@@ -2,20 +2,29 @@ import express from 'express';
 import { PasswordService } from '../services/passwordService';
 import { PasswordGenerateRequest } from '../types/api';
 import { AppError } from '../middleware/errorHandler';
+import { Router, Request, Response } from 'express';
+import { CompositionPasswordService } from '../services/CompositionPasswordService';
+import { 
+  PasswordGenerateResponse, 
+  CompositionPasswordRequest,
+  CompositionPasswordResponse,
+  APIResponse 
+} from '../types/api';
 
 const router = express.Router();
 const passwordService = new PasswordService();
+const compositionPasswordService = new CompositionPasswordService();
 
 /**
  * パスワード生成エンドポイント
  * POST /api/password/generate
  */
-router.post('/generate', async (req, res, next) => {
+router.post('/generate', async (req: Request, res: Response) => {
   try {
     const criteria: PasswordGenerateRequest = req.body;
     const userSession = req.headers['x-session-id'] as string;
     const ipAddress = req.ip;
-    const userAgent = req.get('User-Agent');
+    const userAgent = req.headers['user-agent'];
 
     // 基本バリデーション
     if (!criteria) {
@@ -63,17 +72,130 @@ router.post('/generate', async (req, res, next) => {
       userAgent
     );
 
-    // 成功レスポンス
-    res.status(200).json({
+    const response: APIResponse<PasswordGenerateResponse> = {
       success: true,
       data: result,
       tdMessage: `${result.strength}強度のパスワードを${result.passwords.length}個生成しました！安全に使用してくださいね♪`,
       timestamp: new Date().toISOString(),
-      requestId: req.headers['x-request-id'] || `pwd-${Date.now()}`
-    });
+      requestId: `pwd-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    };
 
+    res.json(response);
   } catch (error) {
-    next(error); // エラーハンドリングミドルウェアに委譲
+    console.error('パスワード生成エラー:', error);
+    
+    const response: APIResponse<null> = {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : 'パスワード生成に失敗しました',
+        code: 'PASSWORD_GENERATION_ERROR',
+        details: error instanceof Error ? error.stack : undefined
+      },
+      tdMessage: 'エラーが発生しました... 設定を確認して再度お試しください',
+      timestamp: new Date().toISOString(),
+      requestId: `pwd-err-${Date.now()}`
+    };
+
+    res.status(500).json(response);
+  }
+});
+
+/**
+ * 構成プリセット対応パスワード生成エンドポイント
+ * POST /api/password/generate-with-composition
+ */
+router.post('/generate-with-composition', async (req: Request, res: Response) => {
+  try {
+    const criteria: CompositionPasswordRequest = req.body;
+    const userSession = req.headers['x-session-id'] as string;
+    const ipAddress = req.ip;
+    const userAgent = req.headers['user-agent'];
+
+    const result = await compositionPasswordService.generateWithComposition(
+      criteria, 
+      userSession, 
+      ipAddress, 
+      userAgent
+    );
+
+    // TDメッセージの生成
+    let tdMessage = '';
+    if (criteria.composition === 'none') {
+      tdMessage = `${result.strength}強度のパスワードを${result.passwords.length}個生成しました！`;
+    } else {
+      const satisfiedCount = result.composition.appliedRequirements.filter(req => req.satisfied).length;
+      const totalCount = result.composition.appliedRequirements.length;
+      tdMessage = `${criteria.composition}プリセットで${result.strength}強度のパスワードを${result.passwords.length}個生成しました！要件満足度: ${satisfiedCount}/${totalCount} ♪`;
+    }
+
+    const response: APIResponse<CompositionPasswordResponse> = {
+      success: true,
+      data: result,
+      tdMessage,
+      timestamp: new Date().toISOString(),
+      requestId: `pwd-comp-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('構成プリセット付きパスワード生成エラー:', error);
+    
+    const response: APIResponse<null> = {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : '構成プリセット付きパスワード生成に失敗しました',
+        code: 'COMPOSITION_PASSWORD_GENERATION_ERROR',
+        details: error instanceof Error ? error.stack : undefined
+      },
+      tdMessage: 'エラーが発生しました... 構成設定を確認して再度お試しください',
+      timestamp: new Date().toISOString(),
+      requestId: `pwd-comp-err-${Date.now()}`
+    };
+
+    res.status(500).json(response);
+  }
+});
+
+/**
+ * プリセット一覧取得エンドポイント
+ * GET /api/password/presets
+ */
+router.get('/presets', async (req: Request, res: Response) => {
+  try {
+    const presets = compositionPasswordService.getAvailablePresets();
+
+    const response: APIResponse<any> = {
+      success: true,
+      data: {
+        presets,
+        categories: {
+          'none': { label: '基本設定', description: '文字種を自由に選択' },
+          'standard': { label: '標準プリセット', description: 'よく使用される構成' },
+          'custom': { label: 'カスタム設定', description: '高度なカスタマイズ' }
+        }
+      },
+      tdMessage: '利用可能な構成プリセット一覧です♪ お好みの設定を選択してください！',
+      timestamp: new Date().toISOString(),
+      requestId: `presets-${Date.now()}`
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('プリセット取得エラー:', error);
+    
+    const response: APIResponse<null> = {
+      success: false,
+      error: {
+        message: 'プリセット情報の取得に失敗しました',
+        code: 'PRESETS_FETCH_ERROR',
+        details: error instanceof Error ? error.stack : undefined
+      },
+      tdMessage: 'プリセット情報の取得に失敗しました... 再度お試しください',
+      timestamp: new Date().toISOString(),
+      requestId: `presets-err-${Date.now()}`
+    };
+
+    res.status(500).json(response);
   }
 });
 
@@ -81,29 +203,41 @@ router.post('/generate', async (req, res, next) => {
  * パスワード強度分析エンドポイント
  * POST /api/password/analyze
  */
-router.post('/analyze', async (req, res, next) => {
+router.post('/analyze', async (req: Request, res: Response) => {
   try {
     const { password } = req.body;
 
     if (!password || typeof password !== 'string') {
-      throw new AppError('分析するパスワードが必要です', 400, 'MISSING_PASSWORD');
-    }
-
-    if (password.length > 1000) {
-      throw new AppError('パスワードが長すぎます', 400, 'PASSWORD_TOO_LONG');
+      throw new Error('パスワードが指定されていません');
     }
 
     const analysis = await passwordService.analyzePasswordStrength(password);
 
-    res.status(200).json({
+    const response: APIResponse<any> = {
       success: true,
       data: analysis,
-      tdMessage: `パスワード強度は${analysis.strength}です。${analysis.recommendations.length > 0 ? '改善提案もありますよ！' : '素晴らしい強度です！'}`,
-      timestamp: new Date().toISOString()
-    });
+      tdMessage: `パスワード強度: ${analysis.strength} (${analysis.score}/${analysis.maxScore}点)。${analysis.recommendations.length > 0 ? '改善提案があります！' : '良好な強度です♪'}`,
+      timestamp: new Date().toISOString(),
+      requestId: `analyze-${Date.now()}`
+    };
 
+    res.json(response);
   } catch (error) {
-    next(error);
+    console.error('パスワード分析エラー:', error);
+    
+    const response: APIResponse<null> = {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : 'パスワード分析に失敗しました',
+        code: 'PASSWORD_ANALYSIS_ERROR',
+        details: error instanceof Error ? error.stack : undefined
+      },
+      tdMessage: 'パスワード分析に失敗しました... 再度お試しください',
+      timestamp: new Date().toISOString(),
+      requestId: `analyze-err-${Date.now()}`
+    };
+
+    res.status(500).json(response);
   }
 });
 

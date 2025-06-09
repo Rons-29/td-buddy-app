@@ -232,3 +232,113 @@ export interface TDSystemInfo {
   };
   tdMessage: string;
 } 
+
+// 基本的なAPI レスポンス型
+export interface APIResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: {
+    message: string;
+    code: string;
+    details?: any;
+  };
+  tdMessage: string;
+  timestamp: string;
+  requestId: string;
+}
+
+// パスワード生成リクエスト（基本版）
+export interface PasswordGenerateRequest {
+  length: number;                    // パスワード長 (1-128)
+  count: number;                     // 生成個数 (1-1000) 
+  includeUppercase: boolean;         // 大文字を含む
+  includeLowercase: boolean;         // 小文字を含む
+  includeNumbers: boolean;           // 数字を含む
+  includeSymbols: boolean;           // 記号を含む
+  excludeAmbiguous: boolean;         // 紛らわしい文字を除外
+  customCharacters?: string;         // カスタム文字セット
+}
+
+// 構成プリセット対応パスワード生成リクエスト
+export interface CompositionPasswordRequest {
+  // 基本設定
+  length: number;                    // パスワード長 (1-128)
+  count: number;                     // 生成個数 (1-1000)
+  
+  // 構成プリセット
+  composition: 'none' | 'web-standard' | 'num-upper-lower' | 'high-security' | 'enterprise-policy' | 'num-upper-lower-symbol' | 'custom-symbols' | 'custom-charsets' | 'other';
+  
+  // カスタム設定（compositionに応じて使用）
+  customSymbols?: string;            // カスタム記号
+  customCharsets?: CustomCharsetRequirement[];  // カスタム文字種
+  
+  // 除外オプション
+  excludeSimilar?: boolean;          // 似ている文字を除外
+  excludeAmbiguous?: boolean;        // 紛らわしい文字を除外
+  
+  // 基本文字種（composition='none'時に使用）
+  useNumbers?: boolean;
+  useUppercase?: boolean;
+  useLowercase?: boolean;
+  useSymbols?: boolean;
+}
+
+export interface CustomCharsetRequirement {
+  id: string;
+  name: string;
+  charset: string;
+  min: number;
+  enabled: boolean;
+}
+
+// パスワード生成レスポンス（基本版）
+export interface PasswordGenerateResponse {
+  passwords: string[];
+  strength: 'weak' | 'medium' | 'strong' | 'very-strong';
+  estimatedCrackTime: string;
+  criteria: PasswordGenerateRequest;
+  generatedAt: string;
+}
+
+// 構成プリセット対応パスワード生成レスポンス
+export interface CompositionPasswordResponse {
+  passwords: string[];
+  strength: 'weak' | 'medium' | 'strong' | 'very-strong';
+  estimatedCrackTime: string;
+  criteria: CompositionPasswordRequest;
+  generatedAt: string;
+  composition: {
+    usedPreset: string;
+    appliedRequirements: RequirementSummary[];
+  };
+}
+
+export interface RequirementSummary {
+  name: string;
+  charset: string;
+  requiredCount: number;
+  actualCount: number;
+  satisfied: boolean;
+}
+
+// ヘルスチェック
+
+
+// 個人情報生成リクエスト（将来用）
+export interface PersonalInfoRequest {
+  count: number;
+  includeFirstName: boolean;
+  includeLastName: boolean;
+  includeEmail: boolean;
+  includePhone: boolean;
+  includeAddress: boolean;
+  locale: 'ja' | 'en';
+}
+
+// Claude AI リクエスト（将来用）
+export interface ClaudeRequest {
+  prompt: string;
+  context?: string;
+  dataType: 'password' | 'personal' | 'text';
+  parameters?: Record<string, any>;
+} 

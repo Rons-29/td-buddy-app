@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # 💡 開発効率化Tips
 # TestData Buddy (TD) プロジェクトの開発効率化・ベストプラクティス集
