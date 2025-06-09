@@ -35,7 +35,13 @@ app.use(cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization', 
+    'X-Requested-With',
+    'X-Session-ID',      // セッションID用ヘッダー
+    'X-Request-ID'       // リクエストID用ヘッダー（将来用）
+  ]
 }));
 
 // レート制限設定
