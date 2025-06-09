@@ -13,7 +13,10 @@ export type TDEmotion =
   | 'error'      // 😅 エラー・困った
   | 'sleepy'     // 😴 待機中・お休み
   | 'curious'    // 🤨 興味深い・観察
-  | 'friendly';  // 😄 親しみやすい・歓迎
+  | 'friendly'   // 😄 親しみやすい・歓迎
+  | 'sad'        // 😢 悲しい・落ち込み
+  | 'confused'   // 😕 混乱・困惑
+  | 'worried';   // 😰 心配・不安
 
 // アニメーションタイプ
 export type TDAnimation = 
@@ -65,7 +68,10 @@ const TDCharacter: React.FC<TDCharacterProps> = ({
     error: '😅',
     sleepy: '😴',
     curious: '🤨',
-    friendly: '🤖'
+    friendly: '🤖',
+    sad: '😢',
+    confused: '😕',
+    worried: '😰'
   };
 
   // サイズクラスマッピング
@@ -139,6 +145,21 @@ const TDCharacter: React.FC<TDCharacterProps> = ({
         'こんにちは！TDです。よろしくお願いします♪',
         '何かお手伝いできることはありますか？',
         '一緒に素晴らしいものを作りましょう！'
+      ],
+      sad: [
+        'うまくいかなくて悲しいです...',
+        '残念な結果になってしまいました',
+        '次は上手くいくよう頑張りましょう'
+      ],
+      confused: [
+        'ちょっと混乱しています...',
+        'よく分からなくなってしまいました',
+        '一緒に整理してみませんか？'
+      ],
+      worried: [
+        '少し心配になってきました',
+        '大丈夫でしょうか...',
+        '注意深く進めましょう'
       ]
     };
     
