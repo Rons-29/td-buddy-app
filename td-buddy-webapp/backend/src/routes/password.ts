@@ -111,6 +111,17 @@ router.post('/generate-with-composition', async (req: Request, res: Response) =>
     const ipAddress = req.ip;
     const userAgent = req.headers['user-agent'];
 
+    // リクエスト詳細をログ出力
+    console.log('🔍 リクエスト詳細:', JSON.stringify({
+      composition: criteria.composition,
+      useUppercase: criteria.useUppercase,
+      useLowercase: criteria.useLowercase,
+      useNumbers: criteria.useNumbers,
+      useSymbols: criteria.useSymbols,
+      length: criteria.length,
+      count: criteria.count
+    }, null, 2));
+
     const result = await compositionPasswordService.generateWithComposition(
       criteria, 
       userSession, 

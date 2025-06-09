@@ -182,21 +182,65 @@ export class CompositionPasswordService {
       case 'num-upper-lower-symbol':
         const preset = this.COMPOSITION_PRESETS[criteria.composition];
         if (preset?.requirements) {
-          requirements.push(...preset.requirements);
+          // プリセットの要件から文字種選択に基づいてフィルタリング
+          for (const req of preset.requirements) {
+            let shouldInclude = false;
+            
+            // 文字種チェックボックスの状態に基づいて判定
+            if (req.name === '大文字' && criteria.useUppercase) shouldInclude = true;
+            if (req.name === '小文字' && criteria.useLowercase) shouldInclude = true;
+            if (req.name === '数字' && criteria.useNumbers) shouldInclude = true;
+            if (req.name === '記号' && criteria.useSymbols) shouldInclude = true;
+            
+            // 上記以外の特殊な文字種（カスタム記号など）は常に含める
+            if (!['大文字', '小文字', '数字', '記号'].includes(req.name)) {
+              shouldInclude = true;
+            }
+            
+            if (shouldInclude) {
+              requirements.push(req);
+            }
+          }
+          
+          // 文字種が1つも選択されていない場合は、全ての文字種を含める（安全装置）
+          if (requirements.length === 0) {
+            console.log('⚠️  文字種が選択されていないため、プリセットの全文字種を使用します');
+            requirements.push(...preset.requirements);
+          }
         }
         break;
 
       case 'custom-symbols':
         const symbols = criteria.customSymbols || '$@_#&?';
-        requirements.push(
-          { name: '数字', charset: this.DEFAULT_CHARACTERS.numbers, min: 1 },
-          { name: '大文字', charset: this.DEFAULT_CHARACTERS.uppercase, min: 1 },
-          { name: '小文字', charset: this.DEFAULT_CHARACTERS.lowercase, min: 1 },
-          { name: 'カスタム記号', charset: symbols, min: 1 }
-        );
+        
+        // 文字種選択に基づいてカスタム記号プリセットを構築
+        if (criteria.useNumbers) {
+          requirements.push({ name: '数字', charset: this.DEFAULT_CHARACTERS.numbers, min: 1 });
+        }
+        if (criteria.useUppercase) {
+          requirements.push({ name: '大文字', charset: this.DEFAULT_CHARACTERS.uppercase, min: 1 });
+        }
+        if (criteria.useLowercase) {
+          requirements.push({ name: '小文字', charset: this.DEFAULT_CHARACTERS.lowercase, min: 1 });
+        }
+        if (criteria.useSymbols) {
+          requirements.push({ name: 'カスタム記号', charset: symbols, min: 1 });
+        }
+        
+        // 文字種が1つも選択されていない場合は、デフォルトの組み合わせを使用
+        if (requirements.length === 0) {
+          console.log('⚠️  文字種が選択されていないため、デフォルトの組み合わせを使用します');
+          requirements.push(
+            { name: '数字', charset: this.DEFAULT_CHARACTERS.numbers, min: 1 },
+            { name: '大文字', charset: this.DEFAULT_CHARACTERS.uppercase, min: 1 },
+            { name: '小文字', charset: this.DEFAULT_CHARACTERS.lowercase, min: 1 },
+            { name: 'カスタム記号', charset: symbols, min: 1 }
+          );
+        }
         break;
 
       case 'custom-charsets':
+        let hasValidCharsets = false;
         if (criteria.customCharsets) {
           for (const customCharset of criteria.customCharsets) {
             if (customCharset.enabled && customCharset.charset) {
@@ -205,7 +249,36 @@ export class CompositionPasswordService {
                 charset: customCharset.charset,
                 min: customCharset.min
               });
+              hasValidCharsets = true;
             }
+          }
+        }
+        
+        // customCharsetsが空または無効な場合は文字種選択を使用
+        if (!hasValidCharsets) {
+          console.log('⚠️  customCharsetsが空のため、文字種選択を使用します');
+          if (criteria.useUppercase) {
+            requirements.push({ name: '大文字', charset: this.DEFAULT_CHARACTERS.uppercase, min: 1 });
+          }
+          if (criteria.useLowercase) {
+            requirements.push({ name: '小文字', charset: this.DEFAULT_CHARACTERS.lowercase, min: 1 });
+          }
+          if (criteria.useNumbers) {
+            requirements.push({ name: '数字', charset: this.DEFAULT_CHARACTERS.numbers, min: 1 });
+          }
+          if (criteria.useSymbols) {
+            requirements.push({ name: '記号', charset: this.DEFAULT_CHARACTERS.symbols, min: 1 });
+          }
+          
+          // 文字種が1つも選択されていない場合のみデフォルト文字種を使用
+          if (requirements.length === 0) {
+            console.log('⚠️  文字種も選択されていないため、デフォルト文字種を使用します');
+            requirements.push(
+              { name: '大文字', charset: this.DEFAULT_CHARACTERS.uppercase, min: 1 },
+              { name: '小文字', charset: this.DEFAULT_CHARACTERS.lowercase, min: 1 },
+              { name: '数字', charset: this.DEFAULT_CHARACTERS.numbers, min: 1 },
+              { name: '記号', charset: this.DEFAULT_CHARACTERS.symbols, min: 1 }
+            );
           }
         }
         break;

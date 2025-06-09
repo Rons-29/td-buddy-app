@@ -33,6 +33,9 @@ export const PasswordGenerator: React.FC = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  
+  // コピー完了メッセージ用の状態を追加
+  const [copyMessage, setCopyMessage] = useState<string | null>(null);
 
   // TDキャラクター状態（既存）
   const [tdState, setTdState] = useState<TDState>({
@@ -100,36 +103,25 @@ export const PasswordGenerator: React.FC = () => {
     }));
 
     try {
-      let endpoint = 'http://localhost:3001/api/password/generate';
-      let requestBody: any = criteria;
-
-      // 構成プリセットが選択されている場合は新しいAPIを使用
-      if (selectedPresetId !== 'none' && selectedPresetId !== 'other') {
-        endpoint = 'http://localhost:3001/api/password/generate-with-composition';
-        requestBody = {
-          length: criteria.length,
-          count: criteria.count,
-          composition: selectedPresetId,
-          excludeAmbiguous: criteria.excludeAmbiguous,
-          excludeSimilar: true,
-          ...(selectedPresetId === 'custom-symbols' && { customSymbols }),
-          ...(selectedPresetId === 'custom-charsets' && { customCharsets })
-        };
-      } else {
-        // none または other プリセットの場合は、基本API を使用
-        endpoint = 'http://localhost:3001/api/password/generate-with-composition';
-        requestBody = {
-          length: criteria.length,
-          count: criteria.count,
-          composition: selectedPresetId,
-          excludeAmbiguous: criteria.excludeAmbiguous,
-          excludeSimilar: true,
-          useNumbers: criteria.includeNumbers,
-          useUppercase: criteria.includeUppercase,
-          useLowercase: criteria.includeLowercase,
-          useSymbols: criteria.includeSymbols
-        };
-      }
+      // 全ての場合で構成プリセットAPIを使用
+      const endpoint = 'http://localhost:3001/api/password/generate-with-composition';
+      
+      // 基本の文字種選択を含めたリクエストボディを構築
+      const requestBody: any = {
+        length: criteria.length,
+        count: criteria.count,
+        composition: selectedPresetId,
+        excludeAmbiguous: criteria.excludeAmbiguous,
+        excludeSimilar: true,
+        // 文字種選択を常に含める
+        useNumbers: criteria.includeNumbers,
+        useUppercase: criteria.includeUppercase,
+        useLowercase: criteria.includeLowercase,
+        useSymbols: criteria.includeSymbols,
+        // プリセット固有の設定
+        ...(selectedPresetId === 'custom-symbols' && { customSymbols }),
+        ...(selectedPresetId === 'custom-charsets' && { customCharsets })
+      };
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -183,26 +175,27 @@ export const PasswordGenerator: React.FC = () => {
       await navigator.clipboard.writeText(password);
       setCopiedIndex(index);
       
+      // 結果エリア下部にメッセージ表示
+      setCopyMessage(`✅ パスワード ${index + 1} をコピーしました！`);
+      
+      // TDキャラクターにも軽く反応させる（オプション）
       setTdState(prev => ({
         ...prev,
         emotion: 'happy',
-        animation: 'bounce',
-        message: 'クリップボードにコピーしました！安全に使用してくださいね♪',
-        showSpeechBubble: true
+        animation: 'bounce'
       }));
 
       setTimeout(() => {
         setCopiedIndex(null);
-        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+        setCopyMessage(null);
       }, 2000);
     } catch (error) {
       console.error('コピーエラー:', error);
-      setTdState(prev => ({
-        ...prev,
-        emotion: 'confused',
-        message: 'コピーに失敗しました... 手動でコピーしてください',
-        showSpeechBubble: true
-      }));
+      setCopyMessage('❌ コピーに失敗しました。手動でコピーしてください。');
+      
+      setTimeout(() => {
+        setCopyMessage(null);
+      }, 3000);
     }
   };
 
@@ -213,19 +206,27 @@ export const PasswordGenerator: React.FC = () => {
     const allPasswords = result.passwords.join('\n');
     try {
       await navigator.clipboard.writeText(allPasswords);
+      
+      // 結果エリア下部にメッセージ表示
+      setCopyMessage(`✅ ${result.passwords.length}個すべてのパスワードをコピーしました！`);
+      
+      // TDキャラクターにも軽く反応させる（オプション）
       setTdState(prev => ({
         ...prev,
         emotion: 'excited',
-        animation: 'heartbeat',
-        message: `${result.passwords.length}個すべてのパスワードをコピーしました！`,
-        showSpeechBubble: true
+        animation: 'bounce'
       }));
 
       setTimeout(() => {
-        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
-      }, 2000);
+        setCopyMessage(null);
+      }, 3000);
     } catch (error) {
       console.error('全コピーエラー:', error);
+      setCopyMessage('❌ コピーに失敗しました。手動でコピーしてください。');
+      
+      setTimeout(() => {
+        setCopyMessage(null);
+      }, 4000);
     }
   };
 
@@ -283,7 +284,7 @@ export const PasswordGenerator: React.FC = () => {
         />
 
         {/* 基本設定（水平レイアウト） */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-6">
           {/* パスワード長 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -317,6 +318,51 @@ export const PasswordGenerator: React.FC = () => {
             />
             <div className="text-center text-sm text-gray-500 mt-1">
               {criteria.count}個
+            </div>
+          </div>
+
+          {/* 文字種選択 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              使用文字種
+            </label>
+            <div className="space-y-1">
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={criteria.includeUppercase}
+                  onChange={(e) => handleCriteriaChange('includeUppercase', e.target.checked)}
+                  className="mr-1.5"
+                />
+                大文字 (A-Z)
+              </label>
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={criteria.includeLowercase}
+                  onChange={(e) => handleCriteriaChange('includeLowercase', e.target.checked)}
+                  className="mr-1.5"
+                />
+                小文字 (a-z)
+              </label>
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={criteria.includeNumbers}
+                  onChange={(e) => handleCriteriaChange('includeNumbers', e.target.checked)}
+                  className="mr-1.5"
+                />
+                数字 (0-9)
+              </label>
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={criteria.includeSymbols}
+                  onChange={(e) => handleCriteriaChange('includeSymbols', e.target.checked)}
+                  className="mr-1.5"
+                />
+                記号 (!@#$)
+              </label>
             </div>
           </div>
 
@@ -364,54 +410,7 @@ export const PasswordGenerator: React.FC = () => {
           </div>
         </div>
 
-        {/* 詳細設定（必要時のみ表示） */}
-        {(selectedPresetId === 'none' || selectedPresetId === 'other') && (
-          <div className="border-t border-gray-200 pt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              使用する文字種（デフォルト/その他プリセット時）
-            </label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={criteria.includeUppercase}
-                  onChange={(e) => handleCriteriaChange('includeUppercase', e.target.checked)}
-                  className="mr-2"
-                />
-                大文字 (A-Z)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={criteria.includeLowercase}
-                  onChange={(e) => handleCriteriaChange('includeLowercase', e.target.checked)}
-                  className="mr-2"
-                />
-                小文字 (a-z)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={criteria.includeNumbers}
-                  onChange={(e) => handleCriteriaChange('includeNumbers', e.target.checked)}
-                  className="mr-2"
-                />
-                数字 (0-9)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={criteria.includeSymbols}
-                  onChange={(e) => handleCriteriaChange('includeSymbols', e.target.checked)}
-                  className="mr-2"
-                />
-                記号 (!@#$)
-              </label>
-            </div>
-          </div>
-        )}
-
-        {/* カスタム記号入力（custom-symbolsプリセット時のみ表示） */}
+        {/* 詳細設定（カスタムプリセット用のみ） */}
         {selectedPresetId === 'custom-symbols' && (
           <div className="border-t border-gray-200 pt-6">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -520,6 +519,15 @@ export const PasswordGenerator: React.FC = () => {
           <div className="text-xs text-gray-500">
             生成日時: {new Date(result.generatedAt).toLocaleString()}
           </div>
+          
+          {/* コピー完了メッセージ（結果エリア下部） */}
+          {copyMessage && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center justify-center">
+                <span className="text-green-800 font-medium">{copyMessage}</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
