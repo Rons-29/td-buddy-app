@@ -1,0 +1,75 @@
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            format:
+              type: string
+              enum: [csv, json, xml, txt, pdf, png, jpg]
+            size:
+              type: string
+              description: "ファイルサイズ (例: '1MB', '500KB')"
+            rowCount:
+              type: integer
+              description: "データ行数（CSV/JSON用）"
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+                    enum: [uuid, string, number, date, email, name, address]
+  responses:
+    '200':
+      description: 生成成功
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              downloadUrl:
+                type: string
+              filename:
+                type: string
+              fileSize:
+                type: integer
+
+# 個人情報生成
+/generate/personal-info:
+  post:
+    tags:
+      - Personal Info Generation
+    summary: 擬似個人情報生成
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              count:
+                type: integer
+                minimum: 1
+                maximum: 1000
+                default: 1
+              fields:
+                type: array
+                items:
+                  type: string
+                  enum: [fullName, firstName, lastName, email, phoneNumber, address, birthDate, gender]
+              locale:
+                type: string
+                enum: [ja, en]
+                default: ja
+    responses:
+      '200':
+        description: 生成成功
+        content:
+          application/json:
+            schema:
+              type 
