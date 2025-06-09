@@ -12,6 +12,12 @@ export interface PasswordCriteria {
   mustIncludeCharTypes?: string[]; // 必ず含む文字種
   customSymbols?: string; // カスタム記号
   excludeSimilar?: boolean; // 似ている文字を除外
+  excludeSequential?: boolean; // 連続文字を避ける
+  // 高度な設定
+  minEntropy?: number; // 最小エントロピー（ビット）
+  avoidDictionary?: boolean; // 辞書攻撃対策
+  noDuplicates?: boolean; // 重複パスワード除去
+  maxRetries?: number; // 生成再試行回数
 }
 
 // カスタム文字種定義（CustomCharsetsEditor用）

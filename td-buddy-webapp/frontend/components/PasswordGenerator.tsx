@@ -34,7 +34,7 @@ export const PasswordGenerator: React.FC = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  
+
   // コピー完了メッセージ用の状態を追加
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
 
@@ -308,34 +308,34 @@ export const PasswordGenerator: React.FC = () => {
     };
 
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         'X-Session-ID': `td-session-${Date.now()}`,
-      },
+        },
       body: JSON.stringify(requestBody)
-    });
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
-    }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+      }
 
-    const data: APIResponse = await response.json();
-    setResult(data.data);
+      const data: APIResponse = await response.json();
+      setResult(data.data);
 
-    // TDキャラクターの成功反応
-    setTdState(prev => ({
-      ...prev,
-      emotion: 'excited',
-      animation: 'heartbeat',
-      message: data.tdMessage || `${data.data.strength}強度のパスワードを${data.data.passwords.length}個生成しました！`,
-      showSpeechBubble: true
-    }));
+      // TDキャラクターの成功反応
+      setTdState(prev => ({
+        ...prev,
+        emotion: 'excited',
+        animation: 'heartbeat',
+        message: data.tdMessage || `${data.data.strength}強度のパスワードを${data.data.passwords.length}個生成しました！`,
+        showSpeechBubble: true
+      }));
 
-    setTimeout(() => {
-      setTdState(prev => ({ ...prev, showSpeechBubble: false }));
-    }, 3000);
+      setTimeout(() => {
+        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+      }, 3000);
   };
 
   // チャンク生成（大量生成用）
@@ -676,7 +676,7 @@ export const PasswordGenerator: React.FC = () => {
         </p>
       </div>
 
-      {/* TDキャラクター */}
+        {/* TDキャラクター */}
       <div className="flex justify-center">
         <TDCharacter
           emotion={tdState.emotion}
@@ -685,7 +685,7 @@ export const PasswordGenerator: React.FC = () => {
           showSpeechBubble={tdState.showSpeechBubble}
           size="medium"
         />
-      </div>
+        </div>
 
       {/* 設定エリア（フル幅） */}
       <div className="bg-white rounded-lg shadow-md p-4 lg:p-6">
@@ -701,42 +701,85 @@ export const PasswordGenerator: React.FC = () => {
         {/* 基本設定（水平レイアウト） */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-6">
           {/* パスワード長 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
               パスワード長
-            </label>
-            <input
-              type="range"
-              min="4"
+                </label>
+                <input
+                  type="range"
+                  min="4"
               max="50"
-              value={criteria.length}
-              onChange={(e) => handleCriteriaChange('length', parseInt(e.target.value))}
+                  value={criteria.length}
+                  onChange={(e) => handleCriteriaChange('length', parseInt(e.target.value))}
               className="w-full"
-            />
+                />
             <div className="text-center text-sm text-gray-500 mt-1">
               {criteria.length}文字
-            </div>
-          </div>
+                </div>
+              </div>
 
           {/* 生成個数 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
               生成個数
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="1000"
-              value={criteria.count}
-              onChange={(e) => handleCriteriaChange('count', parseInt(e.target.value))}
-              className="w-full"
-            />
-            <div className="text-center text-sm text-gray-500 mt-1">
-              {criteria.count}個
+              {criteria.count > 100 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded">
+                  大量生成
+                </span>
+              )}
+                </label>
+            <div className="space-y-2">
+              {/* スライダー */}
+              <input
+                type="range"
+                min="1"
+                max="1000"
+                value={criteria.count}
+                onChange={(e) => handleCriteriaChange('count', parseInt(e.target.value))}
+                className="w-full"
+              />
+              
+              {/* 数値入力とクイック選択 */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={criteria.count}
+                  onChange={(e) => handleCriteriaChange('count', Math.min(Math.max(parseInt(e.target.value) || 1, 1), 1000))}
+                  className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                />
+                <span className="text-xs text-gray-500">個</span>
+                
+                {/* クイック選択ボタン */}
+                <div className="flex gap-1">
+                  {[10, 50, 100, 500].map(num => (
+                    <button
+                      key={num}
+                      onClick={() => handleCriteriaChange('count', num)}
+                      className={`px-2 py-1 text-xs rounded transition-colors ${
+                        criteria.count === num
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* 生成時間の目安表示 */}
+              <div className="text-xs text-gray-500">
+                {criteria.count <= 10 && '⚡ 高速生成'}
+                {criteria.count > 10 && criteria.count <= 50 && '🚀 標準生成'}
+                {criteria.count > 50 && criteria.count <= 200 && '⏳ 中規模生成（数秒）'}
+                {criteria.count > 200 && '🔄 大規模生成（プログレス表示）'}
+              </div>
+              </div>
             </div>
-          </div>
 
-          {/* 文字種選択 */}
+            {/* 文字種選択 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               使用文字種
@@ -770,14 +813,14 @@ export const PasswordGenerator: React.FC = () => {
                 数字 (0-9)
               </label>
               <label className="flex items-center text-sm">
-                <input
-                  type="checkbox"
+                    <input
+                      type="checkbox"
                   checked={criteria.includeSymbols}
                   onChange={(e) => handleCriteriaChange('includeSymbols', e.target.checked)}
                   className="mr-1.5"
-                />
+                    />
                 記号 (!@#$)
-              </label>
+                  </label>
             </div>
           </div>
 
@@ -787,46 +830,181 @@ export const PasswordGenerator: React.FC = () => {
               除外オプション
             </label>
             <div className="space-y-2">
-              <label className="flex items-center">
+              {/* 紛らわしい文字除外 */}
+              <label className="flex items-start">
+                    <input
+                      type="checkbox"
+                      checked={criteria.excludeAmbiguous}
+                      onChange={(e) => handleCriteriaChange('excludeAmbiguous', e.target.checked)}
+                  className="mr-2 mt-0.5"
+                    />
+                <div>
+                  <span className="text-sm font-medium">紛らわしい文字を除外</span>
+                  <div className="text-xs text-gray-500 mt-1">
+                    除外: i, l, 1, L, o, 0, O
+                  </div>
+                </div>
+                  </label>
+                  
+              {/* 似ている文字除外 */}
+              <label className="flex items-start">
                 <input
                   type="checkbox"
-                  checked={criteria.excludeAmbiguous}
-                  onChange={(e) => handleCriteriaChange('excludeAmbiguous', e.target.checked)}
-                  className="mr-2"
+                  checked={criteria.excludeSimilar || false}
+                  onChange={(e) => handleCriteriaChange('excludeSimilar', e.target.checked)}
+                  className="mr-2 mt-0.5"
                 />
-                <span className="text-sm">紛らわしい文字を除外</span>
+                  <div>
+                  <span className="text-sm font-medium">似ている記号を除外</span>
+                  <div className="text-xs text-gray-500 mt-1">
+                    除外: {'{}'}, [], (), /\, '"`~
+                  </div>
+                </div>
+                    </label>
+              
+              {/* 連続文字除外 */}
+              <label className="flex items-start">
+                    <input
+                  type="checkbox"
+                  checked={criteria.excludeSequential || false}
+                  onChange={(e) => handleCriteriaChange('excludeSequential', e.target.checked)}
+                  className="mr-2 mt-0.5"
+                />
+                <div>
+                  <span className="text-sm font-medium">連続文字を避ける</span>
+                  <div className="text-xs text-gray-500 mt-1">
+                    abc, 123 などの連続を回避
+                  </div>
+                </div>
               </label>
             </div>
-          </div>
+            </div>
 
-          {/* 生成ボタン */}
+            {/* 生成ボタン */}
           <div className="flex items-end">
-            <button
-              onClick={generatePasswords}
-              disabled={isGenerating}
+              <button
+                onClick={generatePasswords}
+                disabled={isGenerating}
               className={`w-full px-6 py-3 rounded-lg font-semibold text-white transition-all ${
                 isGenerating
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
               }`}
-            >
-              {isGenerating ? (
+              >
+                {isGenerating ? (
                 <span className="flex items-center justify-center">
                   <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  生成中...
+                    生成中...
                 </span>
-              ) : (
+                ) : (
                 <span className="flex items-center justify-center">
                   <Zap className="w-4 h-4 mr-2" />
-                  パスワード生成
+                    パスワード生成
                 </span>
-              )}
-            </button>
-          </div>
-          
+                )}
+              </button>
+            </div>
+
           {/* プログレスバー */}
           <ProgressBar />
         </div>
+
+        {/* 高度な設定ボタン */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            <Settings2 className="w-4 h-4" />
+            {showAdvanced ? '高度な設定を隠す' : '高度な設定を表示'}
+          </button>
+        </div>
+
+        {/* 高度な設定パネル */}
+        {showAdvanced && (
+          <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg space-y-6">
+            <h3 className="text-lg font-medium text-gray-800 mb-4">⚙️ 高度な設定</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 文字品質設定 */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-700">🔍 文字品質</h4>
+                
+                {/* 最小エントロピー設定 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    最小エントロピー（ビット）
+                  </label>
+                  <input
+                    type="range"
+                    min="20"
+                    max="100"
+                    value={criteria.minEntropy || 50}
+                    onChange={(e) => handleCriteriaChange('minEntropy', parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                  <div className="text-center text-sm text-gray-500 mt-1">
+                    {criteria.minEntropy || 50}ビット
+                  </div>
+                </div>
+                
+                {/* 辞書攻撃対策 */}
+                <label className="flex items-start">
+                  <input
+                    type="checkbox"
+                    checked={criteria.avoidDictionary || false}
+                    onChange={(e) => handleCriteriaChange('avoidDictionary', e.target.checked)}
+                    className="mr-2 mt-0.5"
+                  />
+                  <div>
+                    <span className="text-sm font-medium">辞書攻撃対策</span>
+                    <div className="text-xs text-gray-500 mt-1">
+                      一般的な単語パターンを避ける
+                    </div>
+                  </div>
+                </label>
+              </div>
+              
+              {/* 生成オプション */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-700">⚡ 生成オプション</h4>
+                
+                {/* 重複チェック */}
+                <label className="flex items-start">
+                  <input
+                    type="checkbox"
+                    checked={criteria.noDuplicates || false}
+                    onChange={(e) => handleCriteriaChange('noDuplicates', e.target.checked)}
+                    className="mr-2 mt-0.5"
+                  />
+                  <div>
+                    <span className="text-sm font-medium">重複パスワード除去</span>
+                    <div className="text-xs text-gray-500 mt-1">
+                      同じパスワードが生成されないよう保証
+                    </div>
+                  </div>
+                </label>
+                
+                {/* 再試行回数 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    生成再試行回数
+                  </label>
+                  <select
+                    value={criteria.maxRetries || 100}
+                    onChange={(e) => handleCriteriaChange('maxRetries', parseInt(e.target.value))}
+                    className="w-full p-2 border border-gray-300 rounded"
+                  >
+                    <option value={10}>10回（高速）</option>
+                    <option value={50}>50回（標準）</option>
+                    <option value={100}>100回（推奨）</option>
+                    <option value={1000}>1000回（最大品質）</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 詳細設定（カスタムプリセット用） */}
         {(selectedPresetId === 'custom-symbols' || selectedPresetId === 'custom-charsets') && (
@@ -873,38 +1051,38 @@ export const PasswordGenerator: React.FC = () => {
       )}
 
       {/* 生成結果（下部にフル幅表示） */}
-      {result && (
+          {result && (
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">🔐 生成結果</h2>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowPasswords(!showPasswords)}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowPasswords(!showPasswords)}
                 className="p-2 text-gray-500 hover:text-gray-700"
                 title={showPasswords ? 'パスワードを隠す' : 'パスワードを表示'}
-              >
+                  >
                 {showPasswords ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-              <button
-                onClick={copyAllPasswords}
+                  </button>
+                  <button
+                    onClick={copyAllPasswords}
                 className="p-2 text-gray-500 hover:text-gray-700"
                 title="すべてコピー"
-              >
+                  >
                 <Copy className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+                  </button>
+                </div>
+              </div>
 
-          {/* 強度表示 */}
+              {/* 強度表示 */}
           <div className="mb-4">
             <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStrengthInfo(result.strength).bg} ${getStrengthInfo(result.strength).color}`}>
               <span className="mr-1">{getStrengthInfo(result.strength).icon}</span>
               強度: {getStrengthInfo(result.strength).label}
-            </div>
+                    </div>
             <p className="text-sm text-gray-600 mt-1">
               推定解読時間: {result.estimatedCrackTime}
             </p>
-          </div>
+                  </div>
 
           {/* パスワードリスト（グリッドレイアウト） */}
           <OptimizedPasswordDisplay passwords={result.passwords} />
@@ -928,8 +1106,8 @@ export const PasswordGenerator: React.FC = () => {
 
           <div className="text-xs text-gray-500">
             生成日時: {new Date(result.generatedAt).toLocaleString()}
-          </div>
-          
+              </div>
+
           {/* コピー完了メッセージ（結果エリア下部） */}
           {copyMessage && (
             <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">

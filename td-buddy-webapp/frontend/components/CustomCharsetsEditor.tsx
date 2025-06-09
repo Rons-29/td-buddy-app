@@ -2,6 +2,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, GripVertical, Eye, EyeOff, RefreshCw, Check, AlertTriangle, Info } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface CustomCharset {
   id: string;
@@ -66,6 +85,144 @@ const COLOR_PALETTE = [
   '#8b5cf6', '#a855f7', '#c026d3', '#d946ef', '#ec4899', '#f43f5e'
 ];
 
+// ソート可能な文字種アイテムコンポーネント
+const SortableCharsetItem: React.FC<{
+  charset: CustomCharset;
+  validationErrors: string[];
+  onUpdate: (field: keyof CustomCharset, value: any) => void;
+  onDuplicate: () => void;
+  onRemove: () => void;
+}> = ({ charset, validationErrors, onUpdate, onDuplicate, onRemove }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: charset.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div 
+      ref={setNodeRef}
+      style={style}
+      className={`p-4 border-2 rounded-lg transition-all ${
+        charset.enabled ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50 opacity-60'
+      } ${isDragging ? 'shadow-lg z-10' : ''}`}
+    >
+      <div className="flex items-start gap-3">
+        {/* ドラッグハンドル */}
+        <div 
+          className="pt-2 cursor-move touch-none"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className={`w-4 h-4 ${isDragging ? 'text-blue-600' : 'text-gray-400'}`} />
+        </div>
+
+        {/* カラーインジケーター */}
+        <div className="pt-2">
+          <div 
+            className="w-4 h-4 rounded-full border border-gray-300"
+            style={{ backgroundColor: charset.color }}
+          />
+        </div>
+
+        {/* メイン入力エリア */}
+        <div className="flex-1 space-y-3">
+          {/* 名前と有効/無効 */}
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="文字種名（例: 母音）"
+              value={charset.name}
+              onChange={(e) => onUpdate('name', e.target.value)}
+              className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={() => onUpdate('enabled', !charset.enabled)}
+              className={`p-2 rounded ${
+                charset.enabled 
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
+              title={charset.enabled ? '有効' : '無効'}
+            >
+              {charset.enabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {/* 文字セット入力 */}
+          <div className="space-y-2">
+            <input
+              type="text"
+              placeholder="文字セット（例: aeiou）"
+              value={charset.charset}
+              onChange={(e) => onUpdate('charset', e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded font-mono focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <span>文字数: {[...new Set(charset.charset)].length}</span>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-1">
+                  最小文字数:
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={charset.min}
+                    onChange={(e) => onUpdate('min', parseInt(e.target.value) || 1)}
+                    className="w-16 p-1 border border-gray-300 rounded text-center"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* エラー表示 */}
+          {validationErrors.length > 0 && (
+            <div className="p-2 bg-red-50 border border-red-200 rounded">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5" />
+                <div>
+                  {validationErrors.map((error, errorIndex) => (
+                    <div key={errorIndex} className="text-sm text-red-700">
+                      • {error}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 操作ボタン */}
+        <div className="flex flex-col gap-1">
+          <button
+            onClick={onDuplicate}
+            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
+            title="複製"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onRemove}
+            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+            title="削除"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
   charsets,
   onChange,
@@ -75,6 +232,14 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
   const [showPresets, setShowPresets] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
   const [previewPassword, setPreviewPassword] = useState<string>('');
+
+  // ドラッグ&ドロップのセンサー設定
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // 文字種の妥当性チェック
   useEffect(() => {
@@ -207,6 +372,18 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
     onChange([...charsets, duplicated]);
   };
 
+  // ドラッグ&ドロップ終了時の処理
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = charsets.findIndex(charset => charset.id === active.id);
+      const newIndex = charsets.findIndex(charset => charset.id === over.id);
+
+      onChange(arrayMove(charsets, oldIndex, newIndex));
+    }
+  };
+
   return (
     <div className={`custom-charsets-editor ${className}`}>
       <div className="space-y-4">
@@ -278,115 +455,29 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
               </button>
             </div>
           ) : (
-            charsets.map((charset, index) => (
-              <div 
-                key={charset.id} 
-                className={`p-4 border-2 rounded-lg transition-all ${
-                  charset.enabled ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50 opacity-60'
-                }`}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={charsets.map(cs => cs.id)}
+                strategy={verticalListSortingStrategy}
               >
-                <div className="flex items-start gap-3">
-                  {/* ドラッグハンドル */}
-                  <div className="pt-2">
-                    <GripVertical className="w-4 h-4 text-gray-400 cursor-move" />
-                  </div>
-
-                  {/* カラーインジケーター */}
-                  <div className="pt-2">
-                    <div 
-                      className="w-4 h-4 rounded-full border border-gray-300"
-                      style={{ backgroundColor: charset.color }}
+                <div className="space-y-3">
+                  {charsets.map((charset) => (
+                    <SortableCharsetItem
+                      key={charset.id}
+                      charset={charset}
+                      validationErrors={validationErrors[charset.id] || []}
+                      onUpdate={(field, value) => updateCharset(charset.id, field, value)}
+                      onDuplicate={() => duplicateCharset(charset)}
+                      onRemove={() => removeCharset(charset.id)}
                     />
-                  </div>
-
-                  {/* メイン入力エリア */}
-                  <div className="flex-1 space-y-3">
-                    {/* 名前と有効/無効 */}
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="text"
-                        placeholder="文字種名（例: 母音）"
-                        value={charset.name}
-                        onChange={(e) => updateCharset(charset.id, 'name', e.target.value)}
-                        className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                      />
-                      <button
-                        onClick={() => updateCharset(charset.id, 'enabled', !charset.enabled)}
-                        className={`p-2 rounded ${
-                          charset.enabled 
-                            ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                            : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                        }`}
-                        title={charset.enabled ? '有効' : '無効'}
-                      >
-                        {charset.enabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </button>
-                    </div>
-
-                    {/* 文字セット入力 */}
-                    <div className="space-y-2">
-                      <input
-                        type="text"
-                        placeholder="文字セット（例: aeiou）"
-                        value={charset.charset}
-                        onChange={(e) => updateCharset(charset.id, 'charset', e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded font-mono focus:ring-2 focus:ring-blue-500"
-                      />
-                      <div className="flex items-center justify-between text-sm text-gray-600">
-                        <span>文字数: {[...new Set(charset.charset)].length}</span>
-                        <div className="flex items-center gap-3">
-                          <label className="flex items-center gap-1">
-                            最小文字数:
-                            <input
-                              type="number"
-                              min="1"
-                              max="10"
-                              value={charset.min}
-                              onChange={(e) => updateCharset(charset.id, 'min', parseInt(e.target.value) || 1)}
-                              className="w-16 p-1 border border-gray-300 rounded text-center"
-                            />
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* エラー表示 */}
-                    {validationErrors[charset.id] && (
-                      <div className="p-2 bg-red-50 border border-red-200 rounded">
-                        <div className="flex items-start gap-2">
-                          <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5" />
-                          <div>
-                            {validationErrors[charset.id].map((error, errorIndex) => (
-                              <div key={errorIndex} className="text-sm text-red-700">
-                                • {error}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 操作ボタン */}
-                  <div className="flex flex-col gap-1">
-                    <button
-                      onClick={() => duplicateCharset(charset)}
-                      className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
-                      title="複製"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => removeCharset(charset.id)}
-                      className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
-                      title="削除"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              </div>
-            ))
+              </SortableContext>
+            </DndContext>
           )}
         </div>
 
@@ -439,7 +530,9 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
                 <li>• 文字種名は分かりやすい名前を付けてください</li>
                 <li>• 重複した文字は自動的に除去されます</li>
                 <li>• 無効にした文字種はパスワード生成に使用されません</li>
-                <li>• ドラッグ&ドロップで並び順を変更できます</li>
+                <li>• <span className="bg-yellow-100 px-1 rounded">🆕 ドラッグ&ドロップで並び順を変更できます</span></li>
+                <li>• <span className="bg-yellow-100 px-1 rounded">🆕 ハンドル（⋮⋮）をドラッグして順序を入れ替え</span></li>
+                <li>• プリセットから簡単に文字種を追加できます</li>
               </ul>
             </div>
           </div>

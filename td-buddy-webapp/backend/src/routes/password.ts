@@ -1,7 +1,7 @@
 import express from 'express';
 import { PasswordService } from '../services/passwordService';
 import { PasswordGenerateRequest } from '../types/api';
-import { AppError } from '../middleware/errorHandler';
+import { TDError, ValidationError } from '../middleware/errorHandler';
 import { Router, Request, Response } from 'express';
 import { CompositionPasswordService } from '../services/CompositionPasswordService';
 import { 
@@ -28,24 +28,20 @@ router.post('/generate', async (req: Request, res: Response) => {
 
     // 基本バリデーション
     if (!criteria) {
-      throw new AppError('リクエストボディが必要です', 400, 'MISSING_BODY');
+      throw new ValidationError('リクエストボディが必要です');
     }
 
     // パスワード長のバリデーション
     if (!criteria.length || criteria.length < 4 || criteria.length > 128) {
-      throw new AppError(
-        'パスワード長は4文字以上128文字以下で指定してください',
-        400,
-        'INVALID_LENGTH'
+      throw new ValidationError(
+        'パスワード長は4文字以上128文字以下で指定してください'
       );
     }
 
     // 生成数のバリデーション
     if (!criteria.count || criteria.count < 1 || criteria.count > 100) {
-      throw new AppError(
-        '生成数は1個以上100個以下で指定してください',
-        400,
-        'INVALID_COUNT'
+      throw new ValidationError(
+        '生成数は1個以上100個以下で指定してください'
       );
     }
 
@@ -57,10 +53,8 @@ router.post('/generate', async (req: Request, res: Response) => {
                              (criteria.customCharacters && criteria.customCharacters.length > 0);
 
     if (!hasCharacterTypes) {
-      throw new AppError(
-        '少なくとも一つの文字種を選択してください',
-        400,
-        'NO_CHARACTER_TYPES'
+      throw new ValidationError(
+        '少なくとも一つの文字種を選択してください'
       );
     }
 
