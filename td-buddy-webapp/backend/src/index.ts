@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 
-// 環境変数読み込み
+// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -79,10 +79,13 @@ app.get('/health', (req, res) => {
 });
 
 // API ルート設定
-app.use('/api/password', require('./routes/password'));
-app.use('/api/personal', require('./routes/personal'));
-app.use('/api/claude', require('./routes/claude'));
-app.use('/api/health', require('./routes/health'));
+import passwordRoutes from './routes/password';
+import healthRoutes from './routes/health';
+
+app.use('/api/password', passwordRoutes);
+app.use('/api/health', healthRoutes);
+// app.use('/api/personal', require('./routes/personal'));  // TODO: 実装予定
+// app.use('/api/claude', require('./routes/claude'));      // TODO: 実装予定
 
 // ルートエンドポイント
 app.get('/', (req, res) => {

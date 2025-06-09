@@ -180,9 +180,9 @@ export class PasswordService {
           strength,
           estimated_crack_time: estimatedCrackTime,
           expires_at: expiresAt.toISOString(),
-          user_session_id: userSession || undefined,
-          ip_address: ipAddress || undefined,
-          user_agent: userAgent || undefined
+          ...(userSession && { user_session_id: userSession }),
+          ...(ipAddress && { ip_address: ipAddress }),
+          ...(userAgent && { user_agent: userAgent })
         };
 
         await database.run(`
