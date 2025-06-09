@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./frontend/*"],
+      "@backend/*": ["./backend/*"],
+      "@shared/*": ["./shared/*"]
+    }
+  },
+  "include": [
+    "frontend/**/*",
+    "backend/**/*",
+    "shared/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "frontend/.next",
+    "frontend/out",
+    "backend/dist"
+  ],
+  "references": [
+    { "path": "./frontend" },
+    { "path": "./backend" }
+  ]
+} 

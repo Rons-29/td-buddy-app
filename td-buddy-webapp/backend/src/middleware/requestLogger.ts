@@ -1,54 +1,45 @@
 import { Request, Response, NextFunction } from 'express';
 
-// リクエストログ用の型定義
-interface LogRequest extends Request {
-  startTime?: number;
-}
-
-// リクエストログミドルウェア
-export const requestLogger = (req: LogRequest, res: Response, next: NextFunction): void => {
-  const startTime = Date.now();
-  req.startTime = startTime;
+/**
+ * リクエストログミドルウェア
+ * すべてのAPIリクエストの詳細をログに記録
+ */
+export const requestLogger = (req: Request, res: Response, next: NextFunction): void => {
+  const start = Date.now();
+  const timestamp = new Date().toISOString();
+  const method = req.method;
+  const url = req.originalUrl;
+  const userAgent = req.get('User-Agent') || 'Unknown';
+  const ip = req.ip || req.connection.remoteAddress || 'Unknown';
 
   // リクエスト開始ログ
-  console.log(`
-🚀 Request Started:
-- Method: ${req.method}
-- URL: ${req.originalUrl}
-- IP: ${req.ip}
-- User-Agent: ${req.get('User-Agent') || 'Unknown'}
-- Content-Type: ${req.get('Content-Type') || 'None'}
-- Content-Length: ${req.get('Content-Length') || 'None'}
-- Timestamp: ${new Date().toISOString()}
-  `);
-
-  // リクエストボディのログ（機密情報を除く）
-  if (req.body && Object.keys(req.body).length > 0) {
-    const sanitizedBody = sanitizeRequestBody(req.body);
-    console.log(`📝 Request Body:`, sanitizedBody);
-  }
+  console.log(`📝 [${timestamp}] ${method} ${url} - IP: ${ip}`);
 
   // レスポンス完了時のログ
-  const originalSend = res.send;
-  res.send = function(body) {
-    const endTime = Date.now();
-    const duration = endTime - startTime;
-
-    console.log(`
-✅ Request Completed:
-- Method: ${req.method}
-- URL: ${req.originalUrl}
-- Status: ${res.statusCode}
-- Duration: ${duration}ms
-- Response Size: ${Buffer.byteLength(body || '', 'utf8')} bytes
-- Timestamp: ${new Date().toISOString()}
-${getTDLogMessage(res.statusCode, duration)}
-    `);
-
-    return originalSend.call(this, body);
-  };
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const statusCode = res.statusCode;
+    const statusEmoji = statusCode >= 400 ? '❌' : statusCode >= 300 ? '⚠️' : '✅';
+    
+    console.log(`${statusEmoji} [${timestamp}] ${method} ${url} - ${statusCode} - ${duration}ms - IP: ${ip}`);
+    
+    // エラー時の詳細ログ
+    if (statusCode >= 400) {
+      console.log(`🔍 Error Details - UA: ${userAgent}, Body: ${JSON.stringify(req.body)}`);
+    }
+  });
 
   next();
+};
+
+/**
+ * TDキャラクター付きログ出力
+ */
+export const tdLog = (message: string, level: 'info' | 'warn' | 'error' = 'info'): void => {
+  const timestamp = new Date().toISOString();
+  const emoji = level === 'error' ? '🚨' : level === 'warn' ? '⚠️' : '🤖';
+  
+  console.log(`${emoji} TD [${timestamp}]: ${message}`);
 };
 
 // 機密情報をサニタイズする関数

@@ -1,0 +1,416 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🛡️ セキュリティ・安全対策ルール
+# TestData Buddy (TD) プロジェクトのセキュリティガイドライン
+
+## 🔐 基本セキュリティ原則
+
+### セキュリティファースト
+- **安全第一**: 機能よりもセキュリティを優先
+- **最小権限**: 必要最小限の権限のみ付与
+- **多層防御**: 複数のセキュリティ対策を組み合わせ
+- **継続的監視**: 定期的なセキュリティチェック
+
+**TDからのメッセージ**: 「セキュリティは最優先です！TDが一緒に安全を守ります🛡️」
+
+## 🔑 認証・認可
+
+### API キー管理
+```bash
+# ✅ 正しい方法
+export CLAUDE_API_KEY="your-api-key-here"
+export DATABASE_URL="your-db-url-here"
+
+# ❌ 絶対禁止
+const apiKey = "sk-1234567890abcdef"; // コードに直接記載
+```
+
+### 環境変数設定
+```bash
+# .env.example (Gitに含める)
+CLAUDE_API_KEY=your_claude_api_key_here
+DATABASE_URL=file:./data/td-buddy.db
+JWT_SECRET=your_jwt_secret_here
+ENCRYPTION_KEY=your_encryption_key_here
+
+# .env (Gitに含めない)
+CLAUDE_API_KEY=sk-actual-api-key
+DATABASE_URL=file:./data/production.db
+JWT_SECRET=super-secret-jwt-key
+ENCRYPTION_KEY=32-char-encryption-key
+```
+
+### 機密情報の検出
+```bash
+# Git pre-commit hook で機密情報をチェック
+#!/bin/bash
+# .git/hooks/pre-commit
+
+# 機密情報パターンをチェック
+git diff --cached --name-only | xargs grep -l -E "(password|secret|key|token|api_key)" && {
+    echo "⚠️  機密情報が含まれている可能性があります"
+    echo "環境変数に移してください"
+    exit 1
+}
+```
+
+**TDからの警告**: 「危険な情報を検出しました！環境変数に移してください⚠️」
+
+## 🌐 Web セキュリティ
+
+### XSS (Cross-Site Scripting) 対策
+```typescript
+// ✅ 正しい方法 - サニタイズ
+import DOMPurify from 'dompurify';
+
+const sanitizeInput = (input: string): string => {
+  return DOMPurify.sanitize(input);
+};
+
+// React/Remix での安全な表示
+const SafeComponent = ({ userInput }: { userInput: string }) => {
+  const safeContent = sanitizeInput(userInput);
+  return <div dangerouslySetInnerHTML={{ __html: safeContent }} />;
+};
+
+// ❌ 危険な方法
+const UnsafeComponent = ({ userInput }: { userInput: string }) => {
+  return <div dangerouslySetInnerHTML={{ __html: userInput }} />;
+};
+```
+
+### CSRF (Cross-Site Request Forgery) 対策
+```typescript
+// NestJS での CSRF 対策
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+
+@Injectable()
+export class CsrfGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const csrfToken = request.headers['x-csrf-token'];
+    const sessionToken = request.session.csrfToken;
+    
+    return csrfToken === sessionToken;
+  }
+}
+
+// 使用例
+@Post('/generate-password')
+@UseGuards(CsrfGuard)
+async generatePassword(@Body() data: GeneratePasswordDto) {
+  // パスワード生成処理
+}
+```
+
+### SQL インジェクション対策
+```typescript
+// ✅ 正しい方法 - ORMを使用
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class UserService {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
+  
+  async findByEmail(email: string): Promise<User | null> {
+    // TypeORMが自動的にサニタイズ
+    return this.userRepository.findOne({ where: { email } });
+  }
+}
+
+// ❌ 危険な方法 - 生SQL
+async findByEmailUnsafe(email: string): Promise<User | null> {
+  const query = `SELECT * FROM users WHERE email = '${email}'`;
+  return this.database.query(query); // SQL インジェクションの危険性
+}
+
+// ✅ 生SQLを使う場合はパラメータ化
+async findByEmailSafe(email: string): Promise<User | null> {
+  const query = 'SELECT * FROM users WHERE email = ?';
+  return this.database.query(query, [email]);
+}
+```
+
+## 🔒 データ暗号化
+
+### 機密データの暗号化
+```typescript
+import * as crypto from 'crypto';
+
+class EncryptionService {
+  private readonly algorithm = 'aes-256-gcm';
+  private readonly key: Buffer;
+
+  constructor() {
+    this.key = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
+  }
+
+  encrypt(text: string): EncryptedData {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipher(this.algorithm, this.key);
+    cipher.setAAD(Buffer.from('TD-BUDDY', 'utf8'));
+    
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    
+    const authTag = cipher.getAuthTag();
+    
+    return {
+      encryptedData: encrypted,
+      iv: iv.toString('hex'),
+      authTag: authTag.toString('hex'),
+    };
+  }
+
+  decrypt(encryptedData: EncryptedData): string {
+    const decipher = crypto.createDecipher(this.algorithm, this.key);
+    decipher.setAAD(Buffer.from('TD-BUDDY', 'utf8'));
+    decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'));
+    
+    let decrypted = decipher.update(encryptedData.encryptedData, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  }
+}
+```
+
+### パスワードハッシュ化
+```typescript
+import * as bcrypt from 'bcrypt';
+
+class PasswordService {
+  private readonly saltRounds = 12;
+
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, this.saltRounds);
+  }
+
+  async verifyPassword(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
+  }
+}
+```
+
+## 🚦 レート制限・DDoS対策
+
+### API レート制限
+```typescript
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+
+// モジュール設定
+@Module({
+  imports: [
+    ThrottlerModule.forRoot({
+      ttl: 60, // 60秒
+      limit: 10, // 10リクエスト/分
+    }),
+  ],
+})
+export class AppModule {}
+
+// コントローラーでの使用
+@Controller('api/generate')
+@UseGuards(ThrottlerGuard)
+export class GenerateController {
+  @Post('password')
+  @Throttle(5, 60) // パスワード生成は5回/分まで
+  async generatePassword(@Body() data: GeneratePasswordDto) {
+    return this.passwordService.generate(data);
+  }
+  
+  @Post('personal-info')
+  @Throttle(2, 60) // 個人情報生成は2回/分まで
+  async generatePersonalInfo(@Body() data: GeneratePersonalInfoDto) {
+    return this.personalInfoService.generate(data);
+  }
+}
+```
+
+### ユーザー別レート制限
+```typescript
+@Injectable()
+export class UserRateLimitGuard implements CanActivate {
+  constructor(private redisService: RedisService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const userId = request.user?.id || request.ip;
+    const key = `rate_limit:${userId}`;
+    
+    const current = await this.redisService.get(key);
+    if (current && parseInt(current) >= 100) { // 100回/時間まで
+      throw new TooManyRequestsException('レート制限に達しました');
+    }
+    
+    await this.redisService.incr(key);
+    await this.redisService.expire(key, 3600); // 1時間
+    
+    return true;
+  }
+}
+```
+
+## 🧹 データクリーンアップ
+
+### 自動データ削除
+```typescript
+import { Cron, CronExpression } from '@nestjs/schedule';
+
+@Injectable()
+export class DataCleanupService {
+  constructor(
+    @InjectRepository(GeneratedData)
+    private dataRepository: Repository<GeneratedData>,
+  ) {}
+
+  // 毎時間実行：24時間以上経過したデータを削除
+  @Cron(CronExpression.EVERY_HOUR)
+  async cleanupExpiredData() {
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    
+    const result = await this.dataRepository.delete({
+      createdAt: LessThan(twentyFourHoursAgo),
+    });
+    
+    console.log(`🗑️  ${result.affected} 件の期限切れデータを削除しました`);
+  }
+
+  // 毎日午前2時実行：ログファイルのローテーション
+  @Cron('0 2 * * *')
+  async rotateLogFiles() {
+    // ログファイルのアーカイブ・削除処理
+    console.log('📋 ログファイルをローテーションしました');
+  }
+}
+```
+
+### ユーザーデータ削除要求対応
+```typescript
+@Controller('api/user')
+export class UserController {
+  @Delete('data')
+  @UseGuards(AuthGuard)
+  async deleteUserData(@Req() request: AuthenticatedRequest) {
+    const userId = request.user.id;
+    
+    // ユーザーの全データを削除
+    await this.userService.deleteAllUserData(userId);
+    
+    console.log(`🗑️  ユーザー ${userId} のデータを完全削除しました`);
+    
+    return { message: 'データが正常に削除されました' };
+  }
+}
+```
+
+## 🕵️ セキュリティ監視
+
+### 異常アクセス検知
+```typescript
+@Injectable()
+export class SecurityMonitoringService {
+  private readonly suspiciousPatterns = [
+    /script\s*>/i,        // XSS攻撃パターン
+    /union\s+select/i,    // SQL インジェクションパターン
+    /\.\.\/\.\.\//,       // パストラバーサル
+    /<iframe/i,           // iframe インジェクション
+  ];
+
+  logSuspiciousActivity(request: Request, pattern: string) {
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      ip: request.ip,
+      userAgent: request.headers['user-agent'],
+      url: request.url,
+      pattern,
+      body: request.body,
+    };
+    
+    console.warn('🚨 suspicious activity detected:', logEntry);
+    // アラート送信やブロック処理
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async checkForAnomalies() {
+    // 異常なアクセスパターンの検知
+    // レート制限違反の監視
+    // 不正な API 使用の検知
+  }
+}
+```
+
+### セキュリティログ
+```typescript
+@Injectable()
+export class SecurityLogger {
+  private logger = new Logger('Security');
+
+  logAuthAttempt(email: string, success: boolean, ip: string) {
+    this.logger.log(`認証試行: ${email} from ${ip} - ${success ? '成功' : '失敗'}`);
+  }
+
+  logDataGeneration(userId: string, dataType: string, count: number) {
+    this.logger.log(`データ生成: ユーザー${userId} - ${dataType} ${count}件`);
+  }
+
+  logSecurityViolation(violation: string, details: any) {
+    this.logger.error(`セキュリティ違反: ${violation}`, details);
+  }
+}
+```
+
+## ⚡ セキュリティチェックリスト
+
+### 開発時チェックリスト
+- [ ] APIキーが環境変数に設定されている
+- [ ] 入力値のバリデーション・サニタイズが実装されている
+- [ ] SQLクエリがパラメータ化されている
+- [ ] 適切なレート制限が設定されている
+- [ ] セキュリティヘッダーが設定されている
+- [ ] HTTPS通信が強制されている
+- [ ] データの暗号化が実装されている
+
+### デプロイ前チェックリスト
+- [ ] セキュリティスキャンツールでの検査
+- [ ] 依存関係の脆弱性チェック
+- [ ] ログ監視の設定
+- [ ] バックアップの設定
+- [ ] インシデント対応手順の確認
+
+**TDからのメッセージ**: 「セキュリティチェック、すべて完了です！安心してデプロイできますね✨」
+
+## 🚨 インシデント対応
+
+### セキュリティインシデント発生時の手順
+1. **即座の対応**
+   - 影響範囲の特定
+   - 攻撃の遮断
+   - 証拠の保全
+
+2. **調査・分析**
+   - ログの分析
+   - 侵入経路の特定
+   - 影響度の評価
+
+3. **復旧・対策**
+   - システムの復旧
+   - 脆弱性の修正
+   - 再発防止策の実装
+
+4. **報告・学習**
+   - インシデント報告書の作成
+   - チーム内での情報共有
+   - 対策の改善
+
+**TDからの緊急メッセージ**: 「セキュリティインシデントを検知しました！冷静に対応しましょう。TDがサポートします🚨」
+
+---
+
+**TDからの総括メッセージ**: 「セキュリティは継続的な取り組みです。TDと一緒に、安全で信頼できるシステムを構築しましょう！常に警戒を怠らず、でも過度に心配せず、バランスよく進めていきましょう🛡️✨」

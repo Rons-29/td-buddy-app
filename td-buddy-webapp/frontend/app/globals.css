@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TDカスタムスタイル */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-noto-sans-jp: 'Noto Sans JP', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+/* TDキャラクター用のカスタムアニメーション */
+@keyframes td-wiggle {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes td-heartbeat {
+  0%, 50%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(0.9);
+  }
+}
+
+@keyframes td-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.td-wiggle {
+  animation: td-wiggle 1s ease-in-out infinite;
+}
+
+.td-heartbeat {
+  animation: td-heartbeat 1.5s ease-in-out infinite;
+}
+
+.td-float {
+  animation: td-float 3s ease-in-out infinite;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-td-primary-50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-td-primary-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-td-primary-400;
+}
+
+/* ボタンホバーエフェクト */
+.td-button {
+  @apply transition-all duration-200 ease-in-out transform hover:scale-105 focus:scale-105 focus:outline-none focus:ring-2 focus:ring-td-primary-500 focus:ring-opacity-50;
+}
+
+/* カード効果 */
+.td-card {
+  @apply bg-white rounded-lg shadow-sm border border-td-primary-100 hover:shadow-md transition-shadow duration-200;
+}
+
+/* 入力フィールド */
+.td-input {
+  @apply px-3 py-2 border border-td-primary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-td-primary-500 focus:border-td-primary-500 transition-colors duration-200;
+} 
