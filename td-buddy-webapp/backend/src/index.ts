@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
+import { database } from './database/database';
 
 // Load environment variables
 dotenv.config();
@@ -87,10 +88,11 @@ app.get('/health', (req, res) => {
 // API ルート設定
 import passwordRoutes from './routes/password';
 import healthRoutes from './routes/health';
+import { personalRouter } from './routes/personal';
 
 app.use('/api/password', passwordRoutes);
 app.use('/api/health', healthRoutes);
-// app.use('/api/personal', require('./routes/personal'));  // TODO: 実装予定
+app.use('/api/personal', personalRouter);
 // app.use('/api/claude', require('./routes/claude'));      // TODO: 実装予定
 
 // ルートエンドポイント
@@ -126,9 +128,14 @@ app.use('*', (req, res) => {
 // エラーハンドリングミドルウェア（最後に設定）
 app.use(errorHandler);
 
-// サーバー起動
-const server = app.listen(PORT, () => {
-  console.log(`
+// データベース初期化とサーバー起動
+async function startServer() {
+  try {
+    await database.initialize();
+    console.log('✅ データベース初期化完了');
+    
+    const server = app.listen(PORT, () => {
+      console.log(`
 🤖 TestData Buddy Backend Server Started!
 🚀 Server running on port ${PORT}
 🌐 Environment: ${process.env.NODE_ENV || 'development'}
@@ -136,24 +143,41 @@ const server = app.listen(PORT, () => {
 🎯 Ready to generate test data!
 
 TDからのメッセージ: サーバーが正常に起動しました！API経由でデータ生成のお手伝いをします♪
-  `);
+      `);
+    });
+
+    return server;
+  } catch (error) {
+    console.error('❌ サーバー起動エラー:', error);
+    process.exit(1);
+  }
+}
+
+// サーバー起動
+let serverInstance: any;
+startServer().then(server => {
+  serverInstance = server;
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('🤖 TD: サーバーを安全にシャットダウンします...');
-  server.close(() => {
-    console.log('✅ サーバーが正常に終了しました');
-    process.exit(0);
-  });
+  if (serverInstance) {
+    serverInstance.close(() => {
+      console.log('✅ サーバーが正常に終了しました');
+      process.exit(0);
+    });
+  }
 });
 
 process.on('SIGINT', () => {
   console.log('🤖 TD: サーバーを安全にシャットダウンします...');
-  server.close(() => {
-    console.log('✅ サーバーが正常に終了しました');
-    process.exit(0);
-  });
+  if (serverInstance) {
+    serverInstance.close(() => {
+      console.log('✅ サーバーが正常に終了しました');
+      process.exit(0);
+    });
+  }
 });
 
 export default app; 
