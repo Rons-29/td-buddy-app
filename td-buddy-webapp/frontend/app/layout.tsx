@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   description: 'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
   keywords: ['テストデータ', 'QA', 'AI', 'データ生成', 'パスワード生成'],
   authors: [{ name: 'TD Team' }],
+  icons: {
+    icon: '/td-favicon.svg',
+    shortcut: '/td-favicon.svg',
+    apple: '/td-favicon.svg',
+  },
 };
 
 export const viewport: Viewport = {

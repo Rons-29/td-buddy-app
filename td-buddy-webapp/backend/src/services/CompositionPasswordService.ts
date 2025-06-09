@@ -28,7 +28,7 @@ export class CompositionPasswordService {
     numbers: '0123456789',
     symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?',
     ambiguous: 'il1Lo0O',
-    similar: 'il1Lo0O'
+    similar: '{}[]()/\\\'"`~,;.<>'
   };
 
   private readonly COMPOSITION_PRESETS: Record<string, CompositionDefinition> = {
@@ -98,11 +98,26 @@ export class CompositionPasswordService {
     const startTime = Date.now();
     
     try {
+      console.log(`🚀 === パスワード生成開始 ===`);
+      console.log(`📋 受信データ:`, JSON.stringify(criteria, null, 2));
+      
       // バリデーション
       this.validateCriteria(criteria);
+      console.log(`✅ バリデーション通過`);
 
       const passwords: string[] = [];
       const requirements = this.getRequirements(criteria);
+      
+      console.log(`🎯 パスワード生成開始: ${criteria.count}個, 長さ${criteria.length}, プリセット: ${criteria.composition}`);
+      console.log(`📊 最終要件数: ${requirements.length}`);
+      for (const req of requirements) {
+        console.log(`   ➤ ${req.name}: ${req.charset.length}文字 (min: ${req.min})`);
+      }
+      
+      if (requirements.length === 0) {
+        console.error(`🚨 致命的エラー: 要件配列が空です！`);
+        throw new Error('パスワード要件が設定されていません');
+      }
       
       // パスワード生成
       for (let i = 0; i < criteria.count; i++) {
@@ -155,6 +170,9 @@ export class CompositionPasswordService {
   }
 
   private getRequirements(criteria: CompositionPasswordRequest): CompositionRequirement[] {
+    console.log(`🔍 === 要件取得開始 ===`);
+    console.log(`プリセット: ${criteria.composition}`);
+    
     const requirements: CompositionRequirement[] = [];
 
     switch (criteria.composition) {
@@ -181,31 +199,43 @@ export class CompositionPasswordService {
       case 'enterprise-policy':
       case 'num-upper-lower-symbol':
         const preset = this.COMPOSITION_PRESETS[criteria.composition];
+        console.log(`🎯 プリセット検索結果:`, preset ? 'Found' : 'Not found');
         if (preset?.requirements) {
-          // プリセットの要件から文字種選択に基づいてフィルタリング
-          for (const req of preset.requirements) {
-            let shouldInclude = false;
-            
-            // 文字種チェックボックスの状態に基づいて判定
-            if (req.name === '大文字' && criteria.useUppercase) shouldInclude = true;
-            if (req.name === '小文字' && criteria.useLowercase) shouldInclude = true;
-            if (req.name === '数字' && criteria.useNumbers) shouldInclude = true;
-            if (req.name === '記号' && criteria.useSymbols) shouldInclude = true;
-            
-            // 上記以外の特殊な文字種（カスタム記号など）は常に含める
-            if (!['大文字', '小文字', '数字', '記号'].includes(req.name)) {
-              shouldInclude = true;
+          console.log(`📦 プリセット詳細:`, preset);
+          // セキュリティ重視のプリセットでは全要件を強制適用
+          if (['high-security', 'enterprise-policy', 'num-upper-lower-symbol'].includes(criteria.composition)) {
+            console.log(`🛡️  ${criteria.composition}プリセットの全要件を強制適用します`);
+            console.log(`📋 プリセット要件数: ${preset.requirements.length}`);
+            for (const req of preset.requirements) {
+              console.log(`   - ${req.name}: "${req.charset.substring(0, 10)}..." (${req.charset.length}文字, min: ${req.min})`);
             }
-            
-            if (shouldInclude) {
-              requirements.push(req);
-            }
-          }
-          
-          // 文字種が1つも選択されていない場合は、全ての文字種を含める（安全装置）
-          if (requirements.length === 0) {
-            console.log('⚠️  文字種が選択されていないため、プリセットの全文字種を使用します');
             requirements.push(...preset.requirements);
+          } else {
+            // その他のプリセットでは文字種選択に基づいてフィルタリング
+            for (const req of preset.requirements) {
+              let shouldInclude = false;
+              
+              // 文字種チェックボックスの状態に基づいて判定
+              if (req.name === '大文字' && criteria.useUppercase) shouldInclude = true;
+              if (req.name === '小文字' && criteria.useLowercase) shouldInclude = true;
+              if (req.name === '数字' && criteria.useNumbers) shouldInclude = true;
+              if (req.name === '記号' && criteria.useSymbols) shouldInclude = true;
+              
+              // 上記以外の特殊な文字種（カスタム記号など）は常に含める
+              if (!['大文字', '小文字', '数字', '記号'].includes(req.name)) {
+                shouldInclude = true;
+              }
+              
+              if (shouldInclude) {
+                requirements.push(req);
+              }
+            }
+            
+            // 文字種が1つも選択されていない場合は、全ての文字種を含める（安全装置）
+            if (requirements.length === 0) {
+              console.log('⚠️  文字種が選択されていないため、プリセットの全文字種を使用します');
+              requirements.push(...preset.requirements);
+            }
           }
         }
         break;
@@ -293,17 +323,54 @@ export class CompositionPasswordService {
 
   private applyExclusions(charset: string, criteria: CompositionPasswordRequest): string {
     let result = charset;
+    const originalLength = charset.length;
+    console.log(`🔍 除外処理開始: 元の文字セット（${originalLength}文字）: "${charset}"`);
 
     if (criteria.excludeAmbiguous) {
       const ambiguousChars = this.DEFAULT_CHARACTERS.ambiguous.split('');
+      const beforeLength = result.length;
       result = result.split('').filter(char => !ambiguousChars.includes(char)).join('');
+      console.log(`🔍 除外後（ambiguous）: ${beforeLength} → ${result.length} 文字`);
+      console.log(`   除外された文字: ${ambiguousChars.join('')}`);
     }
 
     if (criteria.excludeSimilar) {
       const similarChars = this.DEFAULT_CHARACTERS.similar.split('');
+      const beforeLength = result.length;
       result = result.split('').filter(char => !similarChars.includes(char)).join('');
+      console.log(`🔍 除外後（similar）: ${beforeLength} → ${result.length} 文字`);
+      console.log(`   除外された文字: ${similarChars.join('')}`);
     }
 
+    // 安全装置：文字セットが空または極小になった場合の対応
+    if (result.length === 0) {
+      console.log(`⚠️  文字セットが空になりました。除外オプションを無視して元の文字セットを使用します`);
+      console.log(`📝 元の文字セット: "${charset}"`);
+      result = charset;
+      
+      // それでも空の場合は緊急の代替文字セットを使用
+      if (result.length === 0) {
+        console.log(`🚨 元の文字セットも空でした。緊急代替文字セットを使用します`);
+        result = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      }
+    } else if (result.length < 3) {
+      // 文字セットが極小の場合も安全装置を発動
+      console.log(`⚠️  文字セットが極小（${result.length}文字）になりました。安全性のため最小限の文字を追加します`);
+      console.log(`   現在の文字セット: "${result}"`);
+      
+      // 文字種別に応じて最小限の文字を追加
+      if (charset.includes('A')) { // 大文字の場合
+        result = result.length > 0 ? result + 'ABCDEFGHIJKLMNPQRSTUVWXYZ' : 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
+      } else if (charset.includes('a')) { // 小文字の場合
+        result = result.length > 0 ? result + 'abcdefghijkmnpqrstuvwxyz' : 'abcdefghijkmnpqrstuvwxyz';
+      } else if (charset.includes('1')) { // 数字の場合
+        result = result.length > 0 ? result + '23456789' : '23456789';
+      } else { // 記号の場合
+        result = result.length > 0 ? result + '!@#$%^&*+-=' : '!@#$%^&*+-=';
+      }
+    }
+
+    console.log(`✅ 最終文字セット（${result.length}文字）: "${result.substring(0, 30)}${result.length > 30 ? '...' : ''}"`);
     return result;
   }
 
@@ -336,24 +403,61 @@ export class CompositionPasswordService {
   }
 
   private getRandomChar(charset: string): string {
+    console.log(`🎲 === getRandomChar呼び出し ===`);
+    console.log(`📝 受信した文字セット（${charset.length}文字）: "${charset}"`);
+    
     if (charset.length === 0) {
-      throw new Error('文字セットが空です');
+      console.error(`🚨 致命的エラー: 文字セットが空です！`);
+      console.error(`📍 スタックトレース:`, new Error('文字セット追跡').stack);
+      
+      // 緊急安全装置：デフォルト文字セットを使用
+      const emergencyCharset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+      console.log(`🆘 緊急安全装置発動: デフォルト文字セット（${emergencyCharset.length}文字）を使用`);
+      charset = emergencyCharset;
     }
     
-    const randomBytes = crypto.randomBytes(4);
-    const randomIndex = randomBytes.readUInt32BE(0) % charset.length;
-    const char = charset.charAt(randomIndex); // charAtを使用して安全に取得
-    return char;
+    try {
+      const randomBytes = crypto.randomBytes(4);
+      const randomIndex = randomBytes.readUInt32BE(0) % charset.length;
+      const char = charset.charAt(randomIndex);
+      console.log(`✅ 文字選択成功: "${char}" (インデックス: ${randomIndex})`);
+      return char;
+    } catch (error) {
+      console.error(`❌ getRandomCharでエラー:`, error);
+      throw error;
+    }
   }
 
   private buildAllowedCharset(requirements: CompositionRequirement[]): string {
+    console.log(`🔨 === buildAllowedCharset開始 ===`);
+    console.log(`📋 要件数: ${requirements.length}`);
+    
     let charset = '';
-    for (const req of requirements) {
-      charset += req.charset;
+    for (let i = 0; i < requirements.length; i++) {
+      const req = requirements[i];
+      if (req) {
+        console.log(`   ${i + 1}. ${req.name}: "${req.charset}" (${req.charset.length}文字)`);
+        charset += req.charset;
+      }
     }
     
+    console.log(`🔗 結合後の文字セット（${charset.length}文字）: "${charset.substring(0, 50)}${charset.length > 50 ? '...' : ''}"`);
+    
     // 重複文字を除去
-    return [...new Set(charset.split(''))].join('');
+    const uniqueCharset = [...new Set(charset.split(''))].join('');
+    console.log(`✨ 重複除去後（${uniqueCharset.length}文字）: "${uniqueCharset.substring(0, 50)}${uniqueCharset.length > 50 ? '...' : ''}"`);
+    
+    if (uniqueCharset.length === 0) {
+      console.error(`🚨 buildAllowedCharsetで空の文字セットが生成されました！`);
+      console.error(`📊 要件詳細:`, requirements);
+      
+      // 緊急安全装置
+      const emergencyCharset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      console.log(`🆘 緊急安全装置：デフォルト文字セット（${emergencyCharset.length}文字）を返します`);
+      return emergencyCharset;
+    }
+    
+    return uniqueCharset;
   }
 
   private shuffleString(password: string): string {

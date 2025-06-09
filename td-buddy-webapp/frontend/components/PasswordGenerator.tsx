@@ -5,14 +5,15 @@ import { Copy, RefreshCw, Shield, Eye, EyeOff, Settings2, CheckCircle, Zap } fro
 import TDCharacter, { TDEmotion, TDAnimation } from './TDCharacter';
 import { CompositionSelector } from './CompositionSelector';
 import { CustomSymbolsInput } from './CustomSymbolsInput';
-import { PasswordCriteria, PasswordResult, APIResponse, TDState, PasswordPreset } from '../types/password';
+import { CustomCharsetsEditor } from './CustomCharsetsEditor';
+import { PasswordCriteria, PasswordResult, APIResponse, TDState, PasswordPreset, CustomCharset } from '../types/password';
 import { DEFAULT_PASSWORD_PRESETS } from '../data/passwordPresets';
 
 export const PasswordGenerator: React.FC = () => {
   // 構成プリセット状態
   const [selectedPresetId, setSelectedPresetId] = useState<string>('other');
   const [customSymbols, setCustomSymbols] = useState<string>('$@_#&?');
-  const [customCharsets, setCustomCharsets] = useState<any[]>([]);
+  const [customCharsets, setCustomCharsets] = useState<CustomCharset[]>([]);
 
   // 設定状態（既存）
   const [criteria, setCriteria] = useState<PasswordCriteria>({
@@ -37,6 +38,18 @@ export const PasswordGenerator: React.FC = () => {
   // コピー完了メッセージ用の状態を追加
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
 
+  // 大量生成用プログレス状態
+  const [generationProgress, setGenerationProgress] = useState<{
+    current: number;
+    total: number;
+    estimatedTimeLeft: number;
+    speed: number;
+  } | null>(null);
+
+  // 大量データ表示用の状態
+  const [displayLimit, setDisplayLimit] = useState(100); // 初期表示数
+  const [showAllResults, setShowAllResults] = useState(false);
+
   // TDキャラクター状態（既存）
   const [tdState, setTdState] = useState<TDState>({
     emotion: 'happy',
@@ -52,26 +65,63 @@ export const PasswordGenerator: React.FC = () => {
   const handlePresetChange = (presetId: string, preset: PasswordPreset) => {
     setSelectedPresetId(presetId);
     
-    // プリセットの設定を適用
+    // プリセットの設定をcriteriaに反映
     if (preset.criteria) {
       setCriteria(prev => ({
         ...prev,
-        ...preset.criteria
+        ...preset.criteria,
+        // プリセットに基づいて文字種を自動設定
+        includeUppercase: shouldIncludeCharType(presetId, 'uppercase', preset.criteria),
+        includeLowercase: shouldIncludeCharType(presetId, 'lowercase', preset.criteria),
+        includeNumbers: shouldIncludeCharType(presetId, 'numbers', preset.criteria),
+        includeSymbols: shouldIncludeCharType(presetId, 'symbols', preset.criteria)
       }));
     }
-
-         // TDキャラクターの反応
-     setTdState(prev => ({
-       ...prev,
-       emotion: 'excited',
-       animation: 'bounce',
-       message: `${preset.icon} ${preset.name}プリセットを選択しました！`,
-       showSpeechBubble: true
-     }));
+    
+    // TDキャラクターの反応
+    setTdState(prev => ({
+      ...prev,
+      emotion: 'happy',
+      animation: 'bounce',
+      message: `${preset.name}プリセットに変更しました♪ ${preset.description}`,
+      showSpeechBubble: true
+    }));
 
     setTimeout(() => {
       setTdState(prev => ({ ...prev, showSpeechBubble: false }));
-    }, 2000);
+    }, 3000);
+  };
+
+  // プリセットに基づいて文字種を自動判定する関数
+  const shouldIncludeCharType = (presetId: string, charType: string, presetCriteria: any): boolean => {
+    // セキュリティ重視のプリセットでは全文字種を有効に
+    if (['high-security', 'enterprise-policy', 'num-upper-lower-symbol'].includes(presetId)) {
+      return true;
+    }
+    
+    // Web標準系では記号以外を有効に
+    if (['web-standard', 'num-upper-lower'].includes(presetId)) {
+      return charType !== 'symbols';
+    }
+    
+    // mustIncludeCharTypesが定義されている場合はそれに基づく
+    if (presetCriteria?.mustIncludeCharTypes) {
+      const typeMap: Record<string, string> = {
+        'uppercase': 'uppercase',
+        'lowercase': 'lowercase', 
+        'numbers': 'numbers',
+        'symbols': 'symbols'
+      };
+      return presetCriteria.mustIncludeCharTypes.includes(typeMap[charType]);
+    }
+    
+    // カスタム系では現在の設定を維持
+    if (['custom-symbols', 'custom-charsets'].includes(presetId)) {
+      return criteria[`include${charType.charAt(0).toUpperCase() + charType.slice(1)}` as keyof PasswordCriteria] as boolean;
+    }
+    
+    // デフォルトでは数字・大文字・小文字を有効に
+    return charType !== 'symbols';
   };
 
   // 強度に応じた色とアイコン
@@ -94,33 +144,251 @@ export const PasswordGenerator: React.FC = () => {
   const generatePasswords = async () => {
     setIsGenerating(true);
     setApiError(null);
+    setResult(null);
+    setGenerationProgress(null);
+    
+    const totalCount = criteria.count;
+    const isLargeGeneration = totalCount > 50;
+    
+    // 文字セット検証とフォールバック処理
+    const validateAndPrepareRequest = () => {
+      // custom-charsets プリセットの場合の特別な検証
+      if (selectedPresetId === 'custom-charsets') {
+        // customCharsets が空またはすべて無効な場合
+        const validCharsets = customCharsets.filter(cs => cs.enabled && cs.charset.length > 0);
+        
+        if (validCharsets.length === 0) {
+          // デフォルトの安全な文字セットを提供
+          console.warn('🔧 TDが空の文字セットを検出し、デフォルト設定に変更します');
+          setTdState(prev => ({
+            ...prev,
+            emotion: 'thinking',
+            animation: 'wiggle',
+            message: '文字セットが空のため、安全なデフォルト設定を適用します♪',
+            showSpeechBubble: true
+          }));
+          
+          // 高セキュリティのデフォルト文字セット
+          return {
+            composition: 'enterprise-policy', // 安全なプリセットに変更
+            useUppercase: true,
+            useLowercase: true,
+            useNumbers: true,
+            useSymbols: true
+          };
+        }
+        
+        // 有効な文字セットがある場合は通常通り
+        return {
+          composition: selectedPresetId,
+          customCharsets: validCharsets,
+          useUppercase: criteria.includeUppercase,
+          useLowercase: criteria.includeLowercase,
+          useNumbers: criteria.includeNumbers,
+          useSymbols: criteria.includeSymbols
+        };
+      }
+      
+      // custom-symbols プリセットの場合の検証
+      if (selectedPresetId === 'custom-symbols') {
+        if (!customSymbols || customSymbols.trim().length === 0) {
+          console.warn('🔧 TDがカスタム記号が空のため、デフォルト記号を適用します');
+          setTdState(prev => ({
+            ...prev,
+            emotion: 'thinking',
+            message: 'カスタム記号が空のため、標準記号を適用します♪',
+            showSpeechBubble: true
+          }));
+          
+          return {
+            composition: 'web-standard', // 安全なプリセットに変更
+            useUppercase: true,
+            useLowercase: true,
+            useNumbers: true,
+            useSymbols: true
+          };
+        }
+        
+        return {
+          composition: selectedPresetId,
+          useUppercase: criteria.includeUppercase,
+          useLowercase: criteria.includeLowercase,
+          useNumbers: criteria.includeNumbers,
+          useSymbols: criteria.includeSymbols
+        };
+      }
+      
+      // 基本的な文字種チェック
+      const hasAnyCharType = criteria.includeUppercase || 
+                            criteria.includeLowercase || 
+                            criteria.includeNumbers || 
+                            criteria.includeSymbols;
+      
+      if (!hasAnyCharType) {
+        console.warn('🔧 TDが文字種が選択されていないため、安全なデフォルトを適用します');
+        setTdState(prev => ({
+          ...prev,
+          emotion: 'thinking',
+          message: '文字種が選択されていないため、英数字を有効にします♪',
+          showSpeechBubble: true
+        }));
+        
+        return {
+          composition: selectedPresetId,
+          useUppercase: true,
+          useLowercase: true,
+          useNumbers: true,
+          useSymbols: false
+        };
+      }
+      
+      // 通常の場合 - すべてのプリセット（high-security等）
+      return {
+        composition: selectedPresetId,
+        useUppercase: criteria.includeUppercase,
+        useLowercase: criteria.includeLowercase,
+        useNumbers: criteria.includeNumbers,
+        useSymbols: criteria.includeSymbols
+      };
+    };
+    
+    const safeConfig = validateAndPrepareRequest();
+    
     setTdState(prev => ({
       ...prev,
       emotion: 'thinking',
       animation: 'wiggle',
-      message: 'パスワードを生成中です... しばらくお待ちください♪',
+      message: isLargeGeneration 
+        ? `${totalCount}個の大量生成を開始します！TDが頑張ります♪` 
+        : 'パスワードを生成中です... しばらくお待ちください♪',
       showSpeechBubble: true
     }));
 
     try {
-      // 全ての場合で構成プリセットAPIを使用
+      // 大量生成の場合はチャンク処理
+      if (isLargeGeneration) {
+        await generatePasswordsInChunks(totalCount, safeConfig);
+      } else {
+        await generatePasswordsSingle(totalCount, safeConfig);
+      }
+
+    } catch (error) {
+      console.error('パスワード生成エラー:', error);
+      setApiError(error instanceof Error ? error.message : '不明なエラーが発生しました');
+      
+      setTdState(prev => ({
+        ...prev,
+        emotion: 'sad',
+        animation: 'wiggle',
+        message: 'エラーが発生しました... 設定を確認して再度お試しください',
+        showSpeechBubble: true
+      }));
+    } finally {
+      setIsGenerating(false);
+      setGenerationProgress(null);
+    }
+  };
+
+  // 単発生成（50個以下）
+  const generatePasswordsSingle = async (totalCount: number, safeConfig: any) => {
+    const endpoint = 'http://localhost:3001/api/password/generate-with-composition';
+    
+    const requestBody: any = {
+      length: criteria.length,
+      count: totalCount,
+      composition: safeConfig.composition,
+      excludeAmbiguous: criteria.excludeAmbiguous,
+      excludeSimilar: true,
+      useNumbers: safeConfig.useNumbers ?? criteria.includeNumbers,
+      useUppercase: safeConfig.useUppercase ?? criteria.includeUppercase,
+      useLowercase: safeConfig.useLowercase ?? criteria.includeLowercase,
+      useSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
+      ...(safeConfig.composition === 'custom-symbols' && { customSymbols }),
+      ...(safeConfig.composition === 'custom-charsets' && { customCharsets: safeConfig.customCharsets })
+    };
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Session-ID': `td-session-${Date.now()}`,
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+    }
+
+    const data: APIResponse = await response.json();
+    setResult(data.data);
+
+    // TDキャラクターの成功反応
+    setTdState(prev => ({
+      ...prev,
+      emotion: 'excited',
+      animation: 'heartbeat',
+      message: data.tdMessage || `${data.data.strength}強度のパスワードを${data.data.passwords.length}個生成しました！`,
+      showSpeechBubble: true
+    }));
+
+    setTimeout(() => {
+      setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+    }, 3000);
+  };
+
+  // チャンク生成（大量生成用）
+  const generatePasswordsInChunks = async (totalCount: number, safeConfig: any) => {
+    const chunkSize = 100; // 100個ずつ生成
+    const chunks = Math.ceil(totalCount / chunkSize);
+    const allPasswords: string[] = [];
+    let combinedResult: PasswordResult | null = null;
+    
+    const startTime = Date.now();
+    
+    for (let i = 0; i < chunks; i++) {
+      const currentChunkSize = Math.min(chunkSize, totalCount - allPasswords.length);
+      const progress = {
+        current: allPasswords.length,
+        total: totalCount,
+        estimatedTimeLeft: 0,
+        speed: 0
+      };
+      
+      // 進捗とスピード計算
+      if (i > 0) {
+        const elapsed = (Date.now() - startTime) / 1000;
+        progress.speed = Math.round(allPasswords.length / elapsed);
+        progress.estimatedTimeLeft = Math.round((totalCount - allPasswords.length) / progress.speed);
+      }
+      
+      setGenerationProgress(progress);
+      
+      // TDの進捗メッセージ
+      setTdState(prev => ({
+        ...prev,
+        emotion: 'thinking',
+        animation: i % 2 === 0 ? 'bounce' : 'wiggle',
+        message: `生成中... ${allPasswords.length}/${totalCount} (${Math.round((allPasswords.length / totalCount) * 100)}%) - 速度: ${progress.speed}個/秒`,
+        showSpeechBubble: true
+      }));
+
+      // チャンク生成（直接APIコール）
       const endpoint = 'http://localhost:3001/api/password/generate-with-composition';
       
-      // 基本の文字種選択を含めたリクエストボディを構築
       const requestBody: any = {
         length: criteria.length,
-        count: criteria.count,
-        composition: selectedPresetId,
+        count: currentChunkSize,
+        composition: safeConfig.composition,
         excludeAmbiguous: criteria.excludeAmbiguous,
         excludeSimilar: true,
-        // 文字種選択を常に含める
-        useNumbers: criteria.includeNumbers,
-        useUppercase: criteria.includeUppercase,
-        useLowercase: criteria.includeLowercase,
-        useSymbols: criteria.includeSymbols,
-        // プリセット固有の設定
-        ...(selectedPresetId === 'custom-symbols' && { customSymbols }),
-        ...(selectedPresetId === 'custom-charsets' && { customCharsets })
+        useNumbers: safeConfig.useNumbers ?? criteria.includeNumbers,
+        useUppercase: safeConfig.useUppercase ?? criteria.includeUppercase,
+        useLowercase: safeConfig.useLowercase ?? criteria.includeLowercase,
+        useSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
+        ...(safeConfig.composition === 'custom-symbols' && { customSymbols }),
+        ...(safeConfig.composition === 'custom-charsets' && { customCharsets: safeConfig.customCharsets })
       };
 
       const response = await fetch(endpoint, {
@@ -138,35 +406,41 @@ export const PasswordGenerator: React.FC = () => {
       }
 
       const data: APIResponse = await response.json();
-      setResult(data.data);
-
-      // TDキャラクターの成功反応
-      setTdState(prev => ({
-        ...prev,
-        emotion: 'excited',
-        animation: 'heartbeat',
-        message: data.tdMessage || `${data.data.strength}強度のパスワードを${data.data.passwords.length}個生成しました！`,
-        showSpeechBubble: true
-      }));
-
-      setTimeout(() => {
-        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
-      }, 3000);
-
-    } catch (error) {
-      console.error('パスワード生成エラー:', error);
-      setApiError(error instanceof Error ? error.message : '不明なエラーが発生しました');
+      const chunkResult = data.data;
       
-      setTdState(prev => ({
-        ...prev,
-        emotion: 'sad',
-        animation: 'wiggle',
-        message: 'エラーが発生しました... 設定を確認して再度お試しください',
-        showSpeechBubble: true
-      }));
-    } finally {
-      setIsGenerating(false);
+      // 結果をマージ
+      if (chunkResult) {
+        allPasswords.push(...chunkResult.passwords);
+        const firstGeneratedAt: string = combinedResult?.generatedAt || chunkResult.generatedAt;
+        combinedResult = {
+          passwords: allPasswords,
+          strength: chunkResult.strength,
+          estimatedCrackTime: chunkResult.estimatedCrackTime,
+          criteria: chunkResult.criteria,
+          generatedAt: firstGeneratedAt
+        };
+        setResult(combinedResult);
+      }
+      
+      // 少し待機（UIの更新時間を確保）
+      await new Promise(resolve => setTimeout(resolve, 50));
     }
+
+    // 最終完了メッセージ
+    const totalTime = (Date.now() - startTime) / 1000;
+    const avgSpeed = Math.round(totalCount / totalTime);
+    
+    setTdState(prev => ({
+      ...prev,
+      emotion: 'excited',
+      animation: 'heartbeat',
+      message: `🎉 ${totalCount}個の大量生成完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`,
+      showSpeechBubble: true
+    }));
+
+    setTimeout(() => {
+      setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+    }, 5000);
   };
 
   // クリップボードコピー
@@ -249,6 +523,147 @@ export const PasswordGenerator: React.FC = () => {
     }
   };
 
+  // プログレスバーコンポーネント
+  const ProgressBar = () => {
+    if (!generationProgress) return null;
+    
+    const percentage = Math.round((generationProgress.current / generationProgress.total) * 100);
+    const estimatedMinutes = Math.floor(generationProgress.estimatedTimeLeft / 60);
+    const estimatedSeconds = generationProgress.estimatedTimeLeft % 60;
+    
+    return (
+      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex justify-between items-center mb-2">
+          <div className="text-sm font-medium text-blue-800">
+            大量生成中... ({generationProgress.current}/{generationProgress.total})
+          </div>
+          <div className="text-sm text-blue-600">
+            {percentage}%
+          </div>
+        </div>
+        
+        {/* プログレスバー */}
+        <div className="w-full bg-blue-200 rounded-full h-3 mb-3">
+          <div 
+            className="bg-blue-600 h-3 rounded-full transition-all duration-300 relative overflow-hidden"
+            style={{ width: `${percentage}%` }}
+          >
+            <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+          </div>
+        </div>
+        
+        {/* 統計情報 */}
+        <div className="grid grid-cols-2 gap-4 text-xs text-blue-700">
+          <div>
+            <div className="font-medium">生成速度</div>
+            <div>{generationProgress.speed} 個/秒</div>
+          </div>
+          <div>
+            <div className="font-medium">予想残り時間</div>
+            <div>
+              {estimatedMinutes > 0 ? `${estimatedMinutes}分` : ''}{estimatedSeconds}秒
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 大量データ表示最適化コンポーネント
+  const OptimizedPasswordDisplay = ({ passwords }: { passwords: string[] }) => {
+    const totalCount = passwords.length;
+    const displayedPasswords = showAllResults ? passwords : passwords.slice(0, displayLimit);
+    const hiddenCount = totalCount - displayedPasswords.length;
+
+    return (
+      <div>
+        {/* 表示統計 */}
+        {totalCount > displayLimit && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-yellow-800">
+                <span className="font-medium">{displayedPasswords.length}</span>個表示中
+                {hiddenCount > 0 && (
+                  <span className="ml-2">（{hiddenCount}個非表示）</span>
+                )}
+              </div>
+              <button
+                onClick={() => setShowAllResults(!showAllResults)}
+                className="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-md text-sm hover:bg-yellow-300 transition-colors"
+              >
+                {showAllResults ? '一部のみ表示' : 'すべて表示'}
+              </button>
+            </div>
+            {!showAllResults && (
+              <div className="text-xs text-yellow-700 mt-1">
+                ※大量データのため、パフォーマンス向上のため一部のみ表示しています
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* パスワードグリッド（最適化済み） */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {displayedPasswords.map((password, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <div className="flex-1 min-w-0">
+                <code className="font-mono text-sm truncate block">
+                  {showPasswords ? password : '●'.repeat(password.length)}
+                </code>
+                <div className="text-xs text-gray-500 mt-1">
+                  長さ: {password.length}文字
+                </div>
+              </div>
+              <button
+                onClick={() => copyToClipboard(password, index)}
+                className={`ml-3 p-2 rounded transition-all ${
+                  copiedIndex === index
+                    ? 'text-green-600 bg-green-100'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                }`}
+                title="コピー"
+              >
+                {copiedIndex === index ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* 大量データ用の表示制御 */}
+        {totalCount > 100 && (
+          <div className="mt-4 text-center">
+            <div className="text-sm text-gray-600 mb-2">
+              表示制限: {displayLimit}個
+            </div>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={() => setDisplayLimit(50)}
+                className={`px-3 py-1 rounded text-sm ${displayLimit === 50 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              >
+                50個
+              </button>
+              <button
+                onClick={() => setDisplayLimit(100)}
+                className={`px-3 py-1 rounded text-sm ${displayLimit === 100 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              >
+                100個
+              </button>
+              <button
+                onClick={() => setDisplayLimit(500)}
+                className={`px-3 py-1 rounded text-sm ${displayLimit === 500 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+              >
+                500個
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full mx-auto p-4 lg:p-6 space-y-6">
       {/* ヘッダー */}
@@ -311,7 +726,7 @@ export const PasswordGenerator: React.FC = () => {
             <input
               type="range"
               min="1"
-              max="20"
+              max="1000"
               value={criteria.count}
               onChange={(e) => handleCriteriaChange('count', parseInt(e.target.value))}
               className="w-full"
@@ -408,21 +823,38 @@ export const PasswordGenerator: React.FC = () => {
               )}
             </button>
           </div>
+          
+          {/* プログレスバー */}
+          <ProgressBar />
         </div>
 
-        {/* 詳細設定（カスタムプリセット用のみ） */}
-        {selectedPresetId === 'custom-symbols' && (
+        {/* 詳細設定（カスタムプリセット用） */}
+        {(selectedPresetId === 'custom-symbols' || selectedPresetId === 'custom-charsets') && (
           <div className="border-t border-gray-200 pt-6">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                🎨 カスタム記号を設定
-              </label>
-              <CustomSymbolsInput
-                value={customSymbols}
-                onChange={setCustomSymbols}
-                showSuggestions={true}
-              />
-            </div>
+            {/* カスタム記号設定 */}
+            {selectedPresetId === 'custom-symbols' && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  🎨 カスタム記号を設定
+                </label>
+                <CustomSymbolsInput
+                  value={customSymbols}
+                  onChange={setCustomSymbols}
+                  showSuggestions={true}
+                />
+              </div>
+            )}
+
+            {/* カスタム文字種エディター */}
+            {selectedPresetId === 'custom-charsets' && (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <CustomCharsetsEditor
+                  charsets={customCharsets}
+                  onChange={setCustomCharsets}
+                  visible={true}
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -475,29 +907,7 @@ export const PasswordGenerator: React.FC = () => {
           </div>
 
           {/* パスワードリスト（グリッドレイアウト） */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-4">
-            {result.passwords.map((password, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-              >
-                <code className="font-mono text-sm flex-1 truncate">
-                  {showPasswords ? password : '●'.repeat(password.length)}
-                </code>
-                <button
-                  onClick={() => copyToClipboard(password, index)}
-                  className={`ml-3 p-2 rounded transition-all ${
-                    copiedIndex === index
-                      ? 'text-green-600 bg-green-100'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                  }`}
-                  title="コピー"
-                >
-                  {copiedIndex === index ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            ))}
-          </div>
+          <OptimizedPasswordDisplay passwords={result.passwords} />
 
           {/* 構成プリセット情報表示 */}
           {(result as any).composition && (

@@ -289,6 +289,7 @@ export interface CustomCharsetRequirement {
   charset: string;
   min: number;
   enabled: boolean;
+  color: string;
 }
 
 // パスワード生成レスポンス（基本版）

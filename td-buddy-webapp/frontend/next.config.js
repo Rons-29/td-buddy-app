@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
+    // appDir は Next.js 13.4+ では不要（デフォルトで有効）
   },
   typescript: {
     // TypeScriptエラーがあってもビルドを続行

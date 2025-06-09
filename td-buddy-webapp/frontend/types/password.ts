@@ -14,6 +14,16 @@ export interface PasswordCriteria {
   excludeSimilar?: boolean; // 似ている文字を除外
 }
 
+// カスタム文字種定義（CustomCharsetsEditor用）
+export interface CustomCharset {
+  id: string;
+  name: string;
+  charset: string;
+  min: number;
+  enabled: boolean;
+  color: string;
+}
+
 // 構成プリセットの型
 export interface PasswordPreset {
   id: string;
