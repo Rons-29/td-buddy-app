@@ -54,17 +54,33 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* AI連携 */}
+        {/* 文字・テキスト系ツール */}
         <div className="td-card p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
-          <div className="text-3xl mb-3">🧠</div>
+          <div className="text-3xl mb-3">📝</div>
           <h3 className="text-lg font-semibold text-purple-800 mb-2">
-            AI チャット
+            文字・テキスト系ツール
           </h3>
           <p className="text-purple-600 mb-4">
+            文字数カウント・旧字体変換・テキスト生成など
+          </p>
+          <Link href="/text-tools">
+            <button className="td-button bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              ツール開始
+            </button>
+          </Link>
+        </div>
+
+        {/* AI連携 */}
+        <div className="td-card p-6">
+          <div className="text-3xl mb-3">🧠</div>
+          <h3 className="text-lg font-semibold text-td-primary-800 mb-2">
+            AI チャット
+          </h3>
+          <p className="text-td-primary-600 mb-4">
             自然言語でデータ生成条件を指定できます
           </p>
           <Link href="/ai-chat">
-            <button className="td-button bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+            <button className="td-button bg-td-primary-500 text-white px-4 py-2 rounded-md hover:bg-td-primary-600 transition-colors">
               チャット開始
             </button>
           </Link>
