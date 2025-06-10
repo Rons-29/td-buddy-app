@@ -89,11 +89,12 @@ app.get('/health', (req, res) => {
 import passwordRoutes from './routes/password';
 import healthRoutes from './routes/health';
 import { personalRouter } from './routes/personal';
+import aiRoutes from './routes/ai';
 
 app.use('/api/password', passwordRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/personal', personalRouter);
-// app.use('/api/claude', require('./routes/claude'));      // TODO: 実装予定
+app.use('/api/ai', aiRoutes);
 
 // ルートエンドポイント
 app.get('/', (req, res) => {
