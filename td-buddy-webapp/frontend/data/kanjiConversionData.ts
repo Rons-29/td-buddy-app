@@ -412,10 +412,10 @@ export function detectConvertibleCharacters(text: string): {
   const oldToNew: string[] = [];
   
   for (const char of text) {
-    if (newToOldKanjiMap[char]) {
+    if (SHIN_TO_KYU_KANJI[char]) {
       newToOld.push(char);
     }
-    if (oldToNewKanjiMap[char]) {
+    if (KYU_TO_SHIN_KANJI[char]) {
       oldToNew.push(char);
     }
   }
