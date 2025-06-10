@@ -56,12 +56,12 @@ export interface PersonalInfoItem {
   // 氏名情報
   fullName?: {
     kanji: string;                   // 漢字氏名
-    hiragana: string;               // ひらがな氏名
-    katakana: string;               // カタカナ氏名
-    romaji?: string;                // ローマ字氏名
     firstName: string;              // 名前
     lastName: string;               // 苗字
   };
+  
+  // カナ専用フィールド（別カラム表示用）
+  kanaName?: string;                 // カタカナ氏名（独立フィールド）
   
   // 連絡先情報
   email?: string;                    // メールアドレス

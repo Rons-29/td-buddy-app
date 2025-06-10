@@ -23,10 +23,10 @@ router.post('/generate', async (req: Request, res: Response) => {
       throw new ValidationError('リクエストボディが必要です', 'MISSING_BODY');
     }
 
-    // 生成数のバリデーション
-    if (!criteria.count || criteria.count < 1 || criteria.count > 100) {
+    // 生成数のバリデーション - 制限を100件から1000件に緩和
+    if (!criteria.count || criteria.count < 1 || criteria.count > 1000) {
       throw new ValidationError(
-        '生成数は1個以上100個以下で指定してください',
+        '生成数は1個以上1000個以下で指定してください',
         'INVALID_COUNT'
       );
     }
@@ -188,7 +188,7 @@ router.post('/export/csv', async (req: Request, res: Response) => {
     persons.forEach((person: any) => {
       const row = [
         person.fullName?.kanji || '',
-        person.fullName?.katakana || '',
+        person.kanaName || '',  // 氏名（カナ）列にkanaNameを設定
         person.email || '',
         person.phone || '',
         person.mobile || '',
