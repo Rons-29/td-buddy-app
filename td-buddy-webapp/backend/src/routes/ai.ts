@@ -4,104 +4,175 @@ import { RequestValidator } from '../services/validation/RequestValidator';
 import { PersonalInfoService } from '../services/PersonalInfoService';
 
 const router = express.Router();
-const aiService = new AIService();
+let aiService: AIService | null = null;
 const personalInfoService = new PersonalInfoService();
 
-// AI Service初期化（サーバー起動時に実行）
-let aiInitialized = false;
-
-/**
- * AI Service初期化
- */
+// AI Service初期化関数
 async function initializeAI() {
-  if (!aiInitialized) {
-    try {
-      await aiService.initialize();
-      aiInitialized = true;
-      console.log('🤖 AI Service初期化完了');
-    } catch (error: any) {
-      console.error('❌ AI Service初期化失敗:', error);
-      // 初期化失敗でもサーバーは起動継続
-    }
+  try {
+    console.log('🤖 AI Service初期化開始...');
+    aiService = new AIService();
+    await aiService.initialize();
+    console.log('✅ AI Service初期化完了');
+  } catch (error) {
+    console.warn('⚠️ AI Service初期化失敗（デモモードで継続）:', error);
+    // AIサービスが使用できない場合でも、アプリケーションは継続動作
+    aiService = null;
   }
 }
 
-// サーバー起動時に初期化実行
-initializeAI();
+// AI Service初期化実行
+initializeAI().catch(error => {
+  console.warn('⚠️ AI初期化で予期しないエラー:', error);
+});
 
 /**
- * POST /api/ai/parse
- * 自然言語をデータ生成パラメータに変換
+ * 自然言語解析エンドポイント
  */
 router.post('/parse', async (req, res) => {
   try {
-    if (!aiInitialized) {
-      return res.status(503).json({
-        success: false,
-        error: 'AI Service not available',
-        message: 'AI機能が利用できません。管理者にお問い合わせください。'
-      });
-    }
+    const { message } = req.body;
 
-    const { userInput, provider } = req.body;
-
-    if (!userInput || typeof userInput !== 'string') {
+    // 基本バリデーション
+    if (!message || typeof message !== 'string') {
       return res.status(400).json({
         success: false,
-        error: 'userInputは必須です',
+        error: 'messageパラメータが必要です',
         code: 'VALIDATION_ERROR'
       });
     }
 
-    // 強化されたバリデーション実行
-    const validation = RequestValidator.validateComplete(userInput);
-    
-    if (!validation.isValid || !validation.isSafe) {
-      console.log('❌ バリデーションエラー:', {
-        errors: validation.errors,
-        securityIssues: validation.securityIssues.filter(issue => issue.severity === 'HIGH')
-      });
-      
+    // 入力検証
+    const validation = RequestValidator.validateNaturalLanguageInput(message);
+    if (!validation.isValid) {
       return res.status(400).json({
         success: false,
-        error: '入力が無効か安全でない内容が含まれています',
+        error: '入力が無効です',
         code: 'VALIDATION_ERROR',
-        details: {
-          errors: validation.errors,
-          warnings: validation.warnings,
-          securityIssues: validation.securityIssues
-        },
-        timestamp: new Date().toISOString()
+        details: validation.errors
       });
     }
 
-    // 警告がある場合はログに記録
-    if (validation.warnings.length > 0) {
-      console.log('⚠️  入力警告:', validation.warnings);
+    // AIサービスが利用できない場合のフォールバック
+    if (!aiService) {
+      console.log('🔄 AIサービス未初期化 - フォールバック処理実行');
+      
+      // シンプルなパターンマッチングによる解析
+      const fallbackResult = parseFallback(message);
+      
+      return res.json({
+        success: true,
+        result: {
+          params: fallbackResult.params,
+          clarificationNeeded: fallbackResult.clarificationNeeded,
+          clarificationQuestions: fallbackResult.clarificationQuestions
+        },
+        source: 'fallback'
+      });
     }
 
-    console.log(`🔍 AI解析リクエスト: "${userInput}" (${provider || 'default'})`);
-
-    const result = await aiService.parseNaturalLanguageRequest(userInput, provider);
+    // AIサービスを使用した解析
+    console.log('🧠 AI自然言語解析開始:', message);
+    const result = await aiService.parseNaturalLanguageRequest(message);
+    console.log('✅ AI解析完了:', result);
 
     return res.json({
       success: true,
       result,
-      provider: provider || aiService.getDefaultProvider(),
-      timestamp: new Date().toISOString()
+      source: 'ai'
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('❌ AI解析エラー:', error);
     
-    return res.status(error.statusCode || 500).json({
-      success: false,
-      error: error.message,
-      code: error.code || 'AI_PARSE_ERROR',
-      timestamp: new Date().toISOString()
+    // エラー時のフォールバック
+    const fallbackMessage = req.body?.message || 'デフォルト要求';
+    const fallbackResult = parseFallback(fallbackMessage);
+    
+    return res.json({
+      success: true,
+      result: {
+        params: fallbackResult.params,
+        clarificationNeeded: fallbackResult.clarificationNeeded,
+        clarificationQuestions: fallbackResult.clarificationQuestions
+      },
+      source: 'fallback_error',
+      warning: 'AI解析でエラーが発生したため、パターンマッチングで処理しました'
     });
   }
 });
+
+/**
+ * フォールバック解析関数（AIサービスが利用できない場合）
+ */
+function parseFallback(message: string) {
+  const result = {
+    params: {
+      count: 5,
+      locale: 'ja',
+      includeFields: ['fullName', 'email', 'phone'] as string[],
+      filters: {}
+    },
+    clarificationNeeded: false,
+    clarificationQuestions: [] as string[]
+  };
+
+  try {
+    // 数字の抽出
+    const countMatch = message.match(/(\d+)([人件個]|人)/);
+    if (countMatch && countMatch[1]) {
+      result.params.count = Math.min(100, Math.max(1, parseInt(countMatch[1])));
+    }
+
+    // 年齢の抽出
+    const ageMatch = message.match(/(\d+)代/);
+    if (ageMatch && ageMatch[1]) {
+      const ageBase = parseInt(ageMatch[1]);
+      result.params.filters = {
+        ...result.params.filters,
+        ageRange: { min: ageBase, max: ageBase + 9 }
+      };
+    }
+
+    // 性別の抽出
+    if (message.includes('男性') && !message.includes('女性')) {
+      result.params.filters = { ...result.params.filters, gender: 'male' };
+    } else if (message.includes('女性') && !message.includes('男性')) {
+      result.params.filters = { ...result.params.filters, gender: 'female' };
+    }
+
+    // フィールドの抽出
+    const fields = new Set(['fullName']);
+    
+    if (message.includes('連絡先') || message.includes('メール') || message.includes('電話')) {
+      fields.add('email');
+      fields.add('phone');
+    }
+    
+    if (message.includes('詳細') || message.includes('住所') || message.includes('会社')) {
+      fields.add('kanaName');
+      fields.add('address');
+      fields.add('age');
+      fields.add('gender');
+      fields.add('company');
+      fields.add('jobTitle');
+    }
+
+    if (message.includes('エンジニア') || message.includes('営業') || message.includes('職業')) {
+      fields.add('company');
+      fields.add('jobTitle');
+    }
+
+    result.params.includeFields = Array.from(fields);
+
+    console.log('🔄 フォールバック解析結果:', result);
+    return result;
+
+  } catch (error) {
+    console.error('❌ フォールバック解析エラー:', error);
+    return result; // デフォルト値を返す
+  }
+}
 
 /**
  * GET /api/ai/status
@@ -109,16 +180,16 @@ router.post('/parse', async (req, res) => {
  */
 router.get('/status', async (req, res) => {
   try {
-    const stats = aiService.getStats();
+    const stats = aiService?.getStats() || {};
     let healthCheck = {};
     
-    if (aiInitialized) {
+    if (aiService) {
       healthCheck = await aiService.healthCheck();
     }
 
-    res.json({
+    return res.json({
       success: true,
-      initialized: aiInitialized,
+      initialized: aiService !== null,
       stats,
       healthCheck,
       timestamp: new Date().toISOString()
@@ -127,7 +198,7 @@ router.get('/status', async (req, res) => {
   } catch (error: any) {
     console.error('❌ AI状態確認エラー:', error);
     
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: error.message,
       timestamp: new Date().toISOString()

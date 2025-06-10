@@ -3,9 +3,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
 import { database } from './database/database';
+import { WebSocketService } from './services/WebSocketService';
 
 // Load environment variables
 dotenv.config();
@@ -135,15 +137,23 @@ async function startServer() {
     await database.initialize();
     console.log('✅ データベース初期化完了');
     
-    const server = app.listen(PORT, () => {
+    // HTTPサーバーを作成
+    const httpServer = createServer(app);
+    
+    // WebSocketサービスを初期化
+    const webSocketService = new WebSocketService(httpServer);
+    console.log('🔌 WebSocketサービス初期化完了');
+    
+    const server = httpServer.listen(PORT, () => {
       console.log(`
 🤖 TestData Buddy Backend Server Started!
 🚀 Server running on port ${PORT}
 🌐 Environment: ${process.env.NODE_ENV || 'development'}
 📡 Health check: http://localhost:${PORT}/health
+🔌 WebSocket server: enabled
 🎯 Ready to generate test data!
 
-TDからのメッセージ: サーバーが正常に起動しました！API経由でデータ生成のお手伝いをします♪
+TDからのメッセージ: サーバーが正常に起動しました！リアルタイム通信とAPI経由でデータ生成のお手伝いをします♪
       `);
     });
 
