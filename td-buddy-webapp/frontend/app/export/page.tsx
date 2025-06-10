@@ -3,6 +3,7 @@
 import React from 'react';
 import { Download, FileDown, Database, Settings } from 'lucide-react';
 import { AdvancedExportContainer } from '../../components/AdvancedExportContainer';
+import UseCaseShowcase from '../../components/UseCaseShowcase';
 
 export default function ExportPage() {
   return (
@@ -91,6 +92,11 @@ export default function ExportPage() {
               <span className="px-2 py-1 bg-td-info-100 text-td-info-700 rounded text-sm">進捗表示</span>
             </div>
           </div>
+        </div>
+
+        {/* 🆕 活用例表示セクション */}
+        <div className="mb-8">
+          <UseCaseShowcase />
         </div>
 
         {/* メインコンテナ */}

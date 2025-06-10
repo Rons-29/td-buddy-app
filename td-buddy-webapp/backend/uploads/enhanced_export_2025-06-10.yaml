@@ -1,0 +1,110 @@
+# TestData Buddy Export
+# Generated at: 2025-06-10T14:56:16.796Z
+
+metadata:
+  exportedAt: "2025-06-10T14:56:16.796Z"
+  recordCount: 10
+  generatedBy: "TestData Buddy"
+  version: "1.0.0"
+
+data:
+  - # Record 1
+    id: 1
+    testField1: テストデータ1
+    testField2: 228
+    testField3: true
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.9478578654314536
+    category: B
+    status: inactive
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 2
+    id: 2
+    testField1: テストデータ2
+    testField2: 1
+    testField3: false
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.04533493789527521
+    category: B
+    status: pending
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 3
+    id: 3
+    testField1: テストデータ3
+    testField2: 997
+    testField3: false
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.31092666612839226
+    category: B
+    status: inactive
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 4
+    id: 4
+    testField1: テストデータ4
+    testField2: 801
+    testField3: true
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.7402657899133052
+    category: D
+    status: active
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 5
+    id: 5
+    testField1: テストデータ5
+    testField2: 160
+    testField3: true
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.21769053809301941
+    category: D
+    status: inactive
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 6
+    id: 6
+    testField1: テストデータ6
+    testField2: 950
+    testField3: false
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.15101119926160145
+    category: B
+    status: pending
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 7
+    id: 7
+    testField1: テストデータ7
+    testField2: 861
+    testField3: true
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.30827188778797976
+    category: C
+    status: inactive
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 8
+    id: 8
+    testField1: テストデータ8
+    testField2: 347
+    testField3: true
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.5263301362417327
+    category: A
+    status: active
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 9
+    id: 9
+    testField1: テストデータ9
+    testField2: 485
+    testField3: true
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.08650869535823102
+    category: B
+    status: pending
+    generatedAt: "2025-06-10T14:56:16.796Z"
+  - # Record 10
+    id: 10
+    testField1: テストデータ10
+    testField2: 594
+    testField3: false
+    testField4: "2025-06-10T14:56:16.796Z"
+    randomValue: 0.681297000018112
+    category: C
+    status: pending
+    generatedAt: "2025-06-10T14:56:16.796Z"

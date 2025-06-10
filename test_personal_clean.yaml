@@ -1,0 +1,45 @@
+# TestData Buddy Export
+# Generated at: 2025-06-10T14:52:19.422Z
+
+metadata:
+  exportedAt: "2025-06-10T14:52:19.422Z"
+  recordCount: 2
+  generatedBy: "TestData Buddy"
+  version: "1.0.0"
+
+data:
+  - # Record 1
+    id: 1
+    fullName_kanji: 伊藤 美穂
+    fullName_kana: 伊藤タナカ 美穂タロウ
+    email: 伊藤美穂1@example.com
+    phone: 03-5859-9700
+    mobile: 090-3245-4343
+    address: 東京都渋谷区5-3-6
+    postalCode: 769-2317
+    birthDate: 1978-04-28
+    age: 28
+    gender: 女性
+    company: 株式会社テスト
+    jobTitle: エンジニア
+    website: "https://伊藤.example.com"
+    socialId: 96407221
+    generatedAt: "2025-06-10T14:52:19.422Z"
+  - # Record 2
+    id: 2
+    fullName_kanji: 伊藤 恵
+    fullName_kana: 伊藤タナカ 恵タロウ
+    email: 伊藤恵2@example.com
+    phone: 03-9438-2192
+    mobile: 090-1764-7126
+    address: 東京都渋谷区5-11-7
+    postalCode: 436-3294
+    birthDate: 1992-12-21
+    age: 58
+    gender: 女性
+    company: 株式会社テスト
+    jobTitle: エンジニア
+    website: "https://伊藤.example.com"
+    socialId: 32064765
+    generatedAt: "2025-06-10T14:52:19.422Z"
+

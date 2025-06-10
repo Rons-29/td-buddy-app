@@ -1,0 +1,426 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🎨 デザインシステム統一ルール
+# TestData Buddy (TD) プロジェクトのUI・デザイン統一ガイドライン
+
+## 🎯 デザインシステムの基本原則
+
+### 設計思想
+- **一貫性**: 全てのコンポーネントで統一されたデザイン言語
+- **再利用性**: DRY原則に基づく効率的なコンポーネント設計  
+- **アクセシビリティ**: 全ユーザーが使いやすいインクルーシブデザイン
+- **パフォーマンス**: 軽量で高速なユーザーインターフェース
+
+**TDからのメッセージ**: 「美しく、使いやすく、一貫したデザインで、最高のユーザー体験を提供しましょう！✨」
+
+## 🎨 デザイントークン（必須）
+
+### TDブランドカラー
+```scss
+// プライマリカラー（TDメインブルー）
+--td-primary-500: #3b82f6;    // メインカラー
+--td-primary-600: #2563eb;    // ホバー状態
+--td-primary-700: #1d4ed8;    // アクティブ状態
+
+// セカンダリカラー（TDオレンジ）  
+--td-secondary-500: #f97316;  // メインオレンジ
+--td-secondary-600: #ea580c;  // ホバー状態
+
+// アクセントカラー（TDグリーン）
+--td-accent-500: #22c55e;     // メイングリーン
+--td-accent-600: #16a34a;     // ホバー状態
+
+// セマンティックカラー
+--td-success: #22c55e;        // 成功状態
+--td-warning: #f97316;        // 警告状態  
+--td-danger: #ef4444;         // 危険状態
+--td-info: #3b82f6;          // 情報表示
+```
+
+### スペーシング（8pxグリッドシステム）
+```scss
+--space-1: 4px;   --space-2: 8px;   --space-3: 12px;
+--space-4: 16px;  --space-6: 24px;  --space-8: 32px;
+--space-10: 40px; --space-12: 48px; --space-16: 64px;
+```
+
+### タイポグラフィ
+```scss
+--text-xs: 12px;    --text-sm: 14px;    --text-base: 16px;
+--text-lg: 18px;    --text-xl: 20px;    --text-2xl: 24px;
+--text-3xl: 30px;   --text-4xl: 36px;   --text-5xl: 48px;
+```
+
+## 🔘 ボタンコンポーネント（必須実装）
+
+### バリアント定義
+```typescript
+type ButtonVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'ghost';
+type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
+
+interface TDButtonProps {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  loading?: boolean;
+  icon?: React.ReactNode;
+  iconPosition?: 'left' | 'right' | 'only';
+  fullWidth?: boolean;
+  disabled?: boolean;
+}
+```
+
+### ボタン状態とスタイル
+```css
+/* 基本ボタンスタイル */
+.td-button {
+  display: inline-flex;
+  align-items: center;
+  justify-center: center;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  transform: scale(1);
+}
+
+/* ホバー効果（デスクトップのみ） */
+@media (hover: hover) {
+  .td-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* アクティブ効果 */
+.td-button:active {
+  transform: scale(0.95);
+}
+
+/* フォーカス効果 */
+.td-button:focus-visible {
+  outline: none;
+  ring: 4px;
+  ring-opacity: 50%;
+}
+
+/* 無効状態 */
+.td-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: scale(1);
+}
+```
+
+### ボタンサイズ
+```css
+.td-button-sm { padding: 8px 12px; font-size: 14px; min-height: 32px; }
+.td-button-md { padding: 12px 16px; font-size: 16px; min-height: 40px; }
+.td-button-lg { padding: 16px 24px; font-size: 18px; min-height: 48px; }
+.td-button-xl { padding: 20px 32px; font-size: 20px; min-height: 56px; }
+```
+
+## 🗂️ カードコンポーネント
+
+### カード設計原則
+```typescript
+interface TDCardProps {
+  variant?: 'default' | 'elevated' | 'outlined' | 'filled';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  hover?: boolean;
+  clickable?: boolean;
+}
+```
+
+### カードスタイル
+```css
+.td-card {
+  background: white;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.td-card-default {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.td-card-elevated {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.td-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+```
+
+## 🔤 入力フィールド
+
+### Input コンポーネント
+```typescript
+interface TDInputProps {
+  label?: string;
+  helperText?: string;
+  error?: string | boolean;
+  success?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  icon?: React.ReactNode;
+  iconPosition?: 'left' | 'right';
+}
+```
+
+### Input状態スタイル
+```css
+.td-input {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease-in-out;
+}
+
+.td-input:focus {
+  border-color: var(--td-primary-500);
+  ring: 2px;
+  ring-color: var(--td-primary-500);
+  ring-opacity: 0.2;
+  outline: none;
+}
+
+.td-input-error {
+  border-color: var(--td-danger);
+  ring: 2px;
+  ring-color: var(--td-danger);
+  ring-opacity: 0.2;
+}
+
+.td-input-success {
+  border-color: var(--td-success);
+  ring: 2px;
+  ring-color: var(--td-success);
+  ring-opacity: 0.2;
+}
+```
+
+## 📱 レスポンシブ設計（必須）
+
+### ブレークポイント
+```scss
+$td-breakpoints: (
+  'xs': 0px,      // 〜575px   小型スマートフォン
+  'sm': 576px,    // 576px〜   スマートフォン  
+  'md': 768px,    // 768px〜   タブレット縦向き
+  'lg': 1024px,   // 1024px〜  タブレット横向き・小型ノートPC
+  'xl': 1280px,   // 1280px〜  デスクトップ
+  '2xl': 1536px   // 1536px〜  大型デスクトップ
+);
+```
+
+### タッチターゲット
+```css
+/* モバイル対応：最小44px × 44px */
+.td-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px;
+}
+
+/* タッチデバイスでのホバー効果無効化 */
+@media (hover: none) and (pointer: coarse) {
+  .td-hover-effect:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+```
+
+## 🎭 アニメーション・インタラクション
+
+### TDアニメーションライブラリ
+```scss
+:root {
+  --td-duration-fast: 150ms;     // 素早い反応
+  --td-duration-normal: 200ms;   // 標準的な変化  
+  --td-duration-slow: 300ms;     // ゆっくりとした変化
+  
+  --td-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --td-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* アニメーション削減設定への対応 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+### TDキャラクター専用アニメーション
+```css
+@keyframes td-wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes td-heartbeat {
+  0%, 50%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  75% { transform: scale(0.9); }
+}
+
+@keyframes td-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.td-character.wiggle { animation: td-wiggle 1s ease-in-out infinite; }
+.td-character.heartbeat { animation: td-heartbeat 1.5s ease-in-out infinite; }  
+.td-character.float { animation: td-float 3s ease-in-out infinite; }
+```
+
+## ♿ アクセシビリティ（必須）
+
+### 必須属性
+```typescript
+// ボタンコンポーネント
+interface AccessibleButtonProps {
+  'aria-label'?: string;      // アイコンのみボタンの場合必須
+  'aria-describedby'?: string; // 説明テキストのID
+  'aria-pressed'?: boolean;    // トグルボタンの場合
+  'aria-expanded'?: boolean;   // ドロップダウンボタンの場合
+}
+```
+
+### フォーカス管理
+```css
+.td-focus-visible:focus-visible {
+  outline: 2px solid var(--td-primary-500);
+  outline-offset: 2px;
+}
+
+/* ハイコントラストモード対応 */
+@media (prefers-contrast: high) {
+  .td-button {
+    border: 2px solid currentColor;
+  }
+}
+```
+
+## 📏 実装ルール（必須遵守）
+
+### 1. コンポーネント作成時
+- [ ] デザイントークン（CSS変数）を使用する
+- [ ] TypeScript型定義を作成する
+- [ ] レスポンシブ対応を実装する
+- [ ] アクセシビリティ属性を設定する
+- [ ] テストファイルを作成する
+
+### 2. スタイリング時
+- [ ] TailwindCSSのユーティリティクラスを優先使用
+- [ ] カスタムCSSは最小限に抑える
+- [ ] hover効果はデスクトップのみ適用
+- [ ] reduced-motion設定に対応する
+
+### 3. コンポーネント命名
+```typescript
+// ✅ 正しい命名
+<Button variant="primary" size="md">保存</Button>
+<Card variant="elevated" hover>
+<Input label="パスワード" error={passwordError} />
+
+// ❌ 避けるべき命名  
+<PrimaryButton large>保存</PrimaryButton>
+<ElevatedCard>
+<PasswordInput hasError>
+```
+
+### 4. ファイル構成
+```
+components/
+├── ui/                    # 基本UIコンポーネント
+│   ├── Button.tsx
+│   ├── Card.tsx
+│   ├── Input.tsx
+│   └── index.ts
+├── forms/                 # フォーム関連
+├── layouts/               # レイアウト
+└── features/              # 機能別コンポーネント
+```
+
+## 🎯 品質チェックリスト
+
+### コンポーネント作成時の確認
+- [ ] デザイントークンを使用している
+- [ ] 一貫したサイズバリエーション（sm, md, lg）がある
+- [ ] TypeScript型が適切に定義されている
+- [ ] アクセシビリティ属性が設定されている
+- [ ] レスポンシブ対応が実装されている
+- [ ] アニメーション削減設定に対応している
+- [ ] テストが記述されている
+
+### スタイリング確認
+- [ ] TDブランドカラーを使用している
+- [ ] 8pxグリッドシステムに準拠している
+- [ ] ホバー効果がデスクトップのみに適用されている
+- [ ] フォーカス表示が分かりやすい
+- [ ] 無効状態の見た目が適切
+
+## 🚨 禁止事項
+
+### 絶対に避けるべき実装
+```typescript
+// ❌ 禁止：ハードコードされた値
+const Button = () => (
+  <button style={{ padding: '10px', backgroundColor: '#3b82f6' }}>
+    ボタン
+  </button>
+);
+
+// ❌ 禁止：インライン関数の乱用
+<button onClick={() => handleClick()}>クリック</button>
+
+// ❌ 禁止：aria属性の省略
+<button>
+  <CloseIcon />
+</button>
+
+// ✅ 推奨：適切な実装
+const Button = ({ variant = 'primary', size = 'md', ...props }) => (
+  <button 
+    className={cn(
+      'td-button',
+      `td-button-${variant}`,
+      `td-button-${size}`
+    )}
+    {...props}
+  />
+);
+
+<Button 
+  onClick={handleClick}
+  aria-label="閉じる"
+  icon={<CloseIcon />}
+  iconPosition="only"
+/>
+```
+
+## 🔄 更新・メンテナンス
+
+### デザインシステム更新時
+1. **設計変更**: デザイントークンの更新
+2. **実装**: 各コンポーネントの修正
+3. **テスト**: 回帰テストの実行
+4. **ドキュメント**: 変更内容の記録
+
+### バージョン管理
+- **メジャー**: 破壊的変更（例：APIの変更）
+- **マイナー**: 新機能追加（例：新コンポーネント）
+- **パッチ**: バグ修正・微調整
+
+---
+
+**TDからの最終メッセージ**: 「デザインシステムは、チーム全体で美しく一貫したプロダクトを作るための共通言語です。ルールに従いつつ、ユーザーが喜ぶ体験を一緒に作り上げましょう！🎨✨」
+
+**詳細ドキュメント**: `docs/design-system-*.md` ファイルに更に詳しい仕様があります。併せてご確認ください。

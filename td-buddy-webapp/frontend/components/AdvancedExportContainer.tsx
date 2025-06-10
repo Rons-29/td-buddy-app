@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FileDown, AlertCircle, CheckCircle, Loader } from 'lucide-react';
 
 export type ExportFormat = 'csv' | 'json' | 'xml' | 'yaml' | 'sql';
@@ -43,6 +43,35 @@ export function AdvancedExportContainer() {
     percentage: 0,
     status: 'idle',
   });
+
+  // 🆕 活用例からの設定適用機能
+  useEffect(() => {
+    const handleApplyConfig = (event: CustomEvent) => {
+      const config = event.detail;
+      setSettings(prev => ({
+        ...prev,
+        format: config.format,
+        count: config.count,
+        encoding: config.options?.encoding || prev.encoding,
+        tableName: config.options?.tableName || prev.tableName,
+        includeMetadata: config.options?.includeHeaders !== false,
+        batchSize: config.options?.batchSize || prev.batchSize,
+        streaming: config.count > 10000
+      }));
+      
+      // 成功メッセージ表示
+      setProgress(prev => ({
+        ...prev,
+        status: 'idle',
+        message: `設定を適用しました: ${config.format.toUpperCase()}形式、${config.count.toLocaleString()}件`
+      }));
+    };
+
+    window.addEventListener('applyUseCaseConfig', handleApplyConfig as EventListener);
+    return () => {
+      window.removeEventListener('applyUseCaseConfig', handleApplyConfig as EventListener);
+    };
+  }, []);
 
   const handleExport = useCallback(async () => {
     setProgress({
