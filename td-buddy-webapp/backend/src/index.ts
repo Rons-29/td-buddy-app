@@ -92,11 +92,13 @@ import passwordRoutes from './routes/password';
 import healthRoutes from './routes/health';
 import { personalRouter } from './routes/personal';
 import aiRoutes from './routes/ai';
+import exportRoutes from './routes/export';
 
 app.use('/api/password', passwordRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/personal', personalRouter);
 app.use('/api/ai', aiRoutes);
+app.use('/api/export', exportRoutes);
 
 // ルートエンドポイント
 app.get('/', (req, res) => {
@@ -108,6 +110,7 @@ app.get('/', (req, res) => {
       password: '/api/password',
       personal: '/api/personal',
       claude: '/api/claude',
+      export: '/api/export',
       docs: '/api/docs'
     },
     tdMessage: 'こんにちは！TDのバックエンドサーバーです。API経由でデータ生成をお手伝いします♪'
@@ -123,7 +126,8 @@ app.use('*', (req, res) => {
       '/health',
       '/api/password',
       '/api/personal',
-      '/api/claude'
+      '/api/claude',
+      '/api/export'
     ]
   });
 });
