@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Download, FileDown, Database, Settings } from 'lucide-react';
-import { AdvancedExportContainer } from '../../components/AdvancedExportContainer';
-import UseCaseShowcase from '../../components/UseCaseShowcase';
+import { AdvancedExportContainer } from '@/components/AdvancedExportContainer';
+import UseCaseShowcase from '@/components/UseCaseShowcase';
 
 export default function ExportPage() {
   return (
