@@ -21,6 +21,16 @@ import {
 import { COMPLETE_KANA_MAPPING, SINGLE_CHAR_MAPPING } from '../data/kanaMapping';
 import { PerformanceService } from './PerformanceService';
 
+/**
+ * バリデーションエラークラス
+ */
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
 export class PersonalInfoService {
   private performanceService = PerformanceService.getInstance();
   
@@ -28,66 +38,84 @@ export class PersonalInfoService {
    * 個人情報を生成
    */
   async generatePersonalInfo(request: PersonalInfoGenerateRequest): Promise<PersonalInfoGenerateResponse> {
-    const timerId = this.performanceService.startTimer('personal_info_generation');
+    const startTime = Date.now();
     
-    // リクエストバリデーション
-    const validation = this.validateRequest(request);
-    if (!validation.isValid) {
-      throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
-    }
+    try {
+      // リクエストバリデーション
+      const validation = this.validateRequest(request);
+      if (!validation.isValid) {
+        throw new ValidationError(validation.errors.join(', '));
+      }
 
-    console.log(`🤖 TDが個人情報生成を開始: ${request.count}件, ${request.includeFields.join(', ')}`);
+      // 生成開始ログ
+      console.log(`🤖 TDが個人情報生成を開始: ${request.count}件, ${request.includeFields.join(', ')}`);
 
-    const persons: PersonalInfoItem[] = [];
-    const duplicateCheck = new Set<string>();
-    let duplicatesRemoved = 0;
+      // 重複除去のためのトラッキングセット
+      const usedEmails = new Set<string>();
+      const usedPhones = new Set<string>();
+      const persons: PersonalInfoItem[] = [];
+      const maxAttempts = request.count * 3; // 最大試行回数
+      let attempts = 0;
 
-    // バッチ処理で効率化（大量データ対応）
-    const batchSize = Math.min(100, request.count);
-    const batches = Math.ceil(request.count / batchSize);
-    
-    for (let batch = 0; batch < batches; batch++) {
-      const batchStart = batch * batchSize;
-      const batchEnd = Math.min(batchStart + batchSize, request.count);
-      const batchCount = batchEnd - batchStart;
-      
-      // バッチ内並列処理
-      const batchPromises = Array.from({ length: batchCount }, () => 
-        Promise.resolve(this.generateSinglePerson(request))
-      );
-      
-      const batchResults = await Promise.all(batchPromises);
-      
-      // 重複チェックと追加
-      for (const person of batchResults) {
-        const duplicateKey = `${person.fullName?.kanji || ''}:${person.email || ''}`;
-        if (!duplicateCheck.has(duplicateKey)) {
-          duplicateCheck.add(duplicateKey);
+      // 指定された数まで生成（重複除去付き）
+      while (persons.length < request.count && attempts < maxAttempts) {
+        attempts++;
+        const person = this.generateSinglePerson(request);
+        
+        // 重複チェック
+        let isDuplicate = false;
+        
+        // メールアドレスの重複チェック
+        if (person.email && usedEmails.has(person.email)) {
+          isDuplicate = true;
+        }
+        
+        // 電話番号の重複チェック
+        if (person.phone && usedPhones.has(person.phone)) {
+          isDuplicate = true;
+        }
+        
+        // 重複がない場合は追加
+        if (!isDuplicate) {
+          if (person.email) usedEmails.add(person.email);
+          if (person.phone) usedPhones.add(person.phone);
           persons.push(person);
-        } else {
-          duplicatesRemoved++;
         }
       }
+
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      const itemsPerSecond = (persons.length / duration) * 1000;
+
+      // パフォーマンス記録
+      const timerId = this.performanceService.startTimer('personal_info_generation');
+      const performanceMetric = this.performanceService.endTimer(timerId, persons.length);
+
+      // 生成完了ログ
+      console.log(`✅ 個人情報生成完了: ${persons.length}件 (${duration.toFixed(2)}ms, ${itemsPerSecond.toFixed(2)} items/sec)`);
+      if (attempts - persons.length > 0) {
+        console.log(`🔄 重複除去: ${attempts - persons.length}件の重複を除去`);
+      }
+
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24時間後
+
+      return {
+        persons,
+        criteria: request,
+        statistics: {
+          totalGenerated: persons.length,
+          uniqueCount: persons.length,
+          generationTime: duration,
+          duplicatesRemoved: attempts - persons.length
+        },
+        generatedAt: now.toISOString(),
+        expiresAt: expiresAt.toISOString()
+      };
+    } catch (error) {
+      console.error('❌ 個人情報生成エラー:', error);
+      throw error;
     }
-
-    const performanceMetric = this.performanceService.endTimer(timerId, persons.length);
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24時間後
-
-    console.log(`✅ 個人情報生成完了: ${persons.length}件 (${performanceMetric.duration.toFixed(2)}ms, ${performanceMetric.throughput?.toFixed(2)} items/sec)`);
-
-    return {
-      persons,
-      criteria: request,
-      statistics: {
-        totalGenerated: request.count,
-        uniqueCount: persons.length,
-        generationTime: performanceMetric.duration,
-        duplicatesRemoved
-      },
-      generatedAt: now.toISOString(),
-      expiresAt: expiresAt.toISOString()
-    };
   }
 
   /**
@@ -248,13 +276,142 @@ export class PersonalInfoService {
     const domain = this.randomChoice(domains);
     
     if (fullName && fullName.firstName && fullName.lastName) {
-      const localPart = `${fullName.firstName}.${fullName.lastName}`.toLowerCase()
+      // 日本語名前を英語に変換
+      const englishName = this.convertJapaneseToEnglish(fullName.firstName, fullName.lastName);
+      
+      // 英語名前からメールアドレスを生成
+      const localPart = `${englishName.firstName}.${englishName.lastName}`.toLowerCase()
         .replace(/\s+/g, '.')
-        .replace(/[^a-z0-9.]/g, '');
+        .replace(/[^a-z0-9.]/g, '')
+        .replace(/\.+/g, '.') // 連続ドットを単一に
+        .replace(/^\.+|\.+$/g, ''); // 先頭・末尾のドットを削除
+      
+      // 空の場合はフォールバック
+      if (!localPart) {
+        return `test.user${Math.floor(Math.random() * 9999)}@${domain}`;
+      }
+      
       return `${localPart}@${domain}`;
     }
     
-    return `test.user@${domain}`;
+    return `test.user${Math.floor(Math.random() * 9999)}@${domain}`;
+  }
+
+  /**
+   * 日本語名前を英語に変換
+   */
+  private convertJapaneseToEnglish(firstName: string, lastName: string): { firstName: string; lastName: string } {
+    // 日本語名前の英語変換マッピング
+    const nameMapping: { [key: string]: string } = {
+      // 姓の変換
+      'テスト': 'Test',
+      'ダミー': 'Dummy', 
+      'サンプル': 'Sample',
+      'モック': 'Mock',
+      'トライアル': 'Trial',
+      'デモ': 'Demo',
+      'テンプレート': 'Template',
+      'プロトタイプ': 'Prototype',
+      'ベータ版': 'Beta',
+      'アルファ版': 'Alpha',
+      'ユニット': 'Unit',
+      'インテグレ': 'Integration',
+      'システム': 'System',
+      'QAテスト': 'QA',
+      'DevTest': 'DevTest',
+      'SampleData': 'SampleData',
+      'MockUp': 'MockUp',
+      'DemoUser': 'DemoUser',
+      'TempUser': 'TempUser',
+      'テストケース': 'TestCase',
+      'データ生成': 'DataGen',
+      '仮想ユーザー': 'VirtualUser',
+      '検証用': 'Verification',
+      'サンプルA': 'SampleA',
+      'サンプルB': 'SampleB',
+      
+      // 名の変換
+      'テスト太郎': 'TestTaro',
+      'ダミー次郎': 'DummyJiro',
+      'サンプル三郎': 'SampleSaburo',
+      'モック四郎': 'MockShiro',
+      'トライアル五郎': 'TrialGoro',
+      'デモ六郎': 'DemoRokuro',
+      'テンプレ七郎': 'TempShichiro',
+      'プロト八郎': 'ProtoHachiro',
+      'ベータ九郎': 'BetaKuro',
+      'アルファ十郎': 'AlphaJuro',
+      'テスト一': 'TestIchi',
+      'サンプル二': 'SampleNi',
+      'ダミー三': 'DummySan',
+      'モック四': 'MockShi',
+      'デモ五': 'DemoGo',
+      'トライアル六': 'TrialRoku',
+      'プロト七': 'ProtoNana',
+      'ベータ八': 'BetaHachi',
+      'アルファ九': 'AlphaKyu',
+      'テンプレ十': 'TempJu',
+      'QA太郎': 'QATaro',
+      'Dev次郎': 'DevJiro',
+      'Test三郎': 'TestSaburo',
+      'Sample四郎': 'SampleShiro',
+      'Demo五郎': 'DemoGoro',
+      
+      // 女性名の変換
+      'テスト花子': 'TestHanako',
+      'ダミー恵子': 'DummyKeiko',
+      'サンプル美子': 'SampleYoshiko',
+      'モック良子': 'MockRyoko',
+      'トライアル和子': 'TrialKazuko',
+      'デモ智子': 'DemoTomoko',
+      'テンプレ雅子': 'TempMasako',
+      'プロト幸子': 'ProtoSachiko',
+      'ベータ京子': 'BetaKyoko',
+      'アルファ直子': 'AlphaNaoko',
+      'テスト子': 'TestKo',
+      'サンプル美': 'SampleMi',
+      'ダミー恵': 'DummyMegumi',
+      'モック子': 'MockKo',
+      'デモ花': 'DemoHana',
+      'トライアル雅': 'TrialMiyabi',
+      'プロト智': 'ProtoSatoshi',
+      'ベータ幸': 'BetaSachi',
+      'アルファ良': 'AlphaRyo',
+      'テンプレ和': 'TempKazu',
+      'QA花子': 'QAHanako',
+      'Dev美子': 'DevYoshiko',
+      'Test恵子': 'TestKeiko',
+      'Sample良子': 'SampleRyoko',
+      'Demo智子': 'DemoTomoko'
+    };
+    
+    // 変換を試行
+    const englishFirstName = nameMapping[firstName] || this.generateFallbackEnglishName(firstName, true);
+    const englishLastName = nameMapping[lastName] || this.generateFallbackEnglishName(lastName, false);
+    
+    return {
+      firstName: englishFirstName,
+      lastName: englishLastName
+    };
+  }
+
+  /**
+   * フォールバック英語名生成
+   */
+  private generateFallbackEnglishName(japaneseString: string, isFirstName: boolean): string {
+    // 英文字が含まれていればそのまま使用
+    if (/[a-zA-Z]/.test(japaneseString)) {
+      return japaneseString.replace(/[^a-zA-Z]/g, '');
+    }
+    
+    // 完全に日本語の場合は一般的な英語名を使用
+    if (isFirstName) {
+      const commonFirstNames = ['Taro', 'Jiro', 'Hanako', 'Yuki', 'Aki', 'Sato', 'Ken', 'Mai', 'Rin', 'Jun'];
+      return this.randomChoice(commonFirstNames);
+    } else {
+      const commonLastNames = ['Tanaka', 'Sato', 'Suzuki', 'Takahashi', 'Ito', 'Watanabe', 'Yamamoto', 'Nakamura', 'Kobayashi', 'Saito'];
+      return this.randomChoice(commonLastNames);
+    }
   }
 
   /**
