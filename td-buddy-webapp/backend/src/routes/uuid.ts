@@ -101,7 +101,7 @@ router.post('/generate', async (req: express.Request, res: express.Response) => 
       timestamp: new Date().toISOString()
     };
 
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
@@ -164,7 +164,7 @@ router.post('/validate', async (req: express.Request, res: express.Response) => 
       timestamp: new Date().toISOString()
     };
 
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
@@ -229,7 +229,7 @@ router.get('/history', async (req: express.Request, res: express.Response) => {
       timestamp: new Date().toISOString()
     };
 
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
@@ -253,7 +253,7 @@ router.get('/statistics', async (req: express.Request, res: express.Response) =>
       }
     };
 
-    res.json(response);
+    return res.json(response);
 
   } catch (error: any) {
     console.error('❌ UUID統計取得API エラー:', error);
@@ -272,7 +272,7 @@ router.get('/statistics', async (req: express.Request, res: express.Response) =>
       timestamp: new Date().toISOString()
     };
 
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
