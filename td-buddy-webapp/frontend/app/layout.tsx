@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Noto_Sans_JP } from 'next/font/google';
 import Link from 'next/link';
-import { TDDesignInspector } from '../components/TDDesignInspector';
+
 import './globals.css';
 
 const inter = Inter({ 
@@ -115,8 +115,7 @@ export default function RootLayout({
           </footer>
         </div>
 
-        {/* TD Design Inspector - 開発環境でのみ表示 */}
-        <TDDesignInspector />
+
       </body>
     </html>
   );
