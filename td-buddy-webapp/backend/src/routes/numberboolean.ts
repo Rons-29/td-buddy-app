@@ -90,7 +90,7 @@ router.post('/generate', async (req: Request, res: Response) => {
       }
     }
 
-    res.json(result);
+    return res.json(result);
 
   } catch (error: any) {
     console.error('数値・真偽値生成エラー:', error);
@@ -118,7 +118,7 @@ router.post('/validate', async (req: Request, res: Response) => {
 
     const isValid = numberBooleanService.validateNumberBoolean(value, type);
 
-    res.json({
+    return res.json({
       success: true,
       valid: isValid,
       value,

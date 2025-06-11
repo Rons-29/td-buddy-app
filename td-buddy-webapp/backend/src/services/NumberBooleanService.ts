@@ -268,7 +268,9 @@ export class NumberBooleanService {
     
     // 30%の確率で特殊値、70%で通常の数値
     if (Math.random() < 0.3) {
-      return specialValues[Math.floor(Math.random() * specialValues.length)];
+      const randomIndex = Math.floor(Math.random() * specialValues.length);
+      const selectedValue = specialValues[randomIndex];
+      return selectedValue !== undefined ? selectedValue : this.generateFloat(options);
     } else {
       return this.generateFloat(options);
     }
@@ -467,7 +469,12 @@ export class NumberBooleanService {
      };
      
      const typeMessages = messages[type] || messages['integer'];
-     return typeMessages[Math.floor(Math.random() * typeMessages.length)];
+     if (!typeMessages || typeMessages.length === 0) {
+       return "TDが数値・真偽値を生成しました♪";
+     }
+     const randomIndex = Math.floor(Math.random() * typeMessages.length);
+     const selectedMessage = typeMessages[randomIndex];
+     return selectedMessage || "TDが数値・真偽値を生成しました♪";
    }
   
   /**
