@@ -79,6 +79,13 @@ export default function RootLayout({
                     UUID生成
                   </Link>
                   <Link 
+                    href="/data-selector" 
+                    className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
+                  >
+                    <span>🎯</span>
+                    データ選択
+                  </Link>
+                  <Link 
                     href="/ai-chat" 
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
                   >
