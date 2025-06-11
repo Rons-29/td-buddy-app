@@ -223,187 +223,249 @@ const getDataTypeInfo = (dataType: DataType) => {
   return dataTypeMap[dataType] || null;
 };
 
-// プリセットデータ
-const CSV_PRESETS = [
-  {
-    id: 'user_basic',
-    name: '👤 ユーザー基本情報',
-    description: 'ユーザー管理システム用の基本的なユーザー情報',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'user_id' },
-      { dataType: 'lastName' as DataType, name: 'last_name' },
-      { dataType: 'firstName' as DataType, name: 'first_name' },
-      { dataType: 'email' as DataType, name: 'email_address' },
-      { dataType: 'phoneNumber' as DataType, name: 'phone_number' },
+// プリセット型定義
+interface CSVPreset {
+  id: string;
+  name: string;
+  description: string;
+  columns: { dataType: DataType; name: string }[];
+}
+
+interface PresetCategory {
+  name: string;
+  emoji: string;
+  description: string;
+  presets: CSVPreset[];
+}
+
+// プリセットカテゴリとデータ
+const CSV_PRESET_CATEGORIES: Record<string, PresetCategory> = {
+  business: {
+    name: '💼 ビジネス・業務',
+    emoji: '💼',
+    description: 'ビジネスシステム・業務管理用',
+    presets: [
+      {
+        id: 'user_basic',
+        name: '👤 ユーザー基本情報',
+        description: 'ユーザー管理システム用の基本的なユーザー情報',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'user_id' },
+          { dataType: 'lastName' as DataType, name: 'last_name' },
+          { dataType: 'firstName' as DataType, name: 'first_name' },
+          { dataType: 'email' as DataType, name: 'email_address' },
+          { dataType: 'phoneNumber' as DataType, name: 'phone_number' },
+        ],
+      },
+      {
+        id: 'employee_data',
+        name: '👔 従業員データ',
+        description: '人事・勤怠管理システム用の従業員情報',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'employee_id' },
+          { dataType: 'fullName' as DataType, name: 'full_name' },
+          { dataType: 'email' as DataType, name: 'work_email' },
+          { dataType: 'randomNumber' as DataType, name: 'department_id' },
+          { dataType: 'date' as DataType, name: 'hire_date' },
+        ],
+      },
+      {
+        id: 'financial_data',
+        name: '💰 金融データ',
+        description: '会計・財務管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'transaction_id' },
+          { dataType: 'randomNumber' as DataType, name: 'account_id' },
+          { dataType: 'words' as DataType, name: 'transaction_type' },
+          { dataType: 'randomNumber' as DataType, name: 'amount' },
+          { dataType: 'sentences' as DataType, name: 'description' },
+          { dataType: 'dateTime' as DataType, name: 'created_at' },
+        ],
+      },
     ],
   },
-  {
-    id: 'address_full',
-    name: '🏠 住所情報',
-    description: '配送・住所管理システム用の詳細住所データ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'address_id' },
-      { dataType: 'country' as DataType, name: 'country' },
-      { dataType: 'state' as DataType, name: 'prefecture' },
-      { dataType: 'city' as DataType, name: 'city' },
-      { dataType: 'street' as DataType, name: 'street_address' },
-      { dataType: 'zipCode' as DataType, name: 'postal_code' },
+  ecommerce: {
+    name: '🛒 EC・販売',
+    emoji: '🛒',
+    description: 'Eコマース・販売システム用',
+    presets: [
+      {
+        id: 'product_catalog',
+        name: '📦 商品カタログ',
+        description: 'ECサイト・商品管理システム用のサンプルデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'product_id' },
+          { dataType: 'words' as DataType, name: 'product_name' },
+          { dataType: 'randomNumber' as DataType, name: 'price' },
+          { dataType: 'sentences' as DataType, name: 'description' },
+          { dataType: 'date' as DataType, name: 'release_date' },
+        ],
+      },
+      {
+        id: 'order_data',
+        name: '🛒 注文データ',
+        description: 'ECサイト・注文管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'order_id' },
+          { dataType: 'randomNumber' as DataType, name: 'customer_id' },
+          { dataType: 'words' as DataType, name: 'product_name' },
+          { dataType: 'randomNumber' as DataType, name: 'quantity' },
+          { dataType: 'randomNumber' as DataType, name: 'price' },
+          { dataType: 'dateTime' as DataType, name: 'order_date' },
+        ],
+      },
+      {
+        id: 'address_full',
+        name: '🏠 住所情報',
+        description: '配送・住所管理システム用の詳細住所データ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'address_id' },
+          { dataType: 'country' as DataType, name: 'country' },
+          { dataType: 'state' as DataType, name: 'prefecture' },
+          { dataType: 'city' as DataType, name: 'city' },
+          { dataType: 'street' as DataType, name: 'street_address' },
+          { dataType: 'zipCode' as DataType, name: 'postal_code' },
+        ],
+      },
     ],
   },
-  {
-    id: 'product_catalog',
-    name: '📦 商品カタログ',
-    description: 'ECサイト・商品管理システム用のサンプルデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'product_id' },
-      { dataType: 'words' as DataType, name: 'product_name' },
-      { dataType: 'randomNumber' as DataType, name: 'price' },
-      { dataType: 'sentences' as DataType, name: 'description' },
-      { dataType: 'date' as DataType, name: 'release_date' },
+  content: {
+    name: '📝 コンテンツ・メディア',
+    emoji: '📝',
+    description: 'CMS・メディア・コンテンツ管理用',
+    presets: [
+      {
+        id: 'blog_post',
+        name: '📝 ブログ記事',
+        description: 'CMS・ブログシステム用のコンテンツデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'post_id' },
+          { dataType: 'sentences' as DataType, name: 'title' },
+          { dataType: 'paragraphs' as DataType, name: 'content' },
+          { dataType: 'username' as DataType, name: 'author' },
+          { dataType: 'words' as DataType, name: 'category' },
+          { dataType: 'dateTime' as DataType, name: 'published_at' },
+        ],
+      },
+      {
+        id: 'social_media',
+        name: '📱 SNS投稿',
+        description: 'ソーシャルメディア・投稿管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'post_id' },
+          { dataType: 'username' as DataType, name: 'username' },
+          { dataType: 'sentences' as DataType, name: 'post_content' },
+          { dataType: 'randomNumber' as DataType, name: 'likes_count' },
+          { dataType: 'randomNumber' as DataType, name: 'shares_count' },
+          { dataType: 'dateTime' as DataType, name: 'posted_at' },
+        ],
+      },
     ],
   },
-  {
-    id: 'log_data',
-    name: '📊 ログデータ',
-    description: 'システムログ・アクセスログ用のサンプルデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'log_id' },
-      { dataType: 'dateTime' as DataType, name: 'timestamp' },
-      { dataType: 'ipAddress' as DataType, name: 'client_ip' },
-      { dataType: 'username' as DataType, name: 'username' },
-      { dataType: 'words' as DataType, name: 'action' },
+  entertainment: {
+    name: '🎮 エンターテイメント',
+    emoji: '🎮',
+    description: 'ゲーム・イベント・エンタメ用',
+    presets: [
+      {
+        id: 'game_scores',
+        name: '🎮 ゲームスコア',
+        description: 'ゲーム・スコア管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'score_id' },
+          { dataType: 'username' as DataType, name: 'player_name' },
+          { dataType: 'words' as DataType, name: 'game_mode' },
+          { dataType: 'randomNumber' as DataType, name: 'score' },
+          { dataType: 'randomNumber' as DataType, name: 'level' },
+          { dataType: 'dateTime' as DataType, name: 'played_at' },
+        ],
+      },
+      {
+        id: 'event_tickets',
+        name: '🎫 イベントチケット',
+        description: 'イベント管理・チケット販売システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'ticket_id' },
+          { dataType: 'words' as DataType, name: 'event_name' },
+          { dataType: 'fullName' as DataType, name: 'attendee_name' },
+          { dataType: 'email' as DataType, name: 'attendee_email' },
+          { dataType: 'randomNumber' as DataType, name: 'seat_number' },
+          { dataType: 'date' as DataType, name: 'event_date' },
+        ],
+      },
     ],
   },
-  {
-    id: 'employee_data',
-    name: '👔 従業員データ',
-    description: '人事・勤怠管理システム用の従業員情報',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'employee_id' },
-      { dataType: 'fullName' as DataType, name: 'full_name' },
-      { dataType: 'email' as DataType, name: 'work_email' },
-      { dataType: 'randomNumber' as DataType, name: 'department_id' },
-      { dataType: 'date' as DataType, name: 'hire_date' },
+  education: {
+    name: '🎓 教育・ヘルスケア',
+    emoji: '🎓',
+    description: '教育・医療・ヘルスケア用',
+    presets: [
+      {
+        id: 'education_data',
+        name: '🎓 教育データ',
+        description: '学習管理・教育システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'student_id' },
+          { dataType: 'fullName' as DataType, name: 'student_name' },
+          { dataType: 'words' as DataType, name: 'course_name' },
+          { dataType: 'randomNumber' as DataType, name: 'grade' },
+          { dataType: 'email' as DataType, name: 'student_email' },
+          { dataType: 'date' as DataType, name: 'enrollment_date' },
+        ],
+      },
+      {
+        id: 'healthcare_data',
+        name: '🏥 医療データ',
+        description: '医療管理・ヘルスケアシステム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'patient_id' },
+          { dataType: 'fullName' as DataType, name: 'patient_name' },
+          { dataType: 'randomNumber' as DataType, name: 'age' },
+          { dataType: 'words' as DataType, name: 'diagnosis' },
+          { dataType: 'words' as DataType, name: 'treatment' },
+          { dataType: 'date' as DataType, name: 'visit_date' },
+        ],
+      },
     ],
   },
-  {
-    id: 'order_data',
-    name: '🛒 注文データ',
-    description: 'ECサイト・注文管理システム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'order_id' },
-      { dataType: 'randomNumber' as DataType, name: 'customer_id' },
-      { dataType: 'words' as DataType, name: 'product_name' },
-      { dataType: 'randomNumber' as DataType, name: 'quantity' },
-      { dataType: 'randomNumber' as DataType, name: 'price' },
-      { dataType: 'dateTime' as DataType, name: 'order_date' },
+  technical: {
+    name: '🔧 技術・システム',
+    emoji: '🔧',
+    description: 'システム・技術・IoT用',
+    presets: [
+      {
+        id: 'log_data',
+        name: '📊 ログデータ',
+        description: 'システムログ・アクセスログ用のサンプルデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'log_id' },
+          { dataType: 'dateTime' as DataType, name: 'timestamp' },
+          { dataType: 'ipAddress' as DataType, name: 'client_ip' },
+          { dataType: 'username' as DataType, name: 'username' },
+          { dataType: 'words' as DataType, name: 'action' },
+        ],
+      },
+      {
+        id: 'iot_sensor',
+        name: '📡 IoTセンサー',
+        description: 'IoT・センサーデータ監視システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'sensor_id' },
+          { dataType: 'words' as DataType, name: 'device_name' },
+          { dataType: 'randomNumber' as DataType, name: 'temperature' },
+          { dataType: 'randomNumber' as DataType, name: 'humidity' },
+          { dataType: 'ipAddress' as DataType, name: 'device_ip' },
+          { dataType: 'dateTime' as DataType, name: 'recorded_at' },
+        ],
+      },
     ],
   },
-  {
-    id: 'blog_post',
-    name: '📝 ブログ記事',
-    description: 'CMS・ブログシステム用のコンテンツデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'post_id' },
-      { dataType: 'sentences' as DataType, name: 'title' },
-      { dataType: 'paragraphs' as DataType, name: 'content' },
-      { dataType: 'username' as DataType, name: 'author' },
-      { dataType: 'words' as DataType, name: 'category' },
-      { dataType: 'dateTime' as DataType, name: 'published_at' },
-    ],
-  },
-  {
-    id: 'iot_sensor',
-    name: '📡 IoTセンサー',
-    description: 'IoT・センサーデータ監視システム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'sensor_id' },
-      { dataType: 'words' as DataType, name: 'device_name' },
-      { dataType: 'randomNumber' as DataType, name: 'temperature' },
-      { dataType: 'randomNumber' as DataType, name: 'humidity' },
-      { dataType: 'ipAddress' as DataType, name: 'device_ip' },
-      { dataType: 'dateTime' as DataType, name: 'recorded_at' },
-    ],
-  },
-  {
-    id: 'event_tickets',
-    name: '🎫 イベントチケット',
-    description: 'イベント管理・チケット販売システム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'ticket_id' },
-      { dataType: 'words' as DataType, name: 'event_name' },
-      { dataType: 'fullName' as DataType, name: 'attendee_name' },
-      { dataType: 'email' as DataType, name: 'attendee_email' },
-      { dataType: 'randomNumber' as DataType, name: 'seat_number' },
-      { dataType: 'date' as DataType, name: 'event_date' },
-    ],
-  },
-  {
-    id: 'financial_data',
-    name: '💰 金融データ',
-    description: '会計・財務管理システム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'transaction_id' },
-      { dataType: 'randomNumber' as DataType, name: 'account_id' },
-      { dataType: 'words' as DataType, name: 'transaction_type' },
-      { dataType: 'randomNumber' as DataType, name: 'amount' },
-      { dataType: 'sentences' as DataType, name: 'description' },
-      { dataType: 'dateTime' as DataType, name: 'created_at' },
-    ],
-  },
-  {
-    id: 'game_scores',
-    name: '🎮 ゲームスコア',
-    description: 'ゲーム・スコア管理システム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'score_id' },
-      { dataType: 'username' as DataType, name: 'player_name' },
-      { dataType: 'words' as DataType, name: 'game_mode' },
-      { dataType: 'randomNumber' as DataType, name: 'score' },
-      { dataType: 'randomNumber' as DataType, name: 'level' },
-      { dataType: 'dateTime' as DataType, name: 'played_at' },
-    ],
-  },
-  {
-    id: 'education_data',
-    name: '🎓 教育データ',
-    description: '学習管理・教育システム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'student_id' },
-      { dataType: 'fullName' as DataType, name: 'student_name' },
-      { dataType: 'words' as DataType, name: 'course_name' },
-      { dataType: 'randomNumber' as DataType, name: 'grade' },
-      { dataType: 'email' as DataType, name: 'student_email' },
-      { dataType: 'date' as DataType, name: 'enrollment_date' },
-    ],
-  },
-  {
-    id: 'social_media',
-    name: '📱 SNS投稿',
-    description: 'ソーシャルメディア・投稿管理システム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'post_id' },
-      { dataType: 'username' as DataType, name: 'username' },
-      { dataType: 'sentences' as DataType, name: 'post_content' },
-      { dataType: 'randomNumber' as DataType, name: 'likes_count' },
-      { dataType: 'randomNumber' as DataType, name: 'shares_count' },
-      { dataType: 'dateTime' as DataType, name: 'posted_at' },
-    ],
-  },
-  {
-    id: 'healthcare_data',
-    name: '🏥 医療データ',
-    description: '医療管理・ヘルスケアシステム用のデータ',
-    columns: [
-      { dataType: 'autoIncrement' as DataType, name: 'patient_id' },
-      { dataType: 'fullName' as DataType, name: 'patient_name' },
-      { dataType: 'randomNumber' as DataType, name: 'age' },
-      { dataType: 'words' as DataType, name: 'diagnosis' },
-      { dataType: 'words' as DataType, name: 'treatment' },
-      { dataType: 'date' as DataType, name: 'visit_date' },
-    ],
-  },
-] as const;
+};
+
+// 後方互換性のため全プリセットのフラットリストも保持
+const CSV_PRESETS: CSVPreset[] = Object.values(CSV_PRESET_CATEGORIES).flatMap(
+  category => category.presets
+);
 
 // 日本語データセット
 const JAPANESE_DATA = {
@@ -1098,7 +1160,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       {/* プリセット選択モーダル */}
       {showPresets && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-blue-800">
@@ -1114,42 +1176,75 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                 </ActionButton>
               </div>
 
-              <div className="grid gap-4">
-                {CSV_PRESETS.map(preset => (
-                  <div
-                    key={preset.id}
-                    className="border border-blue-200 rounded-lg p-4 hover:border-blue-400 transition-colors"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-blue-800 mb-2">
-                          {preset.name}
-                        </h4>
-                        <p className="text-sm text-gray-600 mb-3">
-                          {preset.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {preset.columns.map((col, index) => (
-                            <span
-                              key={index}
-                              className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md"
-                            >
-                              {col.name}
-                            </span>
-                          ))}
+              <div className="space-y-6">
+                {Object.entries(CSV_PRESET_CATEGORIES).map(
+                  ([categoryKey, category]) => (
+                    <div
+                      key={categoryKey}
+                      className="border border-gray-200 rounded-lg p-4"
+                    >
+                      {/* カテゴリヘッダー */}
+                      <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                        <span className="text-2xl">{category.emoji}</span>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-800">
+                            {category.name}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {category.description}
+                          </p>
                         </div>
                       </div>
-                      <ActionButton
-                        type="generate"
-                        onClick={() => applyPreset(preset.id)}
-                        variant="primary"
-                        size="sm"
-                      >
-                        適用
-                      </ActionButton>
+
+                      {/* プリセット一覧 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {category.presets.map(preset => (
+                          <div
+                            key={preset.id}
+                            className="border border-blue-200 rounded-lg p-3 hover:border-blue-400 transition-colors bg-gradient-to-r from-blue-50 to-indigo-50"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-blue-800 mb-1 text-sm">
+                                  {preset.name}
+                                </h5>
+                                <p className="text-xs text-gray-600 mb-2">
+                                  {preset.description}
+                                </p>
+                                <div className="flex flex-wrap gap-1">
+                                  {preset.columns.map((col, index) => (
+                                    <span
+                                      key={index}
+                                      className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md"
+                                    >
+                                      {col.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <ActionButton
+                                type="generate"
+                                onClick={() => applyPreset(preset.id)}
+                                variant="primary"
+                                size="sm"
+                              >
+                                適用
+                              </ActionButton>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
+              </div>
+
+              {/* TDからのメッセージ */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700 text-center">
+                  🤖 <strong>TDからのTip:</strong>{' '}
+                  プリセットを適用後も、カラムの追加・削除・並び替えが可能です。お気軽にカスタマイズしてくださいね♪
+                </p>
               </div>
             </div>
           </div>
