@@ -240,4 +240,36 @@ export interface TDSystemInfo {
   lastCleanup: string;
   status: 'healthy' | 'warning' | 'error';
   tdMessage: string;
+}
+
+// ==================================================
+// 🆕 Step 14: 新データタイプ - UUID/GUID 生成用データベース型
+// ==================================================
+
+// 生成されたUUIDエンティティ
+export interface GeneratedUuid {
+  id: number;
+  uuid_value: string;               // 生成されたUUID値
+  version: string;                  // UUIDバージョン (v1, v4, v6, v7)
+  format: string;                   // 出力フォーマット
+  criteria: string;                 // 生成条件（JSON文字列）
+  metadata: string;                 // メタデータ（JSON文字列）
+  created_at: string;
+  expires_at: string;
+  user_session_id?: string;
+  ip_address?: string;
+  user_agent?: string;
+}
+
+// UUID挿入用の型
+export interface InsertGeneratedUuid {
+  uuid_value: string;
+  version: string;
+  format: string;
+  criteria: string;
+  metadata: string;
+  expires_at: string;
+  user_session_id?: string;
+  ip_address?: string;
+  user_agent?: string;
 } 

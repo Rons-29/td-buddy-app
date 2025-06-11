@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf8"?>
+<export>
+  <metadata>
+    <exportedAt>2025-06-10T14:51:49.033Z</exportedAt>
+    <recordCount>2</recordCount>
+    <generatedBy>TestData Buddy</generatedBy>
+  </metadata>
+  <data>
+    <record>
+      <id>1</id>
+      <testField1>テストデータ1</testField1>
+      <testField2>285</testField2>
+      <testField3>false</testField3>
+      <testField4>2025-06-10T14:51:49.033Z</testField4>
+      <randomValue>0.5840641884073343</randomValue>
+      <category>C</category>
+      <status>pending</status>
+      <generatedAt>2025-06-10T14:51:49.033Z</generatedAt>
+    </record>
+    <record>
+      <id>2</id>
+      <testField1>テストデータ2</testField1>
+      <testField2>911</testField2>
+      <testField3>false</testField3>
+      <testField4>2025-06-10T14:51:49.033Z</testField4>
+      <randomValue>0.14910658114889896</randomValue>
+      <category>B</category>
+      <status>pending</status>
+      <generatedAt>2025-06-10T14:51:49.033Z</generatedAt>
+    </record>
+  </data>
+</export>
