@@ -1,21 +1,37 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { 
-  User, Users, Download, Copy, RefreshCw, Settings2, 
-  CheckCircle, Zap, Mail, Phone, MapPin, Calendar, Building, Sparkles, Table, Grid, Check
+import {
+  Building,
+  Calendar,
+  CheckCircle,
+  Grid,
+  Mail,
+  MapPin,
+  Phone,
+  Settings2,
+  Sparkles,
+  Table,
+  User,
+  Users,
 } from 'lucide-react';
-import { Button } from './ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/Card';
-import { FieldSelector, FieldOption } from './ui/FieldSelector';
-import { EnhancedTDCharacter, TDMood } from './ui/EnhancedTDCharacter';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActionButton } from './ui/ActionButton';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/Card';
 import { DataTable } from './ui/DataTable';
+import { EnhancedTDCharacter, TDMood } from './ui/EnhancedTDCharacter';
+import { FieldOption, FieldSelector } from './ui/FieldSelector';
 
 // 簡易版の型定義
 interface PersonalInfo {
   id: string;
   fullName?: { kanji: string; firstName: string; lastName: string };
-  kanaName?: string;  // カナ専用フィールド
+  kanaName?: string; // カナ専用フィールド
   email?: string;
   phone?: string;
   address?: { full: string };
@@ -26,87 +42,89 @@ interface PersonalInfo {
 }
 
 const FIELD_OPTIONS: FieldOption[] = [
-  { 
-    id: 'fullName', 
-    label: '氏名', 
-    icon: '👤', 
+  {
+    id: 'fullName',
+    label: '氏名',
+    icon: '👤',
     description: '日本語の姓名（漢字）',
-    selected: true 
+    selected: true,
   },
-  { 
-    id: 'kanaName', 
-    label: 'カナ氏名', 
-    icon: '🔤', 
+  {
+    id: 'kanaName',
+    label: 'カナ氏名',
+    icon: '🔤',
     description: 'カタカナ氏名（CSV：氏名（カナ）列）',
-    selected: false 
+    selected: false,
   },
-  { 
-    id: 'email', 
-    label: 'メールアドレス', 
-    icon: '📧', 
+  {
+    id: 'email',
+    label: 'メールアドレス',
+    icon: '📧',
     description: '実用的なメールアドレス形式',
-    selected: true 
+    selected: true,
   },
-  { 
-    id: 'phone', 
-    label: '電話番号', 
-    icon: '☎️', 
+  {
+    id: 'phone',
+    label: '電話番号',
+    icon: '☎️',
     description: '固定電話・携帯電話番号',
-    selected: true 
+    selected: true,
   },
-  { 
-    id: 'address', 
-    label: '住所', 
-    icon: '🏠', 
+  {
+    id: 'address',
+    label: '住所',
+    icon: '🏠',
     description: '日本の住所（都道府県・市区町村）',
-    selected: false 
+    selected: false,
   },
-  { 
-    id: 'age', 
-    label: '年齢', 
-    icon: '🔢', 
+  {
+    id: 'age',
+    label: '年齢',
+    icon: '🔢',
     description: '18〜80歳の範囲で生成',
-    selected: false 
+    selected: false,
   },
-  { 
-    id: 'gender', 
-    label: '性別', 
-    icon: '⚧️', 
+  {
+    id: 'gender',
+    label: '性別',
+    icon: '⚧️',
     description: '男性・女性・その他',
-    selected: false 
+    selected: false,
   },
-  { 
-    id: 'company', 
-    label: '会社名', 
-    icon: '🏢', 
+  {
+    id: 'company',
+    label: '会社名',
+    icon: '🏢',
     description: '日本の企業名（実在・架空）',
-    selected: false 
+    selected: false,
   },
-  { 
-    id: 'jobTitle', 
-    label: '職種', 
-    icon: '💼', 
+  {
+    id: 'jobTitle',
+    label: '職種',
+    icon: '💼',
     description: '業界に応じた職種・役職',
-    selected: false 
-  }
+    selected: false,
+  },
 ];
 
 export const PersonalInfoGenerator: React.FC = React.memo(() => {
   const [count, setCount] = useState(5);
-  const [fieldOptions, setFieldOptions] = useState<FieldOption[]>(FIELD_OPTIONS);
+  const [fieldOptions, setFieldOptions] =
+    useState<FieldOption[]>(FIELD_OPTIONS);
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<PersonalInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [tdMood, setTdMood] = useState<TDMood>('happy');
-  const [tdMessage, setTdMessage] = useState('個人情報生成の準備ができました！');
+  const [tdMessage, setTdMessage] =
+    useState('個人情報生成の準備ができました！');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [isCopied, setIsCopied] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
   const handleFieldToggle = useCallback((fieldId: string) => {
-    setFieldOptions(prev => 
-      prev.map(option => 
-        option.id === fieldId 
+    setFieldOptions(prev =>
+      prev.map(option =>
+        option.id === fieldId
           ? { ...option, selected: !option.selected }
           : option
       )
@@ -132,27 +150,38 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
     setIsCopied(true); // コピー開始時にtrueにセット
     const selectedFields = fieldOptions.filter(f => f.selected);
-    
+
     try {
       // データをテキスト形式で整形（絵文字付き）
       let allDataText = `🤖 TestData Buddy - 生成データ (${result.length}件)\n`;
       allDataText += `📅 生成日時: ${new Date().toLocaleString('ja-JP')}\n`;
       allDataText += `${'='.repeat(60)}\n\n`;
-      
+
       result.forEach((person, index) => {
         allDataText += `📋 === ${index + 1}件目 ===\n`;
-        
+
         selectedFields.forEach(field => {
-          const emoji = field.id === 'fullName' ? '👤' :
-                       field.id === 'kanaName' ? '🔤' :
-                       field.id === 'email' ? '📧' :
-                       field.id === 'phone' ? '📞' :
-                       field.id === 'address' ? '🏠' :
-                       field.id === 'age' ? '🎂' :
-                       field.id === 'gender' ? '⚧️' :
-                       field.id === 'company' ? '🏢' :
-                       field.id === 'jobTitle' ? '💼' : '📝';
-          
+          const emoji =
+            field.id === 'fullName'
+              ? '👤'
+              : field.id === 'kanaName'
+              ? '🔤'
+              : field.id === 'email'
+              ? '📧'
+              : field.id === 'phone'
+              ? '📞'
+              : field.id === 'address'
+              ? '🏠'
+              : field.id === 'age'
+              ? '🎂'
+              : field.id === 'gender'
+              ? '⚧️'
+              : field.id === 'company'
+              ? '🏢'
+              : field.id === 'jobTitle'
+              ? '💼'
+              : '📝';
+
           switch (field.id) {
             case 'fullName':
               if (person.fullName) {
@@ -186,7 +215,12 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               break;
             case 'gender':
               if (person.gender) {
-                const genderText = person.gender === 'male' ? '男性' : person.gender === 'female' ? '女性' : person.gender;
+                const genderText =
+                  person.gender === 'male'
+                    ? '男性'
+                    : person.gender === 'female'
+                    ? '女性'
+                    : person.gender;
                 allDataText += `${emoji} 性別: ${genderText}\n`;
               }
               break;
@@ -204,26 +238,32 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
         });
         allDataText += '\n';
       });
-      
+
       allDataText += `${'='.repeat(60)}\n`;
       allDataText += `✨ TDからのメッセージ: データのご利用ありがとうございます！\n`;
       allDataText += `🔧 生成ツール: TestData Buddy\n`;
 
       await navigator.clipboard.writeText(allDataText);
       setTdMood('success');
-      setTdMessage(`🎉 ${result.length}件のデータを全体コピーしました！クリップボードに保存済みです♪`);
-      
+      setTdMessage(
+        `🎉 ${result.length}件のデータを全体コピーしました！クリップボードに保存済みです♪`
+      );
+
       // 3秒後にコピー状態をリセット
       setTimeout(() => {
         setIsCopied(false);
         setTdMood('happy');
-        setTdMessage('コピーしたデータを活用してくださいね♪ 他にもお手伝いできることがあれば、いつでもお声かけください！');
+        setTdMessage(
+          'コピーしたデータを活用してくださいね♪ 他にもお手伝いできることがあれば、いつでもお声かけください！'
+        );
       }, 3000);
     } catch (err) {
       console.error('Failed to copy all data: ', err);
       setIsCopied(false); // エラー時はすぐにリセット
       setTdMood('error');
-      setTdMessage('❌ コピーに失敗しました。ブラウザの設定を確認してもう一度お試しください。');
+      setTdMessage(
+        '❌ コピーに失敗しました。ブラウザの設定を確認してもう一度お試しください。'
+      );
       setTimeout(() => {
         setTdMood('thinking');
         setTdMessage('お手伝いできることはありますか？');
@@ -236,18 +276,21 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
     setIsExporting(true); // エクスポート開始
     const selectedFields = fieldOptions.filter(f => f.selected).map(f => f.id);
-    
+
     try {
-      const response = await fetch('http://localhost:3001/api/personal/export/csv', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          persons: result,
-          includeFields: selectedFields
-        })
-      });
+      const response = await fetch(
+        'http://localhost:3001/api/personal/export/csv',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            persons: result,
+            includeFields: selectedFields,
+          }),
+        }
+      );
 
       if (!response.ok) throw new Error('CSV export failed');
 
@@ -263,7 +306,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
       setTdMood('success');
       setTdMessage('CSVファイルのダウンロードが完了しました！');
-      
+
       // 2秒後にエクスポート状態をリセット
       setTimeout(() => {
         setIsExporting(false);
@@ -277,7 +320,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
   const generatePersonalInfo = async () => {
     const selectedFields = fieldOptions.filter(f => f.selected);
-    
+
     if (selectedFields.length === 0) {
       setError('フィールドを最低1つ選択してください');
       setTdMood('thinking');
@@ -291,17 +334,20 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
     setTdMessage(`${count}件の個人情報を生成中です...`);
 
     try {
-      const response = await fetch('http://localhost:3001/api/personal/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          count,
-          locale: 'ja',
-          includeFields: selectedFields.map(f => f.id)
-        })
-      });
+      const response = await fetch(
+        'http://localhost:3001/api/personal/generate',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            count,
+            locale: 'ja',
+            includeFields: selectedFields.map(f => f.id),
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`API エラー: ${response.status}`);
@@ -311,12 +357,15 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       if (data.success) {
         setResult(data.data.persons);
         setTdMood('success');
-        setTdMessage(`✨ ${data.data.persons.length}件の個人情報を生成しました！`);
+        setTdMessage(
+          `✨ ${data.data.persons.length}件の個人情報を生成しました！`
+        );
       } else {
         throw new Error('API レスポンスエラー');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '不明なエラー';
+      const errorMessage =
+        error instanceof Error ? error.message : '不明なエラー';
       setError(errorMessage);
       setTdMood('error');
       setTdMessage(`エラーが発生しました: ${errorMessage}`);
@@ -334,28 +383,45 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       key: field.id,
       label: field.label,
       icon: field.icon,
-      width: field.id === 'fullName' ? '200px' : 
-             field.id === 'address' ? '300px' : 
-             field.id === 'email' ? '250px' : undefined,
-      render: field.id === 'fullName' ? (value: any) => (
-        value?.kanji ? (
-          <span className="font-medium text-gray-900">{value.kanji}</span>
-        ) : null
-      ) : field.id === 'address' ? (value: any) => (
-        value?.full ? (
-          <span className="text-sm text-gray-700">{value.full}</span>
-        ) : null
-      ) : field.id === 'gender' ? (value: any) => (
-        value ? (
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            value === 'male' ? 'bg-blue-100 text-blue-800' : 
-            value === 'female' ? 'bg-pink-100 text-pink-800' : 
-            'bg-gray-100 text-gray-800'
-          }`}>
-            {value === 'male' ? '男性' : value === 'female' ? '女性' : value}
-          </span>
-        ) : null
-      ) : undefined
+      width:
+        field.id === 'fullName'
+          ? '200px'
+          : field.id === 'address'
+          ? '300px'
+          : field.id === 'email'
+          ? '250px'
+          : undefined,
+      render:
+        field.id === 'fullName'
+          ? (value: any) =>
+              value?.kanji ? (
+                <span className="font-medium text-gray-900">{value.kanji}</span>
+              ) : null
+          : field.id === 'address'
+          ? (value: any) =>
+              value?.full ? (
+                <span className="text-sm text-gray-700">{value.full}</span>
+              ) : null
+          : field.id === 'gender'
+          ? (value: any) =>
+              value ? (
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    value === 'male'
+                      ? 'bg-blue-100 text-blue-800'
+                      : value === 'female'
+                      ? 'bg-pink-100 text-pink-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  {value === 'male'
+                    ? '男性'
+                    : value === 'female'
+                    ? '女性'
+                    : value}
+                </span>
+              ) : null
+          : undefined,
     }));
   }, [fieldOptions]);
 
@@ -385,7 +451,9 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                 </h1>
                 <div className="flex items-center justify-center space-x-2 mt-2">
                   <Sparkles className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm text-gray-600 font-medium">Powered by TD Buddy</span>
+                  <span className="text-sm text-gray-600 font-medium">
+                    Powered by TD Buddy
+                  </span>
                   <Sparkles className="h-4 w-4 text-yellow-500" />
                 </div>
               </div>
@@ -393,7 +461,9 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
             <p className="text-xl text-gray-700 max-w-2xl mx-auto">
               QAテスト用のリアルで実用的な個人情報データを生成します。
               <br />
-              <span className="text-blue-600 font-medium">安全・高速・日本語対応</span>
+              <span className="text-blue-600 font-medium">
+                安全・高速・日本語対応
+              </span>
             </p>
           </div>
 
@@ -426,48 +496,62 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                           min="1"
                           max="1000"
                           value={count}
-                          onChange={(e) => setCount(Math.max(1, Math.min(1000, parseInt(e.target.value) || 1)))}
+                          onChange={e =>
+                            setCount(
+                              Math.max(
+                                1,
+                                Math.min(1000, parseInt(e.target.value) || 1)
+                              )
+                            )
+                          }
                           className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-td-primary-500 focus:border-transparent"
                         />
-                        <span className="text-sm text-gray-500">件 (最大1000件)</span>
+                        <span className="text-sm text-gray-500">
+                          件 (最大1000件)
+                        </span>
                         <div className="flex space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          <ActionButton
+                            type="replace"
                             onClick={() => setCount(5)}
+                            variant="secondary"
+                            size="sm"
                             className="text-xs"
                           >
                             5件
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          </ActionButton>
+                          <ActionButton
+                            type="replace"
                             onClick={() => setCount(50)}
+                            variant="secondary"
+                            size="sm"
                             className="text-xs"
                           >
                             50件
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          </ActionButton>
+                          <ActionButton
+                            type="replace"
                             onClick={() => setCount(100)}
+                            variant="secondary"
+                            size="sm"
                             className="text-xs"
                           >
                             100件
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          </ActionButton>
+                          <ActionButton
+                            type="replace"
                             onClick={() => setCount(500)}
+                            variant="secondary"
+                            size="sm"
                             className="text-xs"
                           >
                             500件
-                          </Button>
+                          </ActionButton>
                         </div>
                       </div>
                       {count > 100 && (
                         <p className="text-sm text-amber-600 mt-2">
-                          ⚠️ 大量データ生成により処理時間が長くなる場合があります
+                          ⚠️
+                          大量データ生成により処理時間が長くなる場合があります
                         </p>
                       )}
                     </div>
@@ -486,7 +570,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                         )}
                       </div>
                     </div>
-                    
+
                     <FieldSelector
                       options={fieldOptions}
                       onToggle={handleFieldToggle}
@@ -496,24 +580,27 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
                   {/* 生成ボタン */}
                   <div className="pt-4">
-                    <Button
+                    <ActionButton
+                      type="generate"
                       onClick={generatePersonalInfo}
                       disabled={isGenerating || selectedFieldCount === 0}
                       loading={isGenerating}
+                      variant="primary"
                       size="lg"
                       fullWidth
-                      icon={isGenerating ? <RefreshCw className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
                       className="relative overflow-hidden"
                     >
                       <span className="relative z-10">
-                        {isGenerating ? 'データ生成中...' : `${count}件の個人情報を生成`}
+                        {isGenerating
+                          ? 'データ生成中...'
+                          : `${count}件の個人情報を生成`}
                       </span>
-                      
+
                       {/* ボタン内のキラキラエフェクト */}
                       {!isGenerating && (
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000" />
                       )}
-                    </Button>
+                    </ActionButton>
                   </div>
                 </CardContent>
               </Card>
@@ -532,51 +619,61 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                       <div className="flex items-center space-x-2">
                         {/* 表示モード切り替え */}
                         <div className="flex bg-white/50 rounded-lg p-1">
-                          <Button
+                          <ActionButton
+                            type="replace"
                             onClick={() => setViewMode('cards')}
-                            variant={viewMode === 'cards' ? 'primary' : 'ghost'}
+                            variant={
+                              viewMode === 'cards' ? 'primary' : 'secondary'
+                            }
                             size="sm"
-                            icon={<Grid className="h-4 w-4" />}
                             className="rounded-md"
                           >
+                            <Grid className="h-4 w-4 mr-1" />
                             カード表示
-                          </Button>
-                          <Button
+                          </ActionButton>
+                          <ActionButton
+                            type="replace"
                             onClick={() => setViewMode('table')}
-                            variant={viewMode === 'table' ? 'primary' : 'ghost'}
+                            variant={
+                              viewMode === 'table' ? 'primary' : 'secondary'
+                            }
                             size="sm"
-                            icon={<Table className="h-4 w-4" />}
                             className="rounded-md"
                           >
+                            <Table className="h-4 w-4 mr-1" />
                             テーブル表示
-                          </Button>
+                          </ActionButton>
                         </div>
-                        
+
                         {/* アクションボタン */}
                         <div className="flex items-center space-x-2">
-                          <Button
+                          <ActionButton
+                            type="copy"
                             onClick={copyAllData}
-                            variant="primary"
+                            isActive={isCopied}
+                            variant={isCopied ? 'accent' : 'primary'}
                             size="sm"
-                            icon={isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                             disabled={isCopied}
                             className={`${
-                              isCopied 
-                                ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600' 
+                              isCopied
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
                                 : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600'
                             } text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
                           >
                             <span className="flex items-center space-x-1">
                               <span>{isCopied ? '✅' : '📋'}</span>
-                              <span>{isCopied ? 'コピー済み' : '全体コピー'}</span>
+                              <span>
+                                {isCopied ? 'コピー済み' : '全体コピー'}
+                              </span>
                             </span>
-                          </Button>
-                          
-                          <Button
+                          </ActionButton>
+
+                          <ActionButton
+                            type="generate"
                             onClick={exportToCsv}
+                            loading={isExporting}
                             variant="secondary"
                             size="sm"
-                            icon={isExporting ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                             disabled={isExporting}
                             className={`${
                               isExporting
@@ -586,9 +683,11 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                           >
                             <span className="flex items-center space-x-1">
                               <span>{isExporting ? '⏳' : '💾'}</span>
-                              <span>{isExporting ? 'エクスポート中...' : 'CSV出力'}</span>
+                              <span>
+                                {isExporting ? 'エクスポート中...' : 'CSV出力'}
+                              </span>
                             </span>
-                          </Button>
+                          </ActionButton>
                         </div>
                       </div>
                     </div>
@@ -606,30 +705,42 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                             <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                               #{index + 1}
                             </div>
-                            
+
                             <div className="space-y-2 text-sm">
                               {person.fullName && (
                                 <div className="flex items-center space-x-2">
                                   <User className="h-4 w-4 text-blue-500" />
-                                  <span className="font-medium">{person.fullName.kanji}</span>
+                                  <span className="font-medium">
+                                    {person.fullName.kanji}
+                                  </span>
                                 </div>
                               )}
                               {person.kanaName && (
                                 <div className="flex items-center space-x-2">
-                                  <span className="text-blue-600 font-bold text-xs">🔤</span>
-                                  <span className="font-medium text-blue-900">{person.kanaName}</span>
+                                  <span className="text-blue-600 font-bold text-xs">
+                                    🔤
+                                  </span>
+                                  <span className="font-medium text-blue-900">
+                                    {person.kanaName}
+                                  </span>
                                 </div>
                               )}
                               {person.email && (
                                 <div className="flex items-center space-x-2 group/email">
                                   <Mail className="h-4 w-4 text-emerald-500" />
-                                  <span className="flex-1 truncate">{person.email}</span>
-                                  <button
-                                    onClick={() => person.email && copyToClipboard(person.email)}
-                                    className="opacity-0 group-hover/email:opacity-100 transition-opacity p-1 hover:bg-gray-200 rounded"
-                                  >
-                                    <Copy className="h-3 w-3 text-gray-400" />
-                                  </button>
+                                  <span className="flex-1 truncate">
+                                    {person.email}
+                                  </span>
+                                  <ActionButton
+                                    type="copy"
+                                    onClick={() =>
+                                      person.email &&
+                                      copyToClipboard(person.email)
+                                    }
+                                    variant="secondary"
+                                    size="sm"
+                                    className="opacity-0 group-hover/email:opacity-100 transition-opacity p-1"
+                                  />
                                 </div>
                               )}
                               {person.phone && (
@@ -641,19 +752,25 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                               {person.address && (
                                 <div className="flex items-center space-x-2">
                                   <MapPin className="h-4 w-4 text-red-500" />
-                                  <span className="text-xs">{person.address.full}</span>
+                                  <span className="text-xs">
+                                    {person.address.full}
+                                  </span>
                                 </div>
                               )}
                               {person.age && (
                                 <div className="flex items-center space-x-2">
                                   <Calendar className="h-4 w-4 text-purple-500" />
-                                  <span>{person.age}歳 ({person.gender})</span>
+                                  <span>
+                                    {person.age}歳 ({person.gender})
+                                  </span>
                                 </div>
                               )}
                               {person.company && (
                                 <div className="flex items-center space-x-2">
                                   <Building className="h-4 w-4 text-indigo-500" />
-                                  <span className="text-xs">{person.company} - {person.jobTitle}</span>
+                                  <span className="text-xs">
+                                    {person.company} - {person.jobTitle}
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -695,11 +812,16 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
               {/* エラー表示 */}
               {error && (
-                <Card variant="bordered" className="border-red-200 bg-red-50/80 backdrop-blur-sm">
+                <Card
+                  variant="bordered"
+                  className="border-red-200 bg-red-50/80 backdrop-blur-sm"
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                      <p className="text-red-700 text-sm font-medium">{error}</p>
+                      <p className="text-red-700 text-sm font-medium">
+                        {error}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -718,7 +840,9 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">フィールド数</span>
-                      <span className="font-semibold">{selectedFieldCount}種類</span>
+                      <span className="font-semibold">
+                        {selectedFieldCount}種類
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">生成時刻</span>
