@@ -2,6 +2,7 @@
 
 import { FileText, GripVertical, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
+import { useButtonState } from '../hooks/useButtonState';
 import { ActionButton } from './ui/ActionButton';
 import {
   Card,
@@ -513,6 +514,9 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
   const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
   const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
 
+  // ボタン状態管理
+  const { buttonStates, setButtonActive } = useButtonState();
+
   // ドラッグ&ドロップ処理
   const handleDragStart = useCallback(
     (e: React.DragEvent, columnId: string) => {
@@ -865,6 +869,9 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       setTdMessage(
         `🎉 ${rowCount}件のテストデータを生成完了しました！データをご確認ください♪`
       );
+
+      // 生成ボタンの状態を「生成完了」に変更
+      setButtonActive('generate');
     } catch (error) {
       console.error('Data generation failed:', error);
       setTdMood('error');
@@ -874,7 +881,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     } finally {
       setIsGenerating(false);
     }
-  }, [columns, rowCount, generateDataValue]);
+  }, [columns, rowCount, generateDataValue, setButtonActive]);
 
   // CSVエクスポート
   const exportToCSV = useCallback(() => {
@@ -926,6 +933,9 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
 
       setTdMood('success');
       setTdMessage('CSVファイルのダウンロードが完了しました！');
+
+      // ダウンロードボタンの状態を「ダウンロード済み」に変更
+      setButtonActive('download');
     } catch (error) {
       console.error('CSV export failed:', error);
       setTdMood('error');
@@ -933,7 +943,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     } finally {
       setIsExporting(false);
     }
-  }, [rows, columns, exportSettings]);
+  }, [rows, columns, exportSettings, setButtonActive]);
 
   return (
     <div className="space-y-6">
@@ -1219,6 +1229,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               onClick={generateData}
               disabled={isGenerating || columns.length === 0}
               loading={isGenerating}
+              isActive={buttonStates.generate}
               variant="primary"
               size="lg"
             />
@@ -1228,6 +1239,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               onClick={exportToCSV}
               disabled={rows.length === 0 || isExporting}
               loading={isExporting}
+              isActive={buttonStates.download}
               variant="accent"
             />
           </div>
