@@ -176,6 +176,22 @@ export default function Home() {
             </Link>
           </div>
 
+          {/* ファイル容量テスト */}
+          <div className="td-card p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200">
+            <div className="text-3xl mb-3">📁</div>
+            <h3 className="text-lg font-semibold text-orange-800 mb-2">
+              ファイル容量テスト
+            </h3>
+            <p className="text-orange-600 mb-4">
+              指定サイズのテストファイル生成・青空文庫データ対応
+            </p>
+            <Link href="/file-size-test">
+              <button className="td-button bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+                生成開始
+              </button>
+            </Link>
+          </div>
+
           {/* AI連携 - パープル系に統一 */}
           <div className="td-card p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200">
             <div className="text-3xl mb-3">🧠</div>
