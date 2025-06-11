@@ -1,15 +1,6 @@
 'use client';
 
-import {
-  Database,
-  Download,
-  FileText,
-  GripVertical,
-  Plus,
-  RefreshCw,
-  Target,
-  Trash2,
-} from 'lucide-react';
+import { FileText, GripVertical, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { ActionButton } from './ui/ActionButton';
 import {
@@ -950,7 +941,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <Database className="h-8 w-8 text-blue-600" />
+            <FileText className="h-8 w-8 text-blue-600" />
             <CardTitle className="text-2xl font-bold text-blue-800">
               📋 CSV テストデータ生成
             </CardTitle>
@@ -973,7 +964,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-600" />
+              <FileText className="h-5 w-5 text-blue-600" />
               <CardTitle className="text-lg text-blue-800">
                 カラム設定
               </CardTitle>
@@ -993,7 +984,6 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                 variant="primary"
                 size="sm"
               >
-                <Plus className="h-4 w-4 mr-2" />
                 カラム追加
               </ActionButton>
             </div>
@@ -1160,7 +1150,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       <Card className="border-blue-200">
         <CardHeader>
           <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-            <Database className="h-5 w-5" />
+            <FileText className="h-5 w-5" />
             データ生成設定
           </CardTitle>
         </CardHeader>
@@ -1231,39 +1221,15 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               loading={isGenerating}
               variant="primary"
               size="lg"
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  生成中...
-                </>
-              ) : (
-                <>
-                  <Database className="h-4 w-4 mr-2" />
-                  データ生成
-                </>
-              )}
-            </ActionButton>
+            />
 
             <ActionButton
               type="download"
               onClick={exportToCSV}
               disabled={rows.length === 0 || isExporting}
               loading={isExporting}
-              variant="secondary"
-            >
-              {isExporting ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  エクスポート中...
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4 mr-2" />
-                  CSVダウンロード
-                </>
-              )}
-            </ActionButton>
+              variant="accent"
+            />
           </div>
         </CardContent>
       </Card>
