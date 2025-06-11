@@ -1,17 +1,9 @@
 'use client';
 
-import {
-  Database,
-  Download,
-  FileText,
-  GripVertical,
-  Plus,
-  RefreshCw,
-  Target,
-  Trash2,
-} from 'lucide-react';
+import { FileText, GripVertical, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
-import { Button } from './ui/Button';
+import { useButtonState } from '../hooks/useButtonState';
+import { ActionButton } from './ui/ActionButton';
 import {
   Card,
   CardContent,
@@ -187,6 +179,294 @@ const DATA_TYPE_CATEGORIES = {
   },
 } as const;
 
+// データタイプ情報を取得するヘルパー関数
+const getDataTypeInfo = (dataType: DataType) => {
+  const dataTypeMap: Record<
+    DataType,
+    { label: string; suggestedName: string }
+  > = {
+    // Name系
+    firstName: { label: '名前（名）', suggestedName: 'first_name' },
+    lastName: { label: '名前（姓）', suggestedName: 'last_name' },
+    fullName: { label: 'フルネーム', suggestedName: 'full_name' },
+    // Address系
+    country: { label: '国名', suggestedName: 'country' },
+    state: { label: '都道府県', suggestedName: 'prefecture' },
+    city: { label: '市区町村', suggestedName: 'city' },
+    street: { label: '番地・町名', suggestedName: 'street_address' },
+    zipCode: { label: '郵便番号', suggestedName: 'postal_code' },
+    // Number系
+    randomNumber: { label: 'ランダム数値', suggestedName: 'random_number' },
+    phoneNumber: { label: '電話番号', suggestedName: 'phone_number' },
+    // Internet系
+    email: { label: 'メールアドレス', suggestedName: 'email_address' },
+    username: { label: 'ユーザー名', suggestedName: 'username' },
+    domainName: { label: 'ドメイン名', suggestedName: 'domain_name' },
+    ipAddress: { label: 'IPアドレス', suggestedName: 'ip_address' },
+    // Text系
+    words: { label: '単語', suggestedName: 'sample_words' },
+    sentences: { label: '文章', suggestedName: 'sample_text' },
+    paragraphs: { label: '段落', suggestedName: 'description' },
+    // Utilities系
+    autoIncrement: { label: '連番', suggestedName: 'id' },
+    dateTime: { label: '日時', suggestedName: 'created_at' },
+    date: { label: '日付', suggestedName: 'date' },
+    time: { label: '時刻', suggestedName: 'time' },
+    md5Hash: { label: 'MD5ハッシュ', suggestedName: 'hash_value' },
+    // Legacy
+    text: { label: 'テキスト', suggestedName: 'text_value' },
+    number: { label: '数値', suggestedName: 'number_value' },
+    phone: { label: '電話番号', suggestedName: 'phone' },
+    custom: { label: 'カスタム', suggestedName: 'custom_value' },
+  };
+
+  return dataTypeMap[dataType] || null;
+};
+
+// プリセット型定義
+interface CSVPreset {
+  id: string;
+  name: string;
+  description: string;
+  columns: { dataType: DataType; name: string }[];
+}
+
+interface PresetCategory {
+  name: string;
+  emoji: string;
+  description: string;
+  presets: CSVPreset[];
+}
+
+// プリセットカテゴリとデータ
+const CSV_PRESET_CATEGORIES: Record<string, PresetCategory> = {
+  business: {
+    name: '💼 ビジネス・業務',
+    emoji: '💼',
+    description: 'ビジネスシステム・業務管理用',
+    presets: [
+      {
+        id: 'user_basic',
+        name: '👤 ユーザー基本情報',
+        description: 'ユーザー管理システム用の基本的なユーザー情報',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'user_id' },
+          { dataType: 'lastName' as DataType, name: 'last_name' },
+          { dataType: 'firstName' as DataType, name: 'first_name' },
+          { dataType: 'email' as DataType, name: 'email_address' },
+          { dataType: 'phoneNumber' as DataType, name: 'phone_number' },
+        ],
+      },
+      {
+        id: 'employee_data',
+        name: '👔 従業員データ',
+        description: '人事・勤怠管理システム用の従業員情報',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'employee_id' },
+          { dataType: 'fullName' as DataType, name: 'full_name' },
+          { dataType: 'email' as DataType, name: 'work_email' },
+          { dataType: 'randomNumber' as DataType, name: 'department_id' },
+          { dataType: 'date' as DataType, name: 'hire_date' },
+        ],
+      },
+      {
+        id: 'financial_data',
+        name: '💰 金融データ',
+        description: '会計・財務管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'transaction_id' },
+          { dataType: 'randomNumber' as DataType, name: 'account_id' },
+          { dataType: 'words' as DataType, name: 'transaction_type' },
+          { dataType: 'randomNumber' as DataType, name: 'amount' },
+          { dataType: 'sentences' as DataType, name: 'description' },
+          { dataType: 'dateTime' as DataType, name: 'created_at' },
+        ],
+      },
+    ],
+  },
+  ecommerce: {
+    name: '🛒 EC・販売',
+    emoji: '🛒',
+    description: 'Eコマース・販売システム用',
+    presets: [
+      {
+        id: 'product_catalog',
+        name: '📦 商品カタログ',
+        description: 'ECサイト・商品管理システム用のサンプルデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'product_id' },
+          { dataType: 'words' as DataType, name: 'product_name' },
+          { dataType: 'randomNumber' as DataType, name: 'price' },
+          { dataType: 'sentences' as DataType, name: 'description' },
+          { dataType: 'date' as DataType, name: 'release_date' },
+        ],
+      },
+      {
+        id: 'order_data',
+        name: '🛒 注文データ',
+        description: 'ECサイト・注文管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'order_id' },
+          { dataType: 'randomNumber' as DataType, name: 'customer_id' },
+          { dataType: 'words' as DataType, name: 'product_name' },
+          { dataType: 'randomNumber' as DataType, name: 'quantity' },
+          { dataType: 'randomNumber' as DataType, name: 'price' },
+          { dataType: 'dateTime' as DataType, name: 'order_date' },
+        ],
+      },
+      {
+        id: 'address_full',
+        name: '🏠 住所情報',
+        description: '配送・住所管理システム用の詳細住所データ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'address_id' },
+          { dataType: 'country' as DataType, name: 'country' },
+          { dataType: 'state' as DataType, name: 'prefecture' },
+          { dataType: 'city' as DataType, name: 'city' },
+          { dataType: 'street' as DataType, name: 'street_address' },
+          { dataType: 'zipCode' as DataType, name: 'postal_code' },
+        ],
+      },
+    ],
+  },
+  content: {
+    name: '📝 コンテンツ・メディア',
+    emoji: '📝',
+    description: 'CMS・メディア・コンテンツ管理用',
+    presets: [
+      {
+        id: 'blog_post',
+        name: '📝 ブログ記事',
+        description: 'CMS・ブログシステム用のコンテンツデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'post_id' },
+          { dataType: 'sentences' as DataType, name: 'title' },
+          { dataType: 'paragraphs' as DataType, name: 'content' },
+          { dataType: 'username' as DataType, name: 'author' },
+          { dataType: 'words' as DataType, name: 'category' },
+          { dataType: 'dateTime' as DataType, name: 'published_at' },
+        ],
+      },
+      {
+        id: 'social_media',
+        name: '📱 SNS投稿',
+        description: 'ソーシャルメディア・投稿管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'post_id' },
+          { dataType: 'username' as DataType, name: 'username' },
+          { dataType: 'sentences' as DataType, name: 'post_content' },
+          { dataType: 'randomNumber' as DataType, name: 'likes_count' },
+          { dataType: 'randomNumber' as DataType, name: 'shares_count' },
+          { dataType: 'dateTime' as DataType, name: 'posted_at' },
+        ],
+      },
+    ],
+  },
+  entertainment: {
+    name: '🎮 エンターテイメント',
+    emoji: '🎮',
+    description: 'ゲーム・イベント・エンタメ用',
+    presets: [
+      {
+        id: 'game_scores',
+        name: '🎮 ゲームスコア',
+        description: 'ゲーム・スコア管理システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'score_id' },
+          { dataType: 'username' as DataType, name: 'player_name' },
+          { dataType: 'words' as DataType, name: 'game_mode' },
+          { dataType: 'randomNumber' as DataType, name: 'score' },
+          { dataType: 'randomNumber' as DataType, name: 'level' },
+          { dataType: 'dateTime' as DataType, name: 'played_at' },
+        ],
+      },
+      {
+        id: 'event_tickets',
+        name: '🎫 イベントチケット',
+        description: 'イベント管理・チケット販売システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'ticket_id' },
+          { dataType: 'words' as DataType, name: 'event_name' },
+          { dataType: 'fullName' as DataType, name: 'attendee_name' },
+          { dataType: 'email' as DataType, name: 'attendee_email' },
+          { dataType: 'randomNumber' as DataType, name: 'seat_number' },
+          { dataType: 'date' as DataType, name: 'event_date' },
+        ],
+      },
+    ],
+  },
+  education: {
+    name: '🎓 教育・ヘルスケア',
+    emoji: '🎓',
+    description: '教育・医療・ヘルスケア用',
+    presets: [
+      {
+        id: 'education_data',
+        name: '🎓 教育データ',
+        description: '学習管理・教育システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'student_id' },
+          { dataType: 'fullName' as DataType, name: 'student_name' },
+          { dataType: 'words' as DataType, name: 'course_name' },
+          { dataType: 'randomNumber' as DataType, name: 'grade' },
+          { dataType: 'email' as DataType, name: 'student_email' },
+          { dataType: 'date' as DataType, name: 'enrollment_date' },
+        ],
+      },
+      {
+        id: 'healthcare_data',
+        name: '🏥 医療データ',
+        description: '医療管理・ヘルスケアシステム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'patient_id' },
+          { dataType: 'fullName' as DataType, name: 'patient_name' },
+          { dataType: 'randomNumber' as DataType, name: 'age' },
+          { dataType: 'words' as DataType, name: 'diagnosis' },
+          { dataType: 'words' as DataType, name: 'treatment' },
+          { dataType: 'date' as DataType, name: 'visit_date' },
+        ],
+      },
+    ],
+  },
+  technical: {
+    name: '🔧 技術・システム',
+    emoji: '🔧',
+    description: 'システム・技術・IoT用',
+    presets: [
+      {
+        id: 'log_data',
+        name: '📊 ログデータ',
+        description: 'システムログ・アクセスログ用のサンプルデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'log_id' },
+          { dataType: 'dateTime' as DataType, name: 'timestamp' },
+          { dataType: 'ipAddress' as DataType, name: 'client_ip' },
+          { dataType: 'username' as DataType, name: 'username' },
+          { dataType: 'words' as DataType, name: 'action' },
+        ],
+      },
+      {
+        id: 'iot_sensor',
+        name: '📡 IoTセンサー',
+        description: 'IoT・センサーデータ監視システム用のデータ',
+        columns: [
+          { dataType: 'autoIncrement' as DataType, name: 'sensor_id' },
+          { dataType: 'words' as DataType, name: 'device_name' },
+          { dataType: 'randomNumber' as DataType, name: 'temperature' },
+          { dataType: 'randomNumber' as DataType, name: 'humidity' },
+          { dataType: 'ipAddress' as DataType, name: 'device_ip' },
+          { dataType: 'dateTime' as DataType, name: 'recorded_at' },
+        ],
+      },
+    ],
+  },
+};
+
+// 後方互換性のため全プリセットのフラットリストも保持
+const CSV_PRESETS: CSVPreset[] = Object.values(CSV_PRESET_CATEGORIES).flatMap(
+  category => category.presets
+);
+
 // 日本語データセット
 const JAPANESE_DATA = {
   lastNames: [
@@ -289,6 +569,94 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     filename: 'test_data',
   });
 
+  // プリセット機能
+  const [showPresets, setShowPresets] = useState(false);
+
+  // ドラッグ&ドロップ状態
+  const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
+  const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
+
+  // ボタン状態管理
+  const { buttonStates, setButtonActive } = useButtonState();
+
+  // ドラッグ&ドロップ処理
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, columnId: string) => {
+      setDraggedColumnId(columnId);
+      e.dataTransfer.effectAllowed = 'move';
+    },
+    []
+  );
+
+  const handleDragEnd = useCallback(() => {
+    setDraggedColumnId(null);
+    setDragOverColumnId(null);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, columnId: string) => {
+    e.preventDefault();
+    setDragOverColumnId(columnId);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetColumnId: string) => {
+      e.preventDefault();
+
+      if (!draggedColumnId || draggedColumnId === targetColumnId) {
+        return;
+      }
+
+      const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+      const draggedIndex = sortedColumns.findIndex(
+        col => col.id === draggedColumnId
+      );
+      const targetIndex = sortedColumns.findIndex(
+        col => col.id === targetColumnId
+      );
+
+      if (draggedIndex === -1 || targetIndex === -1) return;
+
+      // カラムの順序を再配置
+      const newColumns = [...sortedColumns];
+      const [draggedColumn] = newColumns.splice(draggedIndex, 1);
+      newColumns.splice(targetIndex, 0, draggedColumn);
+
+      // order を再設定
+      const updatedColumns = newColumns.map((col, index) => ({
+        ...col,
+        order: index,
+      }));
+
+      setColumns(updatedColumns);
+      setTdMood('success');
+      setTdMessage(
+        '✨ カラムの順序を変更しました！ドラッグ&ドロップ便利ですね♪'
+      );
+    },
+    [draggedColumnId, columns]
+  );
+
+  // プリセット適用
+  const applyPreset = useCallback((presetId: string) => {
+    const preset = CSV_PRESETS.find(p => p.id === presetId);
+    if (!preset) return;
+
+    const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
+      id: `preset_${presetId}_${index}_${Date.now()}`,
+      name: col.name,
+      dataType: col.dataType,
+      required: true,
+      order: index,
+    }));
+
+    setColumns(newColumns);
+    setShowPresets(false);
+    setTdMood('success');
+    setTdMessage(
+      `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
+    );
+  }, []);
+
   // カラム追加
   const addColumn = useCallback(() => {
     const newColumn: CSVColumn = {
@@ -312,11 +680,29 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     );
   }, []);
 
-  // カラム更新
+  // カラム更新（データタイプ変更時にカラム名も自動更新）
   const updateColumn = useCallback(
     (columnId: string, updates: Partial<CSVColumn>) => {
       setColumns(prev =>
-        prev.map(col => (col.id === columnId ? { ...col, ...updates } : col))
+        prev.map(col => {
+          if (col.id === columnId) {
+            const updatedCol = { ...col, ...updates };
+
+            // データタイプが変更された場合、適切なカラム名を自動設定
+            if (updates.dataType && updates.dataType !== col.dataType) {
+              const dataTypeInfo = getDataTypeInfo(updates.dataType);
+              if (dataTypeInfo) {
+                updatedCol.name = dataTypeInfo.suggestedName;
+                setTdMessage(
+                  `データタイプを「${dataTypeInfo.label}」に変更し、カラム名を「${dataTypeInfo.suggestedName}」に自動設定しました！`
+                );
+              }
+            }
+
+            return updatedCol;
+          }
+          return col;
+        })
       );
     },
     []
@@ -545,6 +931,9 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       setTdMessage(
         `🎉 ${rowCount}件のテストデータを生成完了しました！データをご確認ください♪`
       );
+
+      // 生成ボタンの状態を「生成完了」に変更
+      setButtonActive('generate');
     } catch (error) {
       console.error('Data generation failed:', error);
       setTdMood('error');
@@ -554,7 +943,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     } finally {
       setIsGenerating(false);
     }
-  }, [columns, rowCount, generateDataValue]);
+  }, [columns, rowCount, generateDataValue, setButtonActive]);
 
   // CSVエクスポート
   const exportToCSV = useCallback(() => {
@@ -606,6 +995,9 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
 
       setTdMood('success');
       setTdMessage('CSVファイルのダウンロードが完了しました！');
+
+      // ダウンロードボタンの状態を「ダウンロード済み」に変更
+      setButtonActive('download');
     } catch (error) {
       console.error('CSV export failed:', error);
       setTdMood('error');
@@ -613,7 +1005,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     } finally {
       setIsExporting(false);
     }
-  }, [rows, columns, exportSettings]);
+  }, [rows, columns, exportSettings, setButtonActive]);
 
   return (
     <div className="space-y-6">
@@ -621,7 +1013,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <Database className="h-8 w-8 text-blue-600" />
+            <FileText className="h-8 w-8 text-blue-600" />
             <CardTitle className="text-2xl font-bold text-blue-800">
               📋 CSV テストデータ生成
             </CardTitle>
@@ -644,15 +1036,29 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-600" />
+              <FileText className="h-5 w-5 text-blue-600" />
               <CardTitle className="text-lg text-blue-800">
                 カラム設定
               </CardTitle>
             </div>
-            <Button onClick={addColumn} variant="primary" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              カラム追加
-            </Button>
+            <div className="flex gap-2">
+              <ActionButton
+                type="generate"
+                onClick={() => setShowPresets(true)}
+                variant="accent"
+                size="sm"
+              >
+                ⭐ プリセット
+              </ActionButton>
+              <ActionButton
+                type="generate"
+                onClick={addColumn}
+                variant="primary"
+                size="sm"
+              >
+                カラム追加
+              </ActionButton>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -665,83 +1071,191 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               </p>
             </div>
           ) : (
-            columns.map((column, index) => (
-              <div
-                key={column.id}
-                className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
-              >
-                {/* ドラッグハンドル */}
-                <div className="cursor-move text-gray-400 hover:text-gray-600">
-                  <GripVertical className="h-5 w-5" />
-                </div>
-
-                {/* カラム名入力 */}
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={column.name}
-                    onChange={e =>
-                      updateColumn(column.id, { name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="カラム名を入力"
-                  />
-                </div>
-
-                {/* データタイプ選択 */}
-                <div className="w-48">
-                  <select
-                    value={column.dataType}
-                    onChange={e =>
-                      updateColumn(column.id, {
-                        dataType: e.target.value as DataType,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                  >
-                    {Object.entries(DATA_TYPE_CATEGORIES).map(
-                      ([categoryKey, category]) => (
-                        <optgroup
-                          key={categoryKey}
-                          label={`${category.emoji} ${category.label}`}
-                        >
-                          {category.types.map(type => (
-                            <option key={type.value} value={type.value}>
-                              {type.label} - {type.description}
-                            </option>
-                          ))}
-                        </optgroup>
-                      )
-                    )}
-                    {/* Legacy options */}
-                    <optgroup label="🔧 Legacy">
-                      <option value="text">テキスト</option>
-                      <option value="number">数値</option>
-                      <option value="phone">電話番号</option>
-                      <option value="custom">カスタム</option>
-                    </optgroup>
-                  </select>
-                </div>
-
-                {/* 削除ボタン */}
-                <Button
-                  onClick={() => removeColumn(column.id)}
-                  variant="danger"
-                  size="sm"
+            columns
+              .sort((a, b) => a.order - b.order)
+              .map((column, index) => (
+                <div
+                  key={column.id}
+                  draggable
+                  onDragStart={e => handleDragStart(e, column.id)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={e => handleDragOver(e, column.id)}
+                  onDrop={e => handleDrop(e, column.id)}
+                  className={`flex items-center gap-3 p-4 bg-gray-50 rounded-lg border transition-colors ${
+                    draggedColumnId === column.id
+                      ? 'border-blue-500 bg-blue-50 opacity-50 cursor-move'
+                      : dragOverColumnId === column.id
+                      ? 'border-blue-400 bg-blue-50 cursor-move'
+                      : 'border-gray-200 hover:border-blue-300 cursor-move'
+                  }`}
                 >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))
+                  {/* ドラッグハンドル */}
+                  <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors">
+                    <GripVertical className="h-5 w-5" />
+                  </div>
+
+                  {/* カラム名入力 */}
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={column.name}
+                      onChange={e =>
+                        updateColumn(column.id, { name: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="カラム名を入力"
+                    />
+                  </div>
+
+                  {/* データタイプ選択 */}
+                  <div className="w-48">
+                    <select
+                      value={column.dataType}
+                      onChange={e =>
+                        updateColumn(column.id, {
+                          dataType: e.target.value as DataType,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    >
+                      {Object.entries(DATA_TYPE_CATEGORIES).map(
+                        ([categoryKey, category]) => (
+                          <optgroup
+                            key={categoryKey}
+                            label={`${category.emoji} ${category.label}`}
+                          >
+                            {category.types.map(type => (
+                              <option key={type.value} value={type.value}>
+                                {type.label} - {type.description}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )
+                      )}
+                      {/* Legacy options */}
+                      <optgroup label="🔧 Legacy">
+                        <option value="text">テキスト</option>
+                        <option value="number">数値</option>
+                        <option value="phone">電話番号</option>
+                        <option value="custom">カスタム</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  {/* 削除ボタン */}
+                  <ActionButton
+                    type="clear"
+                    onClick={() => removeColumn(column.id)}
+                    variant="danger"
+                    size="sm"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </ActionButton>
+                </div>
+              ))
           )}
         </CardContent>
       </Card>
+
+      {/* プリセット選択モーダル */}
+      {showPresets && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-blue-800">
+                  ⭐ プリセット選択
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowPresets(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-6">
+                {Object.entries(CSV_PRESET_CATEGORIES).map(
+                  ([categoryKey, category]) => (
+                    <div
+                      key={categoryKey}
+                      className="border border-gray-200 rounded-lg p-4"
+                    >
+                      {/* カテゴリヘッダー */}
+                      <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                        <span className="text-2xl">{category.emoji}</span>
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-800">
+                            {category.name}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {category.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* プリセット一覧 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {category.presets.map(preset => (
+                          <div
+                            key={preset.id}
+                            className="border border-blue-200 rounded-lg p-3 hover:border-blue-400 transition-colors bg-gradient-to-r from-blue-50 to-indigo-50"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-blue-800 mb-1 text-sm">
+                                  {preset.name}
+                                </h5>
+                                <p className="text-xs text-gray-600 mb-2">
+                                  {preset.description}
+                                </p>
+                                <div className="flex flex-wrap gap-1">
+                                  {preset.columns.map((col, index) => (
+                                    <span
+                                      key={index}
+                                      className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md"
+                                    >
+                                      {col.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <ActionButton
+                                type="generate"
+                                onClick={() => applyPreset(preset.id)}
+                                variant="primary"
+                                size="sm"
+                              >
+                                適用
+                              </ActionButton>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+
+              {/* TDからのメッセージ */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700 text-center">
+                  🤖 <strong>TDからのTip:</strong>{' '}
+                  プリセットを適用後も、カラムの追加・削除・並び替えが可能です。お気軽にカスタマイズしてくださいね♪
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* データ生成設定セクション */}
       <Card className="border-blue-200">
         <CardHeader>
           <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-            <Database className="h-5 w-5" />
+            <FileText className="h-5 w-5" />
             データ生成設定
           </CardTitle>
         </CardHeader>
@@ -805,42 +1319,24 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
 
           {/* アクションボタン */}
           <div className="flex flex-wrap gap-3 pt-4">
-            <Button
+            <ActionButton
+              type="generate"
               onClick={generateData}
               disabled={isGenerating || columns.length === 0}
+              loading={isGenerating}
+              isActive={buttonStates.generate}
               variant="primary"
               size="lg"
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  生成中...
-                </>
-              ) : (
-                <>
-                  <Database className="h-4 w-4 mr-2" />
-                  データ生成
-                </>
-              )}
-            </Button>
+            />
 
-            <Button
+            <ActionButton
+              type="download"
               onClick={exportToCSV}
               disabled={rows.length === 0 || isExporting}
-              variant="secondary"
-            >
-              {isExporting ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  エクスポート中...
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4 mr-2" />
-                  CSVダウンロード
-                </>
-              )}
-            </Button>
+              loading={isExporting}
+              isActive={buttonStates.download}
+              variant="accent"
+            />
           </div>
         </CardContent>
       </Card>
@@ -858,14 +1354,30 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               <table className="min-w-full table-auto border-collapse">
                 <thead>
                   <tr className="bg-blue-50">
-                    {columns.map(column => (
-                      <th
-                        key={column.id}
-                        className="px-4 py-2 text-left text-sm font-medium text-blue-800 border border-blue-200"
-                      >
-                        {column.name}
-                      </th>
-                    ))}
+                    {columns
+                      .sort((a, b) => a.order - b.order)
+                      .map(column => (
+                        <th
+                          key={column.id}
+                          draggable
+                          onDragStart={e => handleDragStart(e, column.id)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={e => handleDragOver(e, column.id)}
+                          onDrop={e => handleDrop(e, column.id)}
+                          className={`px-4 py-2 text-left text-sm font-medium text-blue-800 border border-blue-200 cursor-move transition-colors ${
+                            draggedColumnId === column.id
+                              ? 'bg-blue-200 opacity-50'
+                              : dragOverColumnId === column.id
+                              ? 'bg-blue-100'
+                              : 'hover:bg-blue-100'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <GripVertical className="h-3 w-3 text-blue-600" />
+                            {column.name}
+                          </div>
+                        </th>
+                      ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -874,14 +1386,16 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                       key={row.id}
                       className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
                     >
-                      {columns.map(column => (
-                        <td
-                          key={column.id}
-                          className="px-4 py-2 text-sm text-gray-700 border border-gray-200"
-                        >
-                          {row.data[column.name]}
-                        </td>
-                      ))}
+                      {columns
+                        .sort((a, b) => a.order - b.order)
+                        .map(column => (
+                          <td
+                            key={column.id}
+                            className="px-4 py-2 text-sm text-gray-700 border border-gray-200"
+                          >
+                            {row.data[column.name]}
+                          </td>
+                        ))}
                     </tr>
                   ))}
                 </tbody>
