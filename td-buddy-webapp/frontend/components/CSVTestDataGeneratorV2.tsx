@@ -3,6 +3,8 @@
 import { FileText, GripVertical, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { useButtonState } from '../hooks/useButtonState';
+import { DEFAULT_SETTINGS } from '../types/csv-detailed-settings';
+import { DataTypeDetailSettings } from './csv/DataTypeDetailSettings';
 import { ActionButton } from './ui/ActionButton';
 import {
   Card,
@@ -20,6 +22,7 @@ interface CSVColumn {
   dataType: DataType;
   required: boolean;
   order: number;
+  settings?: any; // 詳細設定（データタイプ別）
 }
 
 // ユーザープリセット型定義
@@ -315,7 +318,7 @@ const CSV_PRESET_CATEGORIES: Record<string, PresetCategory> = {
       },
     ],
   },
-  ecommerce: {
+  'e-commerce': {
     name: '🛒 EC・販売',
     emoji: '🛒',
     description: 'Eコマース・販売システム用',
@@ -581,7 +584,7 @@ const JAPANESE_DATA = {
   ],
 };
 
-export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
+const CSVTestDataGeneratorV2Component: React.FC = () => {
   const [columns, setColumns] = useState<CSVColumn[]>([]);
   const [rows, setRows] = useState<CSVRow[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -617,6 +620,11 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
   const [templatePreview, setTemplatePreview] = useState<Template | null>(null);
   const [showExportPreview, setShowExportPreview] = useState(false);
   const [showPresetImportExport, setShowPresetImportExport] = useState(false);
+
+  // 詳細設定の展開状態管理
+  const [expandedSettings, setExpandedSettings] = useState<
+    Record<string, boolean>
+  >({});
 
   // ボタン状態管理
   const { buttonStates, setButtonActive } = useButtonState();
@@ -779,10 +787,34 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
           );
           break;
         case 'toggleRequired':
+          // 切り替え前の状態を記録
+          const beforeToggle = newColumns.filter(col =>
+            columnIds.includes(col.id)
+          );
+          const requiredCount = beforeToggle.filter(col => col.required).length;
+          const optionalCount = beforeToggle.filter(
+            col => !col.required
+          ).length;
+
           newColumns = newColumns.map(col =>
             columnIds.includes(col.id)
               ? { ...col, required: !col.required }
               : col
+          );
+
+          // 切り替え結果のメッセージを設定
+          const totalColumns = columnIds.length;
+          let toggleMessage = '';
+          if (requiredCount > 0 && optionalCount > 0) {
+            toggleMessage = `${totalColumns}個のカラムの必須設定を切り替えました！`;
+          } else if (requiredCount === totalColumns) {
+            toggleMessage = `${totalColumns}個のカラムを任意に変更しました！`;
+          } else {
+            toggleMessage = `${totalColumns}個のカラムを必須に変更しました！`;
+          }
+
+          setTdMessage(
+            `✨ ${toggleMessage} 赤い背景色で必須カラムを確認できます♪`
           );
           break;
         case 'rename':
@@ -802,9 +834,13 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     setSelectedColumns([]);
     setShowBulkEdit(false);
     setTdMood('success');
-    setTdMessage(
-      `✨ ${columnIds.length}個のカラムに一括編集を適用しました！効率的ですね♪`
-    );
+
+    // toggleRequiredの場合は既にメッセージが設定されているので、他の操作のみメッセージを設定
+    if (op !== 'toggleRequired') {
+      setTdMessage(
+        `✨ ${columnIds.length}個のカラムに一括編集を適用しました！効率的ですね♪`
+      );
+    }
   }, []);
 
   // カラム選択状態の切り替え
@@ -1001,6 +1037,23 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                   `データタイプを「${dataTypeInfo.label}」に変更し、カラム名を「${dataTypeInfo.suggestedName}」に自動設定しました！`
                 );
               }
+              // データタイプが変更された場合、デフォルト設定を適用
+              updatedCol.settings = DEFAULT_SETTINGS[updates.dataType] || null;
+            }
+
+            // 必須設定が変更された場合のメッセージ
+            if (
+              updates.required !== undefined &&
+              updates.required !== col.required
+            ) {
+              const requiredStatus = updates.required ? '必須' : '任意';
+              setTdMessage(
+                `「${col.name}」カラムを${requiredStatus}に設定しました！${
+                  updates.required
+                    ? '📍 必須カラムには赤い背景色がつきます'
+                    : '⚪ 任意カラムになりました'
+                }`
+              );
             }
 
             return updatedCol;
@@ -1011,6 +1064,23 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     },
     []
   );
+
+  // 詳細設定変更処理
+  const handleSettingsChange = useCallback(
+    (columnId: string, settings: any) => {
+      updateColumn(columnId, { settings });
+      setTdMessage('🔧 詳細設定を更新しました！データ生成時に反映されます♪');
+    },
+    [updateColumn]
+  );
+
+  // 詳細設定の展開状態切り替え
+  const toggleSettingsExpanded = useCallback((columnId: string) => {
+    setExpandedSettings(prev => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  }, []);
 
   // データ生成関数
   const generateDataValue = useCallback(
@@ -1398,93 +1468,209 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
             columns
               .sort((a, b) => a.order - b.order)
               .map((column, index) => (
-                <div
-                  key={column.id}
-                  draggable
-                  onDragStart={e => handleDragStart(e, column.id)}
-                  onDragEnd={handleDragEnd}
-                  onDragOver={e => handleDragOver(e, column.id)}
-                  onDrop={e => handleDrop(e, column.id)}
-                  className={`flex items-center gap-3 p-4 bg-gray-50 rounded-lg border transition-colors ${
-                    draggedColumnId === column.id
-                      ? 'border-blue-500 bg-blue-50 opacity-50 cursor-move'
-                      : dragOverColumnId === column.id
-                      ? 'border-blue-400 bg-blue-50 cursor-move'
-                      : 'border-gray-200 hover:border-blue-300 cursor-move'
-                  }`}
-                >
-                  {/* ドラッグハンドル */}
-                  <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors">
-                    <GripVertical className="h-5 w-5" />
-                  </div>
+                <div key={column.id} className="space-y-2">
+                  <div
+                    draggable
+                    onDragStart={e => handleDragStart(e, column.id)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={e => handleDragOver(e, column.id)}
+                    onDrop={e => handleDrop(e, column.id)}
+                    className={`p-4 bg-gray-50 rounded-lg border transition-colors ${
+                      draggedColumnId === column.id
+                        ? 'border-blue-500 bg-blue-50 opacity-50 cursor-move'
+                        : dragOverColumnId === column.id
+                        ? 'border-blue-400 bg-blue-50 cursor-move'
+                        : 'border-gray-200 hover:border-blue-300 cursor-move'
+                    }`}
+                  >
+                    {/* 上段: メイン設定 */}
+                    <div className="flex items-center gap-3 mb-3">
+                      {/* ドラッグハンドル */}
+                      <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors">
+                        <GripVertical className="h-5 w-5" />
+                      </div>
 
-                  {/* カラム名入力 */}
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={column.name}
-                      onChange={e =>
-                        updateColumn(column.id, { name: e.target.value })
+                      {/* カラム名入力 */}
+                      <div className="flex-1 relative">
+                        <input
+                          type="text"
+                          value={column.name}
+                          onChange={e =>
+                            updateColumn(column.id, { name: e.target.value })
+                          }
+                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            column.required
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-gray-300'
+                          }`}
+                          placeholder="カラム名を入力"
+                        />
+                        {column.required && (
+                          <span className="absolute -top-2 -right-2 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                            必須
+                          </span>
+                        )}
+                      </div>
+
+                      {/* 必須設定チェックボックス */}
+                      <div className="flex items-center gap-2">
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={column.required}
+                            onChange={e =>
+                              updateColumn(column.id, {
+                                required: e.target.checked,
+                              })
+                            }
+                            className="mr-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                          />
+                          <span
+                            className={`text-sm font-medium ${
+                              column.required ? 'text-red-700' : 'text-gray-600'
+                            }`}
+                          >
+                            必須
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* 複製ボタン */}
+                      <ActionButton
+                        type="copy"
+                        onClick={() => duplicateColumn(column.id)}
+                        variant="secondary"
+                        size="sm"
+                      >
+                        📋
+                      </ActionButton>
+
+                      {/* 削除ボタン */}
+                      <ActionButton
+                        type="clear"
+                        onClick={() => removeColumn(column.id)}
+                        variant="danger"
+                        size="sm"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </ActionButton>
+                    </div>
+
+                    {/* 中段: データタイプ選択（2段階式） */}
+                    <div className="mb-3">
+                      <div className="space-y-2">
+                        {/* Step 1: カテゴリ選択 */}
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-700 min-w-fit">
+                            カテゴリ:
+                          </label>
+                          <select
+                            value={
+                              Object.entries(DATA_TYPE_CATEGORIES).find(
+                                ([_, category]) =>
+                                  category.types.some(
+                                    type => type.value === column.dataType
+                                  )
+                              )?.[0] || 'legacy'
+                            }
+                            onChange={e => {
+                              const categoryValue = e.target.value;
+                              if (categoryValue !== 'legacy') {
+                                const categoryKey =
+                                  categoryValue as keyof typeof DATA_TYPE_CATEGORIES;
+                                const category =
+                                  DATA_TYPE_CATEGORIES[categoryKey];
+                                if (category && category.types.length > 0) {
+                                  // 現在の設定を保持しつつデータタイプのみ変更
+                                  updateColumn(column.id, {
+                                    dataType: category.types[0]
+                                      .value as DataType,
+                                    // 既存の設定は保持
+                                    settings: column.settings || {},
+                                  });
+                                }
+                              }
+                            }}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            aria-label="データカテゴリを選択"
+                          >
+                            {Object.entries(DATA_TYPE_CATEGORIES).map(
+                              ([categoryKey, category]) => (
+                                <option key={categoryKey} value={categoryKey}>
+                                  {category.emoji} {category.label}
+                                </option>
+                              )
+                            )}
+                            <option value="legacy">🔧 Legacy</option>
+                          </select>
+                        </div>
+
+                        {/* Step 2: 具体的なデータタイプ選択 */}
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-700 min-w-fit">
+                            データタイプ:
+                          </label>
+                          <select
+                            value={column.dataType}
+                            onChange={e =>
+                              updateColumn(column.id, {
+                                dataType: e.target.value as DataType,
+                                // 既存の設定は保持
+                                settings: column.settings || {},
+                              })
+                            }
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            aria-label="具体的なデータタイプを選択"
+                          >
+                            {(() => {
+                              const currentCategory = Object.entries(
+                                DATA_TYPE_CATEGORIES
+                              ).find(([_, category]) =>
+                                category.types.some(
+                                  type => type.value === column.dataType
+                                )
+                              );
+
+                              if (currentCategory) {
+                                return currentCategory[1].types.map(type => (
+                                  <option key={type.value} value={type.value}>
+                                    {type.label} - {type.description}
+                                  </option>
+                                ));
+                              } else {
+                                // Legacy options
+                                return [
+                                  <option key="text" value="text">
+                                    テキスト
+                                  </option>,
+                                  <option key="number" value="number">
+                                    数値
+                                  </option>,
+                                  <option key="phone" value="phone">
+                                    電話番号
+                                  </option>,
+                                  <option key="custom" value="custom">
+                                    カスタム
+                                  </option>,
+                                ];
+                              }
+                            })()}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 下段: 詳細設定（データタイプ選択の直下） */}
+                    <DataTypeDetailSettings
+                      dataType={column.dataType}
+                      settings={column.settings}
+                      onSettingsChange={(settings: any) =>
+                        handleSettingsChange(column.id, settings)
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="カラム名を入力"
+                      isExpanded={expandedSettings[column.id] || false}
+                      onToggleExpanded={() => toggleSettingsExpanded(column.id)}
                     />
                   </div>
-
-                  {/* データタイプ選択 */}
-                  <div className="w-48">
-                    <select
-                      value={column.dataType}
-                      onChange={e =>
-                        updateColumn(column.id, {
-                          dataType: e.target.value as DataType,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                    >
-                      {Object.entries(DATA_TYPE_CATEGORIES).map(
-                        ([categoryKey, category]) => (
-                          <optgroup
-                            key={categoryKey}
-                            label={`${category.emoji} ${category.label}`}
-                          >
-                            {category.types.map(type => (
-                              <option key={type.value} value={type.value}>
-                                {type.label} - {type.description}
-                              </option>
-                            ))}
-                          </optgroup>
-                        )
-                      )}
-                      {/* Legacy options */}
-                      <optgroup label="🔧 Legacy">
-                        <option value="text">テキスト</option>
-                        <option value="number">数値</option>
-                        <option value="phone">電話番号</option>
-                        <option value="custom">カスタム</option>
-                      </optgroup>
-                    </select>
-                  </div>
-
-                  {/* 複製ボタン */}
-                  <ActionButton
-                    type="copy"
-                    onClick={() => duplicateColumn(column.id)}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    📋
-                  </ActionButton>
-
-                  {/* 削除ボタン */}
-                  <ActionButton
-                    type="clear"
-                    onClick={() => removeColumn(column.id)}
-                    variant="danger"
-                    size="sm"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </ActionButton>
                 </div>
               ))
           )}
@@ -1796,9 +1982,14 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                           onChange={() => toggleColumnSelection(column.id)}
                           className="mr-2"
                         />
-                        <span className="text-sm">
+                        <span className="text-sm flex items-center gap-2">
                           {column.name} (
                           {getDataTypeInfo(column.dataType)?.label})
+                          {column.required && (
+                            <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                              必須
+                            </span>
+                          )}
                         </span>
                       </label>
                     ))}
@@ -1810,6 +2001,36 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                     <p className="text-sm text-blue-600">
                       {selectedColumns.length}個のカラムが選択されています
                     </p>
+
+                    {/* 選択されたカラムの現在の必須状態を表示 */}
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <h5 className="text-sm font-medium text-gray-700 mb-2">
+                        現在の必須設定状態
+                      </h5>
+                      <div className="space-y-1">
+                        {selectedColumns.map(columnId => {
+                          const column = columns.find(c => c.id === columnId);
+                          if (!column) return null;
+                          return (
+                            <div
+                              key={columnId}
+                              className="flex items-center justify-between text-sm"
+                            >
+                              <span>{column.name}</span>
+                              <span
+                                className={`px-2 py-1 rounded text-xs ${
+                                  column.required
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}
+                              >
+                                {column.required ? '必須' : '任意'}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
 
                     {/* データタイプ変更セクション */}
                     <div className="space-y-3">
@@ -2375,6 +2596,9 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       )}
     </div>
   );
-});
+};
 
+export const CSVTestDataGeneratorV2 = React.memo(
+  CSVTestDataGeneratorV2Component
+);
 export default CSVTestDataGeneratorV2;
