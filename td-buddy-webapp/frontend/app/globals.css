@@ -280,7 +280,7 @@
 
 /* Tipエリア */
 .td-tip-compact {
-  @apply mt-3 pt-3 border-t border-td-primary-150 bg-td-primary-25 -mx-4 px-4 -mb-4 pb-4 rounded-b-lg;
+  @apply mt-3 pt-3 border-t border-td-primary-200 bg-td-primary-50 -mx-4 px-4 -mb-4 pb-4 rounded-b-lg;
 }
 
 .td-tip-text {
@@ -338,7 +338,7 @@
 
 /* 設定項目区切り */
 .td-settings-divider {
-  @apply border-t border-td-primary-150 my-3;
+  @apply border-t border-td-primary-200 my-3;
 }
 
 /* アイコン統一 */
