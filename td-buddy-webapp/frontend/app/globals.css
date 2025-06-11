@@ -21,7 +21,8 @@
 
 /* TDキャラクター用のカスタムアニメーション */
 @keyframes td-wiggle {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(-3deg);
   }
   50% {
@@ -30,7 +31,9 @@
 }
 
 @keyframes td-heartbeat {
-  0%, 50%, 100% {
+  0%,
+  50%,
+  100% {
     transform: scale(1);
   }
   25% {
@@ -42,7 +45,8 @@
 }
 
 @keyframes td-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -51,7 +55,8 @@
 }
 
 @keyframes td-pulse-slow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -182,4 +187,165 @@
 .category-divider::after {
   content: '';
   @apply absolute right-0 top-1/2 transform -translate-y-1/2 w-full h-px bg-gradient-to-r from-gray-300 to-transparent;
-} 
+}
+
+/* === 📐 詳細設定用コンパクトレイアウト（TD Design System v2.0準拠） === */
+
+/* 詳細設定パネル */
+.td-detail-panel {
+  @apply bg-gradient-to-br from-td-primary-50 to-td-secondary-50 rounded-lg border border-td-primary-200 shadow-sm;
+  backdrop-filter: blur(10px);
+}
+
+.td-detail-panel-content {
+  @apply p-4 space-y-4;
+}
+
+/* コンパクト入力フィールド */
+.td-input-compact {
+  @apply px-2 py-1.5 text-sm border border-td-primary-200 rounded-md focus:outline-none focus:ring-1 focus:ring-td-primary-400 focus:border-td-primary-400 transition-colors duration-200 bg-white;
+}
+
+.td-input-compact:hover {
+  @apply border-td-primary-300;
+}
+
+/* コンパクトセレクト */
+.td-select-compact {
+  @apply px-2 py-1.5 text-sm border border-td-primary-200 rounded-md focus:outline-none focus:ring-1 focus:ring-td-primary-400 focus:border-td-primary-400 transition-colors duration-200 bg-white cursor-pointer;
+}
+
+/* コンパクトラベル */
+.td-label-compact {
+  @apply text-xs font-medium text-td-gray-700 mb-1 flex items-center gap-1;
+}
+
+/* 設定グリッドレイアウト */
+.td-settings-grid {
+  @apply grid gap-3;
+}
+
+/* レスポンシブグリッド: モバイル→タブレット→デスクトップ */
+.td-settings-grid-1 {
+  @apply grid-cols-1;
+}
+
+.td-settings-grid-2 {
+  @apply grid-cols-1 md:grid-cols-2;
+}
+
+.td-settings-grid-3 {
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+}
+
+.td-settings-grid-4 {
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
+}
+
+/* 設定行レイアウト */
+.td-settings-row {
+  @apply flex items-center gap-3 flex-wrap;
+}
+
+.td-settings-row-2 {
+  @apply flex items-center gap-3 justify-between;
+}
+
+/* チェックボックス改善 */
+.td-checkbox-compact {
+  @apply flex items-center gap-2 text-sm text-td-gray-700;
+}
+
+.td-checkbox-compact input {
+  @apply w-4 h-4 text-td-primary-500 border-td-primary-300 rounded focus:ring-td-primary-400 focus:ring-1;
+}
+
+/* フィールドグループ */
+.td-field-group {
+  @apply space-y-1.5;
+}
+
+.td-field-group-inline {
+  @apply flex items-end gap-2;
+}
+
+/* 設定ヘッダー */
+.td-settings-header {
+  @apply flex items-center justify-between py-2 border-b border-td-primary-200 mb-3;
+}
+
+.td-settings-title {
+  @apply text-sm font-medium text-td-gray-800 flex items-center gap-2;
+}
+
+/* Tipエリア */
+.td-tip-compact {
+  @apply mt-3 pt-3 border-t border-td-primary-150 bg-td-primary-25 -mx-4 px-4 -mb-4 pb-4 rounded-b-lg;
+}
+
+.td-tip-text {
+  @apply text-xs text-td-gray-600 flex items-center gap-1;
+}
+
+/* アニメーション効果 */
+.td-slide-down {
+  @apply transform transition-all duration-200 ease-out;
+}
+
+.td-slide-down.expanded {
+  @apply translate-y-0 opacity-100;
+}
+
+.td-slide-down.collapsed {
+  @apply -translate-y-2 opacity-0 max-h-0 overflow-hidden;
+}
+
+/* ホバー効果統一 */
+.td-hover-lift {
+  @apply transition-transform duration-200 hover:transform hover:-translate-y-0.5;
+}
+
+/* フォーカス効果統一 */
+.td-focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-td-primary-400 focus:ring-opacity-50;
+}
+
+/* レスポンシブ表示制御 */
+.td-mobile-only {
+  @apply block md:hidden;
+}
+
+.td-desktop-only {
+  @apply hidden md:block;
+}
+
+.td-tablet-up {
+  @apply hidden md:block;
+}
+
+/* 詳細設定特化型レイアウト */
+.td-detail-layout-compact {
+  @apply grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2;
+}
+
+.td-detail-layout-horizontal {
+  @apply flex flex-wrap items-end gap-3;
+}
+
+.td-detail-layout-stacked {
+  @apply space-y-2;
+}
+
+/* 設定項目区切り */
+.td-settings-divider {
+  @apply border-t border-td-primary-150 my-3;
+}
+
+/* アイコン統一 */
+.td-icon-compact {
+  @apply w-4 h-4 text-td-primary-400;
+}
+
+.td-icon-info {
+  @apply w-3 h-3 text-td-gray-400 hover:text-td-primary-500 transition-colors cursor-help;
+}

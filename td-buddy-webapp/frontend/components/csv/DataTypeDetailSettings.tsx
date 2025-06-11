@@ -13,7 +13,15 @@ import {
 } from '../../types/csv-detailed-settings';
 import { SETTING_TOOLTIPS } from '../../types/csv-setting-tooltips';
 import { Button } from '../ui/Button';
-import { LabelWithTooltip } from '../ui/Tooltip';
+import {
+  CompactCheckbox,
+  CompactDivider,
+  CompactInput,
+  CompactLayout,
+  CompactPanel,
+  CompactRow,
+  CompactSelect,
+} from '../ui/CompactForm';
 
 interface DataTypeDetailSettingsProps {
   dataType: string;
@@ -30,134 +38,42 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
   isExpanded,
   onToggleExpanded,
 }) => {
-  // 設定値を更新する共通関数
+  // 設定更新ヘルパー
   const updateSetting = (key: string, value: any) => {
-    onSettingsChange({
-      ...settings,
-      [key]: value,
-    });
+    onSettingsChange({ ...settings, [key]: value });
   };
 
-  // 共通の入力フィールドコンポーネント（ツールチップ対応）
-  const InputField = ({
-    label,
-    tooltip,
-    tooltipPosition = 'auto',
-    type = 'text',
-    value,
-    onChange,
-    required = false,
-    ...props
-  }: any) => (
-    <div className="space-y-1">
-      <LabelWithTooltip
-        label={label}
-        tooltip={tooltip}
-        required={required}
-        tooltipPosition={tooltipPosition}
-      />
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className="w-full px-2 py-1 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-        {...props}
-      />
-    </div>
-  );
-
-  // 共通のセレクトコンポーネント（ツールチップ対応）
-  const SelectField = ({
-    label,
-    tooltip,
-    tooltipPosition = 'auto',
-    value,
-    onChange,
-    options,
-    required = false,
-    ...props
-  }: any) => (
-    <div className="space-y-1">
-      <LabelWithTooltip
-        label={label}
-        tooltip={tooltip}
-        required={required}
-        tooltipPosition={tooltipPosition}
-      />
-      <select
-        value={value}
-        onChange={onChange}
-        className="w-full px-2 py-1 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-        {...props}
-      >
-        {options.map((option: any) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-
-  // 共通のチェックボックスコンポーネント（ツールチップ対応）
-  const CheckboxField = ({
-    label,
-    tooltip,
-    tooltipPosition = 'auto',
-    checked,
-    onChange,
-  }: any) => (
-    <div className="flex items-center space-x-2">
-      <label className="flex items-center space-x-2 text-xs text-gray-700 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={onChange}
-          className="w-3 h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-        />
-        <span>{label}</span>
-      </label>
-      <LabelWithTooltip
-        label=""
-        tooltip={tooltip}
-        tooltipPosition={tooltipPosition}
-      />
-    </div>
-  );
-
-  // 数値範囲設定コンポーネント（改善版・ツールチップ対応）
+  // 数値範囲設定コンポーネント（コンパクト版）
   const NumberRangeSettings = ({
     settings,
   }: {
     settings: RandomNumberSettings;
   }) => (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <InputField
-          label="最小値"
-          tooltip={SETTING_TOOLTIPS.numberRange.min}
-          tooltipPosition="top"
-          type="number"
-          value={settings.min}
-          onChange={(e: any) =>
-            updateSetting('min', parseInt(e.target.value) || 0)
-          }
-          required
-        />
-        <InputField
-          label="最大値"
-          tooltip={SETTING_TOOLTIPS.numberRange.max}
-          tooltipPosition="top"
-          type="number"
-          value={settings.max}
-          onChange={(e: any) =>
-            updateSetting('max', parseInt(e.target.value) || 100)
-          }
-          required
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <CheckboxField
+    <CompactLayout type="horizontal">
+      <CompactInput
+        label="最小値"
+        tooltip={SETTING_TOOLTIPS.numberRange.min}
+        tooltipPosition="top"
+        type="number"
+        value={settings.min}
+        onChange={(e: any) =>
+          updateSetting('min', parseInt(e.target.value) || 0)
+        }
+        required
+      />
+      <CompactInput
+        label="最大値"
+        tooltip={SETTING_TOOLTIPS.numberRange.max}
+        tooltipPosition="top"
+        type="number"
+        value={settings.max}
+        onChange={(e: any) =>
+          updateSetting('max', parseInt(e.target.value) || 100)
+        }
+        required
+      />
+      <CompactRow justify="start">
+        <CompactCheckbox
           label="整数のみ"
           tooltip={SETTING_TOOLTIPS.numberRange.isInteger}
           tooltipPosition="bottom"
@@ -165,107 +81,96 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
           onChange={(e: any) => updateSetting('isInteger', e.target.checked)}
         />
         {!settings.isInteger && (
-          <div className="w-24">
-            <InputField
-              label="小数桁"
-              tooltip={SETTING_TOOLTIPS.numberRange.decimals}
-              tooltipPosition="bottom"
-              type="number"
-              min="0"
-              max="10"
-              value={settings.decimals || 2}
-              onChange={(e: any) =>
-                updateSetting('decimals', parseInt(e.target.value) || 2)
-              }
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  // テキスト設定コンポーネント（改善版・ツールチップ対応）
-  const TextSettingsComponent = ({ settings }: { settings: TextSettings }) => (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <InputField
-          label="最小単語数"
-          tooltip={SETTING_TOOLTIPS.text.minWords}
-          tooltipPosition="top"
-          type="number"
-          min="1"
-          value={settings.minWords}
-          onChange={(e: any) =>
-            updateSetting('minWords', parseInt(e.target.value) || 1)
-          }
-          required
-        />
-        <InputField
-          label="最大単語数"
-          tooltip={SETTING_TOOLTIPS.text.maxWords}
-          tooltipPosition="top"
-          type="number"
-          min="1"
-          value={settings.maxWords}
-          onChange={(e: any) =>
-            updateSetting('maxWords', parseInt(e.target.value) || 5)
-          }
-          required
-        />
-      </div>
-      <div className="flex items-center space-x-4">
-        <div className="flex-1">
-          <SelectField
-            label="言語"
-            tooltip={SETTING_TOOLTIPS.text.language}
+          <CompactInput
+            label="小数桁"
+            tooltip={SETTING_TOOLTIPS.numberRange.decimals}
             tooltipPosition="bottom"
-            value={settings.language}
-            onChange={(e: any) => updateSetting('language', e.target.value)}
-            options={[
-              { value: 'ja', label: '日本語' },
-              { value: 'en', label: '英語' },
-              { value: 'mixed', label: '混合' },
-            ]}
-          />
-        </div>
-        <div className="pt-5">
-          <CheckboxField
-            label="絵文字含む"
-            tooltip={SETTING_TOOLTIPS.text.includeEmoji}
-            tooltipPosition="bottom"
-            checked={settings.includeEmoji}
+            type="number"
+            min="0"
+            max="10"
+            value={settings.decimals || 2}
             onChange={(e: any) =>
-              updateSetting('includeEmoji', e.target.checked)
+              updateSetting('decimals', parseInt(e.target.value) || 2)
             }
+            className="w-20"
           />
-        </div>
-      </div>
-    </div>
+        )}
+      </CompactRow>
+    </CompactLayout>
   );
 
-  // 電話番号設定コンポーネント（改善版・ツールチップ対応）
+  // テキスト設定コンポーネント（コンパクト版）
+  const TextSettingsComponent = ({ settings }: { settings: TextSettings }) => (
+    <CompactLayout type="horizontal">
+      <CompactInput
+        label="最小単語数"
+        tooltip={SETTING_TOOLTIPS.text.minWords}
+        tooltipPosition="top"
+        type="number"
+        min="1"
+        value={settings.minWords}
+        onChange={(e: any) =>
+          updateSetting('minWords', parseInt(e.target.value) || 1)
+        }
+        required
+      />
+      <CompactInput
+        label="最大単語数"
+        tooltip={SETTING_TOOLTIPS.text.maxWords}
+        tooltipPosition="top"
+        type="number"
+        min="1"
+        value={settings.maxWords}
+        onChange={(e: any) =>
+          updateSetting('maxWords', parseInt(e.target.value) || 5)
+        }
+        required
+      />
+      <CompactRow>
+        <CompactSelect
+          label="言語"
+          tooltip={SETTING_TOOLTIPS.text.language}
+          tooltipPosition="bottom"
+          value={settings.language}
+          onChange={(e: any) => updateSetting('language', e.target.value)}
+          options={[
+            { value: 'ja', label: '日本語' },
+            { value: 'en', label: '英語' },
+            { value: 'mixed', label: '混合' },
+          ]}
+        />
+        <CompactCheckbox
+          label="絵文字含む"
+          tooltip={SETTING_TOOLTIPS.text.includeEmoji}
+          tooltipPosition="bottom"
+          checked={settings.includeEmoji}
+          onChange={(e: any) => updateSetting('includeEmoji', e.target.checked)}
+        />
+      </CompactRow>
+    </CompactLayout>
+  );
+
+  // 電話番号設定コンポーネント（コンパクト版）
   const PhoneSettingsComponent = ({
     settings,
   }: {
     settings: PhoneNumberSettings;
   }) => (
-    <div className="space-y-3">
-      <div className="grid grid-cols-1">
-        <SelectField
-          label="形式"
-          tooltip={SETTING_TOOLTIPS.phone.format}
-          tooltipPosition="top"
-          value={settings.format}
-          onChange={(e: any) => updateSetting('format', e.target.value)}
-          options={[
-            { value: 'mobile', label: '携帯電話' },
-            { value: 'landline', label: '固定電話' },
-            { value: 'toll-free', label: 'フリーダイヤル' },
-          ]}
-        />
-      </div>
-      <div className="flex items-center justify-between space-x-4">
-        <CheckboxField
+    <CompactLayout type="horizontal">
+      <CompactSelect
+        label="形式"
+        tooltip={SETTING_TOOLTIPS.phone.format}
+        tooltipPosition="top"
+        value={settings.format}
+        onChange={(e: any) => updateSetting('format', e.target.value)}
+        options={[
+          { value: 'mobile', label: '携帯電話' },
+          { value: 'landline', label: '固定電話' },
+          { value: 'toll-free', label: 'フリーダイヤル' },
+        ]}
+      />
+      <CompactRow>
+        <CompactCheckbox
           label="ハイフン付き"
           tooltip={SETTING_TOOLTIPS.phone.includeHyphen}
           tooltipPosition="bottom"
@@ -274,7 +179,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
             updateSetting('includeHyphen', e.target.checked)
           }
         />
-        <CheckboxField
+        <CompactCheckbox
           label="数字を含める"
           tooltip={SETTING_TOOLTIPS.phone.includeNumbers}
           tooltipPosition="bottom"
@@ -283,256 +188,241 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
             updateSetting('includeNumbers', e.target.checked)
           }
         />
-      </div>
-    </div>
+      </CompactRow>
+    </CompactLayout>
   );
 
-  // メール設定コンポーネント（改善版・ツールチップ対応）
+  // メール設定コンポーネント（コンパクト版）
   const EmailSettingsComponent = ({
     settings,
   }: {
     settings: EmailSettings;
   }) => (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <InputField
-          label="ドメイン"
-          tooltip={SETTING_TOOLTIPS.email.domain}
-          tooltipPosition="top"
-          value={settings.domain}
-          onChange={(e: any) => updateSetting('domain', e.target.value)}
-          placeholder="example.com"
-        />
-        <SelectField
-          label="形式"
-          tooltip={SETTING_TOOLTIPS.email.format}
-          tooltipPosition="top"
-          value={settings.format}
-          onChange={(e: any) => updateSetting('format', e.target.value)}
-          options={[
-            { value: 'business', label: 'ビジネス用' },
-            { value: 'personal', label: '個人用' },
-            { value: 'random', label: 'ランダム' },
-          ]}
-        />
-      </div>
-      <div className="flex items-center justify-center">
-        <CheckboxField
-          label="数字を含める"
-          tooltip={SETTING_TOOLTIPS.email.includeNumbers}
-          tooltipPosition="bottom"
-          checked={settings.includeNumbers}
-          onChange={(e: any) =>
-            updateSetting('includeNumbers', e.target.checked)
-          }
-        />
-      </div>
-    </div>
+    <CompactLayout type="horizontal">
+      <CompactInput
+        label="ドメイン"
+        tooltip={SETTING_TOOLTIPS.email.domain}
+        tooltipPosition="top"
+        value={settings.domain || ''}
+        onChange={(e: any) => updateSetting('domain', e.target.value)}
+        placeholder="example.com"
+      />
+      <CompactSelect
+        label="形式"
+        tooltip={SETTING_TOOLTIPS.email.format}
+        tooltipPosition="top"
+        value={settings.format}
+        onChange={(e: any) => updateSetting('format', e.target.value)}
+        options={[
+          { value: 'business', label: 'ビジネス用' },
+          { value: 'personal', label: '個人用' },
+          { value: 'random', label: 'ランダム' },
+        ]}
+      />
+      <CompactCheckbox
+        label="数字を含める"
+        tooltip={SETTING_TOOLTIPS.email.includeNumbers}
+        tooltipPosition="bottom"
+        checked={settings.includeNumbers}
+        onChange={(e: any) => updateSetting('includeNumbers', e.target.checked)}
+      />
+    </CompactLayout>
   );
 
-  // 日時設定コンポーネント（改善版・ツールチップ対応）
+  // 日時設定コンポーネント（コンパクト版）
   const DateTimeSettingsComponent = ({
     settings,
   }: {
     settings: DateTimeSettings;
   }) => (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <InputField
-          label="開始日"
-          tooltip={SETTING_TOOLTIPS.dateTime.startDate}
-          tooltipPosition="top"
-          type="date"
-          value={settings.startDate}
-          onChange={(e: any) => updateSetting('startDate', e.target.value)}
-          required
+    <CompactLayout type="horizontal">
+      <CompactInput
+        label="開始日"
+        tooltip={SETTING_TOOLTIPS.dateTime.startDate}
+        tooltipPosition="top"
+        type="date"
+        value={settings.startDate}
+        onChange={(e: any) => updateSetting('startDate', e.target.value)}
+        required
+      />
+      <CompactInput
+        label="終了日"
+        tooltip={SETTING_TOOLTIPS.dateTime.endDate}
+        tooltipPosition="top"
+        type="date"
+        value={settings.endDate}
+        onChange={(e: any) => updateSetting('endDate', e.target.value)}
+        required
+      />
+      <CompactRow>
+        <CompactSelect
+          label="フォーマット"
+          tooltip={SETTING_TOOLTIPS.dateTime.format}
+          tooltipPosition="bottom"
+          value={settings.format}
+          onChange={(e: any) => updateSetting('format', e.target.value)}
+          options={[
+            { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
+            { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
+            { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY' },
+            { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
+          ]}
         />
-        <InputField
-          label="終了日"
-          tooltip={SETTING_TOOLTIPS.dateTime.endDate}
-          tooltipPosition="top"
-          type="date"
-          value={settings.endDate}
-          onChange={(e: any) => updateSetting('endDate', e.target.value)}
-          required
+        <CompactCheckbox
+          label="時刻含む"
+          tooltip={SETTING_TOOLTIPS.dateTime.includeTime}
+          tooltipPosition="bottom"
+          checked={settings.includeTime}
+          onChange={(e: any) => updateSetting('includeTime', e.target.checked)}
         />
-      </div>
-      <div className="flex items-center space-x-4">
-        <div className="flex-1">
-          <SelectField
-            label="フォーマット"
-            tooltip={SETTING_TOOLTIPS.dateTime.format}
-            tooltipPosition="bottom"
-            value={settings.format}
-            onChange={(e: any) => updateSetting('format', e.target.value)}
-            options={[
-              { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
-              { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
-              { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY' },
-              { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
-            ]}
-          />
-        </div>
-        <div className="pt-5">
-          <CheckboxField
-            label="時刻含む"
-            tooltip={SETTING_TOOLTIPS.dateTime.includeTime}
-            tooltipPosition="bottom"
-            checked={settings.includeTime}
-            onChange={(e: any) =>
-              updateSetting('includeTime', e.target.checked)
-            }
-          />
-        </div>
-      </div>
-    </div>
+      </CompactRow>
+    </CompactLayout>
   );
 
-  // 連番設定コンポーネント（改善版・ツールチップ対応）
+  // 連番設定コンポーネント（コンパクト版）
   const AutoIncrementSettingsComponent = ({
     settings,
   }: {
     settings: AutoIncrementSettings;
   }) => (
-    <div className="space-y-3">
-      <div className="grid grid-cols-3 gap-3">
-        <InputField
-          label="開始値"
-          tooltip={SETTING_TOOLTIPS.autoIncrement.start}
-          tooltipPosition="top"
-          type="number"
-          value={settings.start}
-          onChange={(e: any) =>
-            updateSetting('start', parseInt(e.target.value) || 1)
-          }
-          required
-        />
-        <InputField
-          label="増分"
-          tooltip={SETTING_TOOLTIPS.autoIncrement.step}
-          tooltipPosition="top"
-          type="number"
-          min="1"
-          value={settings.step}
-          onChange={(e: any) =>
-            updateSetting('step', parseInt(e.target.value) || 1)
-          }
-          required
-        />
-        <InputField
-          label="ゼロパディング"
-          tooltip={SETTING_TOOLTIPS.autoIncrement.padding}
-          tooltipPosition="top"
-          type="number"
-          min="0"
-          max="10"
-          value={settings.padding}
-          onChange={(e: any) =>
-            updateSetting('padding', parseInt(e.target.value) || 0)
-          }
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <InputField
+    <CompactLayout type="horizontal">
+      <CompactInput
+        label="開始値"
+        tooltip={SETTING_TOOLTIPS.autoIncrement.start}
+        tooltipPosition="top"
+        type="number"
+        value={settings.start}
+        onChange={(e: any) =>
+          updateSetting('start', parseInt(e.target.value) || 1)
+        }
+        required
+      />
+      <CompactInput
+        label="増分"
+        tooltip={SETTING_TOOLTIPS.autoIncrement.step}
+        tooltipPosition="top"
+        type="number"
+        min="1"
+        value={settings.step}
+        onChange={(e: any) =>
+          updateSetting('step', parseInt(e.target.value) || 1)
+        }
+        required
+      />
+      <CompactInput
+        label="ゼロパディング"
+        tooltip={SETTING_TOOLTIPS.autoIncrement.padding}
+        tooltipPosition="top"
+        type="number"
+        min="0"
+        max="10"
+        value={settings.padding}
+        onChange={(e: any) =>
+          updateSetting('padding', parseInt(e.target.value) || 0)
+        }
+      />
+      <CompactDivider />
+      <CompactRow>
+        <CompactInput
           label="プレフィックス"
           tooltip={SETTING_TOOLTIPS.autoIncrement.prefix}
           tooltipPosition="bottom"
-          value={settings.prefix}
+          value={settings.prefix || ''}
           onChange={(e: any) => updateSetting('prefix', e.target.value)}
           placeholder="USER"
         />
-        <InputField
+        <CompactInput
           label="サフィックス"
           tooltip={SETTING_TOOLTIPS.autoIncrement.suffix}
           tooltipPosition="bottom"
-          value={settings.suffix}
+          value={settings.suffix || ''}
           onChange={(e: any) => updateSetting('suffix', e.target.value)}
           placeholder="_ID"
         />
-      </div>
-    </div>
+      </CompactRow>
+    </CompactLayout>
   );
 
+  // 設定コンポーネントの決定
   const renderSettingsComponent = () => {
-    const currentSettings = settings || DEFAULT_SETTINGS[dataType] || {};
+    const currentSettings = {
+      ...DEFAULT_SETTINGS[dataType as keyof typeof DEFAULT_SETTINGS],
+      ...settings,
+    };
 
     switch (dataType) {
-      case 'randomNumber':
-        return <NumberRangeSettings settings={currentSettings} />;
-      case 'words':
-      case 'sentences':
-      case 'paragraphs':
-        return <TextSettingsComponent settings={currentSettings} />;
-      case 'phoneNumber':
-        return <PhoneSettingsComponent settings={currentSettings} />;
+      case 'random_number':
+        return (
+          <NumberRangeSettings
+            settings={currentSettings as RandomNumberSettings}
+          />
+        );
+      case 'text':
+        return (
+          <TextSettingsComponent settings={currentSettings as TextSettings} />
+        );
+      case 'phone_number':
+        return (
+          <PhoneSettingsComponent
+            settings={currentSettings as PhoneNumberSettings}
+          />
+        );
       case 'email':
-        return <EmailSettingsComponent settings={currentSettings} />;
-      case 'dateTime':
-      case 'date':
-        return <DateTimeSettingsComponent settings={currentSettings} />;
-      case 'autoIncrement':
-        return <AutoIncrementSettingsComponent settings={currentSettings} />;
+        return (
+          <EmailSettingsComponent settings={currentSettings as EmailSettings} />
+        );
+      case 'datetime':
+        return (
+          <DateTimeSettingsComponent
+            settings={currentSettings as DateTimeSettings}
+          />
+        );
+      case 'auto_increment':
+        return (
+          <AutoIncrementSettingsComponent
+            settings={currentSettings as AutoIncrementSettings}
+          />
+        );
       default:
-        return null;
+        return (
+          <div className="text-sm text-td-gray-500 text-center py-4">
+            📝 このデータタイプの詳細設定はまだ用意されていません
+          </div>
+        );
     }
   };
 
-  const hasSettings = [
-    'randomNumber',
-    'words',
-    'sentences',
-    'paragraphs',
-    'phoneNumber',
-    'email',
-    'dateTime',
-    'date',
-    'autoIncrement',
-  ].includes(dataType);
-
-  if (!hasSettings) {
-    return (
-      <div className="text-xs text-gray-500 italic pl-2">
-        💡 このデータタイプには詳細設定はありません
-      </div>
-    );
-  }
-
   return (
-    <div>
+    <div className="td-slide-down">
+      {/* 詳細設定トグルボタン */}
       <Button
-        onClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
-          onToggleExpanded();
-        }}
+        onClick={onToggleExpanded}
         variant="ghost"
         size="sm"
-        className="flex items-center gap-1 text-xs text-gray-600 hover:text-blue-600 p-1 h-auto"
+        className="mt-2 w-full text-xs td-button border-td-primary-200 hover:bg-td-primary-50"
       >
-        <Settings className="w-3 h-3" />
-        <span>詳細設定</span>
+        <Settings className="w-3 h-3 mr-1" />
+        詳細設定
         {isExpanded ? (
-          <ChevronUp className="w-3 h-3" />
+          <ChevronUp className="w-3 h-3 ml-1" />
         ) : (
-          <ChevronDown className="w-3 h-3" />
+          <ChevronDown className="w-3 h-3 ml-1" />
         )}
       </Button>
 
+      {/* 詳細設定パネル */}
       <div
         className={`overflow-visible transition-all duration-200 ease-in-out ${
-          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-64 opacity-100 mt-2' : 'max-h-0 opacity-0'
         }`}
       >
         {isExpanded && (
-          <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
-            <div className="space-y-3">{renderSettingsComponent()}</div>
-            <div className="mt-4 pt-3 border-t border-gray-300">
-              <p className="text-xs text-gray-500 flex items-center gap-1">
-                💡 <span className="font-medium">TDからのTip:</span>
-                設定項目のインフォマーク（ℹ️）にホバーすると詳しい説明が表示されます
-              </p>
-            </div>
-          </div>
+          <CompactPanel
+            showTip={true}
+            tipText="設定項目のインフォマーク（ℹ️）にホバーすると詳しい説明が表示されます"
+          >
+            {renderSettingsComponent()}
+          </CompactPanel>
         )}
       </div>
     </div>
