@@ -4,19 +4,20 @@ import Link from 'next/link';
 
 import './globals.css';
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
 });
 
-const notoSansJP = Noto_Sans_JP({ 
+const notoSansJP = Noto_Sans_JP({
   subsets: ['latin'],
   variable: '--font-noto-sans-jp',
 });
 
 export const metadata: Metadata = {
   title: 'TestData Buddy - AI連携型テストデータ生成ツール',
-  description: 'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
+  description:
+    'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
   keywords: ['テストデータ', 'QA', 'AI', 'データ生成', 'パスワード生成'],
   authors: [{ name: 'TD Team' }],
   icons: {
@@ -39,7 +40,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className="h-full">
-      <body 
+      <head>
+        <link
+          rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>"
+        />
+      </head>
+      <body
         className={`
           ${inter.variable} 
           ${notoSansJP.variable} 
@@ -56,68 +63,67 @@ export default function RootLayout({
           <header className="bg-white shadow-sm border-b border-td-primary-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center h-16">
-                <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                <Link
+                  href="/"
+                  className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                >
                   <div className="text-2xl">🤖</div>
                   <h1 className="text-xl font-bold text-td-primary-800">
                     TestData Buddy
                   </h1>
                 </Link>
-                
+
                 {/* ナビゲーションメニュー */}
                 <nav className="hidden md:flex items-center space-x-6">
-                  <Link 
-                    href="/personal" 
+                  <Link
+                    href="/personal"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors"
                   >
                     個人情報生成
                   </Link>
-                  <Link 
-                    href="/uuid" 
+                  <Link
+                    href="/uuid"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
                   >
                     <span>🆔</span>
                     UUID生成
                   </Link>
-                  <Link 
-                    href="/data-selector" 
+                  <Link
+                    href="/data-selector"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
                   >
                     <span>🎯</span>
                     データ選択
                   </Link>
-                  <Link 
-                    href="/practical-data" 
+                  <Link
+                    href="/practical-data"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
                   >
                     <span>📋</span>
                     実用データ
                   </Link>
-                  <Link 
-                    href="/ai-chat" 
+                  <Link
+                    href="/ai-chat"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
                   >
                     <span>🧠</span>
                     AI チャット
                   </Link>
-                  <Link 
-                    href="/password" 
+                  <Link
+                    href="/password"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors"
                   >
                     パスワード生成
                   </Link>
                 </nav>
-                
-                <div className="text-sm text-td-primary-600">
-                  Version 1.0.0
-                </div>
+
+                <div className="text-sm text-td-primary-600">Version 1.0.0</div>
               </div>
             </div>
           </header>
 
           {/* メインコンテンツ */}
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
 
           {/* フッター */}
           <footer className="bg-td-primary-800 text-white py-4">
@@ -128,9 +134,7 @@ export default function RootLayout({
             </div>
           </footer>
         </div>
-
-
       </body>
     </html>
   );
-} 
+}
