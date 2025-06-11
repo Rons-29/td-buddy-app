@@ -294,6 +294,123 @@ const CSV_PRESETS = [
       { dataType: 'date' as DataType, name: 'hire_date' },
     ],
   },
+  {
+    id: 'order_data',
+    name: '🛒 注文データ',
+    description: 'ECサイト・注文管理システム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'order_id' },
+      { dataType: 'randomNumber' as DataType, name: 'customer_id' },
+      { dataType: 'words' as DataType, name: 'product_name' },
+      { dataType: 'randomNumber' as DataType, name: 'quantity' },
+      { dataType: 'randomNumber' as DataType, name: 'price' },
+      { dataType: 'dateTime' as DataType, name: 'order_date' },
+    ],
+  },
+  {
+    id: 'blog_post',
+    name: '📝 ブログ記事',
+    description: 'CMS・ブログシステム用のコンテンツデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'post_id' },
+      { dataType: 'sentences' as DataType, name: 'title' },
+      { dataType: 'paragraphs' as DataType, name: 'content' },
+      { dataType: 'username' as DataType, name: 'author' },
+      { dataType: 'words' as DataType, name: 'category' },
+      { dataType: 'dateTime' as DataType, name: 'published_at' },
+    ],
+  },
+  {
+    id: 'iot_sensor',
+    name: '📡 IoTセンサー',
+    description: 'IoT・センサーデータ監視システム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'sensor_id' },
+      { dataType: 'words' as DataType, name: 'device_name' },
+      { dataType: 'randomNumber' as DataType, name: 'temperature' },
+      { dataType: 'randomNumber' as DataType, name: 'humidity' },
+      { dataType: 'ipAddress' as DataType, name: 'device_ip' },
+      { dataType: 'dateTime' as DataType, name: 'recorded_at' },
+    ],
+  },
+  {
+    id: 'event_tickets',
+    name: '🎫 イベントチケット',
+    description: 'イベント管理・チケット販売システム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'ticket_id' },
+      { dataType: 'words' as DataType, name: 'event_name' },
+      { dataType: 'fullName' as DataType, name: 'attendee_name' },
+      { dataType: 'email' as DataType, name: 'attendee_email' },
+      { dataType: 'randomNumber' as DataType, name: 'seat_number' },
+      { dataType: 'date' as DataType, name: 'event_date' },
+    ],
+  },
+  {
+    id: 'financial_data',
+    name: '💰 金融データ',
+    description: '会計・財務管理システム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'transaction_id' },
+      { dataType: 'randomNumber' as DataType, name: 'account_id' },
+      { dataType: 'words' as DataType, name: 'transaction_type' },
+      { dataType: 'randomNumber' as DataType, name: 'amount' },
+      { dataType: 'sentences' as DataType, name: 'description' },
+      { dataType: 'dateTime' as DataType, name: 'created_at' },
+    ],
+  },
+  {
+    id: 'game_scores',
+    name: '🎮 ゲームスコア',
+    description: 'ゲーム・スコア管理システム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'score_id' },
+      { dataType: 'username' as DataType, name: 'player_name' },
+      { dataType: 'words' as DataType, name: 'game_mode' },
+      { dataType: 'randomNumber' as DataType, name: 'score' },
+      { dataType: 'randomNumber' as DataType, name: 'level' },
+      { dataType: 'dateTime' as DataType, name: 'played_at' },
+    ],
+  },
+  {
+    id: 'education_data',
+    name: '🎓 教育データ',
+    description: '学習管理・教育システム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'student_id' },
+      { dataType: 'fullName' as DataType, name: 'student_name' },
+      { dataType: 'words' as DataType, name: 'course_name' },
+      { dataType: 'randomNumber' as DataType, name: 'grade' },
+      { dataType: 'email' as DataType, name: 'student_email' },
+      { dataType: 'date' as DataType, name: 'enrollment_date' },
+    ],
+  },
+  {
+    id: 'social_media',
+    name: '📱 SNS投稿',
+    description: 'ソーシャルメディア・投稿管理システム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'post_id' },
+      { dataType: 'username' as DataType, name: 'username' },
+      { dataType: 'sentences' as DataType, name: 'post_content' },
+      { dataType: 'randomNumber' as DataType, name: 'likes_count' },
+      { dataType: 'randomNumber' as DataType, name: 'shares_count' },
+      { dataType: 'dateTime' as DataType, name: 'posted_at' },
+    ],
+  },
+  {
+    id: 'healthcare_data',
+    name: '🏥 医療データ',
+    description: '医療管理・ヘルスケアシステム用のデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'patient_id' },
+      { dataType: 'fullName' as DataType, name: 'patient_name' },
+      { dataType: 'randomNumber' as DataType, name: 'age' },
+      { dataType: 'words' as DataType, name: 'diagnosis' },
+      { dataType: 'words' as DataType, name: 'treatment' },
+      { dataType: 'date' as DataType, name: 'visit_date' },
+    ],
+  },
 ] as const;
 
 // 日本語データセット
@@ -400,6 +517,67 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
 
   // プリセット機能
   const [showPresets, setShowPresets] = useState(false);
+
+  // ドラッグ&ドロップ状態
+  const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
+  const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
+
+  // ドラッグ&ドロップ処理
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, columnId: string) => {
+      setDraggedColumnId(columnId);
+      e.dataTransfer.effectAllowed = 'move';
+    },
+    []
+  );
+
+  const handleDragEnd = useCallback(() => {
+    setDraggedColumnId(null);
+    setDragOverColumnId(null);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, columnId: string) => {
+    e.preventDefault();
+    setDragOverColumnId(columnId);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetColumnId: string) => {
+      e.preventDefault();
+
+      if (!draggedColumnId || draggedColumnId === targetColumnId) {
+        return;
+      }
+
+      const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+      const draggedIndex = sortedColumns.findIndex(
+        col => col.id === draggedColumnId
+      );
+      const targetIndex = sortedColumns.findIndex(
+        col => col.id === targetColumnId
+      );
+
+      if (draggedIndex === -1 || targetIndex === -1) return;
+
+      // カラムの順序を再配置
+      const newColumns = [...sortedColumns];
+      const [draggedColumn] = newColumns.splice(draggedIndex, 1);
+      newColumns.splice(targetIndex, 0, draggedColumn);
+
+      // order を再設定
+      const updatedColumns = newColumns.map((col, index) => ({
+        ...col,
+        order: index,
+      }));
+
+      setColumns(updatedColumns);
+      setTdMood('success');
+      setTdMessage(
+        '✨ カラムの順序を変更しました！ドラッグ&ドロップ便利ですね♪'
+      );
+    },
+    [draggedColumnId, columns]
+  );
 
   // プリセット適用
   const applyPreset = useCallback((presetId: string) => {
@@ -831,75 +1009,88 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               </p>
             </div>
           ) : (
-            columns.map((column, index) => (
-              <div
-                key={column.id}
-                className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
-              >
-                {/* ドラッグハンドル */}
-                <div className="cursor-move text-gray-400 hover:text-gray-600">
-                  <GripVertical className="h-5 w-5" />
-                </div>
-
-                {/* カラム名入力 */}
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={column.name}
-                    onChange={e =>
-                      updateColumn(column.id, { name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="カラム名を入力"
-                  />
-                </div>
-
-                {/* データタイプ選択 */}
-                <div className="w-48">
-                  <select
-                    value={column.dataType}
-                    onChange={e =>
-                      updateColumn(column.id, {
-                        dataType: e.target.value as DataType,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                  >
-                    {Object.entries(DATA_TYPE_CATEGORIES).map(
-                      ([categoryKey, category]) => (
-                        <optgroup
-                          key={categoryKey}
-                          label={`${category.emoji} ${category.label}`}
-                        >
-                          {category.types.map(type => (
-                            <option key={type.value} value={type.value}>
-                              {type.label} - {type.description}
-                            </option>
-                          ))}
-                        </optgroup>
-                      )
-                    )}
-                    {/* Legacy options */}
-                    <optgroup label="🔧 Legacy">
-                      <option value="text">テキスト</option>
-                      <option value="number">数値</option>
-                      <option value="phone">電話番号</option>
-                      <option value="custom">カスタム</option>
-                    </optgroup>
-                  </select>
-                </div>
-
-                {/* 削除ボタン */}
-                <ActionButton
-                  type="clear"
-                  onClick={() => removeColumn(column.id)}
-                  variant="danger"
-                  size="sm"
+            columns
+              .sort((a, b) => a.order - b.order)
+              .map((column, index) => (
+                <div
+                  key={column.id}
+                  draggable
+                  onDragStart={e => handleDragStart(e, column.id)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={e => handleDragOver(e, column.id)}
+                  onDrop={e => handleDrop(e, column.id)}
+                  className={`flex items-center gap-3 p-4 bg-gray-50 rounded-lg border transition-colors ${
+                    draggedColumnId === column.id
+                      ? 'border-blue-500 bg-blue-50 opacity-50 cursor-move'
+                      : dragOverColumnId === column.id
+                      ? 'border-blue-400 bg-blue-50 cursor-move'
+                      : 'border-gray-200 hover:border-blue-300 cursor-move'
+                  }`}
                 >
-                  <Trash2 className="h-4 w-4" />
-                </ActionButton>
-              </div>
-            ))
+                  {/* ドラッグハンドル */}
+                  <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors">
+                    <GripVertical className="h-5 w-5" />
+                  </div>
+
+                  {/* カラム名入力 */}
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={column.name}
+                      onChange={e =>
+                        updateColumn(column.id, { name: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="カラム名を入力"
+                    />
+                  </div>
+
+                  {/* データタイプ選択 */}
+                  <div className="w-48">
+                    <select
+                      value={column.dataType}
+                      onChange={e =>
+                        updateColumn(column.id, {
+                          dataType: e.target.value as DataType,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    >
+                      {Object.entries(DATA_TYPE_CATEGORIES).map(
+                        ([categoryKey, category]) => (
+                          <optgroup
+                            key={categoryKey}
+                            label={`${category.emoji} ${category.label}`}
+                          >
+                            {category.types.map(type => (
+                              <option key={type.value} value={type.value}>
+                                {type.label} - {type.description}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )
+                      )}
+                      {/* Legacy options */}
+                      <optgroup label="🔧 Legacy">
+                        <option value="text">テキスト</option>
+                        <option value="number">数値</option>
+                        <option value="phone">電話番号</option>
+                        <option value="custom">カスタム</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  {/* 削除ボタン */}
+                  <ActionButton
+                    type="clear"
+                    onClick={() => removeColumn(column.id)}
+                    variant="danger"
+                    size="sm"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </ActionButton>
+                </div>
+              ))
           )}
         </CardContent>
       </Card>
@@ -1090,14 +1281,30 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               <table className="min-w-full table-auto border-collapse">
                 <thead>
                   <tr className="bg-blue-50">
-                    {columns.map(column => (
-                      <th
-                        key={column.id}
-                        className="px-4 py-2 text-left text-sm font-medium text-blue-800 border border-blue-200"
-                      >
-                        {column.name}
-                      </th>
-                    ))}
+                    {columns
+                      .sort((a, b) => a.order - b.order)
+                      .map(column => (
+                        <th
+                          key={column.id}
+                          draggable
+                          onDragStart={e => handleDragStart(e, column.id)}
+                          onDragEnd={handleDragEnd}
+                          onDragOver={e => handleDragOver(e, column.id)}
+                          onDrop={e => handleDrop(e, column.id)}
+                          className={`px-4 py-2 text-left text-sm font-medium text-blue-800 border border-blue-200 cursor-move transition-colors ${
+                            draggedColumnId === column.id
+                              ? 'bg-blue-200 opacity-50'
+                              : dragOverColumnId === column.id
+                              ? 'bg-blue-100'
+                              : 'hover:bg-blue-100'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <GripVertical className="h-3 w-3 text-blue-600" />
+                            {column.name}
+                          </div>
+                        </th>
+                      ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -1106,14 +1313,16 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                       key={row.id}
                       className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
                     >
-                      {columns.map(column => (
-                        <td
-                          key={column.id}
-                          className="px-4 py-2 text-sm text-gray-700 border border-gray-200"
-                        >
-                          {row.data[column.name]}
-                        </td>
-                      ))}
+                      {columns
+                        .sort((a, b) => a.order - b.order)
+                        .map(column => (
+                          <td
+                            key={column.id}
+                            className="px-4 py-2 text-sm text-gray-700 border border-gray-200"
+                          >
+                            {row.data[column.name]}
+                          </td>
+                        ))}
                     </tr>
                   ))}
                 </tbody>
