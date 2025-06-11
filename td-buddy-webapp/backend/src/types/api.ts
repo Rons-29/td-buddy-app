@@ -266,7 +266,7 @@ export interface CompositionPasswordRequest {
   count: number;                     // 生成個数 (1-1000)
   
   // 構成プリセット
-  composition: 'none' | 'web-standard' | 'num-upper-lower' | 'high-security' | 'enterprise-policy' | 'num-upper-lower-symbol' | 'custom-symbols' | 'custom-charsets' | 'other';
+  composition: 'none' | 'basic' | 'web-standard' | 'num-upper-lower' | 'high-security' | 'enterprise-policy' | 'num-upper-lower-symbol' | 'custom-symbols' | 'custom-charsets' | 'other';
   
   // カスタム設定（compositionに応じて使用）
   customSymbols?: string;            // カスタム記号

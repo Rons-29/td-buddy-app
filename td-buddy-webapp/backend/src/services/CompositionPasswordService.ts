@@ -1,11 +1,9 @@
 import crypto from 'crypto';
 import { database } from '../database/database';
-import { 
-  CompositionPasswordRequest, 
-  CompositionPasswordResponse, 
-  CustomCharsetRequirement,
-  RequirementSummary,
-  APIResponse
+import {
+    CompositionPasswordRequest,
+    CompositionPasswordResponse,
+    RequirementSummary
 } from '../types/api';
 
 interface CompositionRequirement {
@@ -32,6 +30,16 @@ export class CompositionPasswordService {
   };
 
   private readonly COMPOSITION_PRESETS: Record<string, CompositionDefinition> = {
+    'basic': {
+      id: 'basic',
+      label: '基本',
+      description: '大文字・小文字・数字の基本的な組み合わせ',
+      requirements: [
+        { name: '数字', charset: '0123456789', min: 1 },
+        { name: '大文字', charset: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', min: 1 },
+        { name: '小文字', charset: 'abcdefghijklmnopqrstuvwxyz', min: 1 }
+      ]
+    },
     'web-standard': {
       id: 'web-standard',
       label: 'Web標準',
@@ -193,6 +201,7 @@ export class CompositionPasswordService {
         }
         break;
 
+      case 'basic':
       case 'num-upper-lower':
       case 'web-standard':
       case 'high-security':
