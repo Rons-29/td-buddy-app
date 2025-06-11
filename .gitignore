@@ -135,3 +135,13 @@ coverage/
 generated-data/
 exports/
 temp-files/ 
+
+# Documentation Strategy: Keep most docs private
+docs/
+*.md
+!README.md
+!CONTRIBUTING.md
+!CHANGELOG.md
+
+# Only essential public docs allowed
+# Everything else stays local for security
