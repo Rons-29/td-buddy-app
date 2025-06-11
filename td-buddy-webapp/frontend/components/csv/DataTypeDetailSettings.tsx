@@ -345,23 +345,37 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
 
   // 設定コンポーネントの決定
   const renderSettingsComponent = () => {
+    // デフォルト設定のキー名マッピング
+    const settingsKey = (() => {
+      switch (dataType) {
+        case 'date':
+        case 'time':
+          return 'dateTime';
+        default:
+          return dataType;
+      }
+    })();
+
     const currentSettings = {
-      ...DEFAULT_SETTINGS[dataType as keyof typeof DEFAULT_SETTINGS],
+      ...DEFAULT_SETTINGS[settingsKey as keyof typeof DEFAULT_SETTINGS],
       ...settings,
     };
 
     switch (dataType) {
-      case 'random_number':
+      case 'randomNumber':
         return (
           <NumberRangeSettings
             settings={currentSettings as RandomNumberSettings}
           />
         );
       case 'text':
+      case 'words':
+      case 'sentences':
+      case 'paragraphs':
         return (
           <TextSettingsComponent settings={currentSettings as TextSettings} />
         );
-      case 'phone_number':
+      case 'phoneNumber':
         return (
           <PhoneSettingsComponent
             settings={currentSettings as PhoneNumberSettings}
@@ -371,13 +385,15 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         return (
           <EmailSettingsComponent settings={currentSettings as EmailSettings} />
         );
-      case 'datetime':
+      case 'dateTime':
+      case 'date':
+      case 'time':
         return (
           <DateTimeSettingsComponent
             settings={currentSettings as DateTimeSettings}
           />
         );
-      case 'auto_increment':
+      case 'autoIncrement':
         return (
           <AutoIncrementSettingsComponent
             settings={currentSettings as AutoIncrementSettings}
@@ -387,6 +403,9 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         return (
           <div className="text-sm text-td-gray-500 text-center py-4">
             📝 このデータタイプの詳細設定はまだ用意されていません
+            <div className="text-xs text-td-gray-400 mt-1">
+              データタイプ: {dataType}
+            </div>
           </div>
         );
     }
