@@ -1,8 +1,8 @@
 'use client';
 
-import { Calendar, Clock, Copy, Download, Globe, HelpCircle, RefreshCw, Settings, Users } from 'lucide-react';
+import { Calendar, Copy, Download, Globe, HelpCircle, RefreshCw, Settings, Users } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { TimeZoneInfo, WorldTimeComparator, WorldTimeComparison } from '../utils/worldTimeComparator';
+import { RegionConfig, TimeZoneInfo, WorldTimeComparator, WorldTimeComparison } from '../utils/worldTimeComparator';
 import { Button } from './ui/Button';
 
 // 型定義
@@ -35,6 +35,11 @@ const DateTimeGenerator: React.FC = () => {
   const [selectedTimezones, setSelectedTimezones] = useState<string[]>(['Asia/Tokyo', 'America/New_York', 'Europe/London']);
   const [currentTime, setCurrentTime] = useState(new Date());
   
+  // リージョン選択関連の状態
+  const [selectedRegion, setSelectedRegion] = useState('all');
+  const [availableRegions, setAvailableRegions] = useState<RegionConfig[]>([]);
+  const [customTime, setCustomTime] = useState('');
+
   // TDキャラクター状態
   const [tdMessage, setTdMessage] = useState('日付・時刻データ生成の準備完了です！設定を調整するか、世界時間比較をお試しください♪');
 
@@ -57,29 +62,74 @@ const DateTimeGenerator: React.FC = () => {
     { value: 'Asia/Shanghai', label: '中国標準時 (CST)' }
   ];
 
-  // リアルタイム更新
+  // リージョンデータの初期化
+  useEffect(() => {
+    const regions = WorldTimeComparator.getAvailableRegions();
+    setAvailableRegions(regions);
+  }, []);
+
+  // 世界時間比較の更新（リージョン対応）
+  const updateWorldTimeComparison = useCallback((time: Date) => {
+    const comparison = WorldTimeComparator.compareWorldTimesByRegion(
+      time, 
+      settings.timezone,
+      selectedRegion
+    );
+    setWorldTimeComparison(comparison);
+  }, [settings.timezone, selectedRegion]);
+
+  // リアルタイム更新（リージョン対応）
   useEffect(() => {
     if (showWorldClock) {
       const interval = setInterval(() => {
         const now = new Date();
         setCurrentTime(now);
-        const comparison = WorldTimeComparator.compareWorldTimes(now, settings.timezone);
-        setWorldTimeComparison(comparison);
+        updateWorldTimeComparison(now);
       }, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [showWorldClock, settings.timezone]);
+  }, [showWorldClock, updateWorldTimeComparison]);
 
-  // 世界時間比較の初期化
+  // 世界時間比較の初期化（リージョン対応）
   const initializeWorldClock = useCallback(() => {
     const now = new Date();
     setCurrentTime(now);
-    const comparison = WorldTimeComparator.compareWorldTimes(now, settings.timezone);
-    setWorldTimeComparison(comparison);
+    updateWorldTimeComparison(now);
     setShowWorldClock(true);
     setTdMessage('🌍 世界時間比較を開始しました！リアルタイムで更新されます♪');
-  }, [settings.timezone]);
+  }, [updateWorldTimeComparison]);
+
+  // リージョン変更ハンドラ
+  const handleRegionChange = useCallback((regionId: string) => {
+    setSelectedRegion(regionId);
+    
+    const region = availableRegions.find(r => r.id === regionId);
+    if (region) {
+      setTdMessage(`📍 表示地域を「${region.displayName}」に変更しました - ${region.description}`);
+      
+      if (showWorldClock) {
+        updateWorldTimeComparison(currentTime);
+      }
+    }
+  }, [availableRegions, showWorldClock, currentTime, updateWorldTimeComparison]);
+
+  // カスタム時間での比較
+  const compareCustomTime = useCallback(() => {
+    if (!customTime) {
+      setTdMessage('カスタム時間を入力してください');
+      return;
+    }
+
+    const targetTime = new Date(customTime);
+    if (isNaN(targetTime.getTime())) {
+      setTdMessage('有効な日時を入力してください');
+      return;
+    }
+
+    updateWorldTimeComparison(targetTime);
+    setTdMessage(`🕐 指定時間「${targetTime.toLocaleString('ja-JP')}」での時差比較を表示中`);
+  }, [customTime, updateWorldTimeComparison]);
 
   // 最適な会議時間を提案
   const suggestMeetingTime = useCallback(() => {
@@ -209,7 +259,7 @@ const DateTimeGenerator: React.FC = () => {
                 variant={showWorldClock ? "primary" : "secondary"}
                 size="sm"
               >
-                {showWorldClock ? '世界時計表示中' : '世界時間比較'}
+                {showWorldClock ? '時差確認表示中' : '時差確認・世界時間比較'}
               </Button>
               
               <Button
@@ -243,10 +293,20 @@ const DateTimeGenerator: React.FC = () => {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-td-gray-900 flex items-center gap-2">
                     <Globe className="h-5 w-5" />
-                    世界時間比較
+                    時差確認・世界時間比較
                   </h2>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-td-gray-500">基準時間: {settings.timezone}</span>
+                    <input
+                      type="datetime-local"
+                      value={worldTimeComparison.baseTime.toISOString().slice(0, 16)}
+                      onChange={(e) => {
+                        const newTime = new Date(e.target.value);
+                        const newComparison = WorldTimeComparator.generateWorldTimeAt(newTime, settings.timezone);
+                        setWorldTimeComparison(newComparison);
+                        setTdMessage(`${newTime.toLocaleString('ja-JP')}の時差確認を表示中です！各地域の対応時間を確認してください♪`);
+                      }}
+                      className="px-3 py-1 text-sm border border-td-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                     <Button
                       onClick={suggestMeetingTime}
                       icon={<Users className="h-4 w-4" />}
@@ -258,32 +318,114 @@ const DateTimeGenerator: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 世界時計グリッド */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {worldTimeComparison.comparisons.slice(0, 12).map((tz: TimeZoneInfo) => (
-                    <div key={tz.id} className="p-4 bg-td-gray-50 rounded-lg border">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-td-gray-800 text-sm">{tz.displayName}</h3>
-                        {tz.isDST && (
-                          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">DST</span>
-                        )}
+                {/* 基準時間表示 */}
+                <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-blue-900 mb-1">📍 基準時間</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl font-mono font-bold text-blue-900">
+                          {worldTimeComparison.baseTime.toLocaleString('ja-JP', {
+                            timeZone: worldTimeComparison.baseTimeZone,
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          })}
+                        </span>
+                        <div className="text-sm text-blue-700">
+                          <div>{worldTimeComparison.baseTime.toLocaleString('ja-JP', {
+                            timeZone: worldTimeComparison.baseTimeZone,
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                          })}</div>
+                          <div className="font-medium">
+                            {worldTimeComparison.comparisons.find(tz => tz.id === worldTimeComparison.baseTimeZone)?.displayName || worldTimeComparison.baseTimeZone}
+                          </div>
+                        </div>
                       </div>
-                      
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-green-600" />
-                          <span className="font-mono text-lg font-bold text-td-gray-900">
-                            {tz.currentTime.split(' ')[1]}
-                          </span>
+                    </div>
+                    
+                    <div className="text-right">
+                      <div className="text-sm text-blue-600 mb-1">タイムゾーン</div>
+                      <div className="text-sm font-medium text-blue-800">
+                        {worldTimeComparison.comparisons.find(tz => tz.id === worldTimeComparison.baseTimeZone)?.offset || 'UTC+09:00'}
+                      </div>
+                      {worldTimeComparison.comparisons.find(tz => tz.id === worldTimeComparison.baseTimeZone)?.isDST && (
+                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded mt-1 inline-block">
+                          サマータイム
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* リージョン選択 */}
+                <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                  <h3 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
+                    🌏 表示地域の選択
+                  </h3>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {availableRegions.map((region) => (
+                      <button
+                        key={region.id}
+                        onClick={() => handleRegionChange(region.id)}
+                        className={`p-3 text-left rounded-lg border transition-all ${
+                          selectedRegion === region.id
+                            ? 'bg-purple-100 border-purple-400 shadow-sm'
+                            : 'bg-white border-purple-200 hover:bg-purple-50 hover:border-purple-300'
+                        }`}
+                      >
+                        <div className={`font-medium text-sm ${
+                          selectedRegion === region.id ? 'text-purple-900' : 'text-purple-800'
+                        }`}>
+                          {region.displayName}
                         </div>
-                        
-                        <div className="text-xs text-td-gray-600">
-                          <div>{tz.currentTime.split(' ')[0]}</div>
-                          <div>{tz.offset}</div>
+                        <div className="text-xs text-purple-600 mt-1">
+                          {region.description}
                         </div>
-                        
-                        <div className="text-xs">
-                          <span className={`px-2 py-1 rounded-full ${
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-3 text-sm text-purple-700">
+                    💡 <strong>チーム開発に最適</strong>: メンバーの居住地域に合わせて表示地域を絞り込めます
+                  </div>
+                </div>
+
+                {/* 比較時間リスト */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-td-gray-900 mb-4 flex items-center gap-2">
+                    🌍 各地域の対応時間（時差確認）
+                  </h3>
+                  
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {worldTimeComparison.comparisons
+                      .filter(tz => tz.id !== worldTimeComparison.baseTimeZone) // 基準時間は除外
+                      .map((tz: TimeZoneInfo) => (
+                      <div key={tz.id} className="flex items-center justify-between p-4 bg-td-gray-50 rounded-lg border hover:bg-td-gray-100 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className="w-20">
+                            <span className="font-mono text-xl font-bold text-td-gray-900">
+                              {tz.currentTime.split(' ')[1]}
+                            </span>
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="font-semibold text-td-gray-800">{tz.displayName}</div>
+                            <div className="text-sm text-td-gray-600">
+                              {tz.currentTime.split(' ')[0]} • {tz.offset}
+                              {tz.isDST && (
+                                <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                                  DST
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-right">
+                          <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                             tz.timeDifference === '同じ時刻' 
                               ? 'bg-blue-100 text-blue-800'
                               : tz.timeDifference.includes('進んでいる')
@@ -291,28 +433,64 @@ const DateTimeGenerator: React.FC = () => {
                               : 'bg-orange-100 text-orange-800'
                           }`}>
                             {tz.timeDifference}
-                          </span>
+                          </div>
+                          <div className="text-xs text-td-gray-500 mt-1">
+                            基準時間との差
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                  
+                  {/* 簡易時差表 */}
+                  <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h4 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
+                      ⏰ 時差早見表
+                    </h4>
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+                      {worldTimeComparison.comparisons
+                        .filter(tz => tz.id !== worldTimeComparison.baseTimeZone)
+                        .slice(0, 9) // 上位9件のみ表示
+                        .map((tz: TimeZoneInfo) => (
+                          <div key={tz.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                            <span className="font-medium text-amber-800">{tz.displayName}</span>
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              tz.timeDifference === '同じ時刻' 
+                                ? 'bg-blue-100 text-blue-800'
+                                : tz.timeDifference.includes('進んでいる')
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-orange-100 text-orange-800'
+                            }`}>
+                              {tz.timeDifference}
+                            </span>
+                          </div>
+                        ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
 
                 {/* ビジネスアワー分析 */}
                 {worldTimeComparison && (
-                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h3 className="font-semibold text-blue-900 mb-3">📊 ビジネスアワー分析</h3>
-                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h3 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
+                      <div className="w-4 h-4 bg-green-600 rounded-full"></div>
+                      ビジネスアワー分析
+                    </h3>
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 text-sm">
                       {WorldTimeComparator.analyzeBusinessHours(worldTimeComparison)
-                        .slice(0, 6)
                         .map((analysis, index) => (
-                          <div key={index} className="flex items-center gap-2">
+                          <div key={index} className="flex items-center gap-3 p-2 bg-white rounded border">
                             <div className={`w-3 h-3 rounded-full ${
                               analysis.isBusinessHours ? 'bg-green-500' : 'bg-gray-400'
                             }`} />
-                            <span className="text-blue-800">
-                              {analysis.timezone}: {analysis.isBusinessHours ? '営業中' : '営業外'}
-                            </span>
+                            <div>
+                              <div className="font-medium text-green-800">{analysis.timezone}</div>
+                              <div className={`text-xs ${
+                                analysis.isBusinessHours ? 'text-green-600' : 'text-gray-600'
+                              }`}>
+                                {analysis.isBusinessHours ? '営業中' : '営業外'}
+                              </div>
+                            </div>
                           </div>
                         ))}
                     </div>

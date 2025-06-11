@@ -86,6 +86,13 @@ export default function RootLayout({
                     データ選択
                   </Link>
                   <Link 
+                    href="/practical-data" 
+                    className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
+                  >
+                    <span>📋</span>
+                    実用データ
+                  </Link>
+                  <Link 
                     href="/ai-chat" 
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
                   >

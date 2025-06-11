@@ -8,6 +8,7 @@ export interface TimeZoneInfo {
   isDST: boolean;
   country: string;
   city: string;
+  region: string; // 追加: リージョン情報
 }
 
 export interface WorldTimeComparison {
@@ -17,7 +18,79 @@ export interface WorldTimeComparison {
   generatedAt: Date;
 }
 
+// リージョン定義
+export interface RegionConfig {
+  id: string;
+  name: string;
+  displayName: string;
+  description: string;
+  timezones: string[];
+}
+
 export class WorldTimeComparator {
+  // リージョン設定
+  private static readonly REGIONS: RegionConfig[] = [
+    {
+      id: 'all',
+      name: '全世界',
+      displayName: '🌍 全世界',
+      description: '主要なタイムゾーン全て',
+      timezones: []
+    },
+    {
+      id: 'asia',
+      name: 'アジア',
+      displayName: '🌏 アジア',
+      description: 'アジア太平洋地域',
+      timezones: [
+        'Asia/Tokyo', 'Asia/Seoul', 'Asia/Shanghai', 'Asia/Hong_Kong',
+        'Asia/Singapore', 'Asia/Bangkok', 'Asia/Mumbai', 'Australia/Sydney',
+        'Pacific/Auckland'
+      ]
+    },
+    {
+      id: 'americas',
+      name: 'アメリカ大陸',
+      displayName: '🌎 アメリカ大陸',
+      description: '北米・南米地域',
+      timezones: [
+        'America/New_York', 'America/Chicago', 'America/Los_Angeles',
+        'America/Toronto', 'America/Mexico_City', 'America/Sao_Paulo',
+        'America/Argentina/Buenos_Aires'
+      ]
+    },
+    {
+      id: 'europe',
+      name: 'ヨーロッパ',
+      displayName: '🌍 ヨーロッパ',
+      description: 'ヨーロッパ・中東・アフリカ',
+      timezones: [
+        'Europe/London', 'Europe/Paris', 'Europe/Berlin',
+        'Europe/Moscow', 'Asia/Dubai', 'Africa/Cairo'
+      ]
+    },
+    {
+      id: 'game_dev',
+      name: 'ゲーム開発主要地域',
+      displayName: '🎮 ゲーム開発',
+      description: 'ゲーム開発・配信の主要地域',
+      timezones: [
+        'Asia/Tokyo', 'Asia/Seoul', 'America/Los_Angeles',
+        'America/New_York', 'Europe/London', 'Asia/Shanghai'
+      ]
+    },
+    {
+      id: 'business_asia',
+      name: 'アジア ビジネス',
+      displayName: '💼 アジア ビジネス',
+      description: 'アジアの主要ビジネス都市',
+      timezones: [
+        'Asia/Tokyo', 'Asia/Seoul', 'Asia/Shanghai', 'Asia/Hong_Kong',
+        'Asia/Singapore'
+      ]
+    }
+  ];
+
   // 主要タイムゾーンの定義
   private static readonly MAJOR_TIMEZONES = [
     { id: 'UTC', name: 'UTC', displayName: '協定世界時', country: '国際', city: 'UTC' },
@@ -53,19 +126,22 @@ export class WorldTimeComparator {
 
     for (const timezone of this.MAJOR_TIMEZONES) {
       try {
-        // 基準時間をタイムゾーンに変換
-        const timeInZone = new Date(baseTime.toLocaleString('en-US', { timeZone: timezone.id }));
-        const baseInZone = new Date(baseTime.toLocaleString('en-US', { timeZone: baseTimeZone }));
+        // 正確な時差計算: UTC基準でオフセットを取得
+        const baseOffset = this.getTimezoneOffset(baseTimeZone, baseTime);
+        const targetOffset = this.getTimezoneOffset(timezone.id, baseTime);
         
-        // 時差を計算
-        const timeDiffMs = timeInZone.getTime() - baseInZone.getTime();
-        const timeDiffHours = timeDiffMs / (1000 * 60 * 60);
+        // 時差を分単位で計算
+        const timeDiffMinutes = targetOffset - baseOffset;
+        const timeDiffHours = timeDiffMinutes / 60;
         
         // UTC オフセットを取得
         const offset = this.getUTCOffset(timezone.id, baseTime);
         
         // 夏時間判定
         const isDST = this.isDaylightSavingTime(timezone.id, baseTime);
+        
+        // 対象時間の計算
+        const targetTime = new Date(baseTime.getTime() + (timeDiffMinutes * 60 * 1000));
         
         // 時差文字列を生成
         const timeDifference = this.formatTimeDifference(timeDiffHours);
@@ -75,7 +151,7 @@ export class WorldTimeComparator {
           name: timezone.name,
           displayName: timezone.displayName,
           offset: offset,
-          currentTime: timeInZone.toLocaleString('ja-JP', {
+          currentTime: baseTime.toLocaleString('ja-JP', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
@@ -87,7 +163,8 @@ export class WorldTimeComparator {
           timeDifference,
           isDST,
           country: timezone.country,
-          city: timezone.city
+          city: timezone.city,
+          region: 'global' // デフォルトリージョン
         });
       } catch (error) {
         console.warn(`Failed to process timezone ${timezone.id}:`, error);
@@ -122,6 +199,99 @@ export class WorldTimeComparator {
    */
   static generateWorldTimeAt(targetTime: Date, baseTimeZone: string = 'Asia/Tokyo'): WorldTimeComparison {
     return this.compareWorldTimes(targetTime, baseTimeZone);
+  }
+
+  /**
+   * リージョン一覧を取得
+   */
+  static getAvailableRegions(): RegionConfig[] {
+    return this.REGIONS;
+  }
+
+  /**
+   * 特定リージョンのタイムゾーンを取得
+   */
+  static getTimezonesForRegion(regionId: string): typeof this.MAJOR_TIMEZONES {
+    if (regionId === 'all') {
+      return this.MAJOR_TIMEZONES;
+    }
+    
+    const region = this.REGIONS.find(r => r.id === regionId);
+    if (!region || region.timezones.length === 0) {
+      return this.MAJOR_TIMEZONES;
+    }
+    
+    return this.MAJOR_TIMEZONES.filter(tz => region.timezones.includes(tz.id));
+  }
+
+  /**
+   * 指定リージョンでの世界時間比較
+   */
+  static compareWorldTimesByRegion(
+    baseTime: Date, 
+    baseTimeZone: string = 'Asia/Tokyo',
+    regionId: string = 'all'
+  ): WorldTimeComparison {
+    const comparisons: TimeZoneInfo[] = [];
+    const filteredTimezones = this.getTimezonesForRegion(regionId);
+
+    for (const timezone of filteredTimezones) {
+      try {
+        // 正確な時差計算: UTC基準でオフセットを取得
+        const baseOffset = this.getTimezoneOffset(baseTimeZone, baseTime);
+        const targetOffset = this.getTimezoneOffset(timezone.id, baseTime);
+        
+        // 時差を分単位で計算
+        const timeDiffMinutes = targetOffset - baseOffset;
+        const timeDiffHours = timeDiffMinutes / 60;
+        
+        // UTC オフセットを取得
+        const offset = this.getUTCOffset(timezone.id, baseTime);
+        
+        // 夏時間判定
+        const isDST = this.isDaylightSavingTime(timezone.id, baseTime);
+        
+        // 時差文字列を生成
+        const timeDifference = this.formatTimeDifference(timeDiffHours);
+        
+        comparisons.push({
+          id: timezone.id,
+          name: timezone.name,
+          displayName: timezone.displayName,
+          offset: offset,
+          currentTime: baseTime.toLocaleString('ja-JP', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: timezone.id
+          }),
+          timeDifference,
+          isDST,
+          country: timezone.country,
+          city: timezone.city,
+          region: regionId
+        });
+      } catch (error) {
+        console.warn(`Failed to process timezone ${timezone.id}:`, error);
+      }
+    }
+
+    // 時差順にソート
+    comparisons.sort((a, b) => {
+      const aHours = this.parseTimeDifferenceHours(a.timeDifference);
+      const bHours = this.parseTimeDifferenceHours(b.timeDifference);
+      return aHours - bHours;
+    });
+
+    return {
+      baseTime,
+      baseTimeZone,
+      comparisons,
+      generatedAt: new Date()
+    };
   }
 
   /**

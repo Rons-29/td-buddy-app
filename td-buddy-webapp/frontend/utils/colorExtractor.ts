@@ -509,4 +509,106 @@ export class ColorExtractor {
       b: Math.round(b * 255)
     };
   }
+
+  /**
+   * カラーパレットをCSS変数として出力
+   */
+  static generateCSSVariables(colors: ExtractedColor[], prefix: string = 'color'): string {
+    const cssLines = [':root {'];
+    
+    colors.forEach((colorInfo, index) => {
+      const variableName = `--${prefix}-${index + 1}`;
+      const rgb = this.hexToRgb(colorInfo.color);
+      
+      if (rgb) {
+        cssLines.push(`  ${variableName}: ${colorInfo.color}; /* ${colorInfo.percentage}% */`);
+        cssLines.push(`  ${variableName}-rgb: ${rgb.r}, ${rgb.g}, ${rgb.b};`);
+      }
+    });
+    
+    cssLines.push('}');
+    cssLines.push('');
+    cssLines.push('/* 使用例 */');
+    cssLines.push('/* background-color: var(--color-1); */');
+    cssLines.push('/* color: rgba(var(--color-1-rgb), 0.8); */');
+    
+    return cssLines.join('\n');
+  }
+
+  /**
+   * カラーパレットをSCSSミックスインとして出力
+   */
+  static generateSCSSMixins(colors: ExtractedColor[], paletteName: string = 'palette'): string {
+    const scssLines = [`// ${paletteName} カラーパレット`];
+    
+    // 変数定義
+    colors.forEach((colorInfo, index) => {
+      scssLines.push(`$${paletteName}-${index + 1}: ${colorInfo.color}; // ${colorInfo.percentage}%`);
+    });
+    
+    scssLines.push('');
+    
+    // ミックスイン定義
+    scssLines.push(`@mixin ${paletteName}-colors {`);
+    colors.forEach((_, index) => {
+      scssLines.push(`  &.color-${index + 1} { color: $${paletteName}-${index + 1}; }`);
+      scssLines.push(`  &.bg-color-${index + 1} { background-color: $${paletteName}-${index + 1}; }`);
+    });
+    scssLines.push('}');
+    
+    return scssLines.join('\n');
+  }
+
+  /**
+   * カラーパレットをJavaScript配列として出力
+   */
+  static generateJSArray(colors: ExtractedColor[], variableName: string = 'colorPalette'): string {
+    const jsLines = [`// 抽出されたカラーパレット`];
+    jsLines.push(`const ${variableName} = [`);
+    
+    colors.forEach((colorInfo, index) => {
+      const rgb = this.hexToRgb(colorInfo.color);
+      const isLast = index === colors.length - 1;
+      
+      jsLines.push(`  {`);
+      jsLines.push(`    hex: '${colorInfo.color}',`);
+      jsLines.push(`    rgb: { r: ${rgb?.r || 0}, g: ${rgb?.g || 0}, b: ${rgb?.b || 0} },`);
+      jsLines.push(`    percentage: ${colorInfo.percentage},`);
+      jsLines.push(`    count: ${colorInfo.count}`);
+      jsLines.push(`  }${isLast ? '' : ','}`);
+    });
+    
+    jsLines.push('];');
+    jsLines.push('');
+    jsLines.push(`export default ${variableName};`);
+    
+    return jsLines.join('\n');
+  }
+
+  /**
+   * カラーパレットをTailwind CSS設定として出力
+   */
+  static generateTailwindConfig(colors: ExtractedColor[], prefix: string = 'custom'): string {
+    const configLines = ['// tailwind.config.js に追加'];
+    configLines.push('module.exports = {');
+    configLines.push('  theme: {');
+    configLines.push('    extend: {');
+    configLines.push('      colors: {');
+    configLines.push(`        ${prefix}: {`);
+    
+    colors.forEach((colorInfo, index) => {
+      const key = (index + 1) * 100; // 100, 200, 300...
+      configLines.push(`          ${key}: '${colorInfo.color}', // ${colorInfo.percentage}%`);
+    });
+    
+    configLines.push('        }');
+    configLines.push('      }');
+    configLines.push('    }');
+    configLines.push('  }');
+    configLines.push('};');
+    configLines.push('');
+    configLines.push('// 使用例: bg-custom-100, text-custom-200');
+    
+    return configLines.join('\n');
+  }
 } 

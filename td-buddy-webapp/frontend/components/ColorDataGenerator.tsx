@@ -1,7 +1,8 @@
 'use client';
 
-import { Copy, Download, HelpCircle, Palette, RefreshCw, Settings } from 'lucide-react';
+import { Copy, Download, HelpCircle, Image, Palette, RefreshCw, Settings, Upload } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
+import { ColorExtractionResult, ColorExtractor } from '../utils/colorExtractor';
 import { Button } from './ui/Button';
 
 // 型定義
@@ -30,6 +31,11 @@ const ColorDataGenerator: React.FC = () => {
   const [generatedColors, setGeneratedColors] = useState<Array<{value: string, color: string}>>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  
+  // 画像抽出関連のstate
+  const [extractedColors, setExtractedColors] = useState<ColorExtractionResult | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [showImageExtractor, setShowImageExtractor] = useState(false);
   
   // TDキャラクター状態
   const [tdMessage, setTdMessage] = useState('カラーデータ生成の準備完了です！設定を調整してください♪');
@@ -194,6 +200,75 @@ const ColorDataGenerator: React.FC = () => {
     setTdMessage('カラーデータをダウンロードしました！');
   }, [generatedColors]);
 
+  // 画像からカラー抽出
+  const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // ファイル形式チェック
+    if (!file.type.startsWith('image/')) {
+      setTdMessage('画像ファイルを選択してください（JPG、PNG、GIF、WebPなど）');
+      return;
+    }
+
+    setIsExtracting(true);
+    setTdMessage('画像からカラーパレットを抽出中です...');
+
+    try {
+      let result: ColorExtractionResult;
+      
+      if (file.type.startsWith('image/')) {
+        result = await ColorExtractor.extractFromImage(file);
+      } else if (file.name.endsWith('.html') || file.name.endsWith('.htm')) {
+        result = await ColorExtractor.extractFromHTML(file);
+      } else if (file.name.endsWith('.css')) {
+        result = await ColorExtractor.extractFromCSS(file);
+      } else {
+        // デフォルトで画像として処理
+        result = await ColorExtractor.extractFromImage(file);
+      }
+
+      setExtractedColors(result);
+      
+      if (result.success) {
+        setTdMessage(`✅ ${result.message} ドミナントカラー: ${result.dominantColor}`);
+        
+        // 抽出したカラーを生成データに追加オプション
+        const extractedData = result.colors.map(colorInfo => ({
+          value: colorInfo.color,
+          color: colorInfo.color
+        }));
+        
+        // 既存の生成データと結合するか確認
+        if (generatedColors.length > 0) {
+          const combined = [...generatedColors, ...extractedData];
+          setGeneratedColors(combined);
+          setTdMessage(`✅ 抽出した${result.colors.length}色を既存データに追加しました！`);
+        } else {
+          setGeneratedColors(extractedData);
+          setTdMessage(`✅ 抽出した${result.colors.length}色をデータとして設定しました！`);
+        }
+      } else {
+        setTdMessage(`❌ ${result.message}`);
+      }
+    } catch (error) {
+      setTdMessage(`❌ ファイル処理中にエラーが発生しました: ${error}`);
+    } finally {
+      setIsExtracting(false);
+      // ファイル入力をリセット
+      if (event.target) {
+        event.target.value = '';
+      }
+    }
+  }, [generatedColors]);
+
+  // 抽出したパレットからカラーを選択
+  const addExtractedColor = useCallback((color: string) => {
+    const newColor = { value: color, color: color };
+    setGeneratedColors(prev => [...prev, newColor]);
+    setTdMessage(`✅ カラー「${color}」を追加しました！`);
+  }, []);
+
   return (
     <div className="min-h-screen bg-td-gray-50">
       {/* ヘッダー */}
@@ -204,11 +279,20 @@ const ColorDataGenerator: React.FC = () => {
               <Palette className="h-8 w-8 text-pink-600" />
               <h1 className="text-2xl font-bold text-td-gray-900">カラーデータ生成</h1>
               <span className="px-3 py-1 bg-pink-100 text-pink-800 text-sm rounded-full">
-                カラースキーム対応
+                画像抽出対応
               </span>
             </div>
             
             <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => setShowImageExtractor(!showImageExtractor)}
+                icon={<Image className="h-4 w-4" />}
+                variant={showImageExtractor ? "primary" : "secondary"}
+                size="sm"
+              >
+                {showImageExtractor ? '画像抽出表示中' : '画像からカラー抽出'}
+              </Button>
+              
               <Button
                 onClick={() => setShowGuide(!showGuide)}
                 icon={<HelpCircle className="h-4 w-4" />}
@@ -234,6 +318,226 @@ const ColorDataGenerator: React.FC = () => {
         <div className="grid gap-8 lg:grid-cols-12">
           {/* メインコンテンツ */}
           <div className={`${showGuide ? 'lg:col-span-8' : 'lg:col-span-12'} space-y-6`}>
+            
+            {/* 画像抽出パネル */}
+            {showImageExtractor && (
+              <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-td-gray-900 flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    画像からカラー抽出
+                  </h2>
+                </div>
+
+                {/* ファイルアップロード */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-td-gray-700 mb-3">
+                    画像ファイルを選択（JPG、PNG、GIF、WebP対応）
+                  </label>
+                  <div className="border-2 border-dashed border-td-gray-300 rounded-lg p-6 text-center hover:border-pink-400 transition-colors">
+                    <div className="flex flex-col items-center">
+                      <Upload className="h-8 w-8 text-td-gray-400 mb-2" />
+                      <p className="text-td-gray-600 mb-4">クリックして画像を選択するか、ドラッグ&ドロップ</p>
+                      <input
+                        type="file"
+                        accept="image/*,.html,.htm,.css"
+                        onChange={handleImageUpload}
+                        disabled={isExtracting}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <label
+                        htmlFor="image-upload"
+                        className={`cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${
+                          isExtracting 
+                            ? 'bg-gray-400 cursor-not-allowed' 
+                            : 'bg-pink-600 hover:bg-pink-700'
+                        } transition-colors`}
+                      >
+                        {isExtracting ? '抽出中...' : 'ファイルを選択'}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 抽出結果表示 */}
+                {extractedColors && extractedColors.success && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-td-gray-800">抽出されたカラーパレット</h3>
+                    
+                    {/* ドミナントカラー */}
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-medium text-td-gray-700 mb-2">ドミナントカラー</h4>
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-16 h-16 rounded-lg border-2 border-white shadow-sm"
+                          style={{ backgroundColor: extractedColors.dominantColor }}
+                        />
+                        <div>
+                          <div className="font-mono text-lg font-bold">{extractedColors.dominantColor}</div>
+                          <div className="text-sm text-td-gray-600">最も多く使用されている色</div>
+                        </div>
+                        <Button
+                          onClick={() => addExtractedColor(extractedColors.dominantColor)}
+                          variant="primary"
+                          size="sm"
+                        >
+                          追加
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* カラーパレット */}
+                    <div>
+                      <h4 className="font-medium text-td-gray-700 mb-3">カラーパレット（使用頻度順）</h4>
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {extractedColors.colors.slice(0, 9).map((colorInfo, index) => (
+                          <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <div 
+                              className="w-10 h-10 rounded border-2 border-white shadow-sm"
+                              style={{ backgroundColor: colorInfo.color }}
+                            />
+                            <div className="flex-1">
+                              <div className="font-mono text-sm font-medium">{colorInfo.color}</div>
+                              <div className="text-xs text-td-gray-500">{colorInfo.percentage}%</div>
+                            </div>
+                            <Button
+                              onClick={() => addExtractedColor(colorInfo.color)}
+                              variant="secondary"
+                              size="sm"
+                            >
+                              追加
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                                         {/* 全体統計 */}
+                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                       <div className="text-sm text-blue-800">
+                         <strong>抽出情報:</strong> {extractedColors.colors.length}色を検出 • 
+                         ソース: {extractedColors.sourceType === 'image' ? '画像ファイル' : 'HTMLファイル'} • 
+                         抽出日時: {extractedColors.extractedAt.toLocaleString('ja-JP')}
+                       </div>
+                     </div>
+
+                     {/* パレット出力オプション */}
+                     <div className="space-y-4">
+                       <h4 className="font-semibold text-td-gray-800 flex items-center gap-2">
+                         <Download className="h-4 w-4" />
+                         パレット形式でコピー・ダウンロード
+                       </h4>
+                       
+                       <div className="grid gap-3 sm:grid-cols-2">
+                         <Button
+                           onClick={() => {
+                             const cssCode = ColorExtractor.generateCSSVariables(extractedColors.colors);
+                             navigator.clipboard.writeText(cssCode);
+                             setTdMessage('✅ CSS変数形式でクリップボードにコピーしました！');
+                           }}
+                           variant="secondary"
+                           size="sm"
+                           className="justify-start"
+                         >
+                           📋 CSS変数形式をコピー
+                         </Button>
+                         
+                         <Button
+                           onClick={() => {
+                             const scssCode = ColorExtractor.generateSCSSMixins(extractedColors.colors);
+                             navigator.clipboard.writeText(scssCode);
+                             setTdMessage('✅ SCSS形式でクリップボードにコピーしました！');
+                           }}
+                           variant="secondary"
+                           size="sm"
+                           className="justify-start"
+                         >
+                           🎨 SCSS形式をコピー
+                         </Button>
+                         
+                         <Button
+                           onClick={() => {
+                             const jsCode = ColorExtractor.generateJSArray(extractedColors.colors);
+                             navigator.clipboard.writeText(jsCode);
+                             setTdMessage('✅ JavaScript配列形式でクリップボードにコピーしました！');
+                           }}
+                           variant="secondary"
+                           size="sm"
+                           className="justify-start"
+                         >
+                           ⚡ JS配列をコピー
+                         </Button>
+                         
+                         <Button
+                           onClick={() => {
+                             const tailwindCode = ColorExtractor.generateTailwindConfig(extractedColors.colors);
+                             navigator.clipboard.writeText(tailwindCode);
+                             setTdMessage('✅ Tailwind CSS設定でクリップボードにコピーしました！');
+                           }}
+                           variant="secondary"
+                           size="sm"
+                           className="justify-start"
+                         >
+                           🌊 Tailwind設定をコピー
+                         </Button>
+                       </div>
+
+                       {/* 一括ダウンロード */}
+                       <div className="pt-3 border-t border-td-gray-200">
+                         <Button
+                           onClick={() => {
+                             const timestamp = new Date().toISOString().split('T')[0];
+                             const cssCode = ColorExtractor.generateCSSVariables(extractedColors.colors);
+                             const scssCode = ColorExtractor.generateSCSSMixins(extractedColors.colors);
+                             const jsCode = ColorExtractor.generateJSArray(extractedColors.colors);
+                             const tailwindCode = ColorExtractor.generateTailwindConfig(extractedColors.colors);
+                             
+                             const content = [
+                               '/* ========================================',
+                               ' * 抽出されたカラーパレット',
+                               ` * 抽出日時: ${extractedColors.extractedAt.toLocaleString('ja-JP')}`,
+                               ` * 抽出元: ${extractedColors.sourceType}`,
+                               ` * カラー数: ${extractedColors.colors.length}色`,
+                               ' * ======================================== */',
+                               '',
+                               '/* CSS変数 */',
+                               cssCode,
+                               '',
+                               '/* SCSS */',
+                               scssCode,
+                               '',
+                               '/* JavaScript */',
+                               jsCode,
+                               '',
+                               '/* Tailwind CSS */',
+                               tailwindCode
+                             ].join('\n');
+                             
+                             const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+                             const url = URL.createObjectURL(blob);
+                             const a = document.createElement('a');
+                             a.href = url;
+                             a.download = `color_palette_${timestamp}.txt`;
+                             document.body.appendChild(a);
+                             a.click();
+                             document.body.removeChild(a);
+                             URL.revokeObjectURL(url);
+                             setTdMessage('🎨 カラーパレット（全形式）をダウンロードしました！');
+                           }}
+                           variant="primary"
+                           icon={<Download className="h-4 w-4" />}
+                           className="w-full"
+                         >
+                           📁 全形式まとめてダウンロード
+                         </Button>
+                       </div>
+                     </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* 設定パネル */}
             <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
               <h2 className="text-xl font-semibold text-td-gray-900 mb-6 flex items-center gap-2">

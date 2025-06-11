@@ -150,6 +150,22 @@ export default function Home() {
           </Link>
         </div>
 
+        {/* 実用データ選択 */}
+        <div className="td-card p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200">
+          <div className="text-3xl mb-3">📋</div>
+          <h3 className="text-lg font-semibold text-indigo-800 mb-2">
+            実用データ選択
+          </h3>
+          <p className="text-indigo-600 mb-4">
+            ゲーム・Web系・ECサイトなど実際のビジネスで使用されるデータリスト
+          </p>
+          <Link href="/practical-data">
+            <button className="td-button bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              データ選択
+            </button>
+          </Link>
+        </div>
+
         {/* AI連携 */}
         <div className="td-card p-6">
           <div className="text-3xl mb-3">🧠</div>
