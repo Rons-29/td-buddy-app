@@ -11,7 +11,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
-import { Button } from './ui/Button';
+import { ActionButton } from './ui/ActionButton';
 import {
   Card,
   CardContent,
@@ -187,6 +187,115 @@ const DATA_TYPE_CATEGORIES = {
   },
 } as const;
 
+// データタイプ情報を取得するヘルパー関数
+const getDataTypeInfo = (dataType: DataType) => {
+  const dataTypeMap: Record<
+    DataType,
+    { label: string; suggestedName: string }
+  > = {
+    // Name系
+    firstName: { label: '名前（名）', suggestedName: 'first_name' },
+    lastName: { label: '名前（姓）', suggestedName: 'last_name' },
+    fullName: { label: 'フルネーム', suggestedName: 'full_name' },
+    // Address系
+    country: { label: '国名', suggestedName: 'country' },
+    state: { label: '都道府県', suggestedName: 'prefecture' },
+    city: { label: '市区町村', suggestedName: 'city' },
+    street: { label: '番地・町名', suggestedName: 'street_address' },
+    zipCode: { label: '郵便番号', suggestedName: 'postal_code' },
+    // Number系
+    randomNumber: { label: 'ランダム数値', suggestedName: 'random_number' },
+    phoneNumber: { label: '電話番号', suggestedName: 'phone_number' },
+    // Internet系
+    email: { label: 'メールアドレス', suggestedName: 'email_address' },
+    username: { label: 'ユーザー名', suggestedName: 'username' },
+    domainName: { label: 'ドメイン名', suggestedName: 'domain_name' },
+    ipAddress: { label: 'IPアドレス', suggestedName: 'ip_address' },
+    // Text系
+    words: { label: '単語', suggestedName: 'sample_words' },
+    sentences: { label: '文章', suggestedName: 'sample_text' },
+    paragraphs: { label: '段落', suggestedName: 'description' },
+    // Utilities系
+    autoIncrement: { label: '連番', suggestedName: 'id' },
+    dateTime: { label: '日時', suggestedName: 'created_at' },
+    date: { label: '日付', suggestedName: 'date' },
+    time: { label: '時刻', suggestedName: 'time' },
+    md5Hash: { label: 'MD5ハッシュ', suggestedName: 'hash_value' },
+    // Legacy
+    text: { label: 'テキスト', suggestedName: 'text_value' },
+    number: { label: '数値', suggestedName: 'number_value' },
+    phone: { label: '電話番号', suggestedName: 'phone' },
+    custom: { label: 'カスタム', suggestedName: 'custom_value' },
+  };
+
+  return dataTypeMap[dataType] || null;
+};
+
+// プリセットデータ
+const CSV_PRESETS = [
+  {
+    id: 'user_basic',
+    name: '👤 ユーザー基本情報',
+    description: 'ユーザー管理システム用の基本的なユーザー情報',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'user_id' },
+      { dataType: 'lastName' as DataType, name: 'last_name' },
+      { dataType: 'firstName' as DataType, name: 'first_name' },
+      { dataType: 'email' as DataType, name: 'email_address' },
+      { dataType: 'phoneNumber' as DataType, name: 'phone_number' },
+    ],
+  },
+  {
+    id: 'address_full',
+    name: '🏠 住所情報',
+    description: '配送・住所管理システム用の詳細住所データ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'address_id' },
+      { dataType: 'country' as DataType, name: 'country' },
+      { dataType: 'state' as DataType, name: 'prefecture' },
+      { dataType: 'city' as DataType, name: 'city' },
+      { dataType: 'street' as DataType, name: 'street_address' },
+      { dataType: 'zipCode' as DataType, name: 'postal_code' },
+    ],
+  },
+  {
+    id: 'product_catalog',
+    name: '📦 商品カタログ',
+    description: 'ECサイト・商品管理システム用のサンプルデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'product_id' },
+      { dataType: 'words' as DataType, name: 'product_name' },
+      { dataType: 'randomNumber' as DataType, name: 'price' },
+      { dataType: 'sentences' as DataType, name: 'description' },
+      { dataType: 'date' as DataType, name: 'release_date' },
+    ],
+  },
+  {
+    id: 'log_data',
+    name: '📊 ログデータ',
+    description: 'システムログ・アクセスログ用のサンプルデータ',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'log_id' },
+      { dataType: 'dateTime' as DataType, name: 'timestamp' },
+      { dataType: 'ipAddress' as DataType, name: 'client_ip' },
+      { dataType: 'username' as DataType, name: 'username' },
+      { dataType: 'words' as DataType, name: 'action' },
+    ],
+  },
+  {
+    id: 'employee_data',
+    name: '👔 従業員データ',
+    description: '人事・勤怠管理システム用の従業員情報',
+    columns: [
+      { dataType: 'autoIncrement' as DataType, name: 'employee_id' },
+      { dataType: 'fullName' as DataType, name: 'full_name' },
+      { dataType: 'email' as DataType, name: 'work_email' },
+      { dataType: 'randomNumber' as DataType, name: 'department_id' },
+      { dataType: 'date' as DataType, name: 'hire_date' },
+    ],
+  },
+] as const;
+
 // 日本語データセット
 const JAPANESE_DATA = {
   lastNames: [
@@ -289,6 +398,30 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     filename: 'test_data',
   });
 
+  // プリセット機能
+  const [showPresets, setShowPresets] = useState(false);
+
+  // プリセット適用
+  const applyPreset = useCallback((presetId: string) => {
+    const preset = CSV_PRESETS.find(p => p.id === presetId);
+    if (!preset) return;
+
+    const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
+      id: `preset_${presetId}_${index}_${Date.now()}`,
+      name: col.name,
+      dataType: col.dataType,
+      required: true,
+      order: index,
+    }));
+
+    setColumns(newColumns);
+    setShowPresets(false);
+    setTdMood('success');
+    setTdMessage(
+      `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
+    );
+  }, []);
+
   // カラム追加
   const addColumn = useCallback(() => {
     const newColumn: CSVColumn = {
@@ -312,11 +445,29 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     );
   }, []);
 
-  // カラム更新
+  // カラム更新（データタイプ変更時にカラム名も自動更新）
   const updateColumn = useCallback(
     (columnId: string, updates: Partial<CSVColumn>) => {
       setColumns(prev =>
-        prev.map(col => (col.id === columnId ? { ...col, ...updates } : col))
+        prev.map(col => {
+          if (col.id === columnId) {
+            const updatedCol = { ...col, ...updates };
+
+            // データタイプが変更された場合、適切なカラム名を自動設定
+            if (updates.dataType && updates.dataType !== col.dataType) {
+              const dataTypeInfo = getDataTypeInfo(updates.dataType);
+              if (dataTypeInfo) {
+                updatedCol.name = dataTypeInfo.suggestedName;
+                setTdMessage(
+                  `データタイプを「${dataTypeInfo.label}」に変更し、カラム名を「${dataTypeInfo.suggestedName}」に自動設定しました！`
+                );
+              }
+            }
+
+            return updatedCol;
+          }
+          return col;
+        })
       );
     },
     []
@@ -649,10 +800,25 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                 カラム設定
               </CardTitle>
             </div>
-            <Button onClick={addColumn} variant="primary" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              カラム追加
-            </Button>
+            <div className="flex gap-2">
+              <ActionButton
+                type="generate"
+                onClick={() => setShowPresets(true)}
+                variant="accent"
+                size="sm"
+              >
+                ⭐ プリセット
+              </ActionButton>
+              <ActionButton
+                type="generate"
+                onClick={addColumn}
+                variant="primary"
+                size="sm"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                カラム追加
+              </ActionButton>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -724,18 +890,80 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                 </div>
 
                 {/* 削除ボタン */}
-                <Button
+                <ActionButton
+                  type="clear"
                   onClick={() => removeColumn(column.id)}
                   variant="danger"
                   size="sm"
                 >
                   <Trash2 className="h-4 w-4" />
-                </Button>
+                </ActionButton>
               </div>
             ))
           )}
         </CardContent>
       </Card>
+
+      {/* プリセット選択モーダル */}
+      {showPresets && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-blue-800">
+                  ⭐ プリセット選択
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowPresets(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="grid gap-4">
+                {CSV_PRESETS.map(preset => (
+                  <div
+                    key={preset.id}
+                    className="border border-blue-200 rounded-lg p-4 hover:border-blue-400 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-blue-800 mb-2">
+                          {preset.name}
+                        </h4>
+                        <p className="text-sm text-gray-600 mb-3">
+                          {preset.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {preset.columns.map((col, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md"
+                            >
+                              {col.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <ActionButton
+                        type="generate"
+                        onClick={() => applyPreset(preset.id)}
+                        variant="primary"
+                        size="sm"
+                      >
+                        適用
+                      </ActionButton>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* データ生成設定セクション */}
       <Card className="border-blue-200">
@@ -805,9 +1033,11 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
 
           {/* アクションボタン */}
           <div className="flex flex-wrap gap-3 pt-4">
-            <Button
+            <ActionButton
+              type="generate"
               onClick={generateData}
               disabled={isGenerating || columns.length === 0}
+              loading={isGenerating}
               variant="primary"
               size="lg"
             >
@@ -822,11 +1052,13 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                   データ生成
                 </>
               )}
-            </Button>
+            </ActionButton>
 
-            <Button
+            <ActionButton
+              type="download"
               onClick={exportToCSV}
               disabled={rows.length === 0 || isExporting}
+              loading={isExporting}
               variant="secondary"
             >
               {isExporting ? (
@@ -840,7 +1072,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                   CSVダウンロード
                 </>
               )}
-            </Button>
+            </ActionButton>
           </div>
         </CardContent>
       </Card>
