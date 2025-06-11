@@ -22,6 +22,37 @@ interface CSVColumn {
   order: number;
 }
 
+// ユーザープリセット型定義
+interface UserPreset {
+  id: string;
+  name: string;
+  description: string;
+  columns: { dataType: DataType; name: string }[];
+  createdAt: Date;
+  isCustom: true;
+}
+
+// テンプレート型定義
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  settings: {
+    columns: CSVColumn[];
+    rowCount: number;
+    exportSettings: ExportSettings;
+  };
+  createdAt: Date;
+  lastUsed: Date;
+}
+
+// 一括編集型定義
+interface BulkEditOperation {
+  columnIds: string[];
+  operation: 'rename' | 'changeType' | 'toggleRequired' | 'delete';
+  value?: any;
+}
+
 type DataType =
   // Name系
   | 'firstName'
@@ -576,6 +607,14 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
   const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
   const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
 
+  // 新機能の状態管理
+  const [userPresets, setUserPresets] = useState<UserPreset[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [showPresetSave, setShowPresetSave] = useState(false);
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
+
   // ボタン状態管理
   const { buttonStates, setButtonActive } = useButtonState();
 
@@ -636,24 +675,142 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     [draggedColumnId, columns]
   );
 
-  // プリセット適用
-  const applyPreset = useCallback((presetId: string) => {
-    const preset = CSV_PRESETS.find(p => p.id === presetId);
-    if (!preset) return;
+  // ユーザープリセット保存機能
+  const saveUserPreset = useCallback(
+    (name: string, description: string) => {
+      if (columns.length === 0) {
+        setTdMessage(
+          'カラムが設定されていません。まずはカラムを追加してくださいね！'
+        );
+        return;
+      }
 
-    const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
-      id: `preset_${presetId}_${index}_${Date.now()}`,
-      name: col.name,
-      dataType: col.dataType,
-      required: true,
-      order: index,
-    }));
+      const newPreset: UserPreset = {
+        id: `user_preset_${Date.now()}`,
+        name,
+        description,
+        columns: columns.map(col => ({
+          dataType: col.dataType,
+          name: col.name,
+        })),
+        createdAt: new Date(),
+        isCustom: true,
+      };
 
-    setColumns(newColumns);
-    setShowPresets(false);
+      setUserPresets(prev => [...prev, newPreset]);
+      setShowPresetSave(false);
+      setTdMood('success');
+      setTdMessage(
+        `🎉 ユーザープリセット「${name}」を保存しました！いつでも再利用できます♪`
+      );
+    },
+    [columns]
+  );
+
+  // プリセット適用（システム・ユーザー両対応）
+  const applyPreset = useCallback(
+    (presetId: string) => {
+      // システムプリセットをチェック
+      let preset = CSV_PRESETS.find(p => p.id === presetId);
+      // ユーザープリセットもチェック
+      if (!preset) {
+        preset = userPresets.find(p => p.id === presetId);
+      }
+
+      if (!preset) return;
+
+      const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
+        id: `preset_${presetId}_${index}_${Date.now()}`,
+        name: col.name,
+        dataType: col.dataType,
+        required: true,
+        order: index,
+      }));
+
+      setColumns(newColumns);
+      setShowPresets(false);
+      setTdMood('success');
+      setTdMessage(
+        `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
+      );
+    },
+    [userPresets]
+  );
+
+  // カラム複製機能
+  const duplicateColumn = useCallback(
+    (columnId: string) => {
+      const originalColumn = columns.find(col => col.id === columnId);
+      if (!originalColumn) return;
+
+      const duplicatedColumn: CSVColumn = {
+        id: `copy_${Date.now()}`,
+        name: `${originalColumn.name}_copy`,
+        dataType: originalColumn.dataType,
+        required: originalColumn.required,
+        order: columns.length, // 最後に追加
+      };
+
+      setColumns(prev => [...prev, duplicatedColumn]);
+      setTdMood('success');
+      setTdMessage(
+        `✨ 「${originalColumn.name}」カラムを複製しました！設定もそのままコピーされています♪`
+      );
+    },
+    [columns]
+  );
+
+  // 一括編集機能
+  const performBulkEdit = useCallback((operation: BulkEditOperation) => {
+    const { columnIds, operation: op, value } = operation;
+
+    setColumns(prev => {
+      let newColumns = [...prev];
+
+      switch (op) {
+        case 'delete':
+          newColumns = newColumns.filter(col => !columnIds.includes(col.id));
+          break;
+        case 'changeType':
+          newColumns = newColumns.map(col =>
+            columnIds.includes(col.id) ? { ...col, dataType: value } : col
+          );
+          break;
+        case 'toggleRequired':
+          newColumns = newColumns.map(col =>
+            columnIds.includes(col.id)
+              ? { ...col, required: !col.required }
+              : col
+          );
+          break;
+        case 'rename':
+          // 複数カラムの一括リネーム（連番付き）
+          let counter = 1;
+          newColumns = newColumns.map(col =>
+            columnIds.includes(col.id)
+              ? { ...col, name: `${value}_${counter++}` }
+              : col
+          );
+          break;
+      }
+
+      return newColumns;
+    });
+
+    setSelectedColumns([]);
+    setShowBulkEdit(false);
     setTdMood('success');
     setTdMessage(
-      `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
+      `✨ ${columnIds.length}個のカラムに一括編集を適用しました！効率的ですね♪`
+    );
+  }, []);
+
+  // カラム選択状態の切り替え
+  const toggleColumnSelection = useCallback((columnId: string) => {
+    setSelectedColumns(prev =>
+      prev.includes(columnId)
+        ? prev.filter(id => id !== columnId)
+        : [...prev, columnId]
     );
   }, []);
 
@@ -671,6 +828,65 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       '新しいカラムを追加しました！データタイプを選択してくださいね♪'
     );
   }, [columns.length]);
+
+  // テンプレート機能
+  const saveTemplate = useCallback(
+    (name: string, description: string) => {
+      if (columns.length === 0) {
+        setTdMessage(
+          'カラムが設定されていません。まずはカラムを追加してくださいね！'
+        );
+        return;
+      }
+
+      const newTemplate: Template = {
+        id: `template_${Date.now()}`,
+        name,
+        description,
+        settings: {
+          columns: [...columns],
+          rowCount,
+          exportSettings: { ...exportSettings },
+        },
+        createdAt: new Date(),
+        lastUsed: new Date(),
+      };
+
+      setTemplates(prev => [...prev, newTemplate]);
+      setShowTemplateManager(false);
+      setTdMood('success');
+      setTdMessage(
+        `🎉 テンプレート「${name}」を保存しました！設定がすべて保存されています♪`
+      );
+    },
+    [columns, rowCount, exportSettings]
+  );
+
+  const loadTemplate = useCallback(
+    (templateId: string) => {
+      const template = templates.find(t => t.id === templateId);
+      if (!template) return;
+
+      // 設定をすべて復元
+      setColumns(template.settings.columns);
+      setRowCount(template.settings.rowCount);
+      setExportSettings(template.settings.exportSettings);
+
+      // 最終使用日を更新
+      setTemplates(prev =>
+        prev.map(t =>
+          t.id === templateId ? { ...t, lastUsed: new Date() } : t
+        )
+      );
+
+      setShowTemplateManager(false);
+      setTdMood('success');
+      setTdMessage(
+        `✨ テンプレート「${template.name}」を読み込みました！すべての設定が復元されています♪`
+      );
+    },
+    [templates]
+  );
 
   // カラム削除
   const removeColumn = useCallback((columnId: string) => {
@@ -1041,7 +1257,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                 カラム設定
               </CardTitle>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <ActionButton
                 type="generate"
                 onClick={() => setShowPresets(true)}
@@ -1050,6 +1266,36 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               >
                 ⭐ プリセット
               </ActionButton>
+
+              <ActionButton
+                type="paste"
+                onClick={() => setShowPresetSave(true)}
+                variant="secondary"
+                size="sm"
+                disabled={columns.length === 0}
+              >
+                💾 保存
+              </ActionButton>
+
+              <ActionButton
+                type="copy"
+                onClick={() => setShowTemplateManager(true)}
+                variant="secondary"
+                size="sm"
+              >
+                📁 テンプレート
+              </ActionButton>
+
+              <ActionButton
+                type="replace"
+                onClick={() => setShowBulkEdit(true)}
+                variant="secondary"
+                size="sm"
+                disabled={columns.length === 0}
+              >
+                ✏️ 一括編集
+              </ActionButton>
+
               <ActionButton
                 type="generate"
                 onClick={addColumn}
@@ -1141,6 +1387,16 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                       </optgroup>
                     </select>
                   </div>
+
+                  {/* 複製ボタン */}
+                  <ActionButton
+                    type="copy"
+                    onClick={() => duplicateColumn(column.id)}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    📋
+                  </ActionButton>
 
                   {/* 削除ボタン */}
                   <ActionButton
@@ -1409,6 +1665,307 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* プリセット保存モーダル */}
+      {showPresetSave && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-blue-800">
+                  💾 プリセット保存
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowPresetSave(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target as HTMLFormElement);
+                  const name = formData.get('name') as string;
+                  const description = formData.get('description') as string;
+                  if (name.trim()) {
+                    saveUserPreset(name.trim(), description.trim());
+                  }
+                }}
+              >
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      プリセット名 <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="例: 社員データ"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      説明
+                    </label>
+                    <textarea
+                      name="description"
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="プリセットの説明を入力（任意）"
+                    />
+                  </div>
+
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-sm text-blue-700">
+                      <strong>📋 保存対象:</strong> 現在設定されている
+                      {columns.length}個のカラム
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <ActionButton
+                      type="generate"
+                      onClick={() => {}}
+                      variant="primary"
+                      size="sm"
+                    >
+                      💾 保存
+                    </ActionButton>
+                    <ActionButton
+                      type="clear"
+                      onClick={() => setShowPresetSave(false)}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      キャンセル
+                    </ActionButton>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 一括編集モーダル */}
+      {showBulkEdit && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-blue-800">✏️ 一括編集</h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowBulkEdit(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-gray-700 mb-2">
+                    対象カラム選択
+                  </h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {columns.map(column => (
+                      <label key={column.id} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedColumns.includes(column.id)}
+                          onChange={() => toggleColumnSelection(column.id)}
+                          className="mr-2"
+                        />
+                        <span className="text-sm">
+                          {column.name} (
+                          {getDataTypeInfo(column.dataType)?.label})
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedColumns.length > 0 && (
+                  <div className="space-y-3 pt-3 border-t">
+                    <p className="text-sm text-blue-600">
+                      {selectedColumns.length}個のカラムが選択されています
+                    </p>
+
+                    <div className="flex flex-wrap gap-2">
+                      <ActionButton
+                        type="clear"
+                        onClick={() =>
+                          performBulkEdit({
+                            columnIds: selectedColumns,
+                            operation: 'delete',
+                          })
+                        }
+                        variant="danger"
+                        size="sm"
+                      >
+                        🗑️ 削除
+                      </ActionButton>
+
+                      <ActionButton
+                        type="replace"
+                        onClick={() =>
+                          performBulkEdit({
+                            columnIds: selectedColumns,
+                            operation: 'toggleRequired',
+                          })
+                        }
+                        variant="secondary"
+                        size="sm"
+                      >
+                        🔄 必須切替
+                      </ActionButton>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* テンプレート管理モーダル */}
+      {showTemplateManager && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-blue-800">
+                  📁 テンプレート管理
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowTemplateManager(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-6">
+                {/* 新規テンプレート保存 */}
+                <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                  <h4 className="font-semibold text-blue-800 mb-3">
+                    💾 新規テンプレート保存
+                  </h4>
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      const formData = new FormData(
+                        e.target as HTMLFormElement
+                      );
+                      const name = formData.get('templateName') as string;
+                      const description = formData.get(
+                        'templateDescription'
+                      ) as string;
+                      if (name.trim()) {
+                        saveTemplate(name.trim(), description.trim());
+                      }
+                    }}
+                  >
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        name="templateName"
+                        placeholder="テンプレート名"
+                        required
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <input
+                        type="text"
+                        name="templateDescription"
+                        placeholder="説明（任意）"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <ActionButton
+                        type="generate"
+                        onClick={() => {}}
+                        variant="primary"
+                        size="sm"
+                        disabled={columns.length === 0}
+                      >
+                        💾 保存
+                      </ActionButton>
+                    </div>
+                  </form>
+                </div>
+
+                {/* 既存テンプレート一覧 */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3">
+                    保存済みテンプレート
+                  </h4>
+                  {templates.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">
+                      まだテンプレートが保存されていません
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {templates
+                        .sort(
+                          (a, b) => b.lastUsed.getTime() - a.lastUsed.getTime()
+                        )
+                        .map(template => (
+                          <div
+                            key={template.id}
+                            className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-gray-800 mb-1">
+                                  {template.name}
+                                </h5>
+                                <p className="text-sm text-gray-600 mb-2">
+                                  {template.description ||
+                                    'テンプレートの説明なし'}
+                                </p>
+                                <div className="text-xs text-gray-500">
+                                  <span>
+                                    カラム数: {template.settings.columns.length}{' '}
+                                    |{' '}
+                                  </span>
+                                  <span>
+                                    行数: {template.settings.rowCount} |{' '}
+                                  </span>
+                                  <span>
+                                    最終使用:{' '}
+                                    {template.lastUsed.toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                              <ActionButton
+                                type="generate"
+                                onClick={() => loadTemplate(template.id)}
+                                variant="primary"
+                                size="sm"
+                              >
+                                📂 読込
+                              </ActionButton>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
