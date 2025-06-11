@@ -9,6 +9,7 @@
 | **[project_rules.mdc](./project_rules.mdc)** | 基本的なプロジェクトルール・開発原則 | 全開発者 |
 | **[git_rules.mdc](./git_rules.mdc)** | Git操作・ブランチ戦略ルール | 全開発者 |
 | **[security_rules.mdc](./security_rules.mdc)** | セキュリティ・安全対策ルール | 全開発者 |
+| **[design_system_rules.mdc](./design_system_rules.mdc)** | デザインシステム・UI統一ルール | フロントエンド開発者・UI設計者 |
 | **[td_character.mdc](./td_character.mdc)** | TDキャラクター設定・掛け声集 | AI・開発者 |
 | **[development_tips.mdc](./development_tips.mdc)** | 開発効率化Tips・ベストプラクティス | 全開発者 |
 
@@ -66,6 +67,7 @@ TDは、このプロジェクトの愛されキャラクターです：
 ### 日常的な開発
 - **コミットメッセージ**: [git_rules.mdc](./git_rules.mdc) の「コミットメッセージ規約」を参照
 - **効率化Tips**: [development_tips.mdc](./development_tips.mdc) を参照
+- **UI/コンポーネント開発**: [design_system_rules.mdc](./design_system_rules.mdc) を参照
 
 ### TDとの対話
 - **掛け声・メッセージ**: [td_character.mdc](./td_character.mdc) を参照
@@ -83,4 +85,16 @@ TDは、このプロジェクトの愛されキャラクターです：
 - チームミーティングで直接相談
 
 **最終更新**: 2024年12月
-**作成者**: TestData Buddy (TD) 開発チーム 
+**作成者**: TestData Buddy (TD) 開発チーム
+
+## 🎨 デザインシステムについて
+
+新たに追加された **[design_system_rules.mdc](./design_system_rules.mdc)** には、TDプロジェクトのUI・デザイン統一ルールが含まれています：
+
+- **デザイントークン**: カラーパレット、スペーシング、タイポグラフィ
+- **コンポーネント設計**: Button、Card、Input等の統一仕様
+- **レスポンシブ対応**: ブレークポイント、モバイルファースト設計
+- **アクセシビリティ**: WCAG準拠、キーボードナビゲーション
+- **TDアニメーション**: キャラクター専用のアニメーション効果
+
+詳細な仕様は `docs/design-system-*.md` ファイルも併せてご確認ください。 

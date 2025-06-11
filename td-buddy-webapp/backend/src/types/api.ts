@@ -266,7 +266,7 @@ export interface CompositionPasswordRequest {
   count: number;                     // 生成個数 (1-1000)
   
   // 構成プリセット
-  composition: 'none' | 'web-standard' | 'num-upper-lower' | 'high-security' | 'enterprise-policy' | 'num-upper-lower-symbol' | 'custom-symbols' | 'custom-charsets' | 'other';
+  composition: 'none' | 'basic' | 'web-standard' | 'num-upper-lower' | 'high-security' | 'enterprise-policy' | 'num-upper-lower-symbol' | 'custom-symbols' | 'custom-charsets' | 'other';
   
   // カスタム設定（compositionに応じて使用）
   customSymbols?: string;            // カスタム記号
@@ -342,4 +342,74 @@ export interface ClaudeRequest {
   context?: string;
   dataType: 'password' | 'personal' | 'text';
   parameters?: Record<string, any>;
+} 
+
+// ==================================================
+// 🆕 Step 14: 新データタイプ - UUID/GUID 生成関連の型
+// ==================================================
+
+// UUID生成リクエスト
+export interface UuidGenerateRequest {
+  count: number;                     // 生成個数 (1-10000)
+  version: 'v1' | 'v4' | 'v6' | 'v7' | 'mixed';  // UUIDバージョン
+  format: 'standard' | 'compact' | 'uppercase' | 'with-prefix' | 'sql-friendly';  // 出力フォーマット
+  includeTimestamp?: boolean;        // タイムスタンプ付きの場合 (v1, v6, v7)
+  includeMacAddress?: boolean;       // MACアドレス付きの場合 (v1)
+  namespace?: string;                // 名前空間指定 (v3, v5)
+  customPrefix?: string;             // カスタムプレフィックス
+}
+
+// UUID生成アイテム
+export interface UuidItem {
+  id: string;                        // 一意識別子
+  uuid: string;                      // 生成されたUUID
+  version: string;                   // 使用したバージョン
+  format: string;                    // 適用したフォーマット
+  timestamp?: string | undefined;    // タイムスタンプ (該当する場合)
+  macAddress?: string | undefined;   // MACアドレス (該当する場合)
+  namespace?: string | undefined;    // 名前空間 (該当する場合)
+  generatedAt: string;               // 生成日時
+  metadata: {
+    isValid: boolean;                // UUID形式の妥当性
+    entropy: number;                 // エントロピー値
+    randomness: 'low' | 'medium' | 'high' | 'cryptographic';  // ランダム性レベル
+  };
+}
+
+// UUID生成レスポンス
+export interface UuidGenerateResponse {
+  uuids: UuidItem[];
+  criteria: UuidGenerateRequest;
+  statistics: {
+    totalGenerated: number;
+    versionDistribution: Record<string, number>;
+    formatDistribution: Record<string, number>;
+    averageEntropy: number;
+  };
+  generatedAt: string;
+  expiresAt: string;
+}
+
+// UUID検証リクエスト
+export interface UuidValidateRequest {
+  uuids: string[];                   // 検証対象のUUID配列
+  strictMode?: boolean;              // 厳密検証モード
+  checkDuplicates?: boolean;         // 重複チェック
+}
+
+// UUID検証レスポンス
+export interface UuidValidateResponse {
+  results: Array<{
+    uuid: string;
+    isValid: boolean;
+    version?: string | undefined;
+    errors?: string[] | undefined;
+    warnings?: string[] | undefined;
+  }>;
+  summary: {
+    totalChecked: number;
+    validCount: number;
+    invalidCount: number;
+    duplicateCount: number;
+  };
 } 

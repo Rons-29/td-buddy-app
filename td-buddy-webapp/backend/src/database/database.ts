@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
 export class DatabaseService {
   private db: Database.Database | null = null;
@@ -124,6 +124,32 @@ export class DatabaseService {
         ip_address TEXT,
         user_agent TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      
+      `CREATE TABLE IF NOT EXISTS generated_uuids (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        uuid_value TEXT NOT NULL,
+        version TEXT NOT NULL,
+        format TEXT NOT NULL,
+        criteria TEXT NOT NULL,
+        metadata TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        expires_at DATETIME,
+        user_session_id TEXT,
+        ip_address TEXT,
+        user_agent TEXT
+      )`,
+      
+      `CREATE TABLE IF NOT EXISTS generated_data (
+        id TEXT PRIMARY KEY,
+        type TEXT NOT NULL,
+        data TEXT NOT NULL,
+        metadata TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        expires_at DATETIME,
+        user_session_id TEXT,
+        ip_address TEXT,
+        user_agent TEXT
       )`
     ];
 
@@ -144,13 +170,18 @@ export class DatabaseService {
       'DELETE FROM generated_personal_info WHERE expires_at < ?',
       [now]
     );
-    console.log(`🧹 Cleanup: ${deletedPasswords.changes + deletedPersonalInfo.changes} expired records deleted`);
+    const deletedUuids = await this.run(
+      'DELETE FROM generated_uuids WHERE expires_at < ?',
+      [now]
+    );
+    console.log(`🧹 Cleanup: ${deletedPasswords.changes + deletedPersonalInfo.changes + deletedUuids.changes} expired records deleted`);
   }
 
   async getStats(): Promise<any> {
     const stats = await Promise.all([
       this.get('SELECT COUNT(*) as count FROM generated_passwords'),
       this.get('SELECT COUNT(*) as count FROM generated_personal_info'), 
+      this.get('SELECT COUNT(*) as count FROM generated_uuids'),
       this.get('SELECT COUNT(*) as count FROM claude_generations'),
       this.get('SELECT COUNT(*) as count FROM api_statistics'),
       this.get('SELECT COUNT(*) as count FROM error_logs'),
@@ -161,9 +192,10 @@ export class DatabaseService {
     return {
       passwords: { count: stats[0]?.count || 0 },
       personalInfo: { count: stats[1]?.count || 0 },
-      claudeData: { count: stats[2]?.count || 0 },
-      apiCalls: { count: stats[3]?.count || 0 },
-      errors: { count: stats[4]?.count || 0 },
+      uuids: { count: stats[2]?.count || 0 },
+      claudeData: { count: stats[3]?.count || 0 },
+      apiCalls: { count: stats[4]?.count || 0 },
+      errors: { count: stats[5]?.count || 0 },
       dbSize
     };
   }
