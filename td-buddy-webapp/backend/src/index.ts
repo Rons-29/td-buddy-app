@@ -1,12 +1,12 @@
-import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { createServer } from 'http';
+import { database } from './database/database';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
-import { database } from './database/database';
 import { WebSocketService } from './services/WebSocketService';
 
 // Load environment variables
@@ -88,17 +88,19 @@ app.get('/health', (req, res) => {
 });
 
 // API ルート設定
-import passwordRoutes from './routes/password';
-import healthRoutes from './routes/health';
-import { personalRouter } from './routes/personal';
 import aiRoutes from './routes/ai';
 import exportRoutes from './routes/export';
+import healthRoutes from './routes/health';
+import passwordRoutes from './routes/password';
+import { personalRouter } from './routes/personal';
+import uuidRoutes from './routes/uuid';
 
 app.use('/api/password', passwordRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/personal', personalRouter);
 app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/uuid', uuidRoutes);
 
 // ルートエンドポイント
 app.get('/', (req, res) => {
@@ -109,6 +111,7 @@ app.get('/', (req, res) => {
       health: '/health',
       password: '/api/password',
       personal: '/api/personal',
+      uuid: '/api/uuid',
       claude: '/api/claude',
       export: '/api/export',
       docs: '/api/docs'
@@ -126,6 +129,7 @@ app.use('*', (req, res) => {
       '/health',
       '/api/password',
       '/api/personal',
+      '/api/uuid',
       '/api/claude',
       '/api/export'
     ]

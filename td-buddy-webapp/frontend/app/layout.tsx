@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Noto_Sans_JP } from 'next/font/google';
 import Link from 'next/link';
+import { TDDesignInspector } from '../components/TDDesignInspector';
 import './globals.css';
 
 const inter = Inter({ 
@@ -71,6 +72,13 @@ export default function RootLayout({
                     個人情報生成
                   </Link>
                   <Link 
+                    href="/uuid" 
+                    className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
+                  >
+                    <span>🆔</span>
+                    UUID生成
+                  </Link>
+                  <Link 
                     href="/ai-chat" 
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors flex items-center gap-2"
                   >
@@ -106,6 +114,9 @@ export default function RootLayout({
             </div>
           </footer>
         </div>
+
+        {/* TD Design Inspector - 開発環境でのみ表示 */}
+        <TDDesignInspector />
       </body>
     </html>
   );
