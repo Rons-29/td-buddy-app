@@ -1,7 +1,8 @@
 'use client';
 
-import { Calendar, Copy, Download, HelpCircle, RefreshCw, Settings } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import { Calendar, Clock, Copy, Download, Globe, HelpCircle, RefreshCw, Settings, Users } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { TimeZoneInfo, WorldTimeComparator, WorldTimeComparison } from '../utils/worldTimeComparator';
 import { Button } from './ui/Button';
 
 // 型定義
@@ -28,8 +29,14 @@ const DateTimeGenerator: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   
+  // 世界時間比較機能の状態
+  const [showWorldClock, setShowWorldClock] = useState(false);
+  const [worldTimeComparison, setWorldTimeComparison] = useState<WorldTimeComparison | null>(null);
+  const [selectedTimezones, setSelectedTimezones] = useState<string[]>(['Asia/Tokyo', 'America/New_York', 'Europe/London']);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  
   // TDキャラクター状態
-  const [tdMessage, setTdMessage] = useState('日付・時刻データ生成の準備完了です！設定を調整してください♪');
+  const [tdMessage, setTdMessage] = useState('日付・時刻データ生成の準備完了です！設定を調整するか、世界時間比較をお試しください♪');
 
   // プリセットフォーマット
   const formatPresets = {
@@ -49,6 +56,47 @@ const DateTimeGenerator: React.FC = () => {
     { value: 'Europe/London', label: 'イギリス時間 (GMT/BST)' },
     { value: 'Asia/Shanghai', label: '中国標準時 (CST)' }
   ];
+
+  // リアルタイム更新
+  useEffect(() => {
+    if (showWorldClock) {
+      const interval = setInterval(() => {
+        const now = new Date();
+        setCurrentTime(now);
+        const comparison = WorldTimeComparator.compareWorldTimes(now, settings.timezone);
+        setWorldTimeComparison(comparison);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [showWorldClock, settings.timezone]);
+
+  // 世界時間比較の初期化
+  const initializeWorldClock = useCallback(() => {
+    const now = new Date();
+    setCurrentTime(now);
+    const comparison = WorldTimeComparator.compareWorldTimes(now, settings.timezone);
+    setWorldTimeComparison(comparison);
+    setShowWorldClock(true);
+    setTdMessage('🌍 世界時間比較を開始しました！リアルタイムで更新されます♪');
+  }, [settings.timezone]);
+
+  // 最適な会議時間を提案
+  const suggestMeetingTime = useCallback(() => {
+    if (selectedTimezones.length < 2) {
+      setTdMessage('会議時間の提案には2つ以上のタイムゾーンを選択してください');
+      return;
+    }
+
+    const suggestions = WorldTimeComparator.suggestOptimalMeetingTime(selectedTimezones);
+    const bestSuggestion = suggestions[0];
+    
+    if (bestSuggestion) {
+      setTdMessage(
+        `💡 最適な会議時間：${bestSuggestion.suggestedTime} | スコア：${bestSuggestion.score}% | ${bestSuggestion.reasoning}`
+      );
+    }
+  }, [selectedTimezones]);
 
   // データ生成
   const generateDateTime = useCallback(() => {
@@ -150,11 +198,20 @@ const DateTimeGenerator: React.FC = () => {
               <Calendar className="h-8 w-8 text-green-600" />
               <h1 className="text-2xl font-bold text-td-gray-900">日付・時刻データ生成</h1>
               <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                世界標準時間対応
+                世界時間比較対応
               </span>
             </div>
             
             <div className="flex items-center space-x-3">
+              <Button
+                onClick={initializeWorldClock}
+                icon={<Globe className="h-4 w-4" />}
+                variant={showWorldClock ? "primary" : "secondary"}
+                size="sm"
+              >
+                {showWorldClock ? '世界時計表示中' : '世界時間比較'}
+              </Button>
+              
               <Button
                 onClick={() => setShowGuide(!showGuide)}
                 icon={<HelpCircle className="h-4 w-4" />}
@@ -180,6 +237,90 @@ const DateTimeGenerator: React.FC = () => {
         <div className="grid gap-8 lg:grid-cols-12">
           {/* メインコンテンツ */}
           <div className={`${showGuide ? 'lg:col-span-8' : 'lg:col-span-12'} space-y-6`}>
+            {/* 世界時間比較パネル */}
+            {showWorldClock && worldTimeComparison && (
+              <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-td-gray-900 flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    世界時間比較
+                  </h2>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-td-gray-500">基準時間: {settings.timezone}</span>
+                    <Button
+                      onClick={suggestMeetingTime}
+                      icon={<Users className="h-4 w-4" />}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      会議時間提案
+                    </Button>
+                  </div>
+                </div>
+
+                {/* 世界時計グリッド */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {worldTimeComparison.comparisons.slice(0, 12).map((tz: TimeZoneInfo) => (
+                    <div key={tz.id} className="p-4 bg-td-gray-50 rounded-lg border">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-td-gray-800 text-sm">{tz.displayName}</h3>
+                        {tz.isDST && (
+                          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">DST</span>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-green-600" />
+                          <span className="font-mono text-lg font-bold text-td-gray-900">
+                            {tz.currentTime.split(' ')[1]}
+                          </span>
+                        </div>
+                        
+                        <div className="text-xs text-td-gray-600">
+                          <div>{tz.currentTime.split(' ')[0]}</div>
+                          <div>{tz.offset}</div>
+                        </div>
+                        
+                        <div className="text-xs">
+                          <span className={`px-2 py-1 rounded-full ${
+                            tz.timeDifference === '同じ時刻' 
+                              ? 'bg-blue-100 text-blue-800'
+                              : tz.timeDifference.includes('進んでいる')
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-orange-100 text-orange-800'
+                          }`}>
+                            {tz.timeDifference}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* ビジネスアワー分析 */}
+                {worldTimeComparison && (
+                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h3 className="font-semibold text-blue-900 mb-3">📊 ビジネスアワー分析</h3>
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+                      {WorldTimeComparator.analyzeBusinessHours(worldTimeComparison)
+                        .slice(0, 6)
+                        .map((analysis, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className={`w-3 h-3 rounded-full ${
+                              analysis.isBusinessHours ? 'bg-green-500' : 'bg-gray-400'
+                            }`} />
+                            <span className="text-blue-800">
+                              {analysis.timezone}: {analysis.isBusinessHours ? '営業中' : '営業外'}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* 設定パネル */}
             <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
               <h2 className="text-xl font-semibold text-td-gray-900 mb-6 flex items-center gap-2">
@@ -310,29 +451,33 @@ const DateTimeGenerator: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="bg-td-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
-                  <div className="grid gap-2">
-                    {generatedData.map((data, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-2 bg-white rounded border hover:bg-td-gray-50 transition-colors"
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {generatedData.slice(0, 12).map((dateTime, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-td-gray-50 rounded-lg border hover:bg-td-gray-100 transition-colors"
+                    >
+                      <span className="font-mono text-sm text-td-gray-800">{dateTime}</span>
+                      <Button
+                        onClick={() => {
+                          navigator.clipboard.writeText(dateTime);
+                          setTdMessage(`${index + 1}番目の日時をコピーしました`);
+                        }}
+                        icon={<Copy className="h-3 w-3" />}
+                        variant="secondary"
+                        size="sm"
                       >
-                        <span className="font-mono text-sm text-td-gray-800">{data}</span>
-                        <Button
-                          onClick={() => {
-                            navigator.clipboard.writeText(data);
-                            setTdMessage(`${index + 1}番目のデータをコピーしました`);
-                          }}
-                          icon={<Copy className="h-3 w-3" />}
-                          variant="secondary"
-                          size="sm"
-                        >
-                          コピー
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                        コピー
+                      </Button>
+                    </div>
+                  ))}
                 </div>
+                
+                {generatedData.length > 12 && (
+                  <p className="text-sm text-td-gray-500 mt-4">
+                    プレビューは最初の12件のみ表示されています。全データはダウンロードでご確認ください。
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -355,6 +500,17 @@ const DateTimeGenerator: React.FC = () => {
                   </div>
                   
                   <div>
+                    <h4 className="font-medium text-td-gray-800 mb-2">🌍 新機能：世界時間比較</h4>
+                    <ul className="space-y-1">
+                      <li>• リアルタイム世界時計表示</li>
+                      <li>• 各地域との時差自動計算</li>
+                      <li>• ビジネスアワー分析</li>
+                      <li>• 最適な会議時間提案</li>
+                      <li>• 夏時間(DST)自動判定</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
                     <h4 className="font-medium text-td-gray-800 mb-2">🎯 フォーマット例</h4>
                     <ul className="space-y-1">
                       <li>• ISO: 2024-01-01T00:00:00.000Z</li>
@@ -366,7 +522,7 @@ const DateTimeGenerator: React.FC = () => {
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-td-gray-800 mb-2">🌍 タイムゾーン対応</h4>
+                    <h4 className="font-medium text-td-gray-800 mb-2">🌍 対応タイムゾーン</h4>
                     <ul className="space-y-1">
                       <li>• 日本標準時 (JST)</li>
                       <li>• 協定世界時 (UTC)</li>
@@ -381,7 +537,7 @@ const DateTimeGenerator: React.FC = () => {
                       <li>• 個別・全データコピー可能</li>
                       <li>• ファイルダウンロード対応</li>
                       <li>• 最大1,000件まで生成</li>
-                      <li>• ランダム時刻生成</li>
+                      <li>• グローバル会議の時間調整に便利</li>
                     </ul>
                   </div>
                 </div>

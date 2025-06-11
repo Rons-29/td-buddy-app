@@ -1,7 +1,8 @@
 'use client';
 
-import { Download, GripVertical, HelpCircle, Plus, Upload } from 'lucide-react';
+import { Download, GripVertical, HelpCircle, Palette, Plus, Upload } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
+import { csvPresets, getAllCategories, getCategoryColor, getCategoryDisplayName, getDifficultyColor, getPresetById } from '../data/csvPresets';
 import { Button } from './ui/Button';
 
 // 型定義
@@ -47,12 +48,44 @@ const CSVTestDataGenerator: React.FC = () => {
   const [showDataTable, setShowDataTable] = useState(false);
   const [showFileImporter, setShowFileImporter] = useState(false);
   
+  // プリセット関連状態
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedPresetId, setSelectedPresetId] = useState<string>('');
+  
   // ドラッグ&ドロップ状態
   const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
   const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
   
   // TDキャラクター状態
-  const [tdMessage, setTdMessage] = useState('CSVテスト用データ生成の準備完了です！カラムを追加してください♪');
+  const [tdMessage, setTdMessage] = useState('CSVテスト用データ生成の準備完了です！カラムを追加またはプリセットを選択してください♪');
+
+  // プリセット適用
+  const applyPreset = useCallback((presetId: string) => {
+    const preset = getPresetById(presetId);
+    if (!preset) {
+      setTdMessage('プリセットが見つかりませんでした');
+      return;
+    }
+
+    const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
+      id: `preset_col_${Date.now()}_${index}`,
+      name: col.name,
+      dataType: col.dataType,
+      customPattern: col.customPattern,
+      required: col.required,
+      order: index
+    }));
+
+    setColumns(newColumns);
+    setSelectedPresetId(presetId);
+    setShowPresetManager(false);
+    setTdMessage(`${preset.name}プリセットを適用しました！${preset.tdMessage}`);
+  }, []);
+
+  // フィルタされたプリセット
+  const filteredPresets = csvPresets.filter(preset => 
+    selectedCategory === 'all' || preset.category === selectedCategory
+  );
 
   // カラム追加
   const addColumn = useCallback(() => {
@@ -122,24 +155,42 @@ const CSVTestDataGenerator: React.FC = () => {
   // データ生成
   const generateData = useCallback(() => {
     if (columns.length === 0) {
-      setTdMessage('まずカラムを定義してください');
+      setTdMessage('まずカラムを定義またはプリセットを選択してください');
       return;
     }
 
     setIsGenerating(true);
     setTdMessage(`${rowCount}件のテストデータを生成中...`);
 
-    // 簡単なダミーデータ生成
+    // 改良されたダミーデータ生成
     const generatedRows: CSVRow[] = [];
     for (let i = 0; i < rowCount; i++) {
       const rowData: Record<string, any> = {};
       columns.forEach(col => {
         switch (col.dataType) {
           case 'text':
-            rowData[col.id] = `Sample${i + 1}`;
+            if (col.name.toLowerCase().includes('name')) {
+              rowData[col.id] = `テストユーザー${i + 1}`;
+            } else if (col.name.toLowerCase().includes('category')) {
+              const categories = ['カテゴリA', 'カテゴリB', 'カテゴリC'];
+              rowData[col.id] = categories[Math.floor(Math.random() * categories.length)];
+            } else if (col.name.toLowerCase().includes('status')) {
+              const statuses = ['処理中', '完了', '保留中'];
+              rowData[col.id] = statuses[Math.floor(Math.random() * statuses.length)];
+            } else {
+              rowData[col.id] = `Sample${i + 1}`;
+            }
             break;
           case 'number':
-            rowData[col.id] = Math.floor(Math.random() * 1000);
+            if (col.name.toLowerCase().includes('price') || col.name.toLowerCase().includes('amount')) {
+              rowData[col.id] = Math.floor(Math.random() * 100000) + 1000;
+            } else if (col.name.toLowerCase().includes('count') || col.name.toLowerCase().includes('quantity')) {
+              rowData[col.id] = Math.floor(Math.random() * 100) + 1;
+            } else if (col.name.toLowerCase().includes('age')) {
+              rowData[col.id] = Math.floor(Math.random() * 60) + 18;
+            } else {
+              rowData[col.id] = Math.floor(Math.random() * 1000);
+            }
             break;
           case 'email':
             rowData[col.id] = `user${i + 1}@example.com`;
@@ -240,11 +291,20 @@ const CSVTestDataGenerator: React.FC = () => {
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-td-gray-900">CSV テストデータ生成</h1>
               <span className="px-3 py-1 bg-td-primary-100 text-td-primary-800 text-sm rounded-full">
-                ドラッグ&ドロップ対応
+                プリセット対応
               </span>
             </div>
             
             <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => setShowPresetManager(true)}
+                icon={<Palette className="h-4 w-4" />}
+                variant="secondary"
+                size="sm"
+              >
+                プリセット選択
+              </Button>
+              
               <Button
                 onClick={() => setShowFileImporter(true)}
                 icon={<Upload className="h-4 w-4" />}
@@ -339,38 +399,23 @@ const CSVTestDataGenerator: React.FC = () => {
                   <div className="text-center py-8 text-td-gray-500">
                     <div className="text-6xl mb-4">📊</div>
                     <p className="text-lg font-medium">カラムが定義されていません</p>
-                    <p className="text-sm">「カラム追加」ボタンから始めましょう</p>
+                    <p className="text-sm">「カラム追加」または「プリセット選択」から始めましょう</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    <div className="text-sm text-td-gray-600 mb-2 flex items-center gap-2">
-                      <GripVertical className="h-4 w-4" />
-                      <span>カラムをドラッグ&ドロップで並び替えできます</span>
-                    </div>
-                    
+                  <div className="space-y-3">
                     {columns
                       .sort((a, b) => a.order - b.order)
                       .map((column, index) => (
                         <div
                           key={column.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, column.id)}
-                          onDragEnd={handleDragEnd}
-                          onDragOver={(e) => handleDragOver(e, column.id)}
-                          onDrop={(e) => handleDrop(e, column.id)}
-                          className={`flex items-center justify-between p-4 rounded-lg border transition-all cursor-move ${
-                            draggedColumnId === column.id
-                              ? 'bg-td-primary-100 border-td-primary-300 opacity-50'
-                              : dragOverColumnId === column.id
-                              ? 'bg-td-primary-50 border-td-primary-200 border-dashed'
-                              : 'bg-td-gray-50 border-td-gray-200 hover:bg-td-gray-100'
-                          }`}
+                          className="flex items-center justify-between p-4 bg-td-gray-50 rounded-lg border border-td-gray-200"
                         >
-                          <div className="flex items-center space-x-4">
-                            <GripVertical className="h-4 w-4 text-td-gray-400 cursor-move flex-shrink-0" />
-                            <span className="font-medium text-td-gray-600 min-w-[30px]">{index + 1}.</span>
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div className="cursor-move text-td-gray-400">
+                              <GripVertical className="h-4 w-4" />
+                            </div>
                             
-                            <div className="flex items-center space-x-3">
+                            <div className="flex-1">
                               <input
                                 type="text"
                                 value={column.name}
@@ -380,10 +425,12 @@ const CSVTestDataGenerator: React.FC = () => {
                                   );
                                   setColumns(updatedColumns);
                                 }}
-                                className="px-3 py-1 border border-td-gray-300 rounded text-sm"
+                                className="w-full px-3 py-1 border border-td-gray-300 rounded text-sm"
                                 placeholder="カラム名"
                               />
-                              
+                            </div>
+                            
+                            <div>
                               <select
                                 value={column.dataType}
                                 onChange={(e) => {
@@ -492,27 +539,27 @@ const CSVTestDataGenerator: React.FC = () => {
                   <div>
                     <h4 className="font-medium text-td-gray-800 mb-2">📊 基本的な使い方</h4>
                     <ul className="space-y-1">
-                      <li>• カラム追加でデータ構造を定義</li>
-                      <li>• データタイプで生成内容を設定</li>
+                      <li>• プリセット選択で定型データ構造</li>
+                      <li>• カラム追加でカスタム設計</li>
                       <li>• ドラッグ&ドロップで順序変更</li>
                       <li>• プレビューで内容確認</li>
                     </ul>
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-td-gray-800 mb-2">🎯 データタイプ</h4>
+                    <h4 className="font-medium text-td-gray-800 mb-2">🎯 プリセット活用</h4>
                     <ul className="space-y-1">
-                      <li>• テキスト: Sample1, Sample2...</li>
-                      <li>• 数値: ランダムな整数</li>
-                      <li>• メール: user1@example.com</li>
-                      <li>• 電話: 090-xxxx-xxxx</li>
-                      <li>• 日付: YYYY-MM-DD形式</li>
+                      <li>• ECサイト: 顧客・商品・注文データ</li>
+                      <li>• ユーザー管理: 従業員・学生データ</li>
+                      <li>• ビジネス: 営業・在庫管理データ</li>
+                      <li>• システム: ログ・ユーザーデータ</li>
                     </ul>
                   </div>
                   
                   <div>
                     <h4 className="font-medium text-td-gray-800 mb-2">💡 効率化Tips</h4>
                     <ul className="space-y-1">
+                      <li>• プリセット→カスタマイズで時短</li>
                       <li>• CSVインポートで既存構造活用</li>
                       <li>• 複数フォーマット出力対応</li>
                       <li>• 最大10,000件まで生成可能</li>
@@ -524,6 +571,87 @@ const CSVTestDataGenerator: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* プリセットマネージャーモーダル */}
+      {showPresetManager && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-td-gray-900">📋 CSVプリセット選択</h2>
+              <Button
+                onClick={() => setShowPresetManager(false)}
+                variant="secondary"
+                size="sm"
+              >
+                ✕ 閉じる
+              </Button>
+            </div>
+
+            {/* カテゴリフィルタ */}
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={() => setSelectedCategory('all')}
+                  variant={selectedCategory === 'all' ? 'primary' : 'secondary'}
+                  size="sm"
+                >
+                  すべて
+                </Button>
+                {getAllCategories().map(category => (
+                  <Button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    variant={selectedCategory === category ? 'primary' : 'secondary'}
+                    size="sm"
+                  >
+                    {getCategoryDisplayName(category)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* プリセット一覧 */}
+            <div className="grid gap-4 md:grid-cols-2">
+              {filteredPresets.map(preset => (
+                <div
+                  key={preset.id}
+                  className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                    selectedPresetId === preset.id ? 'border-td-primary-500 bg-td-primary-50' : getCategoryColor(preset.category)
+                  }`}
+                  onClick={() => applyPreset(preset.id)}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-semibold text-td-gray-800">{preset.name}</h3>
+                    <span className={`px-2 py-1 text-xs rounded-full ${getDifficultyColor(preset.difficulty)}`}>
+                      {preset.difficulty === 'beginner' ? '初級' : preset.difficulty === 'intermediate' ? '中級' : '上級'}
+                    </span>
+                  </div>
+                  
+                  <p className="text-sm text-td-gray-600 mb-3">{preset.description}</p>
+                  
+                  <div className="mb-3">
+                    <p className="text-xs text-td-gray-500 mb-1">
+                      カラム数: {preset.columns.length}個
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {preset.columns.slice(0, 4).map((col, index) => (
+                        <span key={index} className="text-xs bg-td-gray-100 text-td-gray-600 px-2 py-1 rounded">
+                          {col.name}
+                        </span>
+                      ))}
+                      {preset.columns.length > 4 && (
+                        <span className="text-xs text-td-gray-500">+{preset.columns.length - 4}個</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-td-gray-500">活用例: {preset.usage}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
