@@ -290,7 +290,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     settings: AutoIncrementSettings;
   }) => (
     <div className="space-y-3">
-      <CompactLayout type="force-horizontal">
+      <CompactLayout type="grid-3">
         <CompactInput
           label="開始値"
           tooltip={SETTING_TOOLTIPS.autoIncrement.start}
@@ -327,7 +327,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
           }
         />
       </CompactLayout>
-      <CompactLayout type="force-horizontal">
+      <CompactLayout type="grid-2">
         <CompactInput
           label="プレフィックス"
           tooltip={SETTING_TOOLTIPS.autoIncrement.prefix}

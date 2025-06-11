@@ -166,9 +166,9 @@ export const CompactLayout: React.FC<CompactLayoutProps> = ({
   type = 'grid-2',
 }) => {
   const layoutClasses = {
-    'grid-2': 'td-settings-grid td-settings-grid-2',
-    'grid-3': 'td-settings-grid td-settings-grid-3',
-    'grid-4': 'td-settings-grid td-settings-grid-4',
+    'grid-2': 'td-settings-grid-2',
+    'grid-3': 'td-settings-grid-3',
+    'grid-4': 'td-settings-grid-4',
     horizontal: 'td-detail-layout-horizontal',
     stacked: 'td-detail-layout-stacked',
     'force-horizontal': 'td-settings-force-horizontal',

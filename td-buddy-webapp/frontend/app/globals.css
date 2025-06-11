@@ -236,19 +236,19 @@
 
 /* レスポンシブグリッド: モバイル→タブレット→デスクトップ */
 .td-settings-grid-1 {
-  @apply grid-cols-1;
+  @apply grid grid-cols-1 gap-2;
 }
 
 .td-settings-grid-2 {
-  @apply grid-cols-1 sm:grid-cols-2;
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-2;
 }
 
 .td-settings-grid-3 {
-  @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3;
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2;
 }
 
 .td-settings-grid-4 {
-  @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2;
 }
 
 /* 設定行レイアウト */
