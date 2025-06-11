@@ -225,21 +225,30 @@
   @apply grid gap-2;
 }
 
+/* 強制横並びレイアウト */
+.td-settings-force-horizontal {
+  @apply flex flex-wrap gap-3 items-end;
+}
+
+.td-settings-force-horizontal .td-field-group {
+  @apply space-y-0 flex-shrink-0;
+}
+
 /* レスポンシブグリッド: モバイル→タブレット→デスクトップ */
 .td-settings-grid-1 {
   @apply grid-cols-1;
 }
 
 .td-settings-grid-2 {
-  @apply grid-cols-1 md:grid-cols-2;
+  @apply grid-cols-1 sm:grid-cols-2;
 }
 
 .td-settings-grid-3 {
-  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3;
 }
 
 .td-settings-grid-4 {
-  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-4;
+  @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
 }
 
 /* 設定行レイアウト */
@@ -267,6 +276,10 @@
 
 .td-field-group-inline {
   @apply flex items-end gap-2;
+}
+
+.td-field-group-grid {
+  @apply space-y-0;
 }
 
 /* 設定ヘッダー */

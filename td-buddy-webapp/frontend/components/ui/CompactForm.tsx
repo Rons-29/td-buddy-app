@@ -44,7 +44,13 @@ interface CompactCheckboxProps {
 interface CompactLayoutProps {
   children: React.ReactNode;
   className?: string;
-  type?: 'grid-2' | 'grid-3' | 'grid-4' | 'horizontal' | 'stacked';
+  type?:
+    | 'grid-2'
+    | 'grid-3'
+    | 'grid-4'
+    | 'horizontal'
+    | 'stacked'
+    | 'force-horizontal';
 }
 
 // コンパクト入力フィールド
@@ -165,6 +171,7 @@ export const CompactLayout: React.FC<CompactLayoutProps> = ({
     'grid-4': 'td-settings-grid td-settings-grid-4',
     horizontal: 'td-detail-layout-horizontal',
     stacked: 'td-detail-layout-stacked',
+    'force-horizontal': 'td-settings-force-horizontal',
   };
 
   return (

@@ -15,7 +15,6 @@ import { SETTING_TOOLTIPS } from '../../types/csv-setting-tooltips';
 import { Button } from '../ui/Button';
 import {
   CompactCheckbox,
-  CompactDivider,
   CompactInput,
   CompactLayout,
   CompactPanel,
@@ -290,60 +289,63 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
   }: {
     settings: AutoIncrementSettings;
   }) => (
-    <CompactLayout type="grid-3">
-      <CompactInput
-        label="開始値"
-        tooltip={SETTING_TOOLTIPS.autoIncrement.start}
-        tooltipPosition="top"
-        type="number"
-        value={settings.start}
-        onChange={(e: any) =>
-          updateSetting('start', parseInt(e.target.value) || 1)
-        }
-        required
-      />
-      <CompactInput
-        label="増分"
-        tooltip={SETTING_TOOLTIPS.autoIncrement.step}
-        tooltipPosition="top"
-        type="number"
-        min="1"
-        value={settings.step}
-        onChange={(e: any) =>
-          updateSetting('step', parseInt(e.target.value) || 1)
-        }
-        required
-      />
-      <CompactInput
-        label="ゼロパディング"
-        tooltip={SETTING_TOOLTIPS.autoIncrement.padding}
-        tooltipPosition="top"
-        type="number"
-        min="0"
-        max="10"
-        value={settings.padding}
-        onChange={(e: any) =>
-          updateSetting('padding', parseInt(e.target.value) || 0)
-        }
-      />
-      <CompactDivider />
-      <CompactInput
-        label="プレフィックス"
-        tooltip={SETTING_TOOLTIPS.autoIncrement.prefix}
-        tooltipPosition="bottom"
-        value={settings.prefix || ''}
-        onChange={(e: any) => updateSetting('prefix', e.target.value)}
-        placeholder="USER"
-      />
-      <CompactInput
-        label="サフィックス"
-        tooltip={SETTING_TOOLTIPS.autoIncrement.suffix}
-        tooltipPosition="bottom"
-        value={settings.suffix || ''}
-        onChange={(e: any) => updateSetting('suffix', e.target.value)}
-        placeholder="_ID"
-      />
-    </CompactLayout>
+    <div className="space-y-3">
+      <CompactLayout type="force-horizontal">
+        <CompactInput
+          label="開始値"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.start}
+          tooltipPosition="top"
+          type="number"
+          value={settings.start}
+          onChange={(e: any) =>
+            updateSetting('start', parseInt(e.target.value) || 1)
+          }
+          required
+        />
+        <CompactInput
+          label="増分"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.step}
+          tooltipPosition="top"
+          type="number"
+          min="1"
+          value={settings.step}
+          onChange={(e: any) =>
+            updateSetting('step', parseInt(e.target.value) || 1)
+          }
+          required
+        />
+        <CompactInput
+          label="ゼロパディング"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.padding}
+          tooltipPosition="top"
+          type="number"
+          min="0"
+          max="10"
+          value={settings.padding}
+          onChange={(e: any) =>
+            updateSetting('padding', parseInt(e.target.value) || 0)
+          }
+        />
+      </CompactLayout>
+      <CompactLayout type="force-horizontal">
+        <CompactInput
+          label="プレフィックス"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.prefix}
+          tooltipPosition="bottom"
+          value={settings.prefix || ''}
+          onChange={(e: any) => updateSetting('prefix', e.target.value)}
+          placeholder="USER"
+        />
+        <CompactInput
+          label="サフィックス"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.suffix}
+          tooltipPosition="bottom"
+          value={settings.suffix || ''}
+          onChange={(e: any) => updateSetting('suffix', e.target.value)}
+          placeholder="_ID"
+        />
+      </CompactLayout>
+    </div>
   );
 
   // 設定コンポーネントの決定
