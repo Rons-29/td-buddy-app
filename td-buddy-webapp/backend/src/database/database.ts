@@ -138,6 +138,18 @@ export class DatabaseService {
         user_session_id TEXT,
         ip_address TEXT,
         user_agent TEXT
+      )`,
+      
+      `CREATE TABLE IF NOT EXISTS generated_data (
+        id TEXT PRIMARY KEY,
+        type TEXT NOT NULL,
+        data TEXT NOT NULL,
+        metadata TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        expires_at DATETIME,
+        user_session_id TEXT,
+        ip_address TEXT,
+        user_agent TEXT
       )`
     ];
 
