@@ -1,13 +1,20 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Copy, RefreshCw, Shield, Eye, EyeOff, Settings2, CheckCircle, Zap } from 'lucide-react';
-import TDCharacter, { TDEmotion, TDAnimation } from './TDCharacter';
+import { Eye, EyeOff, Settings2 } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import {
+  APIResponse,
+  CustomCharset,
+  PasswordCriteria,
+  PasswordPreset,
+  PasswordResult,
+  TDState,
+} from '../types/password';
 import { CompositionSelector } from './CompositionSelector';
-import { CustomSymbolsInput } from './CustomSymbolsInput';
 import { CustomCharsetsEditor } from './CustomCharsetsEditor';
-import { PasswordCriteria, PasswordResult, APIResponse, TDState, PasswordPreset, CustomCharset } from '../types/password';
-import { DEFAULT_PASSWORD_PRESETS } from '../data/passwordPresets';
+import { CustomSymbolsInput } from './CustomSymbolsInput';
+import TDCharacter from './TDCharacter';
+import { ActionButton } from './ui/ActionButton';
 
 export const PasswordGenerator: React.FC = () => {
   // 構成プリセット状態
@@ -24,7 +31,7 @@ export const PasswordGenerator: React.FC = () => {
     includeNumbers: true,
     includeSymbols: false,
     excludeAmbiguous: true,
-    customCharacters: ''
+    customCharacters: '',
   });
 
   // UI状態（既存）
@@ -54,8 +61,9 @@ export const PasswordGenerator: React.FC = () => {
   const [tdState, setTdState] = useState<TDState>({
     emotion: 'happy',
     animation: 'float',
-    message: 'パスワード生成の準備ができました！構成プリセットをお選びください♪',
-    showSpeechBubble: true
+    message:
+      'パスワード生成の準備ができました！構成プリセットをお選びください♪',
+    showSpeechBubble: true,
   });
 
   // フォーム参照
@@ -64,27 +72,43 @@ export const PasswordGenerator: React.FC = () => {
   // プリセット変更時の処理
   const handlePresetChange = (presetId: string, preset: PasswordPreset) => {
     setSelectedPresetId(presetId);
-    
+
     // プリセットの設定をcriteriaに反映
     if (preset.criteria) {
       setCriteria(prev => ({
         ...prev,
         ...preset.criteria,
         // プリセットに基づいて文字種を自動設定
-        includeUppercase: shouldIncludeCharType(presetId, 'uppercase', preset.criteria),
-        includeLowercase: shouldIncludeCharType(presetId, 'lowercase', preset.criteria),
-        includeNumbers: shouldIncludeCharType(presetId, 'numbers', preset.criteria),
-        includeSymbols: shouldIncludeCharType(presetId, 'symbols', preset.criteria)
+        includeUppercase: shouldIncludeCharType(
+          presetId,
+          'uppercase',
+          preset.criteria
+        ),
+        includeLowercase: shouldIncludeCharType(
+          presetId,
+          'lowercase',
+          preset.criteria
+        ),
+        includeNumbers: shouldIncludeCharType(
+          presetId,
+          'numbers',
+          preset.criteria
+        ),
+        includeSymbols: shouldIncludeCharType(
+          presetId,
+          'symbols',
+          preset.criteria
+        ),
       }));
     }
-    
+
     // TDキャラクターの反応
     setTdState(prev => ({
       ...prev,
       emotion: 'happy',
       animation: 'bounce',
       message: `${preset.name}プリセットに変更しました♪ ${preset.description}`,
-      showSpeechBubble: true
+      showSpeechBubble: true,
     }));
 
     setTimeout(() => {
@@ -93,33 +117,45 @@ export const PasswordGenerator: React.FC = () => {
   };
 
   // プリセットに基づいて文字種を自動判定する関数
-  const shouldIncludeCharType = (presetId: string, charType: string, presetCriteria: any): boolean => {
+  const shouldIncludeCharType = (
+    presetId: string,
+    charType: string,
+    presetCriteria: any
+  ): boolean => {
     // セキュリティ重視のプリセットでは全文字種を有効に
-    if (['high-security', 'enterprise-policy', 'num-upper-lower-symbol'].includes(presetId)) {
+    if (
+      ['high-security', 'enterprise-policy', 'num-upper-lower-symbol'].includes(
+        presetId
+      )
+    ) {
       return true;
     }
-    
+
     // Web標準系では記号以外を有効に
     if (['web-standard', 'num-upper-lower'].includes(presetId)) {
       return charType !== 'symbols';
     }
-    
+
     // mustIncludeCharTypesが定義されている場合はそれに基づく
     if (presetCriteria?.mustIncludeCharTypes) {
       const typeMap: Record<string, string> = {
-        'uppercase': 'uppercase',
-        'lowercase': 'lowercase', 
-        'numbers': 'numbers',
-        'symbols': 'symbols'
+        uppercase: 'uppercase',
+        lowercase: 'lowercase',
+        numbers: 'numbers',
+        symbols: 'symbols',
       };
       return presetCriteria.mustIncludeCharTypes.includes(typeMap[charType]);
     }
-    
+
     // カスタム系では現在の設定を維持
     if (['custom-symbols', 'custom-charsets'].includes(presetId)) {
-      return criteria[`include${charType.charAt(0).toUpperCase() + charType.slice(1)}` as keyof PasswordCriteria] as boolean;
+      return criteria[
+        `include${
+          charType.charAt(0).toUpperCase() + charType.slice(1)
+        }` as keyof PasswordCriteria
+      ] as boolean;
     }
-    
+
     // デフォルトでは数字・大文字・小文字を有効に
     return charType !== 'symbols';
   };
@@ -128,15 +164,40 @@ export const PasswordGenerator: React.FC = () => {
   const getStrengthInfo = (strength: string) => {
     switch (strength) {
       case 'very-strong':
-        return { color: 'text-green-600', bg: 'bg-green-100', icon: '🛡️', label: '非常に強い' };
+        return {
+          color: 'text-green-600',
+          bg: 'bg-green-100',
+          icon: '🛡️',
+          label: '非常に強い',
+        };
       case 'strong':
-        return { color: 'text-blue-600', bg: 'bg-blue-100', icon: '🔒', label: '強い' };
+        return {
+          color: 'text-blue-600',
+          bg: 'bg-blue-100',
+          icon: '🔒',
+          label: '強い',
+        };
       case 'medium':
-        return { color: 'text-yellow-600', bg: 'bg-yellow-100', icon: '⚠️', label: '普通' };
+        return {
+          color: 'text-yellow-600',
+          bg: 'bg-yellow-100',
+          icon: '⚠️',
+          label: '普通',
+        };
       case 'weak':
-        return { color: 'text-red-600', bg: 'bg-red-100', icon: '⚡', label: '弱い' };
+        return {
+          color: 'text-red-600',
+          bg: 'bg-red-100',
+          icon: '⚡',
+          label: '弱い',
+        };
       default:
-        return { color: 'text-gray-600', bg: 'bg-gray-100', icon: '❓', label: '不明' };
+        return {
+          color: 'text-gray-600',
+          bg: 'bg-gray-100',
+          icon: '❓',
+          label: '不明',
+        };
     }
   };
 
@@ -146,38 +207,42 @@ export const PasswordGenerator: React.FC = () => {
     setApiError(null);
     setResult(null);
     setGenerationProgress(null);
-    
+
     const totalCount = criteria.count;
     const isLargeGeneration = totalCount > 50;
-    
+
     // 文字セット検証とフォールバック処理
     const validateAndPrepareRequest = () => {
       // custom-charsets プリセットの場合の特別な検証
       if (selectedPresetId === 'custom-charsets') {
         // customCharsets が空またはすべて無効な場合
-        const validCharsets = customCharsets.filter(cs => cs.enabled && cs.charset.length > 0);
-        
+        const validCharsets = customCharsets.filter(
+          cs => cs.enabled && cs.charset.length > 0
+        );
+
         if (validCharsets.length === 0) {
           // デフォルトの安全な文字セットを提供
-          console.warn('🔧 TDが空の文字セットを検出し、デフォルト設定に変更します');
+          console.warn(
+            '🔧 TDが空の文字セットを検出し、デフォルト設定に変更します'
+          );
           setTdState(prev => ({
             ...prev,
             emotion: 'thinking',
             animation: 'wiggle',
             message: '文字セットが空のため、安全なデフォルト設定を適用します♪',
-            showSpeechBubble: true
+            showSpeechBubble: true,
           }));
-          
+
           // 高セキュリティのデフォルト文字セット
           return {
             composition: 'enterprise-policy', // 安全なプリセットに変更
             useUppercase: true,
             useLowercase: true,
             useNumbers: true,
-            useSymbols: true
+            useSymbols: true,
           };
         }
-        
+
         // 有効な文字セットがある場合は通常通り
         return {
           composition: selectedPresetId,
@@ -185,83 +250,88 @@ export const PasswordGenerator: React.FC = () => {
           useUppercase: criteria.includeUppercase,
           useLowercase: criteria.includeLowercase,
           useNumbers: criteria.includeNumbers,
-          useSymbols: criteria.includeSymbols
+          useSymbols: criteria.includeSymbols,
         };
       }
-      
+
       // custom-symbols プリセットの場合の検証
       if (selectedPresetId === 'custom-symbols') {
         if (!customSymbols || customSymbols.trim().length === 0) {
-          console.warn('🔧 TDがカスタム記号が空のため、デフォルト記号を適用します');
+          console.warn(
+            '🔧 TDがカスタム記号が空のため、デフォルト記号を適用します'
+          );
           setTdState(prev => ({
             ...prev,
             emotion: 'thinking',
             message: 'カスタム記号が空のため、標準記号を適用します♪',
-            showSpeechBubble: true
+            showSpeechBubble: true,
           }));
-          
+
           return {
             composition: 'web-standard', // 安全なプリセットに変更
             useUppercase: true,
             useLowercase: true,
             useNumbers: true,
-            useSymbols: true
+            useSymbols: true,
           };
         }
-        
+
         return {
           composition: selectedPresetId,
           useUppercase: criteria.includeUppercase,
           useLowercase: criteria.includeLowercase,
           useNumbers: criteria.includeNumbers,
-          useSymbols: criteria.includeSymbols
+          useSymbols: criteria.includeSymbols,
         };
       }
-      
+
       // 基本的な文字種チェック
-      const hasAnyCharType = criteria.includeUppercase || 
-                            criteria.includeLowercase || 
-                            criteria.includeNumbers || 
-                            criteria.includeSymbols;
-      
+      const hasAnyCharType =
+        criteria.includeUppercase ||
+        criteria.includeLowercase ||
+        criteria.includeNumbers ||
+        criteria.includeSymbols;
+
       if (!hasAnyCharType) {
-        console.warn('🔧 TDが文字種が選択されていないため、安全なデフォルトを適用します');
+        console.warn(
+          '🔧 TDが文字種が選択されていないため、安全なデフォルトを適用します'
+        );
         setTdState(prev => ({
           ...prev,
           emotion: 'thinking',
           message: '文字種が選択されていないため、英数字を有効にします♪',
-          showSpeechBubble: true
+          showSpeechBubble: true,
         }));
-        
+
         return {
           composition: selectedPresetId,
           useUppercase: true,
           useLowercase: true,
           useNumbers: true,
-          useSymbols: false
+          useSymbols: false,
         };
       }
-      
+
       // 通常の場合 - すべてのプリセット（high-security等）
       return {
         composition: selectedPresetId,
         useUppercase: criteria.includeUppercase,
         useLowercase: criteria.includeLowercase,
         useNumbers: criteria.includeNumbers,
-        useSymbols: criteria.includeSymbols
+        useSymbols: criteria.includeSymbols,
       };
     };
-    
+
     const safeConfig = validateAndPrepareRequest();
-    
+
     setTdState(prev => ({
       ...prev,
       emotion: 'thinking',
       animation: 'wiggle',
-      message: isLargeGeneration 
-        ? `${totalCount}個の大量生成を開始します！TDが頑張ります♪` 
+      message: isLargeGeneration
+        ? `${totalCount}個の大量生成を開始します！TDが頑張ります♪`
         : 'パスワードを生成中です... しばらくお待ちください♪',
-      showSpeechBubble: true
+      showSpeechBubble: true,
     }));
 
     try {
@@ -271,17 +341,18 @@ export const PasswordGenerator: React.FC = () => {
       } else {
         await generatePasswordsSingle(totalCount, safeConfig);
       }
-
     } catch (error) {
       console.error('パスワード生成エラー:', error);
-      setApiError(error instanceof Error ? error.message : '不明なエラーが発生しました');
-      
+      setApiError(
+        error instanceof Error ? error.message : '不明なエラーが発生しました'
+      );
+
       setTdState(prev => ({
         ...prev,
         emotion: 'sad',
         animation: 'wiggle',
         message: 'エラーが発生しました... 設定を確認して再度お試しください',
-        showSpeechBubble: true
+        showSpeechBubble: true,
       }));
     } finally {
       setIsGenerating(false);
@@ -290,9 +361,13 @@ export const PasswordGenerator: React.FC = () => {
   };
 
   // 単発生成（50個以下）
-  const generatePasswordsSingle = async (totalCount: number, safeConfig: any) => {
-    const endpoint = 'http://localhost:3001/api/password/generate-with-composition';
-    
+  const generatePasswordsSingle = async (
+    totalCount: number,
+    safeConfig: any
+  ) => {
+    const endpoint =
+      'http://localhost:3001/api/password/generate-with-composition';
+
     const requestBody: any = {
       length: criteria.length,
       count: totalCount,
@@ -304,79 +379,94 @@ export const PasswordGenerator: React.FC = () => {
       useLowercase: safeConfig.useLowercase ?? criteria.includeLowercase,
       useSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
       ...(safeConfig.composition === 'custom-symbols' && { customSymbols }),
-      ...(safeConfig.composition === 'custom-charsets' && { customCharsets: safeConfig.customCharsets })
+      ...(safeConfig.composition === 'custom-charsets' && {
+        customCharsets: safeConfig.customCharsets,
+      }),
     };
 
     const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
         'X-Session-ID': `td-session-${Date.now()}`,
-        },
-      body: JSON.stringify(requestBody)
-      });
+      },
+      body: JSON.stringify(requestBody),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || `HTTP ${response.status}`);
-      }
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+    }
 
-      const data: APIResponse = await response.json();
-      setResult(data.data);
+    const data: APIResponse = await response.json();
+    setResult(data.data);
 
-      // TDキャラクターの成功反応
-      setTdState(prev => ({
-        ...prev,
-        emotion: 'excited',
-        animation: 'heartbeat',
-        message: data.tdMessage || `${data.data.strength}強度のパスワードを${data.data.passwords.length}個生成しました！`,
-        showSpeechBubble: true
-      }));
+    // TDキャラクターの成功反応
+    setTdState(prev => ({
+      ...prev,
+      emotion: 'excited',
+      animation: 'heartbeat',
+      message:
+        data.tdMessage ||
+        `${data.data.strength}強度のパスワードを${data.data.passwords.length}個生成しました！`,
+      showSpeechBubble: true,
+    }));
 
-      setTimeout(() => {
-        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
-      }, 3000);
+    setTimeout(() => {
+      setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+    }, 3000);
   };
 
   // チャンク生成（大量生成用）
-  const generatePasswordsInChunks = async (totalCount: number, safeConfig: any) => {
+  const generatePasswordsInChunks = async (
+    totalCount: number,
+    safeConfig: any
+  ) => {
     const chunkSize = 100; // 100個ずつ生成
     const chunks = Math.ceil(totalCount / chunkSize);
     const allPasswords: string[] = [];
     let combinedResult: PasswordResult | null = null;
-    
+
     const startTime = Date.now();
-    
+
     for (let i = 0; i < chunks; i++) {
-      const currentChunkSize = Math.min(chunkSize, totalCount - allPasswords.length);
+      const currentChunkSize = Math.min(
+        chunkSize,
+        totalCount - allPasswords.length
+      );
       const progress = {
         current: allPasswords.length,
         total: totalCount,
         estimatedTimeLeft: 0,
-        speed: 0
+        speed: 0,
       };
-      
+
       // 進捗とスピード計算
       if (i > 0) {
         const elapsed = (Date.now() - startTime) / 1000;
         progress.speed = Math.round(allPasswords.length / elapsed);
-        progress.estimatedTimeLeft = Math.round((totalCount - allPasswords.length) / progress.speed);
+        progress.estimatedTimeLeft = Math.round(
+          (totalCount - allPasswords.length) / progress.speed
+        );
       }
-      
+
       setGenerationProgress(progress);
-      
+
       // TDの進捗メッセージ
       setTdState(prev => ({
         ...prev,
         emotion: 'thinking',
         animation: i % 2 === 0 ? 'bounce' : 'wiggle',
-        message: `生成中... ${allPasswords.length}/${totalCount} (${Math.round((allPasswords.length / totalCount) * 100)}%) - 速度: ${progress.speed}個/秒`,
-        showSpeechBubble: true
+        message: `生成中... ${allPasswords.length}/${totalCount} (${Math.round(
+          (allPasswords.length / totalCount) * 100
+        )}%) - 速度: ${progress.speed}個/秒`,
+        showSpeechBubble: true,
       }));
 
       // チャンク生成（直接APIコール）
-      const endpoint = 'http://localhost:3001/api/password/generate-with-composition';
-      
+      const endpoint =
+        'http://localhost:3001/api/password/generate-with-composition';
+
       const requestBody: any = {
         length: criteria.length,
         count: currentChunkSize,
@@ -388,7 +478,9 @@ export const PasswordGenerator: React.FC = () => {
         useLowercase: safeConfig.useLowercase ?? criteria.includeLowercase,
         useSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
         ...(safeConfig.composition === 'custom-symbols' && { customSymbols }),
-        ...(safeConfig.composition === 'custom-charsets' && { customCharsets: safeConfig.customCharsets })
+        ...(safeConfig.composition === 'custom-charsets' && {
+          customCharsets: safeConfig.customCharsets,
+        }),
       };
 
       const response = await fetch(endpoint, {
@@ -397,7 +489,7 @@ export const PasswordGenerator: React.FC = () => {
           'Content-Type': 'application/json',
           'X-Session-ID': `td-session-${Date.now()}`,
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -407,21 +499,22 @@ export const PasswordGenerator: React.FC = () => {
 
       const data: APIResponse = await response.json();
       const chunkResult = data.data;
-      
+
       // 結果をマージ
       if (chunkResult) {
         allPasswords.push(...chunkResult.passwords);
-        const firstGeneratedAt: string = combinedResult?.generatedAt || chunkResult.generatedAt;
+        const firstGeneratedAt: string =
+          combinedResult?.generatedAt || chunkResult.generatedAt;
         combinedResult = {
           passwords: allPasswords,
           strength: chunkResult.strength,
           estimatedCrackTime: chunkResult.estimatedCrackTime,
           criteria: chunkResult.criteria,
-          generatedAt: firstGeneratedAt
+          generatedAt: firstGeneratedAt,
         };
         setResult(combinedResult);
       }
-      
+
       // 少し待機（UIの更新時間を確保）
       await new Promise(resolve => setTimeout(resolve, 50));
     }
@@ -429,13 +522,13 @@ export const PasswordGenerator: React.FC = () => {
     // 最終完了メッセージ
     const totalTime = (Date.now() - startTime) / 1000;
     const avgSpeed = Math.round(totalCount / totalTime);
-    
+
     setTdState(prev => ({
       ...prev,
       emotion: 'excited',
       animation: 'heartbeat',
       message: `🎉 ${totalCount}個の大量生成完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`,
-      showSpeechBubble: true
+      showSpeechBubble: true,
     }));
 
     setTimeout(() => {
@@ -448,15 +541,15 @@ export const PasswordGenerator: React.FC = () => {
     try {
       await navigator.clipboard.writeText(password);
       setCopiedIndex(index);
-      
+
       // 結果エリア下部にメッセージ表示
       setCopyMessage(`✅ パスワード ${index + 1} をコピーしました！`);
-      
+
       // TDキャラクターにも軽く反応させる（オプション）
       setTdState(prev => ({
         ...prev,
         emotion: 'happy',
-        animation: 'bounce'
+        animation: 'bounce',
       }));
 
       setTimeout(() => {
@@ -466,7 +559,7 @@ export const PasswordGenerator: React.FC = () => {
     } catch (error) {
       console.error('コピーエラー:', error);
       setCopyMessage('❌ コピーに失敗しました。手動でコピーしてください。');
-      
+
       setTimeout(() => {
         setCopyMessage(null);
       }, 3000);
@@ -476,19 +569,21 @@ export const PasswordGenerator: React.FC = () => {
   // 全パスワードをコピー
   const copyAllPasswords = async () => {
     if (!result?.passwords) return;
-    
+
     const allPasswords = result.passwords.join('\n');
     try {
       await navigator.clipboard.writeText(allPasswords);
-      
+
       // 結果エリア下部にメッセージ表示
-      setCopyMessage(`✅ ${result.passwords.length}個すべてのパスワードをコピーしました！`);
-      
+      setCopyMessage(
+        `✅ ${result.passwords.length}個すべてのパスワードをコピーしました！`
+      );
+
       // TDキャラクターにも軽く反応させる（オプション）
       setTdState(prev => ({
         ...prev,
         emotion: 'excited',
-        animation: 'bounce'
+        animation: 'bounce',
       }));
 
       setTimeout(() => {
@@ -497,7 +592,7 @@ export const PasswordGenerator: React.FC = () => {
     } catch (error) {
       console.error('全コピーエラー:', error);
       setCopyMessage('❌ コピーに失敗しました。手動でコピーしてください。');
-      
+
       setTimeout(() => {
         setCopyMessage(null);
       }, 4000);
@@ -507,16 +602,17 @@ export const PasswordGenerator: React.FC = () => {
   // 設定変更処理
   const handleCriteriaChange = (key: keyof PasswordCriteria, value: any) => {
     setCriteria(prev => ({ ...prev, [key]: value }));
-    
+
     // カスタム文字が変更された場合のTD反応
     if (key === 'customCharacters' && value) {
       setTdState(prev => ({
         ...prev,
         emotion: 'thinking',
-        message: 'カスタム文字を設定しました♪ より個性的なパスワードになりますね！',
-        showSpeechBubble: true
+        message:
+          'カスタム文字を設定しました♪ より個性的なパスワードになりますね！',
+        showSpeechBubble: true,
       }));
-      
+
       setTimeout(() => {
         setTdState(prev => ({ ...prev, showSpeechBubble: false }));
       }, 2000);
@@ -526,32 +622,35 @@ export const PasswordGenerator: React.FC = () => {
   // プログレスバーコンポーネント
   const ProgressBar = () => {
     if (!generationProgress) return null;
-    
-    const percentage = Math.round((generationProgress.current / generationProgress.total) * 100);
-    const estimatedMinutes = Math.floor(generationProgress.estimatedTimeLeft / 60);
+
+    const percentage = Math.round(
+      (generationProgress.current / generationProgress.total) * 100
+    );
+    const estimatedMinutes = Math.floor(
+      generationProgress.estimatedTimeLeft / 60
+    );
     const estimatedSeconds = generationProgress.estimatedTimeLeft % 60;
-    
+
     return (
       <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex justify-between items-center mb-2">
           <div className="text-sm font-medium text-blue-800">
-            大量生成中... ({generationProgress.current}/{generationProgress.total})
+            大量生成中... ({generationProgress.current}/
+            {generationProgress.total})
           </div>
-          <div className="text-sm text-blue-600">
-            {percentage}%
-          </div>
+          <div className="text-sm text-blue-600">{percentage}%</div>
         </div>
-        
+
         {/* プログレスバー */}
         <div className="w-full bg-blue-200 rounded-full h-3 mb-3">
-          <div 
+          <div
             className="bg-blue-600 h-3 rounded-full transition-all duration-300 relative overflow-hidden"
             style={{ width: `${percentage}%` }}
           >
             <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
           </div>
         </div>
-        
+
         {/* 統計情報 */}
         <div className="grid grid-cols-2 gap-4 text-xs text-blue-700">
           <div>
@@ -561,7 +660,8 @@ export const PasswordGenerator: React.FC = () => {
           <div>
             <div className="font-medium">予想残り時間</div>
             <div>
-              {estimatedMinutes > 0 ? `${estimatedMinutes}分` : ''}{estimatedSeconds}秒
+              {estimatedMinutes > 0 ? `${estimatedMinutes}分` : ''}
+              {estimatedSeconds}秒
             </div>
           </div>
         </div>
@@ -572,7 +672,9 @@ export const PasswordGenerator: React.FC = () => {
   // 大量データ表示最適化コンポーネント
   const OptimizedPasswordDisplay = ({ passwords }: { passwords: string[] }) => {
     const totalCount = passwords.length;
-    const displayedPasswords = showAllResults ? passwords : passwords.slice(0, displayLimit);
+    const displayedPasswords = showAllResults
+      ? passwords
+      : passwords.slice(0, displayLimit);
     const hiddenCount = totalCount - displayedPasswords.length;
 
     return (
@@ -582,7 +684,8 @@ export const PasswordGenerator: React.FC = () => {
           <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="text-sm text-yellow-800">
-                <span className="font-medium">{displayedPasswords.length}</span>個表示中
+                <span className="font-medium">{displayedPasswords.length}</span>
+                個表示中
                 {hiddenCount > 0 && (
                   <span className="ml-2">（{hiddenCount}個非表示）</span>
                 )}
@@ -617,17 +720,14 @@ export const PasswordGenerator: React.FC = () => {
                   長さ: {password.length}文字
                 </div>
               </div>
-              <button
+              <ActionButton
+                type="copy"
                 onClick={() => copyToClipboard(password, index)}
-                className={`ml-3 p-2 rounded transition-all ${
-                  copiedIndex === index
-                    ? 'text-green-600 bg-green-100'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                }`}
-                title="コピー"
-              >
-                {copiedIndex === index ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </button>
+                isActive={copiedIndex === index}
+                variant="secondary"
+                size="sm"
+                className="ml-3"
+              />
             </div>
           ))}
         </div>
@@ -641,19 +741,31 @@ export const PasswordGenerator: React.FC = () => {
             <div className="flex gap-2 justify-center">
               <button
                 onClick={() => setDisplayLimit(50)}
-                className={`px-3 py-1 rounded text-sm ${displayLimit === 50 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                className={`px-3 py-1 rounded text-sm ${
+                  displayLimit === 50
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
               >
                 50個
               </button>
               <button
                 onClick={() => setDisplayLimit(100)}
-                className={`px-3 py-1 rounded text-sm ${displayLimit === 100 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                className={`px-3 py-1 rounded text-sm ${
+                  displayLimit === 100
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
               >
                 100個
               </button>
               <button
                 onClick={() => setDisplayLimit(500)}
-                className={`px-3 py-1 rounded text-sm ${displayLimit === 500 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                className={`px-3 py-1 rounded text-sm ${
+                  displayLimit === 500
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
               >
                 500個
               </button>
@@ -676,7 +788,7 @@ export const PasswordGenerator: React.FC = () => {
         </p>
       </div>
 
-        {/* TDキャラクター */}
+      {/* TDキャラクター */}
       <div className="flex justify-center">
         <TDCharacter
           emotion={tdState.emotion}
@@ -685,12 +797,12 @@ export const PasswordGenerator: React.FC = () => {
           showSpeechBubble={tdState.showSpeechBubble}
           size="medium"
         />
-        </div>
+      </div>
 
       {/* 設定エリア（フル幅） */}
       <div className="bg-white rounded-lg shadow-md p-4 lg:p-6">
         <h2 className="text-xl font-semibold mb-4">🎯 生成設定</h2>
-        
+
         {/* 構成プリセット選択（フル幅） */}
         <CompositionSelector
           selectedPresetId={selectedPresetId}
@@ -701,33 +813,35 @@ export const PasswordGenerator: React.FC = () => {
         {/* 基本設定（水平レイアウト） */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-6">
           {/* パスワード長 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               パスワード長
-                </label>
-                <input
-                  type="range"
-                  min="4"
+            </label>
+            <input
+              type="range"
+              min="4"
               max="50"
-                  value={criteria.length}
-                  onChange={(e) => handleCriteriaChange('length', parseInt(e.target.value))}
+              value={criteria.length}
+              onChange={e =>
+                handleCriteriaChange('length', parseInt(e.target.value))
+              }
               className="w-full"
-                />
+            />
             <div className="text-center text-sm text-gray-500 mt-1">
               {criteria.length}文字
-                </div>
-              </div>
+            </div>
+          </div>
 
           {/* 生成個数 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               生成個数
               {criteria.count > 100 && (
                 <span className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded">
                   大量生成
                 </span>
               )}
-                </label>
+            </label>
             <div className="space-y-2">
               {/* スライダー */}
               <input
@@ -735,10 +849,12 @@ export const PasswordGenerator: React.FC = () => {
                 min="1"
                 max="1000"
                 value={criteria.count}
-                onChange={(e) => handleCriteriaChange('count', parseInt(e.target.value))}
+                onChange={e =>
+                  handleCriteriaChange('count', parseInt(e.target.value))
+                }
                 className="w-full"
               />
-              
+
               {/* 数値入力とクイック選択 */}
               <div className="flex items-center gap-2">
                 <input
@@ -746,11 +862,16 @@ export const PasswordGenerator: React.FC = () => {
                   min="1"
                   max="1000"
                   value={criteria.count}
-                  onChange={(e) => handleCriteriaChange('count', Math.min(Math.max(parseInt(e.target.value) || 1, 1), 1000))}
+                  onChange={e =>
+                    handleCriteriaChange(
+                      'count',
+                      Math.min(Math.max(parseInt(e.target.value) || 1, 1), 1000)
+                    )
+                  }
                   className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
                 />
                 <span className="text-xs text-gray-500">個</span>
-                
+
                 {/* クイック選択ボタン */}
                 <div className="flex gap-1">
                   {[10, 50, 100, 500].map(num => (
@@ -768,18 +889,20 @@ export const PasswordGenerator: React.FC = () => {
                   ))}
                 </div>
               </div>
-              
+
               {/* 生成時間の目安表示 */}
               <div className="text-xs text-gray-500">
                 {criteria.count <= 10 && '⚡ 高速生成'}
                 {criteria.count > 10 && criteria.count <= 50 && '🚀 標準生成'}
-                {criteria.count > 50 && criteria.count <= 200 && '⏳ 中規模生成（数秒）'}
+                {criteria.count > 50 &&
+                  criteria.count <= 200 &&
+                  '⏳ 中規模生成（数秒）'}
                 {criteria.count > 200 && '🔄 大規模生成（プログレス表示）'}
               </div>
-              </div>
             </div>
+          </div>
 
-            {/* 文字種選択 */}
+          {/* 文字種選択 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               使用文字種
@@ -789,7 +912,9 @@ export const PasswordGenerator: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={criteria.includeUppercase}
-                  onChange={(e) => handleCriteriaChange('includeUppercase', e.target.checked)}
+                  onChange={e =>
+                    handleCriteriaChange('includeUppercase', e.target.checked)
+                  }
                   className="mr-1.5"
                 />
                 大文字 (A-Z)
@@ -798,7 +923,9 @@ export const PasswordGenerator: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={criteria.includeLowercase}
-                  onChange={(e) => handleCriteriaChange('includeLowercase', e.target.checked)}
+                  onChange={e =>
+                    handleCriteriaChange('includeLowercase', e.target.checked)
+                  }
                   className="mr-1.5"
                 />
                 小文字 (a-z)
@@ -807,20 +934,24 @@ export const PasswordGenerator: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={criteria.includeNumbers}
-                  onChange={(e) => handleCriteriaChange('includeNumbers', e.target.checked)}
+                  onChange={e =>
+                    handleCriteriaChange('includeNumbers', e.target.checked)
+                  }
                   className="mr-1.5"
                 />
                 数字 (0-9)
               </label>
               <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
+                <input
+                  type="checkbox"
                   checked={criteria.includeSymbols}
-                  onChange={(e) => handleCriteriaChange('includeSymbols', e.target.checked)}
+                  onChange={e =>
+                    handleCriteriaChange('includeSymbols', e.target.checked)
+                  }
                   className="mr-1.5"
-                    />
+                />
                 記号 (!@#$)
-                  </label>
+              </label>
             </div>
           </div>
 
@@ -832,42 +963,52 @@ export const PasswordGenerator: React.FC = () => {
             <div className="space-y-2">
               {/* 紛らわしい文字除外 */}
               <label className="flex items-start">
-                    <input
-                      type="checkbox"
-                      checked={criteria.excludeAmbiguous}
-                      onChange={(e) => handleCriteriaChange('excludeAmbiguous', e.target.checked)}
+                <input
+                  type="checkbox"
+                  checked={criteria.excludeAmbiguous}
+                  onChange={e =>
+                    handleCriteriaChange('excludeAmbiguous', e.target.checked)
+                  }
                   className="mr-2 mt-0.5"
-                    />
+                />
                 <div>
-                  <span className="text-sm font-medium">紛らわしい文字を除外</span>
+                  <span className="text-sm font-medium">
+                    紛らわしい文字を除外
+                  </span>
                   <div className="text-xs text-gray-500 mt-1">
                     除外: i, l, 1, L, o, 0, O
                   </div>
                 </div>
-                  </label>
-                  
+              </label>
+
               {/* 似ている文字除外 */}
               <label className="flex items-start">
                 <input
                   type="checkbox"
                   checked={criteria.excludeSimilar || false}
-                  onChange={(e) => handleCriteriaChange('excludeSimilar', e.target.checked)}
+                  onChange={e =>
+                    handleCriteriaChange('excludeSimilar', e.target.checked)
+                  }
                   className="mr-2 mt-0.5"
                 />
-                  <div>
-                  <span className="text-sm font-medium">似ている記号を除外</span>
+                <div>
+                  <span className="text-sm font-medium">
+                    似ている記号を除外
+                  </span>
                   <div className="text-xs text-gray-500 mt-1">
                     除外: {'{}'}, [], (), /\, '"`~
                   </div>
                 </div>
-                    </label>
-              
+              </label>
+
               {/* 連続文字除外 */}
               <label className="flex items-start">
-                    <input
+                <input
                   type="checkbox"
                   checked={criteria.excludeSequential || false}
-                  onChange={(e) => handleCriteriaChange('excludeSequential', e.target.checked)}
+                  onChange={e =>
+                    handleCriteriaChange('excludeSequential', e.target.checked)
+                  }
                   className="mr-2 mt-0.5"
                 />
                 <div>
@@ -878,32 +1019,21 @@ export const PasswordGenerator: React.FC = () => {
                 </div>
               </label>
             </div>
-            </div>
+          </div>
 
-            {/* 生成ボタン */}
+          {/* 生成ボタン */}
           <div className="flex items-end">
-              <button
-                onClick={generatePasswords}
-                disabled={isGenerating}
-              className={`w-full px-6 py-3 rounded-lg font-semibold text-white transition-all ${
-                isGenerating
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg'
-              }`}
-              >
-                {isGenerating ? (
-                <span className="flex items-center justify-center">
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    生成中...
-                </span>
-                ) : (
-                <span className="flex items-center justify-center">
-                  <Zap className="w-4 h-4 mr-2" />
-                    パスワード生成
-                </span>
-                )}
-              </button>
-            </div>
+            <ActionButton
+              type="generate"
+              onClick={generatePasswords}
+              disabled={isGenerating}
+              loading={isGenerating}
+              variant="primary"
+              size="lg"
+              fullWidth={true}
+              className="w-full"
+            />
+          </div>
 
           {/* プログレスバー */}
           <ProgressBar />
@@ -911,25 +1041,30 @@ export const PasswordGenerator: React.FC = () => {
 
         {/* 高度な設定ボタン */}
         <div className="flex justify-center">
-          <button
+          <ActionButton
+            type="generate"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            variant="secondary"
+            size="md"
+            className="flex items-center gap-2"
           >
             <Settings2 className="w-4 h-4" />
             {showAdvanced ? '高度な設定を隠す' : '高度な設定を表示'}
-          </button>
+          </ActionButton>
         </div>
 
         {/* 高度な設定パネル */}
         {showAdvanced && (
           <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg space-y-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">⚙️ 高度な設定</h3>
-            
+            <h3 className="text-lg font-medium text-gray-800 mb-4">
+              ⚙️ 高度な設定
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 文字品質設定 */}
               <div className="space-y-4">
                 <h4 className="font-medium text-gray-700">🔍 文字品質</h4>
-                
+
                 {/* 最小エントロピー設定 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -940,20 +1075,27 @@ export const PasswordGenerator: React.FC = () => {
                     min="20"
                     max="100"
                     value={criteria.minEntropy || 50}
-                    onChange={(e) => handleCriteriaChange('minEntropy', parseInt(e.target.value))}
+                    onChange={e =>
+                      handleCriteriaChange(
+                        'minEntropy',
+                        parseInt(e.target.value)
+                      )
+                    }
                     className="w-full"
                   />
                   <div className="text-center text-sm text-gray-500 mt-1">
                     {criteria.minEntropy || 50}ビット
                   </div>
                 </div>
-                
+
                 {/* 辞書攻撃対策 */}
                 <label className="flex items-start">
                   <input
                     type="checkbox"
                     checked={criteria.avoidDictionary || false}
-                    onChange={(e) => handleCriteriaChange('avoidDictionary', e.target.checked)}
+                    onChange={e =>
+                      handleCriteriaChange('avoidDictionary', e.target.checked)
+                    }
                     className="mr-2 mt-0.5"
                   />
                   <div>
@@ -964,27 +1106,31 @@ export const PasswordGenerator: React.FC = () => {
                   </div>
                 </label>
               </div>
-              
+
               {/* 生成オプション */}
               <div className="space-y-4">
                 <h4 className="font-medium text-gray-700">⚡ 生成オプション</h4>
-                
+
                 {/* 重複チェック */}
                 <label className="flex items-start">
                   <input
                     type="checkbox"
                     checked={criteria.noDuplicates || false}
-                    onChange={(e) => handleCriteriaChange('noDuplicates', e.target.checked)}
+                    onChange={e =>
+                      handleCriteriaChange('noDuplicates', e.target.checked)
+                    }
                     className="mr-2 mt-0.5"
                   />
                   <div>
-                    <span className="text-sm font-medium">重複パスワード除去</span>
+                    <span className="text-sm font-medium">
+                      重複パスワード除去
+                    </span>
                     <div className="text-xs text-gray-500 mt-1">
                       同じパスワードが生成されないよう保証
                     </div>
                   </div>
                 </label>
-                
+
                 {/* 再試行回数 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -992,7 +1138,12 @@ export const PasswordGenerator: React.FC = () => {
                   </label>
                   <select
                     value={criteria.maxRetries || 100}
-                    onChange={(e) => handleCriteriaChange('maxRetries', parseInt(e.target.value))}
+                    onChange={e =>
+                      handleCriteriaChange(
+                        'maxRetries',
+                        parseInt(e.target.value)
+                      )
+                    }
                     className="w-full p-2 border border-gray-300 rounded"
                   >
                     <option value={10}>10回（高速）</option>
@@ -1007,7 +1158,8 @@ export const PasswordGenerator: React.FC = () => {
         )}
 
         {/* 詳細設定（カスタムプリセット用） */}
-        {(selectedPresetId === 'custom-symbols' || selectedPresetId === 'custom-charsets') && (
+        {(selectedPresetId === 'custom-symbols' ||
+          selectedPresetId === 'custom-charsets') && (
           <div className="border-t border-gray-200 pt-6">
             {/* カスタム記号設定 */}
             {selectedPresetId === 'custom-symbols' && (
@@ -1051,38 +1203,48 @@ export const PasswordGenerator: React.FC = () => {
       )}
 
       {/* 生成結果（下部にフル幅表示） */}
-          {result && (
+      {result && (
         <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">🔐 生成結果</h2>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowPasswords(!showPasswords)}
-                className="p-2 text-gray-500 hover:text-gray-700"
-                title={showPasswords ? 'パスワードを隠す' : 'パスワードを表示'}
-                  >
-                {showPasswords ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                  <button
-                    onClick={copyAllPasswords}
-                className="p-2 text-gray-500 hover:text-gray-700"
-                title="すべてコピー"
-                  >
-                <Copy className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+            <div className="flex items-center gap-2">
+              <ActionButton
+                type="replace"
+                onClick={() => setShowPasswords(!showPasswords)}
+                variant="secondary"
+                size="sm"
+              >
+                {showPasswords ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </ActionButton>
+              <ActionButton
+                type="copy"
+                onClick={copyAllPasswords}
+                variant="primary"
+                size="sm"
+              />
+            </div>
+          </div>
 
-              {/* 強度表示 */}
+          {/* 強度表示 */}
           <div className="mb-4">
-            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStrengthInfo(result.strength).bg} ${getStrengthInfo(result.strength).color}`}>
-              <span className="mr-1">{getStrengthInfo(result.strength).icon}</span>
+            <div
+              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                getStrengthInfo(result.strength).bg
+              } ${getStrengthInfo(result.strength).color}`}
+            >
+              <span className="mr-1">
+                {getStrengthInfo(result.strength).icon}
+              </span>
               強度: {getStrengthInfo(result.strength).label}
-                    </div>
+            </div>
             <p className="text-sm text-gray-600 mt-1">
               推定解読時間: {result.estimatedCrackTime}
             </p>
-                  </div>
+          </div>
 
           {/* パスワードリスト（グリッドレイアウト） */}
           <OptimizedPasswordDisplay passwords={result.passwords} />
@@ -1090,29 +1252,45 @@ export const PasswordGenerator: React.FC = () => {
           {/* 構成プリセット情報表示 */}
           {(result as any).composition && (
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-              <h4 className="font-medium text-blue-900 mb-2">✅ 構成要件チェック</h4>
+              <h4 className="font-medium text-blue-900 mb-2">
+                ✅ 構成要件チェック
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                {(result as any).composition.appliedRequirements.map((req: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between text-sm bg-white p-2 rounded">
-                    <span className="text-blue-800">{req.name}</span>
-                    <span className={`px-2 py-1 rounded text-xs ${req.satisfied ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                      {req.satisfied ? '✓ 満足' : '✗ 不足'} ({req.actualCount}/{req.requiredCount})
-                    </span>
-                  </div>
-                ))}
+                {(result as any).composition.appliedRequirements.map(
+                  (req: any, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-sm bg-white p-2 rounded"
+                    >
+                      <span className="text-blue-800">{req.name}</span>
+                      <span
+                        className={`px-2 py-1 rounded text-xs ${
+                          req.satisfied
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {req.satisfied ? '✓ 満足' : '✗ 不足'} ({req.actualCount}
+                        /{req.requiredCount})
+                      </span>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           )}
 
           <div className="text-xs text-gray-500">
             生成日時: {new Date(result.generatedAt).toLocaleString()}
-              </div>
+          </div>
 
           {/* コピー完了メッセージ（結果エリア下部） */}
           {copyMessage && (
             <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center justify-center">
-                <span className="text-green-800 font-medium">{copyMessage}</span>
+                <span className="text-green-800 font-medium">
+                  {copyMessage}
+                </span>
               </div>
             </div>
           )}
@@ -1120,4 +1298,4 @@ export const PasswordGenerator: React.FC = () => {
       )}
     </div>
   );
-}; 
+};
