@@ -89,8 +89,10 @@ app.get('/health', (req, res) => {
 
 // API ルート設定
 import aiRoutes from './routes/ai';
+import datetimeRoutes from './routes/datetime';
 import exportRoutes from './routes/export';
 import healthRoutes from './routes/health';
+import numberbooleanRoutes from './routes/numberboolean';
 import passwordRoutes from './routes/password';
 import { personalRouter } from './routes/personal';
 import uuidRoutes from './routes/uuid';
@@ -101,6 +103,8 @@ app.use('/api/personal', personalRouter);
 app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/uuid', uuidRoutes);
+app.use('/api/datetime', datetimeRoutes);
+app.use('/api/numberboolean', numberbooleanRoutes);
 
 // ルートエンドポイント
 app.get('/', (req, res) => {
@@ -112,6 +116,8 @@ app.get('/', (req, res) => {
       password: '/api/password',
       personal: '/api/personal',
       uuid: '/api/uuid',
+      datetime: '/api/datetime',
+      numberboolean: '/api/numberboolean',
       claude: '/api/claude',
       export: '/api/export',
       docs: '/api/docs'
@@ -130,6 +136,8 @@ app.use('*', (req, res) => {
       '/api/password',
       '/api/personal',
       '/api/uuid',
+      '/api/datetime',
+      '/api/numberboolean',
       '/api/claude',
       '/api/export'
     ]

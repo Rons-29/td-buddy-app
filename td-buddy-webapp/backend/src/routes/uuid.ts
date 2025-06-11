@@ -82,7 +82,11 @@ router.post('/generate', async (req: express.Request, res: express.Response) => 
       }
     };
 
+<<<<<<< HEAD
     res.json(response);
+=======
+    return res.json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
 
   } catch (error: any) {
     console.error('❌ UUID生成API エラー:', error);
@@ -101,7 +105,11 @@ router.post('/generate', async (req: express.Request, res: express.Response) => 
       timestamp: new Date().toISOString()
     };
 
+<<<<<<< HEAD
     res.status(500).json(response);
+=======
+    return res.status(500).json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
   }
 });
 
@@ -145,7 +153,11 @@ router.post('/validate', async (req: express.Request, res: express.Response) => 
       }
     };
 
+<<<<<<< HEAD
     res.json(response);
+=======
+    return res.json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
 
   } catch (error: any) {
     console.error('❌ UUID検証API エラー:', error);
@@ -164,7 +176,11 @@ router.post('/validate', async (req: express.Request, res: express.Response) => 
       timestamp: new Date().toISOString()
     };
 
+<<<<<<< HEAD
     res.status(500).json(response);
+=======
+    return res.status(500).json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
   }
 });
 
@@ -210,7 +226,11 @@ router.get('/history', async (req: express.Request, res: express.Response) => {
       }
     };
 
+<<<<<<< HEAD
     res.json(response);
+=======
+    return res.json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
 
   } catch (error: any) {
     console.error('❌ UUID履歴取得API エラー:', error);
@@ -229,7 +249,11 @@ router.get('/history', async (req: express.Request, res: express.Response) => {
       timestamp: new Date().toISOString()
     };
 
+<<<<<<< HEAD
     res.status(500).json(response);
+=======
+    return res.status(500).json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
   }
 });
 
@@ -253,7 +277,11 @@ router.get('/statistics', async (req: express.Request, res: express.Response) =>
       }
     };
 
+<<<<<<< HEAD
     res.json(response);
+=======
+    return res.json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
 
   } catch (error: any) {
     console.error('❌ UUID統計取得API エラー:', error);
@@ -272,7 +300,11 @@ router.get('/statistics', async (req: express.Request, res: express.Response) =>
       timestamp: new Date().toISOString()
     };
 
+<<<<<<< HEAD
     res.status(500).json(response);
+=======
+    return res.status(500).json(response);
+>>>>>>> d360437c6ca0c005be955fae6ad01b33c9dd0472
   }
 });
 
