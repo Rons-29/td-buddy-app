@@ -198,7 +198,7 @@
 }
 
 .td-detail-panel-content {
-  @apply p-4 space-y-4;
+  @apply p-3 space-y-2;
 }
 
 /* コンパクト入力フィールド */
@@ -222,7 +222,7 @@
 
 /* 設定グリッドレイアウト */
 .td-settings-grid {
-  @apply grid gap-3;
+  @apply grid gap-2;
 }
 
 /* レスポンシブグリッド: モバイル→タブレット→デスクトップ */

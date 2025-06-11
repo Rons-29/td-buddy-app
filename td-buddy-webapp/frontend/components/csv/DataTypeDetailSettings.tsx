@@ -49,7 +49,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
   }: {
     settings: RandomNumberSettings;
   }) => (
-    <CompactLayout type="horizontal">
+    <CompactLayout type="grid-3">
       <CompactInput
         label="最小値"
         tooltip={SETTING_TOOLTIPS.numberRange.min}
@@ -72,7 +72,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         }
         required
       />
-      <CompactRow justify="start">
+      <CompactRow>
         <CompactCheckbox
           label="整数のみ"
           tooltip={SETTING_TOOLTIPS.numberRange.isInteger}
@@ -101,7 +101,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
 
   // テキスト設定コンポーネント（コンパクト版）
   const TextSettingsComponent = ({ settings }: { settings: TextSettings }) => (
-    <CompactLayout type="horizontal">
+    <CompactLayout type="grid-3">
       <CompactInput
         label="最小単語数"
         tooltip={SETTING_TOOLTIPS.text.minWords}
@@ -126,27 +126,25 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         }
         required
       />
-      <CompactRow>
-        <CompactSelect
-          label="言語"
-          tooltip={SETTING_TOOLTIPS.text.language}
-          tooltipPosition="bottom"
-          value={settings.language}
-          onChange={(e: any) => updateSetting('language', e.target.value)}
-          options={[
-            { value: 'ja', label: '日本語' },
-            { value: 'en', label: '英語' },
-            { value: 'mixed', label: '混合' },
-          ]}
-        />
-        <CompactCheckbox
-          label="絵文字含む"
-          tooltip={SETTING_TOOLTIPS.text.includeEmoji}
-          tooltipPosition="bottom"
-          checked={settings.includeEmoji}
-          onChange={(e: any) => updateSetting('includeEmoji', e.target.checked)}
-        />
-      </CompactRow>
+      <CompactSelect
+        label="言語"
+        tooltip={SETTING_TOOLTIPS.text.language}
+        tooltipPosition="top"
+        value={settings.language}
+        onChange={(e: any) => updateSetting('language', e.target.value)}
+        options={[
+          { value: 'ja', label: '日本語' },
+          { value: 'en', label: '英語' },
+          { value: 'mixed', label: '混合' },
+        ]}
+      />
+      <CompactCheckbox
+        label="絵文字含む"
+        tooltip={SETTING_TOOLTIPS.text.includeEmoji}
+        tooltipPosition="bottom"
+        checked={settings.includeEmoji}
+        onChange={(e: any) => updateSetting('includeEmoji', e.target.checked)}
+      />
     </CompactLayout>
   );
 
@@ -156,7 +154,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
   }: {
     settings: PhoneNumberSettings;
   }) => (
-    <CompactLayout type="horizontal">
+    <CompactLayout type="grid-2">
       <CompactSelect
         label="形式"
         tooltip={SETTING_TOOLTIPS.phone.format}
@@ -169,7 +167,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
           { value: 'toll-free', label: 'フリーダイヤル' },
         ]}
       />
-      <CompactRow>
+      <div className="space-y-2">
         <CompactCheckbox
           label="ハイフン付き"
           tooltip={SETTING_TOOLTIPS.phone.includeHyphen}
@@ -188,7 +186,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
             updateSetting('includeNumbers', e.target.checked)
           }
         />
-      </CompactRow>
+      </div>
     </CompactLayout>
   );
 
@@ -198,44 +196,53 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
   }: {
     settings: EmailSettings;
   }) => (
-    <CompactLayout type="horizontal">
-      <CompactInput
+    <CompactLayout type="grid-2">
+      <CompactSelect
         label="ドメイン"
         tooltip={SETTING_TOOLTIPS.email.domain}
         tooltipPosition="top"
-        value={settings.domain || ''}
+        value={settings.domain}
         onChange={(e: any) => updateSetting('domain', e.target.value)}
-        placeholder="example.com"
-      />
-      <CompactSelect
-        label="形式"
-        tooltip={SETTING_TOOLTIPS.email.format}
-        tooltipPosition="top"
-        value={settings.format}
-        onChange={(e: any) => updateSetting('format', e.target.value)}
         options={[
-          { value: 'business', label: 'ビジネス用' },
-          { value: 'personal', label: '個人用' },
-          { value: 'random', label: 'ランダム' },
+          { value: 'example.com', label: 'example.com' },
+          { value: 'test.jp', label: 'test.jp' },
+          { value: 'sample.org', label: 'sample.org' },
+          { value: 'demo.net', label: 'demo.net' },
         ]}
       />
-      <CompactCheckbox
-        label="数字を含める"
-        tooltip={SETTING_TOOLTIPS.email.includeNumbers}
-        tooltipPosition="bottom"
-        checked={settings.includeNumbers}
-        onChange={(e: any) => updateSetting('includeNumbers', e.target.checked)}
-      />
+      <div className="space-y-2">
+        <CompactSelect
+          label="形式"
+          tooltip={SETTING_TOOLTIPS.email.format}
+          tooltipPosition="bottom"
+          value={settings.format}
+          onChange={(e: any) => updateSetting('format', e.target.value)}
+          options={[
+            { value: 'business', label: 'ビジネス用' },
+            { value: 'personal', label: '個人用' },
+            { value: 'random', label: 'ランダム' },
+          ]}
+        />
+        <CompactCheckbox
+          label="数字を含める"
+          tooltip={SETTING_TOOLTIPS.email.includeNumbers}
+          tooltipPosition="bottom"
+          checked={settings.includeNumbers}
+          onChange={(e: any) =>
+            updateSetting('includeNumbers', e.target.checked)
+          }
+        />
+      </div>
     </CompactLayout>
   );
 
-  // 日時設定コンポーネント（コンパクト版）
+  // 日付・時刻設定コンポーネント（コンパクト版）
   const DateTimeSettingsComponent = ({
     settings,
   }: {
     settings: DateTimeSettings;
   }) => (
-    <CompactLayout type="horizontal">
+    <CompactLayout type="grid-3">
       <CompactInput
         label="開始日"
         tooltip={SETTING_TOOLTIPS.dateTime.startDate}
@@ -254,28 +261,26 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         onChange={(e: any) => updateSetting('endDate', e.target.value)}
         required
       />
-      <CompactRow>
-        <CompactSelect
-          label="フォーマット"
-          tooltip={SETTING_TOOLTIPS.dateTime.format}
-          tooltipPosition="bottom"
-          value={settings.format}
-          onChange={(e: any) => updateSetting('format', e.target.value)}
-          options={[
-            { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
-            { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
-            { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY' },
-            { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
-          ]}
-        />
-        <CompactCheckbox
-          label="時刻含む"
-          tooltip={SETTING_TOOLTIPS.dateTime.includeTime}
-          tooltipPosition="bottom"
-          checked={settings.includeTime}
-          onChange={(e: any) => updateSetting('includeTime', e.target.checked)}
-        />
-      </CompactRow>
+      <CompactSelect
+        label="フォーマット"
+        tooltip={SETTING_TOOLTIPS.dateTime.format}
+        tooltipPosition="top"
+        value={settings.format}
+        onChange={(e: any) => updateSetting('format', e.target.value)}
+        options={[
+          { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
+          { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
+          { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY' },
+          { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
+        ]}
+      />
+      <CompactCheckbox
+        label="時刻含む"
+        tooltip={SETTING_TOOLTIPS.dateTime.includeTime}
+        tooltipPosition="bottom"
+        checked={settings.includeTime}
+        onChange={(e: any) => updateSetting('includeTime', e.target.checked)}
+      />
     </CompactLayout>
   );
 
@@ -285,7 +290,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
   }: {
     settings: AutoIncrementSettings;
   }) => (
-    <CompactLayout type="horizontal">
+    <CompactLayout type="grid-3">
       <CompactInput
         label="開始値"
         tooltip={SETTING_TOOLTIPS.autoIncrement.start}
@@ -322,24 +327,22 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         }
       />
       <CompactDivider />
-      <CompactRow>
-        <CompactInput
-          label="プレフィックス"
-          tooltip={SETTING_TOOLTIPS.autoIncrement.prefix}
-          tooltipPosition="bottom"
-          value={settings.prefix || ''}
-          onChange={(e: any) => updateSetting('prefix', e.target.value)}
-          placeholder="USER"
-        />
-        <CompactInput
-          label="サフィックス"
-          tooltip={SETTING_TOOLTIPS.autoIncrement.suffix}
-          tooltipPosition="bottom"
-          value={settings.suffix || ''}
-          onChange={(e: any) => updateSetting('suffix', e.target.value)}
-          placeholder="_ID"
-        />
-      </CompactRow>
+      <CompactInput
+        label="プレフィックス"
+        tooltip={SETTING_TOOLTIPS.autoIncrement.prefix}
+        tooltipPosition="bottom"
+        value={settings.prefix || ''}
+        onChange={(e: any) => updateSetting('prefix', e.target.value)}
+        placeholder="USER"
+      />
+      <CompactInput
+        label="サフィックス"
+        tooltip={SETTING_TOOLTIPS.autoIncrement.suffix}
+        tooltipPosition="bottom"
+        value={settings.suffix || ''}
+        onChange={(e: any) => updateSetting('suffix', e.target.value)}
+        placeholder="_ID"
+      />
     </CompactLayout>
   );
 
@@ -432,7 +435,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
       {/* 詳細設定パネル */}
       <div
         className={`overflow-visible transition-all duration-200 ease-in-out ${
-          isExpanded ? 'max-h-64 opacity-100 mt-2' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-48 opacity-100 mt-2' : 'max-h-0 opacity-0'
         }`}
       >
         {isExpanded && (
