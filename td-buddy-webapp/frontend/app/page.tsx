@@ -102,6 +102,54 @@ export default function Home() {
           </Link>
         </div>
 
+        {/* CSV テストデータ生成 */}
+        <div className="td-card p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200">
+          <div className="text-3xl mb-3">📊</div>
+          <h3 className="text-lg font-semibold text-orange-800 mb-2">
+            CSV テストデータ生成
+          </h3>
+          <p className="text-orange-600 mb-4">
+            ドラッグ&ドロップ対応のCSVデータ生成・プレビュー
+          </p>
+          <Link href="/csv-test">
+            <button className="td-button bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              生成開始
+            </button>
+          </Link>
+        </div>
+
+        {/* 日付・時刻データ生成 */}
+        <div className="td-card p-6 bg-gradient-to-br from-green-50 to-teal-50 border-2 border-green-200">
+          <div className="text-3xl mb-3">📅</div>
+          <h3 className="text-lg font-semibold text-green-800 mb-2">
+            日付・時刻データ生成
+          </h3>
+          <p className="text-green-600 mb-4">
+            世界標準時間対応・複数フォーマット出力
+          </p>
+          <Link href="/datetime">
+            <button className="td-button bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              生成開始
+            </button>
+          </Link>
+        </div>
+
+        {/* カラーデータ生成 */}
+        <div className="td-card p-6 bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200">
+          <div className="text-3xl mb-3">🎨</div>
+          <h3 className="text-lg font-semibold text-pink-800 mb-2">
+            カラーデータ生成
+          </h3>
+          <p className="text-pink-600 mb-4">
+            HEX・RGB・HSL・CSS名対応、カラースキーム設定
+          </p>
+          <Link href="/colors">
+            <button className="td-button bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              生成開始
+            </button>
+          </Link>
+        </div>
+
         {/* AI連携 */}
         <div className="td-card p-6">
           <div className="text-3xl mb-3">🧠</div>
