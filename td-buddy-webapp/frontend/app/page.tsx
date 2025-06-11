@@ -86,6 +86,22 @@ export default function Home() {
           </Link>
         </div>
 
+        {/* 数値・真偽値生成 */}
+        <div className="td-card p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
+          <div className="text-3xl mb-3">🔢</div>
+          <h3 className="text-lg font-semibold text-green-800 mb-2">
+            数値・真偽値生成
+          </h3>
+          <p className="text-green-600 mb-4">
+            整数、小数点、通貨、科学記法、真偽値など多様な数値データ
+          </p>
+          <Link href="/number-boolean">
+            <button className="td-button bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              生成開始
+            </button>
+          </Link>
+        </div>
+
         {/* AI連携 */}
         <div className="td-card p-6">
           <div className="text-3xl mb-3">🧠</div>
