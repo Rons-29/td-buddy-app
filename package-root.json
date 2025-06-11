@@ -1,0 +1,59 @@
+{
+  "name": "td-buddy-project",
+  "version": "1.0.0",
+  "description": "TestData Buddy - Complete Project Management (VSCode Extension + Web App)",
+  "private": true,
+  "workspaces": [
+    "td-buddy-webapp",
+    "td-buddy-webapp/frontend",
+    "td-buddy-webapp/backend"
+  ],
+  "scripts": {
+    "start-dev": "./start-dev.sh",
+    "dev": "cd td-buddy-webapp && npm run dev",
+    "dev:webapp": "cd td-buddy-webapp && npm run dev",
+    "dev:webapp:frontend": "cd td-buddy-webapp && npm run dev:frontend",
+    "dev:webapp:backend": "cd td-buddy-webapp && npm run dev:backend",
+    "build": "npm run build:webapp && npm run build:vscode",
+    "build:webapp": "cd td-buddy-webapp && npm run build",
+    "build:vscode": "npm run compile",
+    "test": "npm run test:webapp && npm run test:vscode",
+    "test:webapp": "cd td-buddy-webapp && npm run test",
+    "test:vscode": "npm run pretest && node ./out/test/runTest.js",
+    "test:with-server": "cd td-buddy-webapp && npm run test:with-server",
+    "test:with-server:unit": "cd td-buddy-webapp && npm run test:with-server:unit",
+    "test:with-server:integration": "cd td-buddy-webapp && npm run test:with-server:integration",
+    "test:with-server:e2e": "cd td-buddy-webapp && npm run test:with-server:e2e",
+    "test:with-server:all": "cd td-buddy-webapp && npm run test:with-server:all",
+    "lint": "npm run lint:webapp && npm run lint:vscode",
+    "lint:webapp": "cd td-buddy-webapp && npm run lint",
+    "lint:vscode": "eslint src --ext ts",
+    "clean": "cd td-buddy-webapp && npm run clean && rm -rf out",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package:vscode": "vsce package",
+    "install:all": "npm install && cd td-buddy-webapp && npm install"
+  },
+  "keywords": [
+    "testdata",
+    "qa",
+    "testing",
+    "data-generation",
+    "ai",
+    "vscode-extension",
+    "web-app"
+  ],
+  "author": "TD Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.4",
+    "@vscode/test-electron": "^2.2.0",
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {}
+}
