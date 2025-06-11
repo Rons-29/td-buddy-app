@@ -82,7 +82,7 @@ router.post('/generate', async (req: express.Request, res: express.Response) => 
       }
     };
 
-    res.json(response);
+    return res.json(response);
 
   } catch (error: any) {
     console.error('❌ UUID生成API エラー:', error);
@@ -145,7 +145,7 @@ router.post('/validate', async (req: express.Request, res: express.Response) => 
       }
     };
 
-    res.json(response);
+    return res.json(response);
 
   } catch (error: any) {
     console.error('❌ UUID検証API エラー:', error);
@@ -210,7 +210,7 @@ router.get('/history', async (req: express.Request, res: express.Response) => {
       }
     };
 
-    res.json(response);
+    return res.json(response);
 
   } catch (error: any) {
     console.error('❌ UUID履歴取得API エラー:', error);
