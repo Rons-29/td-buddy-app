@@ -15,15 +15,19 @@ export interface TextSettings {
 }
 
 export interface PhoneNumberSettings {
-  format: 'mobile' | 'landline' | 'both';
+  format: 'mobile' | 'landline' | 'toll-free';
   prefix: string[];
   hyphenated: boolean;
+  includeHyphen: boolean;
+  includeNumbers: boolean;
 }
 
 export interface EmailSettings {
   domains: string[];
+  domain: string;
   includeNumbers: boolean;
   maxNameLength: number;
+  format: 'business' | 'personal' | 'random';
 }
 
 export interface DateTimeSettings {
@@ -134,12 +138,16 @@ export const DEFAULT_SETTINGS: Record<string, any> = {
     format: 'mobile',
     prefix: ['090', '080', '070'],
     hyphenated: true,
+    includeHyphen: true,
+    includeNumbers: true,
   } as PhoneNumberSettings,
 
   email: {
     domains: ['example.com', 'test.co.jp', 'demo.org'],
+    domain: 'example.com',
     includeNumbers: true,
     maxNameLength: 10,
+    format: 'business',
   } as EmailSettings,
 
   dateTime: {

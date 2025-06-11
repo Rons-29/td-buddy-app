@@ -11,7 +11,9 @@ import {
   RandomNumberSettings,
   TextSettings,
 } from '../../types/csv-detailed-settings';
+import { SETTING_TOOLTIPS } from '../../types/csv-setting-tooltips';
 import { Button } from '../ui/Button';
+import { LabelWithTooltip } from '../ui/Tooltip';
 
 interface DataTypeDetailSettingsProps {
   dataType: string;
@@ -36,16 +38,18 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     });
   };
 
-  // 共通の入力フィールドコンポーネント
+  // 共通の入力フィールドコンポーネント（ツールチップ対応）
   const InputField = ({
     label,
+    tooltip,
     type = 'text',
     value,
     onChange,
+    required = false,
     ...props
   }: any) => (
     <div className="space-y-1">
-      <label className="block text-xs font-medium text-gray-700">{label}</label>
+      <LabelWithTooltip label={label} tooltip={tooltip} required={required} />
       <input
         type={type}
         value={value}
@@ -56,10 +60,18 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     </div>
   );
 
-  // 共通のセレクトコンポーネント
-  const SelectField = ({ label, value, onChange, options, ...props }: any) => (
+  // 共通のセレクトコンポーネント（ツールチップ対応）
+  const SelectField = ({
+    label,
+    tooltip,
+    value,
+    onChange,
+    options,
+    required = false,
+    ...props
+  }: any) => (
     <div className="space-y-1">
-      <label className="block text-xs font-medium text-gray-700">{label}</label>
+      <LabelWithTooltip label={label} tooltip={tooltip} required={required} />
       <select
         value={value}
         onChange={onChange}
@@ -75,20 +87,23 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     </div>
   );
 
-  // 共通のチェックボックスコンポーネント
-  const CheckboxField = ({ label, checked, onChange }: any) => (
-    <label className="flex items-center space-x-2 text-xs text-gray-700 cursor-pointer">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        className="w-3 h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-      />
-      <span>{label}</span>
-    </label>
+  // 共通のチェックボックスコンポーネント（ツールチップ対応）
+  const CheckboxField = ({ label, tooltip, checked, onChange }: any) => (
+    <div className="flex items-center space-x-2">
+      <label className="flex items-center space-x-2 text-xs text-gray-700 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={onChange}
+          className="w-3 h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        />
+        <span>{label}</span>
+      </label>
+      <LabelWithTooltip label="" tooltip={tooltip} />
+    </div>
   );
 
-  // 数値範囲設定コンポーネント（改善版）
+  // 数値範囲設定コンポーネント（改善版・ツールチップ対応）
   const NumberRangeSettings = ({
     settings,
   }: {
@@ -97,23 +112,28 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     <div className="grid grid-cols-2 gap-2">
       <InputField
         label="最小値"
+        tooltip={SETTING_TOOLTIPS.numberRange.min}
         type="number"
         value={settings.min}
         onChange={(e: any) =>
           updateSetting('min', parseInt(e.target.value) || 0)
         }
+        required
       />
       <InputField
         label="最大値"
+        tooltip={SETTING_TOOLTIPS.numberRange.max}
         type="number"
         value={settings.max}
         onChange={(e: any) =>
           updateSetting('max', parseInt(e.target.value) || 100)
         }
+        required
       />
       <div className="col-span-2 flex items-center justify-between">
         <CheckboxField
           label="整数のみ"
+          tooltip={SETTING_TOOLTIPS.numberRange.isInteger}
           checked={settings.isInteger}
           onChange={(e: any) => updateSetting('isInteger', e.target.checked)}
         />
@@ -121,6 +141,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
           <div className="w-20">
             <InputField
               label="小数桁"
+              tooltip={SETTING_TOOLTIPS.numberRange.decimals}
               type="number"
               min="0"
               max="10"
@@ -135,33 +156,38 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     </div>
   );
 
-  // テキスト設定コンポーネント（改善版）
+  // テキスト設定コンポーネント（改善版・ツールチップ対応）
   const TextSettingsComponent = ({ settings }: { settings: TextSettings }) => (
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-2">
         <InputField
           label="最小単語数"
+          tooltip={SETTING_TOOLTIPS.text.minWords}
           type="number"
           min="1"
           value={settings.minWords}
           onChange={(e: any) =>
             updateSetting('minWords', parseInt(e.target.value) || 1)
           }
+          required
         />
         <InputField
           label="最大単語数"
+          tooltip={SETTING_TOOLTIPS.text.maxWords}
           type="number"
           min="1"
           value={settings.maxWords}
           onChange={(e: any) =>
             updateSetting('maxWords', parseInt(e.target.value) || 5)
           }
+          required
         />
       </div>
       <div className="flex items-center space-x-4">
         <div className="flex-1">
           <SelectField
             label="言語"
+            tooltip={SETTING_TOOLTIPS.text.language}
             value={settings.language}
             onChange={(e: any) => updateSetting('language', e.target.value)}
             options={[
@@ -174,6 +200,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         <div className="pt-5">
           <CheckboxField
             label="絵文字含む"
+            tooltip={SETTING_TOOLTIPS.text.includeEmoji}
             checked={settings.includeEmoji}
             onChange={(e: any) =>
               updateSetting('includeEmoji', e.target.checked)
@@ -184,7 +211,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     </div>
   );
 
-  // 電話番号設定コンポーネント（改善版）
+  // 電話番号設定コンポーネント（改善版・ツールチップ対応）
   const PhoneSettingsComponent = ({
     settings,
   }: {
@@ -194,68 +221,31 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
       <div className="grid grid-cols-2 gap-2">
         <SelectField
           label="形式"
+          tooltip={SETTING_TOOLTIPS.phone.format}
           value={settings.format}
           onChange={(e: any) => updateSetting('format', e.target.value)}
           options={[
             { value: 'mobile', label: '携帯電話' },
             { value: 'landline', label: '固定電話' },
-            { value: 'both', label: '両方' },
+            { value: 'toll-free', label: 'フリーダイヤル' },
           ]}
         />
-        <div className="pt-5">
+        <div className="flex items-center space-x-2 pt-5">
           <CheckboxField
             label="ハイフン付き"
-            checked={settings.hyphenated}
-            onChange={(e: any) => updateSetting('hyphenated', e.target.checked)}
+            tooltip={SETTING_TOOLTIPS.phone.includeHyphen}
+            checked={settings.includeHyphen}
+            onChange={(e: any) =>
+              updateSetting('includeHyphen', e.target.checked)
+            }
           />
         </div>
       </div>
-      <InputField
-        label="プレフィックス（カンマ区切り）"
-        value={settings.prefix.join(', ')}
-        onChange={(e: any) =>
-          updateSetting(
-            'prefix',
-            e.target.value.split(',').map((s: string) => s.trim())
-          )
-        }
-        placeholder="090, 080, 070"
-      />
-    </div>
-  );
-
-  // メール設定コンポーネント（改善版）
-  const EmailSettingsComponent = ({
-    settings,
-  }: {
-    settings: EmailSettings;
-  }) => (
-    <div className="space-y-2">
-      <InputField
-        label="ドメイン（カンマ区切り）"
-        value={settings.domains.join(', ')}
-        onChange={(e: any) =>
-          updateSetting(
-            'domains',
-            e.target.value.split(',').map((s: string) => s.trim())
-          )
-        }
-        placeholder="example.com, test.co.jp, demo.org"
-      />
-      <div className="grid grid-cols-2 gap-2">
-        <InputField
-          label="名前部分最大文字数"
-          type="number"
-          min="3"
-          max="20"
-          value={settings.maxNameLength}
-          onChange={(e: any) =>
-            updateSetting('maxNameLength', parseInt(e.target.value) || 10)
-          }
-        />
+      <div className="flex items-center justify-between">
         <div className="pt-5">
           <CheckboxField
             label="数字を含める"
+            tooltip={SETTING_TOOLTIPS.phone.includeNumbers}
             checked={settings.includeNumbers}
             onChange={(e: any) =>
               updateSetting('includeNumbers', e.target.checked)
@@ -266,7 +256,49 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     </div>
   );
 
-  // 日時設定コンポーネント（改善版）
+  // メール設定コンポーネント（改善版・ツールチップ対応）
+  const EmailSettingsComponent = ({
+    settings,
+  }: {
+    settings: EmailSettings;
+  }) => (
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <InputField
+          label="ドメイン"
+          tooltip={SETTING_TOOLTIPS.email.domain}
+          value={settings.domain}
+          onChange={(e: any) => updateSetting('domain', e.target.value)}
+          placeholder="example.com"
+        />
+        <SelectField
+          label="形式"
+          tooltip={SETTING_TOOLTIPS.email.format}
+          value={settings.format}
+          onChange={(e: any) => updateSetting('format', e.target.value)}
+          options={[
+            { value: 'business', label: 'ビジネス用' },
+            { value: 'personal', label: '個人用' },
+            { value: 'random', label: 'ランダム' },
+          ]}
+        />
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="pt-5">
+          <CheckboxField
+            label="数字を含める"
+            tooltip={SETTING_TOOLTIPS.email.includeNumbers}
+            checked={settings.includeNumbers}
+            onChange={(e: any) =>
+              updateSetting('includeNumbers', e.target.checked)
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  // 日時設定コンポーネント（改善版・ツールチップ対応）
   const DateTimeSettingsComponent = ({
     settings,
   }: {
@@ -276,21 +308,26 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
       <div className="grid grid-cols-2 gap-2">
         <InputField
           label="開始日"
+          tooltip={SETTING_TOOLTIPS.dateTime.startDate}
           type="date"
           value={settings.startDate}
           onChange={(e: any) => updateSetting('startDate', e.target.value)}
+          required
         />
         <InputField
           label="終了日"
+          tooltip={SETTING_TOOLTIPS.dateTime.endDate}
           type="date"
           value={settings.endDate}
           onChange={(e: any) => updateSetting('endDate', e.target.value)}
+          required
         />
       </div>
       <div className="flex items-center space-x-4">
         <div className="flex-1">
           <SelectField
             label="フォーマット"
+            tooltip={SETTING_TOOLTIPS.dateTime.format}
             value={settings.format}
             onChange={(e: any) => updateSetting('format', e.target.value)}
             options={[
@@ -304,6 +341,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
         <div className="pt-5">
           <CheckboxField
             label="時刻含む"
+            tooltip={SETTING_TOOLTIPS.dateTime.includeTime}
             checked={settings.includeTime}
             onChange={(e: any) =>
               updateSetting('includeTime', e.target.checked)
@@ -314,7 +352,7 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
     </div>
   );
 
-  // 連番設定コンポーネント（改善版）
+  // 連番設定コンポーネント（改善版・ツールチップ対応）
   const AutoIncrementSettingsComponent = ({
     settings,
   }: {
@@ -324,23 +362,28 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
       <div className="grid grid-cols-3 gap-2">
         <InputField
           label="開始値"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.start}
           type="number"
           value={settings.start}
           onChange={(e: any) =>
             updateSetting('start', parseInt(e.target.value) || 1)
           }
+          required
         />
         <InputField
           label="増分"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.step}
           type="number"
           min="1"
           value={settings.step}
           onChange={(e: any) =>
             updateSetting('step', parseInt(e.target.value) || 1)
           }
+          required
         />
         <InputField
           label="ゼロパディング"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.padding}
           type="number"
           min="0"
           max="10"
@@ -353,12 +396,14 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
       <div className="grid grid-cols-2 gap-2">
         <InputField
           label="プレフィックス"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.prefix}
           value={settings.prefix}
           onChange={(e: any) => updateSetting('prefix', e.target.value)}
           placeholder="USER"
         />
         <InputField
           label="サフィックス"
+          tooltip={SETTING_TOOLTIPS.autoIncrement.suffix}
           value={settings.suffix}
           onChange={(e: any) => updateSetting('suffix', e.target.value)}
           placeholder="_ID"
@@ -442,7 +487,8 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
             <div className="space-y-2">{renderSettingsComponent()}</div>
             <div className="mt-2 pt-2 border-t border-gray-200">
               <p className="text-xs text-gray-500">
-                💡 TDからのTip: 設定を変更すると、データ生成時に反映されます
+                💡 TDからのTip:
+                設定項目のインフォマーク（ℹ️）にホバーすると詳しい説明が表示されます
               </p>
             </div>
           </div>
