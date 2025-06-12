@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TD Buddy カスタムスタイル */
+.td-gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.td-card {
+  @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
+}
+
+.td-button {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+}
+
+.td-button-primary {
+  @apply td-button bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.td-button-secondary {
+  @apply td-button bg-gray-200 text-gray-800 hover:bg-gray-300;
+}
+
+.td-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.td-form-group {
+  @apply mb-4;
+}
+
+.td-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.td-label-compact {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+.td-input-compact {
+  @apply px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white;
+}
+
+/* フォント最適化とパフォーマンス向上 */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap; /* フォント表示最適化 */
+  src: local('Inter Regular'), local('Inter-Regular');
+}
+
+/* 高速化のためのCSS最適化 */
+* {
+  font-synthesis: none; /* フォント合成を無効化 */
+}
+
+body {
+  font-feature-settings: 'kern' 1; /* カーニング最適化 */
+  text-rendering: optimizeSpeed; /* 高速レンダリング */
+}
+
+/* プリロード警告解決とパフォーマンス最適化 */
+.td-fast-render {
+  will-change: auto;
+  contain: layout style paint;
+}
+
+.font-optimized {
+  font-display: swap;
+  text-rendering: optimizeSpeed;
+}
+
+/* 超高速処理用の最適化 */
+.turbo-processing {
+  transform: translateZ(0); /* GPU加速 */
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* プログレスバーの最適化 */
+.progress-bar-optimized {
+  will-change: width;
+  transform: translateZ(0);
+}
