@@ -2,6 +2,8 @@
 
 import { Eye, EyeOff, Settings2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
+import { APP_CONFIG, TD_MESSAGES } from '../lib/config';
+import { generatePasswordsLocal } from '../lib/passwordUtils';
 import {
   APIResponse,
   CustomCharset,
@@ -61,8 +63,9 @@ export const PasswordGenerator: React.FC = () => {
   const [tdState, setTdState] = useState<TDState>({
     emotion: 'happy',
     animation: 'float',
-    message:
-      'パスワード生成の準備ができました！構成プリセットをお選びください♪',
+    message: APP_CONFIG.isOfflineMode
+      ? TD_MESSAGES.OFFLINE_MODE
+      : 'パスワード生成の準備ができました！構成プリセットをお選びください♪',
     showSpeechBubble: true,
   });
 
@@ -365,8 +368,46 @@ export const PasswordGenerator: React.FC = () => {
     totalCount: number,
     safeConfig: any
   ) => {
-    const endpoint =
-      'http://localhost:3001/api/password/generate-with-composition';
+    // オフラインモード時はローカル生成
+    if (APP_CONFIG.isOfflineMode) {
+      const localResult = generatePasswordsLocal({
+        length: criteria.length,
+        count: totalCount,
+        includeUppercase: safeConfig.useUppercase ?? criteria.includeUppercase,
+        includeLowercase: safeConfig.useLowercase ?? criteria.includeLowercase,
+        includeNumbers: safeConfig.useNumbers ?? criteria.includeNumbers,
+        includeSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
+        excludeAmbiguous: criteria.excludeAmbiguous,
+        customSymbols:
+          safeConfig.composition === 'custom-symbols'
+            ? customSymbols
+            : undefined,
+      });
+
+      setResult(localResult);
+
+      // TDキャラクターの成功反応
+      setTdState(prev => ({
+        ...prev,
+        emotion: 'excited',
+        animation: 'heartbeat',
+        message: `🤖 ローカル生成完了！${localResult.strength}強度のパスワードを${localResult.passwords.length}個生成しました♪`,
+        showSpeechBubble: true,
+      }));
+
+      setTimeout(() => {
+        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+      }, 3000);
+      return;
+    }
+
+    // API生成（レガシー - バックエンド設定完了後に有効）
+    const apiUrl = APP_CONFIG.getApiUrl(
+      '/api/password/generate-with-composition'
+    );
+    if (!apiUrl) {
+      throw new Error('API接続が利用できません');
+    }
 
     const requestBody: any = {
       length: criteria.length,
@@ -384,7 +425,7 @@ export const PasswordGenerator: React.FC = () => {
       }),
     };
 
-    const response = await fetch(endpoint, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -463,42 +504,70 @@ export const PasswordGenerator: React.FC = () => {
         showSpeechBubble: true,
       }));
 
-      // チャンク生成（直接APIコール）
-      const endpoint =
-        'http://localhost:3001/api/password/generate-with-composition';
+      let chunkResult: PasswordResult;
 
-      const requestBody: any = {
-        length: criteria.length,
-        count: currentChunkSize,
-        composition: safeConfig.composition,
-        excludeAmbiguous: criteria.excludeAmbiguous,
-        excludeSimilar: true,
-        useNumbers: safeConfig.useNumbers ?? criteria.includeNumbers,
-        useUppercase: safeConfig.useUppercase ?? criteria.includeUppercase,
-        useLowercase: safeConfig.useLowercase ?? criteria.includeLowercase,
-        useSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
-        ...(safeConfig.composition === 'custom-symbols' && { customSymbols }),
-        ...(safeConfig.composition === 'custom-charsets' && {
-          customCharsets: safeConfig.customCharsets,
-        }),
-      };
+      // オフラインモード時はローカル生成
+      if (APP_CONFIG.isOfflineMode) {
+        const localResult = generatePasswordsLocal({
+          length: criteria.length,
+          count: currentChunkSize,
+          includeUppercase:
+            safeConfig.useUppercase ?? criteria.includeUppercase,
+          includeLowercase:
+            safeConfig.useLowercase ?? criteria.includeLowercase,
+          includeNumbers: safeConfig.useNumbers ?? criteria.includeNumbers,
+          includeSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
+          excludeAmbiguous: criteria.excludeAmbiguous,
+          customSymbols:
+            safeConfig.composition === 'custom-symbols'
+              ? customSymbols
+              : undefined,
+        });
+        chunkResult = localResult;
+      } else {
+        // API生成（レガシー - バックエンド設定完了後に有効）
+        const apiUrl = APP_CONFIG.getApiUrl(
+          '/api/password/generate-with-composition'
+        );
+        if (!apiUrl) {
+          throw new Error('API接続が利用できません');
+        }
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Session-ID': `td-session-${Date.now()}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
+        const requestBody: any = {
+          length: criteria.length,
+          count: currentChunkSize,
+          composition: safeConfig.composition,
+          excludeAmbiguous: criteria.excludeAmbiguous,
+          excludeSimilar: true,
+          useNumbers: safeConfig.useNumbers ?? criteria.includeNumbers,
+          useUppercase: safeConfig.useUppercase ?? criteria.includeUppercase,
+          useLowercase: safeConfig.useLowercase ?? criteria.includeLowercase,
+          useSymbols: safeConfig.useSymbols ?? criteria.includeSymbols,
+          ...(safeConfig.composition === 'custom-symbols' && { customSymbols }),
+          ...(safeConfig.composition === 'custom-charsets' && {
+            customCharsets: safeConfig.customCharsets,
+          }),
+        };
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-ID': `td-session-${Date.now()}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error?.message || `HTTP ${response.status}`
+          );
+        }
+
+        const data: APIResponse = await response.json();
+        chunkResult = data.data;
       }
-
-      const data: APIResponse = await response.json();
-      const chunkResult = data.data;
 
       // 結果をマージ
       if (chunkResult) {
@@ -527,7 +596,9 @@ export const PasswordGenerator: React.FC = () => {
       ...prev,
       emotion: 'excited',
       animation: 'heartbeat',
-      message: `🎉 ${totalCount}個の大量生成完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`,
+      message: APP_CONFIG.isOfflineMode
+        ? `🎉 ${totalCount}個のローカル大量生成完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`
+        : `🎉 ${totalCount}個の大量生成完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`,
       showSpeechBubble: true,
     }));
 
@@ -568,7 +639,9 @@ export const PasswordGenerator: React.FC = () => {
 
   // 全パスワードをコピー
   const copyAllPasswords = async () => {
-    if (!result?.passwords) return;
+    if (!result?.passwords) {
+      return;
+    }
 
     const allPasswords = result.passwords.join('\n');
     try {
@@ -621,7 +694,9 @@ export const PasswordGenerator: React.FC = () => {
 
   // プログレスバーコンポーネント
   const ProgressBar = () => {
-    if (!generationProgress) return null;
+    if (!generationProgress) {
+      return null;
+    }
 
     const percentage = Math.round(
       (generationProgress.current / generationProgress.total) * 100
