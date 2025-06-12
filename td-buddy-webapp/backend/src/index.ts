@@ -132,7 +132,7 @@ app.get('/', (req, res) => {
       export: '/api/export',
       docs: '/api/docs',
     },
-    tdMessage:
+    brewMessage:
       'こんにちは！TDのバックエンドサーバーです。API経由でデータ生成をお手伝いします♪',
   });
 });

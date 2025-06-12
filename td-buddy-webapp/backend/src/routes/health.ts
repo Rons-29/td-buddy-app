@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
     res.status(200).json({
       success: true,
       data: healthResponse,
-      tdMessage: randomMessage,
+      brewMessage: randomMessage,
       timestamp: new Date().toISOString(),
       metadata: {
         nodeVersion,
@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         code: 'HEALTH_CHECK_FAILED',
         message: 'ヘルスチェックに失敗しました',
         statusCode: 503,
-        tdMessage:
+        brewMessage:
           'システムに問題が発生しているようです。管理者に連絡してください。',
         timestamp: new Date().toISOString(),
         path: req.originalUrl,
@@ -134,7 +134,7 @@ router.get('/detailed', async (req, res) => {
         environment: envInfo,
         timestamp: new Date().toISOString(),
       },
-      tdMessage: '詳細なシステム情報をお届けします！技術者向けの情報ですね📊',
+      brewMessage: '詳細なシステム情報をお届けします！技術者向けの情報ですね📊',
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -146,7 +146,7 @@ router.get('/detailed', async (req, res) => {
         code: 'DETAILED_HEALTH_CHECK_FAILED',
         message: '詳細ヘルスチェックに失敗しました',
         statusCode: 500,
-        tdMessage: '詳細情報の取得に失敗しました。再度お試しください。',
+        brewMessage: '詳細情報の取得に失敗しました。再度お試しください。',
         timestamp: new Date().toISOString(),
         path: req.originalUrl,
         method: req.method,

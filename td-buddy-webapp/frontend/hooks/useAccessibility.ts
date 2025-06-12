@@ -128,7 +128,7 @@ export const useAccessibility = () => {
    * Brewキャラクターからのメッセージを通知
    * @param message ブリューからのメッセージ
    */
-  const announceTDMessage = useCallback(
+  const announceBrewMessage = useCallback(
     (message: string) => {
       const brewMessage = `ブリューからのメッセージ：${message}`;
       announceToScreenReader(brewMessage, 'polite');
@@ -154,7 +154,7 @@ export const useAccessibility = () => {
     announceProgress,
     announceError,
     announceSuccess,
-    announceTDMessage,
+    announceBrewMessage,
   };
 };
 

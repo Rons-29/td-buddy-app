@@ -1,0 +1,46 @@
+{
+  "name": "td-buddy-webapp",
+  "version": "1.0.0",
+  "description": "QA Workbench - AI連携型テストデータ生成ツール（ローカルWebアプリ版）",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "start-dev": "./start-dev.sh",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "cd backend && npm run start",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:frontend": "cd frontend && npm run test",
+    "test:backend": "cd backend && npm run test",
+    "test:with-server": "./test-with-server.sh",
+    "test:with-server:unit": "./test-with-server.sh unit",
+    "test:with-server:integration": "./test-with-server.sh integration",
+    "test:with-server:e2e": "./test-with-server.sh e2e",
+    "test:with-server:all": "./test-with-server.sh all",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "clean": "rm -rf frontend/dist backend/dist frontend/.next"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.2"
+  },
+  "keywords": [
+    "testdata",
+    "qa",
+    "testing",
+    "data-generation",
+    "ai"
+  ],
+  "author": "TD Team",
+  "license": "MIT"
+}

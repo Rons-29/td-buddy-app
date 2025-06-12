@@ -35,7 +35,7 @@ export const AccessibleTabNavigation: React.FC<
     defaultActiveTab || tabs[0]?.id
   );
   const tabListRef = useRef<HTMLDivElement>(null);
-  const { announceToScreenReader, announceTDMessage } = useAccessibility();
+  const { announceToScreenReader, announceBrewMessage } = useAccessibility();
 
   const activeTabIndex = tabs.findIndex(tab => tab.id === activeTabId);
   const tabIds = tabs.map(tab => tab.id);
@@ -52,7 +52,7 @@ export const AccessibleTabNavigation: React.FC<
     const tab = tabs.find(t => t.id === tabId);
     if (tab) {
       announceToScreenReader(`${tab.label}タブが選択されました`);
-      announceTDMessage(`${tab.label}の画面に切り替わりました！`);
+      announceBrewMessage(`${tab.label}の画面に切り替わりました！`);
     }
   };
 

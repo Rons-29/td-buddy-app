@@ -239,7 +239,7 @@ export interface TDSystemInfo {
   storageUsed: number;
   lastCleanup: string;
   status: 'healthy' | 'warning' | 'error';
-  tdMessage: string;
+  brewMessage: string;
 }
 
 // ==================================================

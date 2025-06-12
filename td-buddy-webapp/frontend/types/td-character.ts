@@ -34,7 +34,7 @@ export interface TDState {
 }
 
 // ブリューからのメッセージ定義
-export interface TDMessage {
+export interface BrewMessage {
   id: string;
   emotion: BrewEmotion;
   text: string;

@@ -34,7 +34,7 @@ export interface GeneratedDateTime {
     weekNumber: number;
     era?: string;
   };
-  tdMessage: string;
+  brewMessage: string;
   generatedAt: Date;
 }
 
@@ -44,7 +44,7 @@ export interface DateTimeGenerationResult {
   count: number;
   options: DateTimeOptions;
   message: string;
-  tdMessage: string;
+  brewMessage: string;
   generatedAt: Date;
 }
 
@@ -73,7 +73,7 @@ export class DateTimeService {
         count: generatedDates.length,
         options,
         message: `${count}件の日付・時刻を生成しました`,
-        tdMessage: this.getTDMessage(options.format, count),
+        brewMessage: this.getBrewMessage(options.format, count),
         generatedAt: new Date(),
       };
     } catch (error: any) {
@@ -83,7 +83,7 @@ export class DateTimeService {
         count: 0,
         options,
         message: `日付・時刻生成エラー: ${error?.message || '不明なエラー'}`,
-        tdMessage: "エラーが発生しましたが、TDが一緒に解決します！",
+        brewMessage: "エラーが発生しましたが、Brewが一緒に解決します！",
         generatedAt: new Date(),
       };
     }
@@ -139,7 +139,7 @@ export class DateTimeService {
       locale: options.locale || 'ja-JP',
       timezone: options.timezone || 'Asia/Tokyo',
       metadata,
-      tdMessage: this.generateTDMessage(originalDate, options.format),
+      brewMessage: this.generateBrewMessage(originalDate, options.format),
       generatedAt: new Date(),
     };
   }
@@ -376,7 +376,7 @@ export class DateTimeService {
   /**
    * TDメッセージ生成
    */
-  private generateTDMessage(date: Date, format: string): string {
+  private generateBrewMessage(date: Date, format: string): string {
     const messages: Record<string, string[]> = {
       iso8601: [
         "国際標準の日時形式です！システム間連携に最適ですね♪",
@@ -422,7 +422,7 @@ export class DateTimeService {
   /**
    * 全体のTDメッセージ取得
    */
-  private getTDMessage(format: string, count: number): string {
+  private getBrewMessage(format: string, count: number): string {
     const baseMessages = [
       `${count}件の${format}形式の日付・時刻を生成しました！`,
       `日付・時刻生成、完了です！${count}件すべて品質チェック済み♪`,

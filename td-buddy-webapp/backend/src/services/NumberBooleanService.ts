@@ -47,7 +47,7 @@ export interface GeneratedNumberBoolean {
     digits: number;
     category: string;
   };
-  tdMessage: string;
+  brewMessage: string;
   generatedAt: Date;
 }
 
@@ -57,7 +57,7 @@ export interface NumberBooleanGenerationResult {
   count: number;
   options: NumberBooleanOptions;
   message: string;
-  tdMessage: string;
+  brewMessage: string;
   generatedAt: Date;
 }
 
@@ -81,7 +81,7 @@ export class NumberBooleanService {
         count: data.length,
         options,
         message: `${data.length}件の数値・真偽値を生成しました`,
-        tdMessage: this.generateSuccessMessage(data.length, options.type),
+        brewMessage: this.generateSuccessMessage(data.length, options.type),
         generatedAt: new Date(),
       };
       
@@ -92,7 +92,7 @@ export class NumberBooleanService {
         count: 0,
         options,
         message: `数値・真偽値生成エラー: ${error?.message || '不明なエラー'}`,
-        tdMessage: "エラーが発生しましたが、TDが一緒に解決します！",
+        brewMessage: "エラーが発生しましたが、Brewが一緒に解決します！",
         generatedAt: new Date(),
       };
     }
@@ -166,7 +166,7 @@ export class NumberBooleanService {
       type: this.getTypeDisplayName(options.type),
       options,
       metadata,
-      tdMessage: this.generateTDMessage(options.type, rawValue),
+      brewMessage: this.generateBrewMessage(options.type, rawValue),
       generatedAt,
     };
   }
@@ -429,7 +429,7 @@ export class NumberBooleanService {
      /**
     * TDメッセージ生成
     */
-   private generateTDMessage(type: string, value: number | boolean): string {
+   private generateBrewMessage(type: string, value: number | boolean): string {
      const messages: Record<string, string[]> = {
        integer: [
          "整数生成、バッチリです！計算やカウンターに最適♪",

@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "exportedAt": "2025-06-10T14:18:08.750Z",
+    "recordCount": 1,
+    "generatedBy": "QA Workbench",
+    "version": "1.0.0"
+  },
+  "data": [
+    {
+      "name": "テスト太郎",
+      "email": "test@example.com"
+    }
+  ]
+}

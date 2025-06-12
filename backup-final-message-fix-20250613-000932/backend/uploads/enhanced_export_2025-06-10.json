@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "exportedAt": "2025-06-10T14:55:40.392Z",
+    "recordCount": 10,
+    "generatedBy": "QA Workbench",
+    "version": "1.0.0"
+  },
+  "data": [
+    {
+      "id": 1,
+      "testField1": "テストデータ1",
+      "testField2": 315,
+      "testField3": true,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.6808358707617954,
+      "category": "C",
+      "status": "pending",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 2,
+      "testField1": "テストデータ2",
+      "testField2": 329,
+      "testField3": false,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.3291998098766775,
+      "category": "B",
+      "status": "pending",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 3,
+      "testField1": "テストデータ3",
+      "testField2": 903,
+      "testField3": true,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.14216702254294544,
+      "category": "C",
+      "status": "inactive",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 4,
+      "testField1": "テストデータ4",
+      "testField2": 897,
+      "testField3": false,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.5003021166357275,
+      "category": "B",
+      "status": "inactive",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 5,
+      "testField1": "テストデータ5",
+      "testField2": 387,
+      "testField3": false,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.8559480394726893,
+      "category": "B",
+      "status": "inactive",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 6,
+      "testField1": "テストデータ6",
+      "testField2": 728,
+      "testField3": true,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.3567996027716924,
+      "category": "D",
+      "status": "pending",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 7,
+      "testField1": "テストデータ7",
+      "testField2": 17,
+      "testField3": true,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.8754960305208839,
+      "category": "D",
+      "status": "inactive",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 8,
+      "testField1": "テストデータ8",
+      "testField2": 396,
+      "testField3": false,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.45580673516885617,
+      "category": "A",
+      "status": "inactive",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 9,
+      "testField1": "テストデータ9",
+      "testField2": 922,
+      "testField3": true,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.638836707302562,
+      "category": "D",
+      "status": "pending",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    },
+    {
+      "id": 10,
+      "testField1": "テストデータ10",
+      "testField2": 159,
+      "testField3": true,
+      "testField4": "2025-06-10T14:55:40.392Z",
+      "randomValue": 0.6794825983283685,
+      "category": "D",
+      "status": "active",
+      "generatedAt": "2025-06-10T14:55:40.392Z"
+    }
+  ]
+}
