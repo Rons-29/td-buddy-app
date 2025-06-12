@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Noto_Sans_JP } from 'next/font/google';
 import Link from 'next/link';
 
+import { EnvironmentInfo } from '@/components/EnvironmentInfo';
 import './globals.css';
 
 const inter = Inter({
@@ -145,6 +146,9 @@ export default function RootLayout({
             </div>
           </footer>
         </div>
+
+        {/* 環境情報デバッグコンポーネント */}
+        <EnvironmentInfo />
       </body>
     </html>
   );
