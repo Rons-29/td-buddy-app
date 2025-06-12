@@ -145,3 +145,5 @@ docs/
 
 # Only essential public docs allowed
 # Everything else stays local for security
+# Local Netlify folder
+.netlify

@@ -274,9 +274,13 @@ export class CSVImporter {
       const settings = this.generateTypeSettings(detectedType, sampleData);
 
       columns.push({
+        id: `col_${colIndex + 1}`,
         name: columnName,
         dataType: detectedType,
         settings,
+        nullable: true,
+        nullRatio: 10,
+        unique: false,
       });
     }
 
@@ -579,6 +583,13 @@ export class TDImportHelper {
       phone: '電話番号',
       date: '日付',
       age: '年齢',
+      boolean: 'ブール値',
+      uuid: 'UUID',
+      url: 'URL',
+      address: '住所',
+      company: '会社名',
+      color: 'カラー',
+      custom: 'カスタム',
     };
 
     return typeNames[type] || type;

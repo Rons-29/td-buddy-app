@@ -200,7 +200,8 @@ abstract class ChunkGenerator {
 
   protected generateFastContent(targetBytes: number): string {
     // 高速コンテンツ生成（繰り返しパターン使用）
-    const baseContent = getRandomSample();
+    const baseWork = getRandomSample();
+    const baseContent = `【${baseWork.title}】（${baseWork.author}著）\n${baseWork.content}`;
     const baseSize = new Blob([baseContent]).size;
     const repetitions = Math.ceil(targetBytes / baseSize);
 
@@ -239,7 +240,7 @@ class JsonChunkGenerator extends ChunkGenerator {
     while (currentSize < targetBytes) {
       const item = {
         id: ++this.itemCount,
-        content: getRandomSample().substring(0, 100), // 短縮して高速化
+        content: getRandomSample().content.substring(0, 100), // 短縮して高速化
         timestamp: new Date().toISOString(),
         size: Math.floor(Math.random() * 1000),
       };
@@ -267,7 +268,7 @@ class XmlChunkGenerator extends ChunkGenerator {
 
     while (currentSize < targetBytes) {
       const record = `  <record id="${++this.recordCount}">
-    <content>${getRandomSample().substring(0, 80)}</content>
+    <content>${getRandomSample().content.substring(0, 80)}</content>
     <timestamp>${new Date().toISOString()}</timestamp>
   </record>\n`;
 
@@ -292,7 +293,7 @@ class CsvChunkGenerator extends ChunkGenerator {
     let currentSize = 0;
 
     while (currentSize < targetBytes) {
-      const row = `${++this.rowCount},"${getRandomSample().substring(
+      const row = `${++this.rowCount},"${getRandomSample().content.substring(
         0,
         50
       )}","${new Date().toISOString()}",${Math.floor(Math.random() * 1000)}\n`;

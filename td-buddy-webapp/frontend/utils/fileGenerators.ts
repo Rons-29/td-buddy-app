@@ -103,7 +103,6 @@ export function generateAozoraBunkoContent(
     content += `【作品 ${index + 1}】\n`;
     content += `タイトル: ${work.title}\n`;
     content += `著者: ${work.author}\n`;
-    content += `概要: ${work.description}\n`;
     content += '-'.repeat(30) + '\n';
     content += work.content + '\n\n';
   });
@@ -394,14 +393,14 @@ export function generateRealTextFile(
 
     switch (fileType) {
       case 'csv':
-        let csvContent = 'ID,タイトル,著者,概要,本文の一部\n';
+        let csvContent = 'ID,タイトル,著者,本文の一部\n';
 
         AOZORA_BUNKO_SAMPLES.forEach((work, index) => {
           const excerpt = work.content
             .substring(0, 100)
             .replace(/"/g, '""')
             .replace(/\n/g, ' ');
-          csvContent += `"${work.id}","${work.title}","${work.author}","${work.description}","${excerpt}"\n`;
+          csvContent += `"${work.id}","${work.title}","${work.author}","${excerpt}"\n`;
         });
 
         // サイズ調整
