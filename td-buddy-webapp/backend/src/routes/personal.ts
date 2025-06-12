@@ -1,9 +1,12 @@
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+import { PersonalInfoGenerateRequest } from '../types/personalInfo';
+import { PersonalInfoService } from '../services/PersonalInfoService';
+
+// Logger setup
+const logger = console;
+
 import crypto 
- Request, Response, Router } 
- database } 
- ValidationError } 
- PersonalInfoService } 
- PersonalInfoGenerateRequest } 
 
 const router = Router();
 const personalInfoService = new PersonalInfoService();

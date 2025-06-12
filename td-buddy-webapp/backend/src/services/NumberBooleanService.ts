@@ -1,4 +1,4 @@
-export interface NumberBooleanOptions {
+const logger = console;export interface NumberBooleanOptions {
   type: 'integer' | 'float' | 'percentage' | 'currency' | 'scientific' | 'boolean' | 'special';
   
   // 数値範囲設定

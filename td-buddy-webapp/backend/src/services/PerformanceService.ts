@@ -1,4 +1,4 @@
- performance } 
+const logger = console; performance } 
 
 export interface PerformanceMetrics {
   operation: string;

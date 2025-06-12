@@ -1,7 +1,10 @@
- Request, Response } 
- ValidationError } 
- CompositionPasswordService } 
- PasswordService } 
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+import { PasswordService, PasswordOptions } from '../services/PasswordService';
+
+// Logger setup
+const logger = console;
+
 import {
   APIResponse,
   CompositionPasswordRequest,

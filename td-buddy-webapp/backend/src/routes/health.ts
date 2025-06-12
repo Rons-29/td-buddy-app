@@ -1,5 +1,10 @@
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+
+// Logger setup
+const logger = console;
+
 import express 
- HealthCheckResponse } 
 
 const router = express.Router();
 

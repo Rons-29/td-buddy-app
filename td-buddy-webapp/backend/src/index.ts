@@ -7,7 +7,9 @@ import { createServer } from 'http';
 import { database } from './database/database';
 import { errorHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
-import { WebSocketService } from './services/WebSocketService';
+
+// Logger setup
+const logger = console;
 
 // Load environment variables
 dotenv.config();

@@ -1,6 +1,11 @@
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+import { UuidService, UuidOptions } from '../services/UuidService';
+
+// Logger setup
+const logger = console;
+
 import express 
- UuidService } 
- ApiResponse, UuidGenerateRequest, UuidValidateRequest } 
 
 const router = express.Router();
 const uuidService = new UuidService();

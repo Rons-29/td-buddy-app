@@ -1,6 +1,10 @@
- Request, Response, Router } 
- database } 
- NumberBooleanOptions, NumberBooleanService } 
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+import { NumberBooleanService, NumberOptions, BooleanOptions } from '../services/NumberBooleanService';
+
+// Logger setup
+const logger = console;
+
 
 const router = Router();
 const numberBooleanService = new NumberBooleanService();

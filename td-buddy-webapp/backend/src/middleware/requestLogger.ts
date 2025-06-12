@@ -1,10 +1,17 @@
- Request, Response, NextFunction } 
+import { NextFunction, Request, Response } from 'express';
+
+// ロガーインポート
+const logger = console;
 
 /**
  * リクエストログミドルウェア
  * すべてのAPIリクエストの詳細をログに記録
  */
-export const requestLogger = (req: Request, res: Response, next: NextFunction): void => {
+export const requestLogger = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const start = Date.now();
   const timestamp = new Date().toISOString();
   const method = req.method;
@@ -19,13 +26,18 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
   res.on('finish', () => {
     const duration = Date.now() - start;
     const statusCode = res.statusCode;
-    const statusEmoji = statusCode >= 400 ? '❌' : statusCode >= 300 ? '⚠️' : '✅';
-    
-    logger.log(`${statusEmoji} [${timestamp}] ${method} ${url} - ${statusCode} - ${duration}ms - IP: ${ip}`);
-    
+    const statusEmoji =
+      statusCode >= 400 ? '❌' : statusCode >= 300 ? '⚠️' : '✅';
+
+    logger.log(
+      `${statusEmoji} [${timestamp}] ${method} ${url} - ${statusCode} - ${duration}ms - IP: ${ip}`
+    );
+
     // エラー時の詳細ログ
     if (statusCode >= 400) {
-      logger.log(`🔍 Error Details - UA: ${userAgent}, Body: ${JSON.stringify(req.body)}`);
+      logger.log(
+        `🔍 Error Details - UA: ${userAgent}, Body: ${JSON.stringify(req.body)}`
+      );
     }
   });
 
@@ -35,10 +47,13 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
 /**
  * TDキャラクター付きログ出力
  */
-export const tdLog = (message: string, level: 'info' | 'warn' | 'error' = 'info'): void => {
+export const tdLog = (
+  message: string,
+  level: 'info' | 'warn' | 'error' = 'info'
+): void => {
   const timestamp = new Date().toISOString();
   const emoji = level === 'error' ? '🚨' : level === 'warn' ? '⚠️' : '🍺';
-  
+
   logger.log(`${emoji} TD [${timestamp}]: ${message}`);
 };
 
@@ -57,7 +72,7 @@ export const apiStats = {
   // 統計更新
   updateStats(statusCode: number, duration: number) {
     this.totalRequests++;
-    
+
     if (statusCode >= 200 && statusCode < 400) {
       this.successfulRequests++;
     } else {
@@ -65,7 +80,9 @@ export const apiStats = {
     }
 
     // 移動平均でレスポンス時間を計算
-    this.averageResponseTime = (this.averageResponseTime * (this.totalRequests - 1) + duration) / this.totalRequests;
+    this.averageResponseTime =
+      (this.averageResponseTime * (this.totalRequests - 1) + duration) /
+      this.totalRequests;
   },
 
   // 統計取得
@@ -75,10 +92,17 @@ export const apiStats = {
       totalRequests: this.totalRequests,
       successfulRequests: this.successfulRequests,
       errorRequests: this.errorRequests,
-      successRate: this.totalRequests > 0 ? (this.successfulRequests / this.totalRequests * 100).toFixed(2) + '%' : '0%',
+      successRate:
+        this.totalRequests > 0
+          ? ((this.successfulRequests / this.totalRequests) * 100).toFixed(2) +
+            '%'
+          : '0%',
       averageResponseTime: Math.round(this.averageResponseTime),
       uptime: Math.round(uptime / 1000) + 's',
-      requestsPerMinute: this.totalRequests > 0 ? (this.totalRequests / (uptime / 60000)).toFixed(2) : '0'
+      requestsPerMinute:
+        this.totalRequests > 0
+          ? (this.totalRequests / (uptime / 60000)).toFixed(2)
+          : '0',
     };
-  }
-}; 
+  },
+};

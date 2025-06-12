@@ -1,7 +1,19 @@
-import express 
- AIService } 
- PersonalInfoService } 
- RequestValidator } 
+import express from 'express';
+import { AIService } from '../services/AIService';
+
+// ロガー設定
+const logger = console;
+
+// 簡易バリデーター（RequestValidatorの代替）
+const RequestValidator = {
+  validateNaturalLanguageInput: (message: string) => ({
+    isValid:
+      typeof message === 'string' &&
+      message.length > 0 &&
+      message.length < 1000,
+    errors: [],
+  }),
+};
 
 const router = express.Router();
 let aiService: AIService | null = null;

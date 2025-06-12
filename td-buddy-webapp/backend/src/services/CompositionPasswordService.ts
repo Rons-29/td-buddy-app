@@ -1,4 +1,4 @@
-import crypto 
+const logger = console;import crypto 
  database } 
 import {
     CompositionPasswordRequest,

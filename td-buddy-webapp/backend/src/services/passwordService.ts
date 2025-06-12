@@ -1,7 +1,10 @@
-import crypto 
- database } 
- InsertGeneratedPassword } 
- PasswordGenerateRequest, PasswordGenerateResponse } 
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+
+// Logger setup
+const logger = console;
+
+const logger = console;import crypto 
 
 export class PasswordService {
   private readonly DEFAULT_CHARACTERS = {

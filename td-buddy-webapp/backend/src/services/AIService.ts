@@ -1,3 +1,4 @@
+import { OpenAIAdapter } from '../services/adapters/OpenAIAdapter';
 import {
   AIAdapterError,
   AIParseRequest,
@@ -5,8 +6,9 @@ import {
   AIProvider,
   IAIAdapter,
 } from '../types/aiAdapter';
- PersonalInfoGenerateRequest } 
- OpenAIAdapter } 
+import { PersonalInfoGenerateRequest } from '../types/personalInfo';
+
+const logger = console;
 
 /**
  * AI Service Manager

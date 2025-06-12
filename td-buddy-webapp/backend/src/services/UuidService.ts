@@ -1,5 +1,10 @@
-import crypto 
- database } 
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+
+// Logger setup
+const logger = console;
+
+const logger = console;import crypto 
 import {
     UuidGenerateRequest,
     UuidGenerateResponse,
@@ -7,7 +12,6 @@ import {
     UuidValidateRequest,
     UuidValidateResponse
 } from '../types/api';
- InsertGeneratedUuid } 
 
 export class UuidService {
   private readonly RETENTION_HOURS = 24; // 24時間でデータを削除

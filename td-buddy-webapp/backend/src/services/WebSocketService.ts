@@ -1,4 +1,4 @@
- Server as SocketIOServer } 
+const logger = console; Server as SocketIOServer } 
  Server as HTTPServer } 
 
 /**

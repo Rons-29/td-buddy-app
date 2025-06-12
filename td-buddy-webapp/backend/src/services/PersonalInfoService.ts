@@ -1,5 +1,12 @@
-import crypto 
-import {
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+import { PersonalInfoGenerateRequest, PersonalInfoGenerateResponse } from '../types/personalInfo';
+
+// Logger setup
+const logger = console;
+
+import { PerformanceService } from './PerformanceService';import crypto 
+const logger = console;import {
   PersonalInfoGenerateRequest,
   PersonalInfoGenerateResponse,
   PersonalInfoItem,
@@ -15,7 +22,6 @@ import {
   EMAIL_DOMAINS,
   PHONE_AREA_CODES
 } from '../data/japaneseData';
- PerformanceService } 
 
 /**
  * バリデーションエラークラス

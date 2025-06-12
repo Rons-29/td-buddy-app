@@ -1,16 +1,19 @@
 import {
-  IAIAdapter,
+  AIAdapterError,
   AIConfig,
-  AIRequest,
-  AIResponse,
   AIParseRequest,
   AIParseResponse,
-  ParsedGenerationParams,
-  AIAdapterError,
-  RateLimitError,
+  AIProvider,
+  AIRequest,
+  AIResponse,
   AuthenticationError,
-  AIProvider
+  IAIAdapter,
+  ParsedGenerationParams,
+  RateLimitError,
 } from '../../types/aiAdapter';
+
+// Logger setup
+const logger = console;
 
 /**
  * OpenAI API Adapter
@@ -22,7 +25,7 @@ export class OpenAIAdapter implements IAIAdapter {
   private rateLimitInfo = {
     remaining: 1000,
     resetTime: new Date(),
-    limit: 1000
+    limit: 1000,
   };
 
   /**
@@ -34,13 +37,16 @@ export class OpenAIAdapter implements IAIAdapter {
       baseUrl: config.baseUrl || 'https://api.openai.com/v1',
       model: config.model || 'gpt-4',
       maxTokens: config.maxTokens || 2000,
-      temperature: config.temperature || 0.7
+      temperature: config.temperature || 0.7,
     };
 
     // 初期化時にヘルスチェック実行
     const isHealthy = await this.healthCheck();
     if (!isHealthy) {
-      throw new AIAdapterError('OpenAI API initialization failed', this.provider);
+      throw new AIAdapterError(
+        'OpenAI API initialization failed',
+        this.provider
+      );
     }
 
     logger.log(`✅ OpenAI Adapter initialized: ${this.config.model}`);
@@ -56,33 +62,33 @@ export class OpenAIAdapter implements IAIAdapter {
 
     try {
       const messages = [];
-      
+
       // システムプロンプトがある場合は追加
       if (request.systemPrompt) {
         messages.push({
           role: 'system',
-          content: request.systemPrompt
+          content: request.systemPrompt,
         });
       }
 
       // ユーザープロンプト追加
       messages.push({
         role: 'user',
-        content: request.prompt
+        content: request.prompt,
       });
 
       const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.apiKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           model: this.config.model,
           messages,
           max_tokens: request.maxTokens || this.config.maxTokens,
-          temperature: request.temperature || this.config.temperature
-        })
+          temperature: request.temperature || this.config.temperature,
+        }),
       });
 
       // レート制限情報を更新
@@ -92,19 +98,18 @@ export class OpenAIAdapter implements IAIAdapter {
         await this.handleErrorResponse(response);
       }
 
-      const data = await response.json() as any;
-      
+      const data = (await response.json()) as any;
+
       return {
         content: data.choices[0]?.message?.content || '',
         usage: {
           promptTokens: data.usage?.prompt_tokens || 0,
           completionTokens: data.usage?.completion_tokens || 0,
-          totalTokens: data.usage?.total_tokens || 0
+          totalTokens: data.usage?.total_tokens || 0,
         },
         model: data.model,
-        finishReason: data.choices[0]?.finish_reason
+        finishReason: data.choices[0]?.finish_reason,
       };
-
     } catch (error: any) {
       if (error instanceof AIAdapterError) {
         throw error;
@@ -119,30 +124,31 @@ export class OpenAIAdapter implements IAIAdapter {
   /**
    * 自然言語をデータ生成パラメータに変換
    */
-  async parseGenerationRequest(request: AIParseRequest): Promise<AIParseResponse> {
+  async parseGenerationRequest(
+    request: AIParseRequest
+  ): Promise<AIParseResponse> {
     const systemPrompt = this.buildParameterExtractionPrompt();
-    
+
     try {
       const aiResponse = await this.generateResponse({
         prompt: request.userInput,
         systemPrompt,
         maxTokens: 1000,
-        temperature: 0.3 // 構造化データ抽出なので低めの温度
+        temperature: 0.3, // 構造化データ抽出なので低めの温度
       });
 
       // JSON形式のレスポンスをパース
       const parsedParams = this.parseAIResponse(aiResponse.content);
-      
+
       return {
         success: true,
         params: parsedParams,
         confidence: this.calculateConfidence(aiResponse.content),
-        clarificationNeeded: false
+        clarificationNeeded: false,
       };
-
     } catch (error: any) {
       logger.error('🔍 Parameter extraction failed:', error);
-      
+
       return {
         success: false,
         error: error.message,
@@ -150,8 +156,8 @@ export class OpenAIAdapter implements IAIAdapter {
         clarificationQuestions: [
           '生成したいデータの件数を教えてください',
           'どのような情報を含めたいですか？（名前、メール、電話番号など）',
-          '特定の条件はありますか？（年齢、性別、職業など）'
-        ]
+          '特定の条件はありますか？（年齢、性別、職業など）',
+        ],
       };
     }
   }
@@ -163,7 +169,7 @@ export class OpenAIAdapter implements IAIAdapter {
     try {
       const response = await this.generateResponse({
         prompt: 'Hello',
-        maxTokens: 10
+        maxTokens: 10,
       });
       return response.content.length > 0;
     } catch (error) {
@@ -231,9 +237,10 @@ export class OpenAIAdapter implements IAIAdapter {
   private parseAIResponse(content: string): ParsedGenerationParams {
     try {
       // JSON部分を抽出（```json ``` で囲まれている場合も対応）
-      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || 
-                       content.match(/\{[\s\S]*\}/);
-      
+      const jsonMatch =
+        content.match(/```json\s*([\s\S]*?)\s*```/) ||
+        content.match(/\{[\s\S]*\}/);
+
       if (!jsonMatch) {
         throw new Error('JSON format not found in AI response');
       }
@@ -251,9 +258,8 @@ export class OpenAIAdapter implements IAIAdapter {
         locale: parsed.locale || 'ja',
         includeFields: parsed.includeFields,
         filters: parsed.filters,
-        customRequirements: parsed.customRequirements
+        customRequirements: parsed.customRequirements,
       };
-
     } catch (error: any) {
       throw new AIAdapterError(
         `Failed to parse AI response: ${error.message}`,
@@ -268,8 +274,9 @@ export class OpenAIAdapter implements IAIAdapter {
   private calculateConfidence(content: string): number {
     // JSON形式が正しく含まれているかチェック
     const hasValidJson = /\{[\s\S]*\}/.test(content);
-    const hasRequiredFields = content.includes('count') && content.includes('includeFields');
-    
+    const hasRequiredFields =
+      content.includes('count') && content.includes('includeFields');
+
     if (hasValidJson && hasRequiredFields) {
       return 0.9;
     } else if (hasValidJson) {
@@ -298,14 +305,18 @@ export class OpenAIAdapter implements IAIAdapter {
    * エラーレスポンス処理
    */
   private async handleErrorResponse(response: Response): Promise<never> {
-    const errorData = await response.json().catch(() => ({})) as any;
-    
+    const errorData = (await response.json().catch(() => ({}))) as any;
+
     switch (response.status) {
       case 401:
         throw new AuthenticationError(this.provider);
       case 429:
         const resetTime = new Date(Date.now() + 60000); // 1分後にリセット（仮）
-        throw new RateLimitError(this.provider, resetTime, this.rateLimitInfo.limit);
+        throw new RateLimitError(
+          this.provider,
+          resetTime,
+          this.rateLimitInfo.limit
+        );
       default:
         throw new AIAdapterError(
           errorData.error?.message || `HTTP ${response.status}`,
@@ -315,4 +326,4 @@ export class OpenAIAdapter implements IAIAdapter {
         );
     }
   }
-} 
+}

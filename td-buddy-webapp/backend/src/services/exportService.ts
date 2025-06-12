@@ -1,4 +1,4 @@
-// Enhanced Export Service - ファイル出力機能強化
+const logger = console;// Enhanced Export Service - ファイル出力機能強化
 // Step 12: JSON/XML/YAML/SQL出力対応
 
 import * as fs 
