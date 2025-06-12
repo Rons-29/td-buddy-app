@@ -122,7 +122,7 @@ const CSVDetailedGenerator = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2"
             >
               <Settings className="h-4 w-4" />
-              {isGenerating ? '醸造中...' : 'データ生成'}
+              {isGenerating ? '生成中...' : 'データ生成'}
             </Button>
           </div>
 

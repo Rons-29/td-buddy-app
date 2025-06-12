@@ -233,7 +233,7 @@ const DateTimeGenerator: React.FC = () => {
     }
 
     setIsGenerating(true);
-    setBrewMessage(`${settings.count}件の日付・時刻データを醸造中...`);
+    setBrewMessage(`${settings.count}件の日付・時刻データを生成中...`);
 
     // 非同期で生成処理を実行
     setTimeout(() => {
@@ -305,7 +305,7 @@ const DateTimeGenerator: React.FC = () => {
       }
 
       setGeneratedData(results);
-      setBrewMessage(`✅ ${settings.count}件の日付・時刻データを醸造しました！`);
+      setBrewMessage(`✅ ${settings.count}件の日付・時刻データを生成しました！`);
       setIsGenerating(false);
       setButtonActive('generate'); // ボタン状態を更新
       setIndividualCopyStates({}); // 個別コピー状態をリセット
@@ -868,17 +868,17 @@ const DateTimeGenerator: React.FC = () => {
                       disabled={isGenerating}
                       size="md"
                     >
-                      {isGenerating ? '醸造中...' : undefined}
+                      {isGenerating ? '生成中...' : undefined}
                     </ActionButton>
                   </div>
                 </div>
 
-                {/* 醸造結果 */}
+                {/* 生成結果 */}
                 {generatedData.length > 0 && (
                   <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-td-gray-800">
-                        醸造結果 ({generatedData.length}件)
+                        生成結果 ({generatedData.length}件)
                       </h3>
                       <div className="flex gap-2">
                         <ActionButton

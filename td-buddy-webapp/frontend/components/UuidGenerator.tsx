@@ -84,7 +84,7 @@ export const UuidGenerator: React.FC = () => {
   // UUID生成API呼び出し
   const generateUuids = async () => {
     if (criteria.count < 1 || criteria.count > 10000) {
-      setApiError('醸造個数は1〜10000の範囲で指定してください');
+      setApiError('生成個数は1〜10000の範囲で指定してください');
       return;
     }
 
@@ -104,7 +104,7 @@ export const UuidGenerator: React.FC = () => {
         showSpeechBubble: true,
       }));
 
-      // オフラインモード時はローカル醸造
+      // オフラインモード時はローカル生成
       if (APP_CONFIG.isOfflineMode) {
         const localResult = generateUuidsLocal({
           count: criteria.count,
@@ -135,7 +135,7 @@ export const UuidGenerator: React.FC = () => {
           ...prev,
           emotion: 'excited',
           animation: 'bounce',
-          message: `🍺 ローカル醸造完了！${criteria.count}個のUUID醸造完了！品質も完璧です♪`,
+          message: `🍺 ローカル生成完了！${criteria.count}個のUUID生成完了！品質も完璧です♪`,
           showSpeechBubble: true,
         }));
 
@@ -146,7 +146,7 @@ export const UuidGenerator: React.FC = () => {
         return;
       }
 
-      // API醸造（レガシー - バックエンド設定完了後に有効）
+      // API生成（レガシー - バックエンド設定完了後に有効）
       const apiUrl = APP_CONFIG.getApiUrl('/api/uuid/generate');
       if (!apiUrl) {
         throw new Error('API接続が利用できません');
@@ -176,7 +176,7 @@ export const UuidGenerator: React.FC = () => {
         animation: 'bounce',
         message:
           data.brewMessage ||
-          `${criteria.count}個のUUID醸造完了！品質も完璧です♪`,
+          `${criteria.count}個のUUID生成完了！品質も完璧です♪`,
         showSpeechBubble: true,
       }));
 
@@ -311,12 +311,12 @@ export const UuidGenerator: React.FC = () => {
         <div className="flex items-center justify-center space-x-3">
           <Fingerprint className="w-8 h-8 text-purple-600" />
           <h1 className="text-3xl font-bold text-gray-900">
-            UUID/GUID醸造ツール
+            UUID/GUID生成ツール
           </h1>
           <Hash className="w-8 h-8 text-blue-600" />
         </div>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          各種バージョン・フォーマット対応のUUID醸造ツール。データベースID、セッション管理、テストデータ作成に最適です。
+          各種バージョン・フォーマット対応のUUID生成ツール。データベースID、セッション管理、テストデータ作成に最適です。
         </p>
       </div>
 
@@ -334,7 +334,7 @@ export const UuidGenerator: React.FC = () => {
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
         <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           <Settings2 className="w-5 h-5 mr-2 text-purple-600" />
-          UUID醸造設定
+          UUID生成設定
         </h3>
 
         {/* プリセット選択 */}
@@ -373,7 +373,7 @@ export const UuidGenerator: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                醸造個数
+                生成個数
               </label>
               <input
                 type="number"
@@ -506,7 +506,7 @@ export const UuidGenerator: React.FC = () => {
             {isGenerating ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>UUID醸造中...</span>
+                <span>UUID生成中...</span>
               </>
             ) : (
               <>
@@ -541,13 +541,13 @@ export const UuidGenerator: React.FC = () => {
         </div>
       )}
 
-      {/* 醸造結果 */}
+      {/* 生成結果 */}
       {result && (
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold text-gray-800 flex items-center">
               <Database className="w-5 h-5 mr-2 text-purple-600" />
-              醸造結果 ({result.uuids.length}個)
+              生成結果 ({result.uuids.length}個)
             </h3>
             <div className="flex items-center space-x-2">
               <button
@@ -574,7 +574,7 @@ export const UuidGenerator: React.FC = () => {
           {/* 統計情報 */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-blue-50 p-3 rounded-lg">
-              <div className="text-sm text-blue-600 font-medium">醸造個数</div>
+              <div className="text-sm text-blue-600 font-medium">生成個数</div>
               <div className="text-lg font-bold text-blue-800">
                 {result.statistics.totalGenerated}
               </div>

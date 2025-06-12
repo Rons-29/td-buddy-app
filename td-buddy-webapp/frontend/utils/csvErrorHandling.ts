@@ -309,7 +309,7 @@ export class CSVValidator {
   }
 
   /**
-   * 醸造設定のバリデーション
+   * 生成設定のバリデーション
    */
   static validateGenerationSettings(rowCount: number, columns: any[]): ValidationResult {
     const errors: ValidationError[] = [];
@@ -516,7 +516,7 @@ export class PerformanceMonitor {
     } else if (duration > 10000) { // 10秒以上
       recommendation = 'ブリューからの提案: 少し時間がかかりました。大量データの場合は分割生成をお勧めします。';
     } else {
-      recommendation = 'ブリューからのメッセージ: 高速醸造完了！素晴らしいパフォーマンスです♪';
+      recommendation = 'ブリューからのメッセージ: 高速生成完了！素晴らしいパフォーマンスです♪';
     }
 
     return {

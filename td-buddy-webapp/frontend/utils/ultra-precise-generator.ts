@@ -127,7 +127,7 @@ export class UltraPreciseGenerator {
       });
 
       console.log(
-        `✅ 超精密醸造完了: ${this.formatBytes(
+        `✅ 超精密生成完了: ${this.formatBytes(
           targetBytes
         )} (誤差0バイト) in ${totalTime.toFixed(2)}秒`
       );

@@ -499,7 +499,7 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
                   onClick={() => {
                     // プレビューを再生成
                     const timestamp = Date.now();
-                    setPreviewPassword('醸造中...');
+                    setPreviewPassword('生成中...');
                     setTimeout(() => {
                       // useEffectが動作してプレビューが更新される
                     }, 100);

@@ -32,11 +32,11 @@ find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's
 
 # 4. 統計情報の更新
 echo "📊 統計情報更新中..."
-find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/生成統計/醸造統計/g' 2>/dev/null || true
+find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/生成統計/生成統計/g' 2>/dev/null || true
 
 # 5. APIコメントの更新
 echo "💬 APIコメント更新中..."
-find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/API生成/API醸造/g' 2>/dev/null || true
+find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/API生成/API生成/g' 2>/dev/null || true
 
 echo "🎉 仕上げ作業完了！"
 echo ""

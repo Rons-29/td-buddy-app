@@ -4,7 +4,7 @@ export const numberbooleanUseCases: NumberBooleanUseCase[] = [
   {
     id: 'unit_testing_scenarios',
     title: '単体テストでの境界値テスト',
-    description: '整数や小数の境界値を醸造してテストケースを充実',
+    description: '整数や小数の境界値を生成してテストケースを充実',
     category: 'testing',
     difficulty: 'beginner',
     icon: '🧪',
@@ -74,7 +74,7 @@ const testScores = [0.34521, 0.67832, 0.91445];`
     scenario: {
       description: 'API開発時に価格、数量、パーセンテージなど様々な数値データでテストが必要',
       problem: '実際のデータを待つか、固定値では十分なテストができない',
-      solution: 'TDで実際のデータに近い多様な数値を醸造してAPIの動作確認'
+      solution: 'TDで実際のデータに近い多様な数値を生成してAPIの動作確認'
     },
     
     examples: [
@@ -133,7 +133,7 @@ discountRates.forEach(rate => {
     scenario: {
       description: 'データベース開発時に、実際の運用に近い数値データでテストしたい',
       problem: '手動でテストデータを作成するのは非効率で、パターンが偏りがち',
-      solution: 'TDで統計的に分散した数値データを大量醸造してデータベースに投入'
+      solution: 'TDで統計的に分散した数値データを大量生成してデータベースに投入'
     },
     
     examples: [
@@ -187,7 +187,7 @@ INSERT INTO products (name, price, discount_rate) VALUES
     scenario: {
       description: 'ビジネス分析システムの開発で、売上やKPIの計算ロジックをテストしたい',
       problem: '実際の機密データは使えず、現実的なビジネス数値が必要',
-      solution: 'TDで実際のビジネス数値に近い分布のデータを醸造してシミュレーション'
+      solution: 'TDで実際のビジネス数値に近い分布のデータを生成してシミュレーション'
     },
     
     examples: [
@@ -243,7 +243,7 @@ const testResults = [
     scenario: {
       description: 'システムのパフォーマンステストで大量の数値データが必要',
       problem: '大量データの生成に時間がかかり、テストパターンが限定的',
-      solution: 'TDで高速に大量の多様な数値データを醸造してストレステスト実行'
+      solution: 'TDで高速に大量の多様な数値データを生成してストレステスト実行'
     },
     
     examples: [
@@ -298,7 +298,7 @@ console.timeEnd('sorting');`
     scenario: {
       description: '科学計算や統計解析で、特定の分布や範囲の数値データが必要',
       problem: '実験データの収集に時間がかかり、シミュレーションが困難',
-      solution: 'TDで科学記法や正規分布に従った数値を醸造して計算・解析を実行'
+      solution: 'TDで科学記法や正規分布に従った数値を生成して計算・解析を実行'
     },
     
     examples: [
@@ -322,7 +322,7 @@ const results = measurements.map(value =>
       {
         title: '統計分析用データ',
         before: 'const samples = [0.5, 0.6, 0.7]; // 少ないサンプル',
-        after: '// TDで大量醸造した統計的に有効なサンプル',
+        after: '// TDで大量生成した統計的に有効なサンプル',
         preset: 'decimal_precision',
         code: `
 // 統計解析用の大量サンプルデータ

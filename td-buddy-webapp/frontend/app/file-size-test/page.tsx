@@ -80,13 +80,13 @@ export default function FileSizeTestPage() {
         break;
       case 'generating':
         const percentage = progressData.percentage.toFixed(1);
-        setBrewMessage(`醸造中... ${percentage}% 完了！頑張ってます♪`);
+        setBrewMessage(`生成中... ${percentage}% 完了！頑張ってます♪`);
         break;
       case 'finalizing':
         setBrewMessage('最終調整中...もうすぐ完了です！');
         break;
       case 'complete':
-        setBrewMessage('醸造完了！完璧なファイルができました✨');
+        setBrewMessage('生成完了！完璧なファイルができました✨');
         break;
     }
   }, []);
@@ -259,7 +259,7 @@ export default function FileSizeTestPage() {
           {/* 設定パネル */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              🎛️ 醸造設定
+              🎛️ 生成設定
             </h2>
 
             {/* ファイルサイズ設定 */}
@@ -406,7 +406,7 @@ export default function FileSizeTestPage() {
                 }
                 className="flex-1"
               >
-                {isGenerating ? '🔄 醸造中...' : '🚀 超精密生成開始'}
+                {isGenerating ? '🔄 生成中...' : '🚀 超精密生成開始'}
               </Button>
               {isGenerating && (
                 <Button

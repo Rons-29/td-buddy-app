@@ -85,7 +85,7 @@ const BrewCharacter: React.FC<BrewCharacterProps> = ({
       warning: '注意が必要です。確認をお願いします',
       sleepy: 'ちょっと疲れました...😴',
       confused: 'あれ？どうしましょう？',
-      determined: '頑張って醸造します！💪',
+      determined: '頑張って生成します！💪',
       neutral: 'お疲れさまです。何かお手伝いできることはありますか？',
       brewing: '🍺 データを生成中...美味しいデータができそうです♪',
       completed: '生成完了！お役に立てて嬉しいです',

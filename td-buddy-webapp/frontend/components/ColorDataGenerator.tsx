@@ -78,7 +78,7 @@ const ColorDataGenerator: React.FC = () => {
     }
 
     setIsGenerating(true);
-    setBrewMessage(`${settings.count}件のカラーデータを醸造中...`);
+    setBrewMessage(`${settings.count}件のカラーデータを生成中...`);
 
     const results: Array<{value: string, color: string}> = [];
     
@@ -174,7 +174,7 @@ const ColorDataGenerator: React.FC = () => {
     }
 
     setGeneratedColors(results);
-    setBrewMessage(`✅ ${settings.count}件のカラーデータを醸造しました！`);
+    setBrewMessage(`✅ ${settings.count}件のカラーデータを生成しました！`);
     setIsGenerating(false);
   }, [settings, hslToHex]);
 
@@ -542,7 +542,7 @@ const ColorDataGenerator: React.FC = () => {
             <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
               <h2 className="text-xl font-semibold text-td-gray-900 mb-6 flex items-center gap-2">
                 <Settings className="h-5 w-5" />
-                醸造設定
+                生成設定
               </h2>
               
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -636,17 +636,17 @@ const ColorDataGenerator: React.FC = () => {
                   variant="primary"
                   disabled={isGenerating}
                 >
-                  {isGenerating ? '醸造中...' : 'カラーを生成'}
+                  {isGenerating ? '生成中...' : 'カラーを生成'}
                 </Button>
               </div>
             </div>
 
-            {/* 醸造結果 */}
+            {/* 生成結果 */}
             {generatedColors.length > 0 && (
               <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-td-gray-800">
-                    醸造結果 ({generatedColors.length}件)
+                    生成結果 ({generatedColors.length}件)
                   </h3>
                   <div className="flex gap-2">
                     <Button

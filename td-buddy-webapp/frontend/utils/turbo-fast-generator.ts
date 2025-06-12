@@ -25,7 +25,7 @@ export class TurboFastGenerator {
   private static readonly BATCH_SIZE = 50; // バッチ処理サイズ
 
   /**
-   * 超高速醸造メイン処理
+   * 超高速生成メイン処理
    */
   async generate(
     targetBytes: number,
@@ -61,7 +61,7 @@ export class TurboFastGenerator {
       const chunks: string[] = [];
       let batchCount = 0;
 
-      // 超高速醸造ループ
+      // 超高速生成ループ
       while (processedBytes < targetBytes) {
         if (abortSignal?.aborted) {
           throw new Error('生成がキャンセルされました');
@@ -139,14 +139,14 @@ export class TurboFastGenerator {
       });
 
       console.log(
-        `🚀 超高速醸造完了: ${formatBytes(targetBytes)} in ${totalTime.toFixed(
+        `🚀 超高速生成完了: ${formatBytes(targetBytes)} in ${totalTime.toFixed(
           2
         )}秒`
       );
       return blob;
     } catch (error) {
       throw new Error(
-        `超高速醸造エラー: ${
+        `超高速生成エラー: ${
           error instanceof Error ? error.message : '不明なエラー'
         }`
       );
@@ -299,7 +299,7 @@ export class TurboFastGenerator {
 }
 
 /**
- * 超高速醸造エントリーポイント
+ * 超高速生成エントリーポイント
  */
 export async function generateTurboFast(
   targetBytes: number,

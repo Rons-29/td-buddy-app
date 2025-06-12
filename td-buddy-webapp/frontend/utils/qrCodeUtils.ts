@@ -1,6 +1,6 @@
 /**
  * QRコード生成ユーティリティ
- * QR Server APIを使用してQRコードを醸造します
+ * QR Server APIを使用してQRコードを生成します
  */
 
 export interface QRCodeOptions {
@@ -183,7 +183,7 @@ export function validateQRCodeText(text: string): {
   if (safeText.length === 0) {
     return {
       isValid: false,
-      error: 'テキストが長すぎてQRコードを醸造できません',
+      error: 'テキストが長すぎてQRコードを生成できません',
       maxLength: QR_LIMITS.MAX_LENGTH_CHARS
     };
   }

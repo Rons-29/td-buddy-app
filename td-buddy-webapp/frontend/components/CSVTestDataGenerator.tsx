@@ -390,7 +390,7 @@ const CSVTestDataGenerator: React.FC = () => {
     }
 
     setIsGenerating(true);
-    setBrewMessage(`${rowCount}件のテストデータを醸造中...`);
+    setBrewMessage(`${rowCount}件のテストデータを生成中...`);
 
     // 自動インクリメントカウンターをリセット
     autoIncrementRefs.clear();
@@ -650,7 +650,7 @@ const CSVTestDataGenerator: React.FC = () => {
 
     setRows(generatedRows);
     setShowDataTable(true);
-    setBrewMessage(`✅ ${rowCount}件のテストデータを醸造しました！`);
+    setBrewMessage(`✅ ${rowCount}件のテストデータを生成しました！`);
     setIsGenerating(false);
   }, [columns, rowCount]);
 
@@ -921,7 +921,7 @@ const CSVTestDataGenerator: React.FC = () => {
               {isGenerating ? (
                 <>
                   <div className="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full" />
-                  醸造中...
+                  生成中...
                 </>
               ) : (
                 <>

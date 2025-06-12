@@ -47,7 +47,7 @@ export class UltraFastGenerator {
       const basePattern = this.getBasePattern(fileType);
       const patternSize = new Blob([basePattern]).size;
 
-      // 超高速醸造ループ
+      // 超高速生成ループ
       while (processedBytes < targetBytes) {
         if (abortSignal?.aborted) {
           throw new Error('生成がキャンセルされました');
@@ -124,7 +124,7 @@ export class UltraFastGenerator {
       return blob;
     } catch (error) {
       throw new Error(
-        `超高速醸造エラー: ${
+        `超高速生成エラー: ${
           error instanceof Error ? error.message : '不明なエラー'
         }`
       );
@@ -168,7 +168,7 @@ export class UltraFastGenerator {
 }
 
 /**
- * 超高速醸造のエントリーポイント
+ * 超高速生成のエントリーポイント
  */
 export async function generateUltraFast(
   targetBytes: number,

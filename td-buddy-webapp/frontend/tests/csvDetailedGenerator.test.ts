@@ -270,7 +270,7 @@ describe('CSV詳細データ生成機能', () => {
       const result = PerformanceMonitor.endGeneration(100, 3);
       
       expect(result.recommendation).toContain('ブリューからのメッセージ');
-      expect(result.recommendation).toContain('高速醸造完了');
+      expect(result.recommendation).toContain('高速生成完了');
     });
   });
 

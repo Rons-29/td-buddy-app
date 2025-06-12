@@ -368,7 +368,7 @@ export const PasswordGenerator: React.FC = () => {
     totalCount: number,
     safeConfig: any
   ) => {
-    // オフラインモード時はローカル醸造
+    // オフラインモード時はローカル生成
     if (APP_CONFIG.isOfflineMode) {
       const localResult = generatePasswordsLocal({
         length: criteria.length,
@@ -391,7 +391,7 @@ export const PasswordGenerator: React.FC = () => {
         ...prev,
         emotion: 'excited',
         animation: 'heartbeat',
-        message: `🍺 ローカル生成完了！${localResult.strength}強度のパスワードを${localResult.passwords.length}個醸造しました♪`,
+        message: `🍺 ローカル生成完了！${localResult.strength}強度のパスワードを${localResult.passwords.length}個生成しました♪`,
         showSpeechBubble: true,
       }));
 
@@ -401,7 +401,7 @@ export const PasswordGenerator: React.FC = () => {
       return;
     }
 
-    // API醸造（レガシー - バックエンド設定完了後に有効）
+    // API生成（レガシー - バックエンド設定完了後に有効）
     const apiUrl = APP_CONFIG.getApiUrl(
       '/api/password/generate-with-composition'
     );
@@ -449,7 +449,7 @@ export const PasswordGenerator: React.FC = () => {
       animation: 'heartbeat',
       message:
         data.brewMessage ||
-        `${data.data.strength}強度のパスワードを${data.data.passwords.length}個醸造しました！`,
+        `${data.data.strength}強度のパスワードを${data.data.passwords.length}個生成しました！`,
       showSpeechBubble: true,
     }));
 
@@ -506,7 +506,7 @@ export const PasswordGenerator: React.FC = () => {
 
       let chunkResult: PasswordResult;
 
-      // オフラインモード時はローカル醸造
+      // オフラインモード時はローカル生成
       if (APP_CONFIG.isOfflineMode) {
         const localResult = generatePasswordsLocal({
           length: criteria.length,
@@ -525,7 +525,7 @@ export const PasswordGenerator: React.FC = () => {
         });
         chunkResult = localResult;
       } else {
-        // API醸造（レガシー - バックエンド設定完了後に有効）
+        // API生成（レガシー - バックエンド設定完了後に有効）
         const apiUrl = APP_CONFIG.getApiUrl(
           '/api/password/generate-with-composition'
         );
@@ -682,7 +682,7 @@ export const PasswordGenerator: React.FC = () => {
         ...prev,
         emotion: 'thinking',
         message:
-          'カスタム文字を設定しました♪ より個性的なパスワードが醸造できますね！',
+          'カスタム文字を設定しました♪ より個性的なパスワードが生成できますね！',
         showSpeechBubble: true,
       }));
 
@@ -859,7 +859,7 @@ export const PasswordGenerator: React.FC = () => {
           🔐 QA Workbench パスワード生成
         </h1>
         <p className="text-amber-600">
-          構成プリセット機能で、より実用的なパスワードを丁寧に醸造します
+          構成プリセット機能で、より実用的なパスワードを丁寧に生成します
         </p>
       </div>
 
@@ -965,14 +965,14 @@ export const PasswordGenerator: React.FC = () => {
                 </div>
               </div>
 
-              {/* 醸造時間の目安表示 */}
+              {/* 生成時間の目安表示 */}
               <div className="text-xs text-gray-500">
-                {criteria.count <= 10 && '⚡ 高速醸造'}
-                {criteria.count > 10 && criteria.count <= 50 && '🚀 標準醸造'}
+                {criteria.count <= 10 && '⚡ 高速生成'}
+                {criteria.count > 10 && criteria.count <= 50 && '🚀 標準生成'}
                 {criteria.count > 50 &&
                   criteria.count <= 200 &&
-                  '⏳ 中規模醸造（数秒）'}
-                {criteria.count > 200 && '🔄 大規模醸造（プログレス表示）'}
+                  '⏳ 中規模生成（数秒）'}
+                {criteria.count > 200 && '🔄 大規模生成（プログレス表示）'}
               </div>
             </div>
           </div>

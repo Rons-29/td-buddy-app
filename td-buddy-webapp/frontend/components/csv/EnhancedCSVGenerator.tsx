@@ -517,7 +517,7 @@ export function EnhancedCSVGenerator({
             </div>
           </div>
 
-          {/* 醸造設定 */}
+          {/* 生成設定 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -546,7 +546,7 @@ export function EnhancedCSVGenerator({
               disabled={uiState.isGenerating || config.columns.length === 0}
               className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-50"
             >
-              {uiState.isGenerating ? '醸造中...' : t('csv.generate')}
+              {uiState.isGenerating ? '生成中...' : t('csv.generate')}
             </button>
 
             <button

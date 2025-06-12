@@ -17,7 +17,7 @@ export default function Home() {
           </p>
           <div className="inline-block bg-amber-100 border border-amber-300 rounded-lg p-4">
             <p className="text-amber-800 font-medium">
-              🍺 「こんにちは！ブリューです。醸造のお手伝いをします♪」
+              🍺 「こんにちは！ブリューです。生成のお手伝いをします♪」
             </p>
           </div>
         </div>
@@ -31,7 +31,7 @@ export default function Home() {
               パスワード生成
             </h3>
             <p className="text-blue-600 mb-4">
-              セキュアで強力なパスワードを丁寧に醸造します
+              セキュアで強力なパスワードを丁寧に生成します
             </p>
             <Link href="/password">
               <button className="td-button bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
@@ -47,7 +47,7 @@ export default function Home() {
               個人情報生成
             </h3>
             <p className="text-green-600 mb-4">
-              テスト用の架空の個人データを安全に醸造します
+              テスト用の架空の個人データを安全に生成します
             </p>
             <Link href="/personal">
               <button className="td-button bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors">
@@ -83,7 +83,7 @@ export default function Home() {
             </p>
             <Link href="/export">
               <button className="td-button bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                醸造エクスポート開始
+                生成エクスポート開始
               </button>
             </Link>
           </div>
@@ -92,7 +92,7 @@ export default function Home() {
           <div className="td-card p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
             <div className="text-3xl mb-3">🔢</div>
             <h3 className="text-lg font-semibold text-green-800 mb-2">
-              数値・真偽値醸造
+              数値・真偽値生成
             </h3>
             <p className="text-green-600 mb-4">
               整数、小数点、通貨、科学記法、真偽値など多様な数値データ生成
@@ -223,11 +223,11 @@ export default function Home() {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
-              <span className="text-amber-600">醸造設備良好</span>
+              <span className="text-amber-600">生成設備良好</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-amber-600">AI醸造システム準備完了</span>
+              <span className="text-amber-600">AI生成システム準備完了</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>

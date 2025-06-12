@@ -571,7 +571,7 @@ ${baseContent
   } catch (error) {
     console.error('ファイル生成エラー:', error);
     throw new Error(
-      `ファイル醸造中にエラーが発生しました: ${
+      `ファイル生成中にエラーが発生しました: ${
         error instanceof Error ? error.message : 'Unknown error'
       }`
     );

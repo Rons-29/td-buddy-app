@@ -157,14 +157,14 @@ export const generateTextContent = (
 
   // タイトルとヘッダーを追加
   const header = `# QA Workbench - ファイル容量テスト用データ
-# Brewが醸造した高品質テストデータ
+# Brewが生成した高品質テストデータ
 # 生成時刻: ${new Date().toISOString()}
 # データ量: ${targetSizeBytes / 1024 / 1024}MB
 # 品質チェック: 完了 ✅
 
-===== QA Workbench データ醸造ログ =====
-醸造者: Brew Assistant
-醸造完了時刻: ${new Date().toLocaleString("ja-JP")}
+===== QA Workbench データ生成ログ =====
+生成者: Brew Assistant
+生成完了時刻: ${new Date().toLocaleString("ja-JP")}
 データ種別: 文章・テキストデータ
 文字エンコーディング: UTF-8
 品質レベル: プロダクション対応

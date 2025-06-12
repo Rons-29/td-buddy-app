@@ -53,7 +53,7 @@ export default function NumberBooleanGuidePage() {
                 href="/number-boolean"
                 className="text-green-600 hover:text-green-700 px-3 py-2 rounded-md text-sm font-medium"
               >
-                醸造ツールに戻る
+                生成ツールに戻る
               </a>
               <a
                 href="/"
@@ -312,7 +312,7 @@ export default function NumberBooleanGuidePage() {
                 <li>• 小数点精度の設定ミス</li>
                 <li>• 範囲設定での論理エラー</li>
                 <li>• 型変換時の精度落ち</li>
-                <li>• パフォーマンスを考慮しない大量醸造</li>
+                <li>• パフォーマンスを考慮しない大量生成</li>
               </ul>
             </div>
           </div>
@@ -331,7 +331,7 @@ export default function NumberBooleanGuidePage() {
               href="/number-boolean"
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-              数値・真偽値醸造ツールを使う
+              数値・真偽値生成ツールを使う
             </a>
           </div>
         </div>

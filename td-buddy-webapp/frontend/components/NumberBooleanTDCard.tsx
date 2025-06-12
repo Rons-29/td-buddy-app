@@ -72,7 +72,7 @@ export function NumberBooleanTDCard({
     setCurrentTip(randomTip);
   }, [selectedType]);
 
-  // 醸造完了時のリアクション
+  // 生成完了時のリアクション
   useEffect(() => {
     if (generatedData.length > 0) {
       const randomReaction =
@@ -94,7 +94,7 @@ export function NumberBooleanTDCard({
       return {
         total: generatedData.length,
         type: 'non-numeric',
-        summary: `${generatedData.length}件の${selectedType}データを醸造しました`,
+        summary: `${generatedData.length}件の${selectedType}データを生成しました`,
       };
     }
 
@@ -123,7 +123,7 @@ export function NumberBooleanTDCard({
         <div>
           <h3 className="font-bold text-blue-900">ブリュー</h3>
           <p className="text-sm text-blue-700">
-            {isGenerating ? '数値醸造中...' : '数値生成の専門家'}
+            {isGenerating ? '数値生成中...' : '数値生成の専門家'}
           </p>
         </div>
       </div>
@@ -133,7 +133,7 @@ export function NumberBooleanTDCard({
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-blue-700">
             <div className="animate-spin h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full"></div>
-            <span className="text-sm">数値を醸造しています...</span>
+            <span className="text-sm">数値を生成しています...</span>
           </div>
           <div className="bg-blue-100 p-3 rounded text-blue-800 text-sm">
             💡 {currentTip}
@@ -141,7 +141,7 @@ export function NumberBooleanTDCard({
         </div>
       )}
 
-      {/* 醸造完了時の表示 */}
+      {/* 生成完了時の表示 */}
       {!isGenerating && generatedData.length > 0 && (
         <div className="space-y-4">
           {/* TDのリアクション */}
@@ -211,7 +211,7 @@ export function NumberBooleanTDCard({
       {!isGenerating && generatedData.length === 0 && (
         <div className="space-y-3">
           <div className="text-blue-700 text-sm">
-            どのような数値データを醸造しましょうか？
+            どのような数値データを生成しましょうか？
           </div>
           <div className="bg-blue-100 p-3 rounded text-blue-800 text-sm">
             💡 {currentTip}

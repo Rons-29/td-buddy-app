@@ -51,7 +51,7 @@ const buttonConfig = {
   generate: {
     icon: '🎯',
     label: '生成',
-    activeLabel: '醸造完了',
+    activeLabel: '生成完了',
     defaultVariant: 'secondary' as const,
   },
   download: {

@@ -35,7 +35,7 @@ describe('Password Generation Frontend Integration Tests', () => {
       const lengthSlider = screen.getByRole('slider');
       fireEvent.change(lengthSlider, { target: { value: '16' } });
 
-      // 醸造個数設定
+      // 生成個数設定
       const countInput = screen.getByDisplayValue('1');
       await user.clear(countInput);
       await user.type(countInput, '3');
@@ -175,7 +175,7 @@ describe('Password Generation Frontend Integration Tests', () => {
       });
     });
 
-    it('🧪 大量醸造時の進行状況表示', async () => {
+    it('🧪 大量生成時の進行状況表示', async () => {
       const user = userEvent.setup();
       
       // 遅延を含むAPIレスポンス
@@ -196,7 +196,7 @@ describe('Password Generation Frontend Integration Tests', () => {
 
       render(<PasswordGenerator />);
 
-      // 大量醸造設定
+      // 大量生成設定
       const countInput = screen.getByDisplayValue('1');
       await user.clear(countInput);
       await user.type(countInput, '500');
@@ -205,11 +205,11 @@ describe('Password Generation Frontend Integration Tests', () => {
       await user.click(generateButton);
 
       // ローディング表示確認
-      expect(screen.getByText(/醸造中/)).toBeInTheDocument();
+      expect(screen.getByText(/生成中/)).toBeInTheDocument();
 
       // 完了後の表示確認
       await waitFor(() => {
-        expect(screen.queryByText(/醸造中/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/生成中/)).not.toBeInTheDocument();
         expect(screen.getByText(/500件のパスワード/)).toBeInTheDocument();
       }, { timeout: 3000 });
     });

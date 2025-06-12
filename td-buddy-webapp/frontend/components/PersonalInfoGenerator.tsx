@@ -116,7 +116,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   const [error, setError] = useState<string | null>(null);
   const [brewMood, setBrewMood] = useState<string>('happy');
   const [brewMessage, setBrewMessage] =
-    useState('個人情報醸造の準備ができました！');
+    useState('個人情報生成の準備ができました！');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [isCopied, setIsCopied] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -155,8 +155,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
     try {
       // データをテキスト形式で整形（絵文字付き）
-      let allDataText = `🍺 QA Workbench - 醸造データ (${result.length}件)\n`;
-      allDataText += `📅 醸造日時: ${new Date().toLocaleString('ja-JP')}\n`;
+      let allDataText = `🍺 QA Workbench - 生成データ (${result.length}件)\n`;
+      allDataText += `📅 生成日時: ${new Date().toLocaleString('ja-JP')}\n`;
       allDataText += `${'='.repeat(60)}\n\n`;
 
       result.forEach((person, index) => {
@@ -243,7 +243,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
       allDataText += `${'='.repeat(60)}\n`;
       allDataText += `✨ ブリューからのメッセージ: データのご利用ありがとうございます！\n`;
-      allDataText += `🔧 醸造ツール: QA Workbench\n`;
+      allDataText += `🔧 生成ツール: QA Workbench\n`;
 
       await navigator.clipboard.writeText(allDataText);
       setBrewMood('success');
@@ -330,14 +330,14 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
     if (selectedFields.length === 0) {
       setError('フィールドを最低1つ選択してください');
       setBrewMood('thinking');
-      setBrewMessage('どのフィールドを醸造しますか？');
+      setBrewMessage('どのフィールドを生成しますか？');
       return;
     }
 
     setIsGenerating(true);
     setError(null);
     setBrewMood('working');
-    setBrewMessage(`${count}件の個人情報を醸造中です...`);
+    setBrewMessage(`${count}件の個人情報を生成中です...`);
 
     try {
       const response = await fetch(
@@ -364,7 +364,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
         setResult(data.data.persons);
         setBrewMood('success');
         setBrewMessage(
-          `✨ ${data.data.persons.length}件の個人情報を醸造しました！`
+          `✨ ${data.data.persons.length}件の個人情報を生成しました！`
         );
       } else {
         throw new Error('API レスポンスエラー');
@@ -453,7 +453,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               </div>
               <div>
                 <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent">
-                  個人情報醸造ツール
+                  個人情報生成ツール
                 </h1>
                 <div className="flex items-center justify-center space-x-2 mt-2">
                   <Sparkles className="h-4 w-4 text-amber-500" />
@@ -465,7 +465,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               </div>
             </div>
             <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-              QAテスト用のリアルで実用的な個人情報データを丁寧に醸造します。
+              QAテスト用のリアルで実用的な個人情報データを丁寧に生成します。
               <br />
               <span className="text-amber-600 font-medium">
                 安全・高速・日本語対応
@@ -494,7 +494,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        醸造数
+                        生成数
                       </label>
                       <div className="flex items-center space-x-4">
                         <input
@@ -565,7 +565,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                     {/* フィールド選択 */}
                     <div className="flex items-center justify-between">
                       <label className="block text-sm font-semibold text-gray-700">
-                        醸造フィールド選択
+                        生成フィールド選択
                       </label>
                       <div className="flex items-center space-x-2 text-sm text-gray-500">
                         <span>{selectedFieldCount}個選択中</span>
@@ -620,7 +620,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                         <div className="p-2 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-lg">
                           <CheckCircle className="h-5 w-5 text-white" />
                         </div>
-                        <span>醸造結果 ({result.length}件)</span>
+                        <span>生成結果 ({result.length}件)</span>
                       </CardTitle>
                       <div className="flex items-center space-x-2">
                         {/* 表示モード切り替え */}
@@ -837,7 +837,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               {result.length > 0 && (
                 <Card variant="glass" className="backdrop-blur-xl">
                   <CardHeader>
-                    <CardTitle className="text-lg">醸造統計</CardTitle>
+                    <CardTitle className="text-lg">生成統計</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between text-sm">
