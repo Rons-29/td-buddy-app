@@ -1,8 +1,9 @@
 # 💼 TD Buddy - 商用対応 Netlify 設定
 
 [build]
-  command = "npm run build"
-  publish = "out"
+  base = "td-buddy-webapp"
+  command = "cd frontend && npm install && npm run build"
+  publish = "frontend/out"
 
 [build.environment]
   NODE_VERSION = "18"
