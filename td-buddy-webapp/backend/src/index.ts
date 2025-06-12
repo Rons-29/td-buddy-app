@@ -119,7 +119,7 @@ app.use('/api/numberboolean', numberbooleanRoutes);
 // ルートエンドポイント
 app.get('/', (req, res) => {
   res.json({
-    message: '🤖 QA Workbench API Server',
+    message: '🍺 QA Workbench API Server',
     version: '1.0.0',
     endpoints: {
       health: '/health',

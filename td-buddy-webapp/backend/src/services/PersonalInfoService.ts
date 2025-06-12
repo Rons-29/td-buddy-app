@@ -48,7 +48,7 @@ export class PersonalInfoService {
       }
 
       // 生成開始ログ
-      console.log(`🤖 TDが個人情報生成を開始: ${request.count}件, ${request.includeFields.join(', ')}`);
+      console.log(`🍺 TDが個人情報生成を開始: ${request.count}件, ${request.includeFields.join(', ')}`);
 
       // 重複除去のためのトラッキングセット
       const usedEmails = new Set<string>();

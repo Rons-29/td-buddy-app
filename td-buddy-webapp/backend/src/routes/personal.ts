@@ -1,9 +1,9 @@
-import { Router, Request, Response } from 'express';
-import { PersonalInfoService } from '../services/PersonalInfoService';
-import { TDError, ValidationError } from '../middleware/errorHandler';
-import { PersonalInfoGenerateRequest } from '../types/personalInfo';
-import { database } from '../database/database';
 import crypto from 'crypto';
+import { Request, Response, Router } from 'express';
+import { database } from '../database/database';
+import { ValidationError } from '../middleware/errorHandler';
+import { PersonalInfoService } from '../services/PersonalInfoService';
+import { PersonalInfoGenerateRequest } from '../types/personalInfo';
 
 const router = Router();
 const personalInfoService = new PersonalInfoService();
@@ -14,7 +14,7 @@ const personalInfoService = new PersonalInfoService();
  */
 router.post('/generate', async (req: Request, res: Response) => {
   const startTime = Date.now();
-  
+
   try {
     const criteria: PersonalInfoGenerateRequest = req.body;
 
@@ -31,25 +31,35 @@ router.post('/generate', async (req: Request, res: Response) => {
       );
     }
 
-    // フィールド指定のバリデーション
+    // フィールド指定のバリデーション - デフォルトフィールドを追加
     if (!criteria.includeFields || criteria.includeFields.length === 0) {
-      throw new ValidationError(
-        '少なくとも1つのフィールドを指定してください',
-        'MISSING_FIELDS'
-      );
+      // デフォルトフィールドを設定
+      criteria.includeFields = ['fullName', 'email', 'phone', 'address'];
+      console.log('🍺 Brew: デフォルトフィールドを適用しました');
     }
 
     // 有効なフィールドのチェック
     const validFields = [
-      'fullName', 'kanaName', 'email', 'phone', 'mobile', 'address', 
-      'postalCode', 'birthDate', 'age', 'gender', 'company', 'jobTitle', 
-      'website', 'socialId'
+      'fullName',
+      'kanaName',
+      'email',
+      'phone',
+      'mobile',
+      'address',
+      'postalCode',
+      'birthDate',
+      'age',
+      'gender',
+      'company',
+      'jobTitle',
+      'website',
+      'socialId',
     ];
-    
+
     const invalidFields = criteria.includeFields.filter(
       field => !validFields.includes(field)
     );
-    
+
     if (invalidFields.length > 0) {
       throw new ValidationError(
         `無効なフィールドが指定されています: ${invalidFields.join(', ')}`,
@@ -57,7 +67,11 @@ router.post('/generate', async (req: Request, res: Response) => {
       );
     }
 
-    console.log(`🍺 Brew: 個人情報生成開始 - ${criteria.count}件, フィールド: [${criteria.includeFields.join(', ')}]`);
+    console.log(
+      `🍺 Brew: 個人情報生成開始 - ${
+        criteria.count
+      }件, フィールド: [${criteria.includeFields.join(', ')}]`
+    );
 
     // PersonalInfoServiceを使用して生成
     const result = await personalInfoService.generatePersonalInfo(criteria);
@@ -79,35 +93,36 @@ router.post('/generate', async (req: Request, res: Response) => {
         dataHash,
         JSON.stringify(criteria),
         expiresAt.toISOString(),
-        req.headers['x-session-id'] as string || 'anonymous',
+        (req.headers['x-session-id'] as string) || 'anonymous',
         req.ip,
-        req.get('User-Agent') || 'unknown'
+        req.get('User-Agent') || 'unknown',
       ]
     );
 
     const responseTime = Date.now() - startTime;
 
-    console.log(`✅ TD: 個人情報生成完了 - ${result.persons.length}件生成 (${responseTime}ms)`);
+    console.log(
+      `✅ TD: 個人情報生成完了 - ${result.persons.length}件生成 (${responseTime}ms)`
+    );
 
     // レスポンス
     res.status(200).json({
       success: true,
       data: result,
       responseTime,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('❌ 個人情報生成エラー:', error);
-    
+
     if (error instanceof ValidationError) {
       res.status(400).json({
         success: false,
         error: {
           code: error.code,
           message: error.message,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       });
     } else {
       res.status(500).json({
@@ -115,8 +130,8 @@ router.post('/generate', async (req: Request, res: Response) => {
         error: {
           code: 'INTERNAL_SERVER_ERROR',
           message: '内部サーバーエラーが発生しました',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       });
     }
   }
@@ -128,8 +143,8 @@ router.post('/generate', async (req: Request, res: Response) => {
  */
 router.get('/history', async (req: Request, res: Response) => {
   try {
-    const sessionId = req.headers['x-session-id'] as string || 'anonymous';
-    
+    const sessionId = (req.headers['x-session-id'] as string) || 'anonymous';
+
     const history = await database.query(
       `SELECT id, criteria, created_at 
        FROM generated_personal_info 
@@ -145,11 +160,10 @@ router.get('/history', async (req: Request, res: Response) => {
         history: history.map((record: any) => ({
           id: record.id,
           criteria: JSON.parse(record.criteria),
-          createdAt: record.created_at
-        }))
-      }
+          createdAt: record.created_at,
+        })),
+      },
     });
-
   } catch (error) {
     console.error('❌ 履歴取得エラー:', error);
     res.status(500).json({
@@ -157,8 +171,8 @@ router.get('/history', async (req: Request, res: Response) => {
       error: {
         code: 'INTERNAL_SERVER_ERROR',
         message: '履歴の取得に失敗しました',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
   }
 });
@@ -170,25 +184,36 @@ router.get('/history', async (req: Request, res: Response) => {
 router.post('/export/csv', async (req: Request, res: Response) => {
   try {
     const { persons } = req.body;
-    
+
     if (!persons || !Array.isArray(persons)) {
       throw new ValidationError('エクスポートデータが必要です', 'MISSING_DATA');
     }
 
     // CSVヘッダー
     const headers = [
-      '氏名（漢字）', '氏名（カナ）', 'メールアドレス', '電話番号', '携帯電話',
-      '住所', '郵便番号', '生年月日', '年齢', '性別', '会社名', '職種', 
-      'ウェブサイト', 'SNS ID'
+      '氏名（漢字）',
+      '氏名（カナ）',
+      'メールアドレス',
+      '電話番号',
+      '携帯電話',
+      '住所',
+      '郵便番号',
+      '生年月日',
+      '年齢',
+      '性別',
+      '会社名',
+      '職種',
+      'ウェブサイト',
+      'SNS ID',
     ];
 
     // CSVデータ作成
     const csvRows = [headers.join(',')];
-    
+
     persons.forEach((person: any) => {
       const row = [
         person.fullName?.kanji || '',
-        person.kanaName || '',  // 氏名（カナ）列にkanaNameを設定
+        person.kanaName || '', // 氏名（カナ）列にkanaNameを設定
         person.email || '',
         person.phone || '',
         person.mobile || '',
@@ -196,36 +221,41 @@ router.post('/export/csv', async (req: Request, res: Response) => {
         person.address?.postalCode || '',
         person.birthDate || '',
         person.age || '',
-        person.gender === 'male' ? '男性' : person.gender === 'female' ? '女性' : '',
+        person.gender === 'male'
+          ? '男性'
+          : person.gender === 'female'
+          ? '女性'
+          : '',
         person.company || '',
         person.jobTitle || '',
         person.website || '',
-        person.socialId || ''
+        person.socialId || '',
       ].map(field => `"${field.toString().replace(/"/g, '""')}"`);
-      
+
       csvRows.push(row.join(','));
     });
 
     const csvContent = csvRows.join('\n');
-    const filename = `personal_info_${new Date().toISOString().slice(0, 10)}.csv`;
+    const filename = `personal_info_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
 
     console.log(`📊 TD: CSVエクスポート完了 - ${persons.length}件`);
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.status(200).send('\uFEFF' + csvContent); // BOM付きでUTF-8
-
   } catch (error) {
     console.error('❌ CSVエクスポートエラー:', error);
-    
+
     if (error instanceof ValidationError) {
       res.status(400).json({
         success: false,
         error: {
           code: error.code,
           message: error.message,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       });
     } else {
       res.status(500).json({
@@ -233,8 +263,8 @@ router.post('/export/csv', async (req: Request, res: Response) => {
         error: {
           code: 'EXPORT_ERROR',
           message: 'CSVエクスポートに失敗しました',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       });
     }
   }
@@ -274,11 +304,10 @@ router.get('/stats', async (req: Request, res: Response) => {
         overview: stats[0],
         fieldUsage: fieldUsage.map((row: any) => ({
           fields: JSON.parse(row.fields || '[]'),
-          count: row.usage_count
-        }))
-      }
+          count: row.usage_count,
+        })),
+      },
     });
-
   } catch (error) {
     console.error('❌ 統計情報取得エラー:', error);
     res.status(500).json({
@@ -286,10 +315,10 @@ router.get('/stats', async (req: Request, res: Response) => {
       error: {
         code: 'STATS_ERROR',
         message: '統計情報の取得に失敗しました',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
   }
 });
 
-export { router as personalRouter }; 
+export { router as personalRouter };

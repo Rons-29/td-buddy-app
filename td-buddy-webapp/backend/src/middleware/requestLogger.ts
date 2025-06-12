@@ -37,7 +37,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
  */
 export const tdLog = (message: string, level: 'info' | 'warn' | 'error' = 'info'): void => {
   const timestamp = new Date().toISOString();
-  const emoji = level === 'error' ? '🚨' : level === 'warn' ? '⚠️' : '🤖';
+  const emoji = level === 'error' ? '🚨' : level === 'warn' ? '⚠️' : '🍺';
   
   console.log(`${emoji} TD [${timestamp}]: ${message}`);
 };

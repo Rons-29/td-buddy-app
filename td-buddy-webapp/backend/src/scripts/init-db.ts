@@ -12,7 +12,7 @@ const command = args[0] || 'help';
 class DatabaseInitializer {
   async init(): Promise<void> {
     console.log(`
-🤖 QA Workbench データベース初期化スクリプト
+🍺 QA Workbench データベース初期化スクリプト
 
 🏗️  データベースの初期化を開始します...
     `);
@@ -32,7 +32,7 @@ class DatabaseInitializer {
       console.log(`
 🎉 データベース初期化が完了しました！
 
-🤖 Brewからのメッセージ:
+🍺 Brewからのメッセージ:
 「データベースの準備ができました！これでテストデータを安全に保存できますね♪」
 
 次のステップ:
@@ -106,7 +106,7 @@ class DatabaseInitializer {
       console.log(`
 ✅ クリーンアップ完了
 
-🤖 Brewからのメッセージ:
+🍺 Brewからのメッセージ:
 「古いデータをお掃除しました！データベースがスッキリしましたね♪」
       `);
 
@@ -174,7 +174,7 @@ class DatabaseInitializer {
 💾 サイズ: ${this.formatFileSize(stats.size)}
 ⏰ 作成日時: ${new Date().toLocaleString('ja-JP')}
 
-🤖 Brewからのメッセージ:
+🍺 Brewからのメッセージ:
 「データベースのバックアップが完了しました！安心ですね♪」`);
 
     } catch (error) {
@@ -205,7 +205,7 @@ class DatabaseInitializer {
 
   showHelp(): void {
     console.log(`
-🤖 QA Workbench データベース管理ツール
+🍺 QA Workbench データベース管理ツール
 
 使用方法:
   npm run db:init          データベースを初期化
@@ -224,7 +224,7 @@ class DatabaseInitializer {
   npm run db:reset -- --force
   npm run db:cleanup
 
-🤖 Brewからのメッセージ:
+🍺 Brewからのメッセージ:
 「データベース管理もTDにお任せください！安全で効率的に管理します♪」
     `);
   }

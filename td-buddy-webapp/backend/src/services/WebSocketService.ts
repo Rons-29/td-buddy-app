@@ -43,7 +43,7 @@ export class WebSocketService {
       // AIチャットルームに参加
       socket.on('join_ai_chat', (data) => {
         socket.join('ai_chat');
-        console.log('🤖 AIチャットルーム参加:', socket.id);
+        console.log('🍺 AIチャットルーム参加:', socket.id);
         
         socket.emit('joined_ai_chat', {
           message: 'AIチャットルームに参加しました',

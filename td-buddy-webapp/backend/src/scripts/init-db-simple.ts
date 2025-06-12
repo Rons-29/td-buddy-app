@@ -13,7 +13,7 @@ class SimpleDBInitializer {
 
   async init(): Promise<void> {
     console.log(`
-🤖 QA Workbench データベース初期化スクリプト
+🍺 QA Workbench データベース初期化スクリプト
 
 🏗️  データベースの初期化を開始します...
     `);
@@ -49,7 +49,7 @@ class SimpleDBInitializer {
 2. @types/better-sqlite3をインストール: npm install -D @types/better-sqlite3
 3. 完全なデータベース初期化を実行: npm run db:init
 
-🤖 Brewからのメッセージ:
+🍺 Brewからのメッセージ:
 「データベースの基盤ができました！依存関係をインストールしてから本格的な初期化を行いましょう♪」
       `);
 
@@ -61,7 +61,7 @@ class SimpleDBInitializer {
 
   showHelp(): void {
     console.log(`
-🤖 QA Workbench 簡易データベース初期化ツール
+🍺 QA Workbench 簡易データベース初期化ツール
 
 使用方法:
   npm run db:setup    基本的なディレクトリ構造を作成
@@ -71,7 +71,7 @@ class SimpleDBInitializer {
   このスクリプトは依存関係をインストールする前の
   基本的なセットアップを行います。
 
-🤖 Brewからのメッセージ:
+🍺 Brewからのメッセージ:
 「まずは基盤を整えましょう！準備ができたら本格的な初期化をします♪」
     `);
   }
