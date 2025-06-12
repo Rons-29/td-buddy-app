@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { csvPresets, getPresetById } from '../data/csvPresets';
+import BrewCharacter from './BrewCharacter';
 import { Button } from './ui/Button';
 import {
   Card,
@@ -19,7 +20,6 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/Card';
-import BrewCharacter';
 
 // 型定義
 export interface CSVColumn {
@@ -172,15 +172,15 @@ const CSVTestDataGenerator: React.FC = () => {
   const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
   const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
 
-  // TDキャラクター状態
-  const [brewMessage, setTdMessage] = useState(
-    'CSVテスト用データ醸造の準備完了です！カラムを追加またはプリセットを選択してください♪'
+  // Brewキャラクター状態
+  const [brewMessage, setBrewMessage] = useState(
+    'CSVテスト用データ生成の準備完了です！カラムを追加またはプリセットを選択してください♪'
   );
 
-  // TDキャラクター状態を追加
-  const [brewMood, setTdMood] = useState<TDMood>('happy');
+  // Brewキャラクター状態を追加
+  const [brewMood, setBrewMood] = useState<string>('happy');
 
-  // データ醸造用の基本データ
+  // データ生成用の基本データ
   const JAPANESE_DATA = {
     lastNames: [
       '佐藤',
@@ -265,7 +265,7 @@ const CSVTestDataGenerator: React.FC = () => {
   const applyPreset = useCallback((presetId: string) => {
     const preset = getPresetById(presetId);
     if (!preset) {
-      setTdMessage('プリセットが見つかりませんでした');
+      setBrewMessage('プリセットが見つかりませんでした');
       return;
     }
 
@@ -281,7 +281,9 @@ const CSVTestDataGenerator: React.FC = () => {
     setColumns(newColumns);
     setSelectedPresetId(presetId);
     setShowPresetManager(false);
-    setTdMessage(`${preset.name}プリセットを適用しました！${preset.brewMessage}`);
+    setBrewMessage(
+      `${preset.name}プリセットを適用しました！${preset.brewMessage}`
+    );
   }, []);
 
   // フィルタされたプリセット
@@ -299,7 +301,7 @@ const CSVTestDataGenerator: React.FC = () => {
       order: columns.length,
     };
     setColumns(prev => [...prev, newColumn]);
-    setTdMessage(
+    setBrewMessage(
       '新しいカラムを追加しました！データタイプを選択してくださいね♪'
     );
   }, [columns.length]);
@@ -309,7 +311,7 @@ const CSVTestDataGenerator: React.FC = () => {
     (columnId: string) => {
       const updatedColumns = columns.filter(col => col.id !== columnId);
       setColumns(updatedColumns);
-      setTdMessage('カラムを削除しました');
+      setBrewMessage('カラムを削除しました');
     },
     [columns]
   );
@@ -359,7 +361,9 @@ const CSVTestDataGenerator: React.FC = () => {
         col => col.id === targetColumnId
       );
 
-      if (draggedIndex === -1 || targetIndex === -1) return;
+      if (draggedIndex === -1 || targetIndex === -1) {
+        return;
+      }
 
       // カラムの順序を再配置
       const newColumns = [...sortedColumns];
@@ -373,25 +377,25 @@ const CSVTestDataGenerator: React.FC = () => {
       }));
 
       setColumns(updatedColumns);
-      setTdMessage('カラムの順序を変更しました');
+      setBrewMessage('カラムの順序を変更しました');
     },
     [draggedColumnId, columns]
   );
 
-  // データ醸造
+  // データ生成
   const generateData = useCallback(() => {
     if (columns.length === 0) {
-      setTdMessage('まずカラムを定義またはプリセットを選択してください');
+      setBrewMessage('まずカラムを定義またはプリセットを選択してください');
       return;
     }
 
     setIsGenerating(true);
-    setTdMessage(`${rowCount}件のテストデータを醸造中...`);
+    setBrewMessage(`${rowCount}件のテストデータを醸造中...`);
 
     // 自動インクリメントカウンターをリセット
     autoIncrementRefs.clear();
 
-    // 改良されたダミーデータ醸造
+    // 改良されたダミーデータ生成
     const generatedRows: CSVRow[] = [];
     for (let i = 0; i < rowCount; i++) {
       const rowData: Record<string, any> = {};
@@ -534,7 +538,7 @@ const CSVTestDataGenerator: React.FC = () => {
               JAPANESE_DATA.words[
                 Math.floor(Math.random() * JAPANESE_DATA.words.length)
               ]
-            }のサンプル段落です。テストデータとして使用されており、実際の内容ではありません。データ醸造の確認用として作成されています。`;
+            }のサンプル段落です。テストデータとして使用されており、実際の内容ではありません。データ生成の確認用として作成されています。`;
             rowData[col.id] = paragraphText;
             break;
 
@@ -646,7 +650,7 @@ const CSVTestDataGenerator: React.FC = () => {
 
     setRows(generatedRows);
     setShowDataTable(true);
-    setTdMessage(`✅ ${rowCount}件のテストデータを醸造しました！`);
+    setBrewMessage(`✅ ${rowCount}件のテストデータを醸造しました！`);
     setIsGenerating(false);
   }, [columns, rowCount]);
 
@@ -709,7 +713,7 @@ const CSVTestDataGenerator: React.FC = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    setTdMessage(
+    setBrewMessage(
       `${outputFormat.toUpperCase()}ファイルをダウンロードしました！`
     );
   }, [rows, columns, outputFormat, exportSettings, generateData]);
@@ -722,7 +726,7 @@ const CSVTestDataGenerator: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mb-2">
             <Database className="h-8 w-8 text-orange-600" />
             <CardTitle className="text-2xl font-bold text-orange-800">
-              📋 CSV テストデータ醸造
+              📋 CSV テストデータ生成
             </CardTitle>
           </div>
           <CardDescription className="text-orange-700">
@@ -731,10 +735,10 @@ const CSVTestDataGenerator: React.FC = () => {
         </CardHeader>
       </Card>
 
-      {/* TDキャラクター */}
+      {/* Brewキャラクター */}
       <Card className="border-orange-200">
         <CardContent className="pt-6">
-          <EnhancedTDCharacter mood={brewMood} message={brewMessage} />
+          <BrewCharacter message={brewMessage} />
         </CardContent>
       </Card>
 
@@ -841,12 +845,12 @@ const CSVTestDataGenerator: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* データ醸造設定セクション */}
+      {/* データ生成設定セクション */}
       <Card className="border-orange-200">
         <CardHeader>
           <CardTitle className="text-lg text-orange-800 flex items-center gap-2">
             <Database className="h-5 w-5" />
-            データ醸造設定
+            データ生成設定
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -922,7 +926,7 @@ const CSVTestDataGenerator: React.FC = () => {
               ) : (
                 <>
                   <Database className="h-4 w-4 mr-2" />
-                  データ醸造
+                  データ生成
                 </>
               )}
             </Button>

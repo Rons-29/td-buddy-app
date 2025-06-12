@@ -4,7 +4,7 @@
 
 ### 🎯 実装ガイドの目的
 
-このガイドは、Progressive Disclosure 方式の TestData Buddy を実装するための具体的なコンポーネント設計と実装方法を提供します。
+このガイドは、Progressive Disclosure 方式の QA Workbench を実装するための具体的なコンポーネント設計と実装方法を提供します。
 
 ### 📂 コンポーネント構成
 
@@ -373,7 +373,7 @@ const TDCharacter: React.FC<TDCharacterProps> = ({
   const getMessageData = () => {
     const messages = {
       1: {
-        welcome: 'TestData Buddyへようこそ！まずは基本機能から始めましょう♪',
+        welcome: 'QA Workbenchへようこそ！まずは基本機能から始めましょう♪',
         helping: 'TDがサポートします。分からないことがあれば聞いてくださいね',
         success: '素晴らしい！データ生成が完了しました🎉',
         error: 'エラーが発生しました。一緒に解決しましょう',
@@ -700,4 +700,4 @@ describe('ProgressiveProvider', () => {
 
 ### 💡 TD からのメッセージ
 
-> 🤖 **TD より**: 「このガイドを使って、みんなが使いやすい TestData Buddy を作りましょう！コンポーネントはレゴブロックのように組み合わせて使えるよう設計されています。困ったときは、いつでも TD が丁寧にサポートしますよ ♪」
+> 🤖 **TD より**: 「このガイドを使って、みんなが使いやすい QA Workbench を作りましょう！コンポーネントはレゴブロックのように組み合わせて使えるよう設計されています。困ったときは、いつでも TD が丁寧にサポートしますよ ♪」

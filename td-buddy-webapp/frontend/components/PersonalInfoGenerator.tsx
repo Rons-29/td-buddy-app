@@ -15,6 +15,7 @@ import {
   Users,
 } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
+import BrewCharacter from './BrewCharacter';
 import { ActionButton } from './ui/ActionButton';
 import {
   Card,
@@ -24,7 +25,6 @@ import {
   CardTitle,
 } from './ui/Card';
 import { DataTable } from './ui/DataTable';
-import BrewCharacter';
 import { FieldOption, FieldSelector } from './ui/FieldSelector';
 
 // 簡易版の型定義
@@ -114,8 +114,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<PersonalInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [brewMood, setTdMood] = useState<TDMood>('happy');
-  const [brewMessage, setTdMessage] =
+  const [brewMood, setBrewMood] = useState<string>('happy');
+  const [brewMessage, setBrewMessage] =
     useState('個人情報醸造の準備ができました！');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [isCopied, setIsCopied] = useState(false);
@@ -134,11 +134,11 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   const copyToClipboard = useCallback(async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      setTdMood('success');
-      setTdMessage('クリップボードにコピーしました！');
+      setBrewMood('success');
+      setBrewMessage('クリップボードにコピーしました！');
       setTimeout(() => {
-        setTdMood('happy');
-        setTdMessage('他にもお手伝いできることはありますか？');
+        setBrewMood('happy');
+        setBrewMessage('他にもお手伝いできることはありますか？');
       }, 2000);
     } catch (err) {
       console.error('Failed to copy: ', err);
@@ -246,29 +246,29 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       allDataText += `🔧 醸造ツール: QA Workbench\n`;
 
       await navigator.clipboard.writeText(allDataText);
-      setTdMood('success');
-      setTdMessage(
+      setBrewMood('success');
+      setBrewMessage(
         `🎉 ${result.length}件のデータを全体コピーしました！クリップボードに保存済みです♪`
       );
 
       // 3秒後にコピー状態をリセット
       setTimeout(() => {
         setIsCopied(false);
-        setTdMood('happy');
-        setTdMessage(
+        setBrewMood('happy');
+        setBrewMessage(
           'コピーしたデータを活用してくださいね♪ 他にもお手伝いできることがあれば、いつでもお声かけください！'
         );
       }, 3000);
     } catch (err) {
       console.error('Failed to copy all data: ', err);
       setIsCopied(false); // エラー時はすぐにリセット
-      setTdMood('error');
-      setTdMessage(
+      setBrewMood('error');
+      setBrewMessage(
         '❌ コピーに失敗しました。ブラウザの設定を確認してもう一度お試しください。'
       );
       setTimeout(() => {
-        setTdMood('thinking');
-        setTdMessage('お手伝いできることはありますか？');
+        setBrewMood('thinking');
+        setBrewMessage('お手伝いできることはありますか？');
       }, 2000);
     }
   }, [result, fieldOptions]);
@@ -310,8 +310,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      setTdMood('success');
-      setTdMessage('CSVファイルのダウンロードが完了しました！');
+      setBrewMood('success');
+      setBrewMessage('CSVファイルのダウンロードが完了しました！');
 
       // 2秒後にエクスポート状態をリセット
       setTimeout(() => {
@@ -319,8 +319,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       }, 2000);
     } catch (error) {
       setIsExporting(false); // エラー時はすぐにリセット
-      setTdMood('error');
-      setTdMessage('CSVエクスポートでエラーが発生しました');
+      setBrewMood('error');
+      setBrewMessage('CSVエクスポートでエラーが発生しました');
     }
   };
 
@@ -329,15 +329,15 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
 
     if (selectedFields.length === 0) {
       setError('フィールドを最低1つ選択してください');
-      setTdMood('thinking');
-      setTdMessage('どのフィールドを醸造しますか？');
+      setBrewMood('thinking');
+      setBrewMessage('どのフィールドを醸造しますか？');
       return;
     }
 
     setIsGenerating(true);
     setError(null);
-    setTdMood('working');
-    setTdMessage(`${count}件の個人情報を醸造中です...`);
+    setBrewMood('working');
+    setBrewMessage(`${count}件の個人情報を醸造中です...`);
 
     try {
       const response = await fetch(
@@ -362,8 +362,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       const data = await response.json();
       if (data.success) {
         setResult(data.data.persons);
-        setTdMood('success');
-        setTdMessage(
+        setBrewMood('success');
+        setBrewMessage(
           `✨ ${data.data.persons.length}件の個人情報を醸造しました！`
         );
       } else {
@@ -373,8 +373,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       const errorMessage =
         error instanceof Error ? error.message : '不明なエラー';
       setError(errorMessage);
-      setTdMood('error');
-      setTdMessage(`エラーが発生しました: ${errorMessage}`);
+      setBrewMood('error');
+      setBrewMessage(`エラーが発生しました: ${errorMessage}`);
     } finally {
       setIsGenerating(false);
     }
@@ -557,7 +557,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                       {count > 100 && (
                         <p className="text-sm text-amber-600 mt-2">
                           ⚠️
-                          大量データ醸造により処理時間が長くなる場合があります
+                          大量データ生成により処理時間が長くなる場合があります
                         </p>
                       )}
                     </div>
@@ -598,7 +598,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                     >
                       <span className="relative z-10">
                         {isGenerating
-                          ? 'データ醸造中...'
+                          ? 'データ生成中...'
                           : `${count}件の個人情報を生成`}
                       </span>
 
@@ -801,11 +801,11 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               )}
             </div>
 
-            {/* 右カラム: TDキャラクターエリア */}
+            {/* 右カラム: Brewキャラクターエリア */}
             <div className="space-y-6">
               <Card variant="glass" className="backdrop-blur-xl sticky top-8">
                 <CardContent className="p-6">
-                  <EnhancedTDCharacter
+                  <BrewCharacter
                     mood={brewMood}
                     message={brewMessage}
                     animation={isGenerating ? 'spin' : 'float'}

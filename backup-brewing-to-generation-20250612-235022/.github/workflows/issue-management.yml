@@ -1,0 +1,176 @@
+name: 🤖 TD Issue Management
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+  pull_request:
+    types: [opened, edited, labeled]
+
+jobs:
+  welcome_new_contributor:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Welcome New Issue
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const author = issue.user.login;
+
+            const welcomeMessage = `
+            ## 🤖 TDからのメッセージ
+
+            @${author} さん、Issueを作成していただき、ありがとうございます！
+
+            TDが内容を確認して、適切に対応いたします。
+
+            📋 **次のステップ**:
+            1. ラベルの自動付与
+            2. 優先度の評価
+            3. 担当者のアサイン
+            4. 進捗状況の更新
+
+            🕒 **対応目安**:
+            - 🚨 Critical: 24時間以内
+            - 🔴 High: 3日以内  
+            - 🟡 Medium: 1週間以内
+            - 🟢 Low: 次回リリース時
+
+            何かご質問がございましたら、お気軽にお声かけください♪
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: welcomeMessage
+            });
+
+      - name: Welcome New Pull Request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+
+            const welcomeMessage = `
+            ## 🤖 TDからのメッセージ
+
+            @${author} さん、Pull Requestをありがとうございます！
+
+            🔍 **レビュープロセス**:
+            1. 自動テスト実行
+            2. セキュリティチェック
+            3. コードレビュー
+            4. 統合テスト
+
+            ✅ **マージ条件**:
+            - [ ] CI/CDパイプライン成功
+            - [ ] セキュリティチェック通過
+            - [ ] 2名以上のレビュー承認
+            - [ ] テストカバレッジ維持
+
+            TDがサポートしますので、安心してお待ちください♪
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: pr.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: welcomeMessage
+            });
+
+  auto_label_security:
+    if: "contains(github.event.issue.title, 'security') || contains(github.event.issue.body, 'security') || contains(github.event.issue.title, 'セキュリティ')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Security Label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['security', 'priority/high']
+            });
+
+  auto_label_bug:
+    if: "contains(github.event.issue.title, '[BUG]') || contains(github.event.issue.title, 'バグ')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Bug Labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['bug', 'needs-triage']
+            });
+
+  auto_label_feature:
+    if: "contains(github.event.issue.title, '[FEATURE]') || contains(github.event.issue.title, '機能要望')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Feature Labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['enhancement', 'feature-request']
+            });
+
+  stale_issue_management:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Close Stale Issues
+        uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: |
+            ## 🤖 TDからのお知らせ
+
+            このIssueは30日間活動がないため、自動的に古いIssueとしてマークされました。
+
+            📋 **次のアクション**:
+            - 7日以内に返信いただければ、アクティブ状態に戻ります
+            - 返信がない場合は、自動的にクローズされます
+
+            引き続きサポートが必要でしたら、お気軽にコメントしてください♪
+          stale-pr-message: |
+            ## 🤖 TDからのお知らせ
+
+            このPull Requestは30日間活動がないため、自動的に古いPRとしてマークされました。
+
+            📋 **次のアクション**:
+            - 7日以内に更新いただければ、アクティブ状態に戻ります
+            - 更新がない場合は、自動的にクローズされます
+
+            マージをご希望の場合は、リベースまたは更新をお願いします♪
+          close-issue-message: |
+            ## 🤖 TDからのお知らせ
+
+            このIssueは活動がないため自動的にクローズされました。
+
+            問題が解決していない場合は、新しいIssueを作成してください。
+            いつでもTDがサポートします♪
+          close-pr-message: |
+            ## 🤖 TDからのお知らせ
+
+            このPull Requestは活動がないため自動的にクローズされました。
+
+            変更をマージしたい場合は、新しいPRを作成してください。
+            TDがレビューをサポートします♪
+          stale-issue-label: "stale"
+          stale-pr-label: "stale"
+          days-before-stale: 30
+          days-before-close: 7

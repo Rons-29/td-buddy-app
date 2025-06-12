@@ -1,0 +1,551 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 💡 開発効率化Tips
+# TestData Buddy (TD) プロジェクトの開発効率化・ベストプラクティス集
+
+## ⚡ コマンドエイリアス・ショートカット
+
+### TDくんお勧めのBashエイリアス
+```bash
+# ~/.bashrc または ~/.zshrc に追加
+
+# 基本的な開発コマンド
+alias td-dev="pnpm run dev"
+alias td-test="pnpm run test"
+alias td-build="pnpm run build"
+alias td-lint="pnpm run lint"
+alias td-type="pnpm run type-check"
+
+# Git操作の効率化
+alias td-status="git status --short"
+alias td-log="git log --oneline --graph --decorate --color"
+alias td-sync="git fetch origin develop && git rebase origin/develop"
+alias td-clean="git branch --merged | grep -v '\\*\\|main\\|develop' | xargs -n 1 git branch -d"
+
+# プロジェクト移動
+alias goto-api="cd packages/api-server"
+alias goto-web="cd packages/web-ui"
+alias goto-shared="cd packages/shared"
+alias goto-root="cd $TD_PROJECT_ROOT"
+
+# 便利なコマンド
+alias td-ports="lsof -i :3000,:3001,:3002"  # 使用中ポートの確認
+alias td-clean-deps="rm -rf node_modules && rm -rf packages/*/node_modules && pnpm install"
+alias td-logs="tail -f logs/*.log"
+```
+
+### Gitエイリアス設定
+```bash
+# ~/.gitconfig に追加
+[alias]
+    # TD専用ショートカット
+    td-new = "!f() { git checkout develop && git pull origin develop && git checkout -b \"$1\"; }; f"
+    td-commit = "!f() { git add . && git commit -m \"$1\"; }; f"
+    td-push = "!f() { git push origin \"$(git branch --show-current)\"; }; f"
+    
+    # ログ・状態確認
+    td-graph = log --oneline --graph --decorate --all --color
+    td-diff = diff --color-words --ignore-space-change
+    td-blame = blame -w -M -C
+    
+    # 便利な操作
+    td-undo = reset --soft HEAD~1
+    td-fixup = commit --amend --no-edit
+    td-search = "!f() { git log --grep=\"$1\" --oneline; }; f"
+```
+
+## 🕐 時間管理・生産性向上
+
+### ポモドーロテクニック
+```bash
+# TD式ポモドーロタイマー
+# ~/.bashrc に追加
+
+td_pomodoro() {
+    echo "🤖 TDと一緒に25分間集中しましょう！"
+    sleep 1500  # 25分
+    echo "🎉 お疲れさまでした！5分間休憩しましょう"
+    
+    # 通知音（macOS）
+    osascript -e 'display notification "ポモドーロ完了！休憩時間です" with title "TD Buddy"'
+}
+
+td_break() {
+    echo "😌 TDと一緒に5分間休憩中..."
+    sleep 300   # 5分
+    echo "⚡ 休憩終了！次のセッションを始めましょう"
+    
+    osascript -e 'display notification "休憩終了！次のセッション開始" with title "TD Buddy"'
+}
+
+alias pomodoro="td_pomodoro"
+alias break="td_break"
+```
+
+### 進捗追跡・振り返り
+```bash
+# 日次振り返りスクリプト
+td_daily_review() {
+    echo "📊 今日の進捗を振り返りましょう！"
+    echo ""
+    echo "📝 今日完了したタスク："
+    git log --since="00:00" --until="23:59" --oneline --author="$(git config user.name)"
+    echo ""
+    echo "🎯 明日の目標："
+    read -p "明日の主要タスクを入力してください: " tomorrow_goal
+    echo "$tomorrow_goal" >> ~/.td_goals.txt
+    echo ""
+    echo "🤖 TDからのメッセージ: 今日もお疲れさまでした！明日も一緒に頑張りましょう♪"
+}
+
+alias daily-review="td_daily_review"
+```
+
+## 🛠️ VS Code / Cursor IDE 設定
+
+### 推奨拡張機能
+```json
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+    "ms-vscode.vscode-jest",
+    "github.copilot",
+    "ms-vscode.remote-containers"
+  ]
+}
+```
+
+### 設定ファイル
+```json
+// .vscode/settings.json
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
+  },
+  "files.autoSave": "onDelay",
+  "files.autoSaveDelay": 1000,
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  "tailwindCSS.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  }
+}
+```
+
+### タスク設定
+```json
+// .vscode/tasks.json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "TD: Start Development",
+      "type": "shell",
+      "command": "pnpm run dev",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "TD: Run Tests",
+      "type": "shell",
+      "command": "pnpm run test",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "TD: Type Check",
+      "type": "shell",
+      "command": "pnpm run type-check",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    }
+  ]
+}
+```
+
+## 🚀 開発ワークフロー最適化
+
+### 開発開始時のチェックリスト
+```bash
+#!/bin/bash
+# scripts/td-start-dev.sh
+# 開発開始時の自動チェックスクリプト
+
+echo "🤖 TDが開発環境をチェックします..."
+
+# 1. Git状態確認
+echo "📊 Git状態確認..."
+git status --porcelain
+
+# 2. 依存関係の確認
+echo "📦 依存関係確認..."
+pnpm audit --audit-level moderate
+
+# 3. 環境変数の確認
+echo "🔧 環境変数確認..."
+if [ ! -f .env ]; then
+    echo "⚠️  .envファイルが見つかりません"
+    cp .env.example .env
+    echo "✅ .env.exampleから.envを作成しました"
+fi
+
+# 4. ポートの確認
+echo "🌐 ポート使用状況確認..."
+if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null ; then
+    echo "⚠️  ポート3000が使用中です"
+else
+    echo "✅ ポート3000は利用可能です"
+fi
+
+# 5. 型チェック
+echo "🔍 型チェック実行..."
+pnpm run type-check
+
+echo "🎉 開発環境チェック完了！TDと一緒に開発を始めましょう！"
+```
+
+### 開発終了時のクリーンアップ
+```bash
+#!/bin/bash
+# scripts/td-end-dev.sh
+# 開発終了時のクリーンアップスクリプト
+
+echo "🤖 TDが開発環境をクリーンアップします..."
+
+# 1. 未コミットの変更確認
+if [ -n "$(git status --porcelain)" ]; then
+    echo "⚠️  未コミットの変更があります"
+    git status --short
+    read -p "コミットしますか？ (y/n): " commit_choice
+    if [ "$commit_choice" = "y" ]; then
+        read -p "コミットメッセージを入力してください: " commit_msg
+        git add .
+        git commit -m "$commit_msg"
+    fi
+fi
+
+# 2. 一時ファイルの削除
+echo "🧹 一時ファイルを削除..."
+find . -name "*.tmp" -delete
+find . -name ".DS_Store" -delete
+
+# 3. ログファイルの整理
+echo "📋 ログファイルを整理..."
+if [ -d logs ]; then
+    gzip logs/*.log 2>/dev/null || true
+fi
+
+# 4. プロセスの終了
+echo "🔚 開発サーバーを終了..."
+pkill -f "pnpm.*dev" || true
+
+echo "✨ クリーンアップ完了！お疲れさまでした！"
+echo "🤖 TDからのメッセージ: 今日も素晴らしい開発でした。ゆっくり休んでくださいね♪"
+```
+
+## 🧪 テスト効率化
+
+### テスト実行スクリプト
+```bash
+#!/bin/bash
+# scripts/td-test.sh
+# 効率的なテスト実行スクリプト
+
+echo "🧪 TDがテストを実行します..."
+
+# 1. 単体テスト
+echo "🔍 単体テスト実行中..."
+pnpm run test:unit
+
+# 2. 統合テスト
+echo "🔗 統合テスト実行中..."
+pnpm run test:integration
+
+# 3. E2Eテスト（オプション）
+read -p "E2Eテストも実行しますか？ (y/n): " e2e_choice
+if [ "$e2e_choice" = "y" ]; then
+    echo "🌐 E2Eテスト実行中..."
+    pnpm run test:e2e
+fi
+
+# 4. カバレッジレポート生成
+echo "📊 カバレッジレポート生成中..."
+pnpm run test:coverage
+
+echo "✅ テスト完了！結果を確認してください"
+open coverage/index.html  # macOS
+```
+
+### テストデータ生成ヘルパー
+```typescript
+// packages/shared/test-utils/td-test-helper.ts
+export class TDTestHelper {
+  /**
+   * テスト用パスワードを生成
+   */
+  static generateTestPassword(length: number = 12): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    return Array.from(crypto.getRandomValues(new Uint8Array(length)))
+      .map(x => chars[x % chars.length])
+      .join('');
+  }
+
+  /**
+   * テスト用個人情報を生成
+   */
+  static generateTestPersonalInfo(): PersonalInfo {
+    return {
+      fullName: 'テスト 太郎',
+      email: `test-${Date.now()}@td-buddy.local`,
+      phone: '090-0000-0000',
+      address: 'テスト県テスト市テスト町1-1-1',
+      birthDate: new Date('1990-01-01'),
+    };
+  }
+
+  /**
+   * テスト用データベースリセット
+   */
+  static async resetTestDatabase(): Promise<void> {
+    // テスト用データベースの初期化処理
+    console.log('🗑️  TDがテストデータベースをリセットします...');
+  }
+}
+```
+
+## 📝 コード品質向上
+
+### Pre-commit フック設定
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+# TDによる自動品質チェック
+
+echo "🤖 TDがコミット前チェックを実行します..."
+
+# 1. ESLint チェック
+echo "🔍 ESLint チェック..."
+npm run lint
+if [ $? -ne 0 ]; then
+    echo "❌ ESLintエラーがあります。修正してからコミットしてください。"
+    exit 1
+fi
+
+# 2. 型チェック
+echo "🔍 TypeScript型チェック..."
+npm run type-check
+if [ $? -ne 0 ]; then
+    echo "❌ 型エラーがあります。修正してからコミットしてください。"
+    exit 1
+fi
+
+# 3. テスト実行
+echo "🧪 テスト実行..."
+npm run test:unit
+if [ $? -ne 0 ]; then
+    echo "❌ テストが失敗しています。修正してからコミットしてください。"
+    exit 1
+fi
+
+# 4. 機密情報チェック
+echo "🔒 機密情報チェック..."
+git diff --cached --name-only | xargs grep -l -E "(password|secret|key|token|api_key)" && {
+    echo "⚠️  機密情報が含まれている可能性があります。環境変数に移してください。"
+    exit 1
+}
+
+echo "✅ TDの品質チェック完了！コミットを続行します。"
+```
+
+### コードメトリクス監視
+```bash
+#!/bin/bash
+# scripts/td-metrics.sh
+# コード品質メトリクス取得
+
+echo "📊 TDがコード品質をチェックします..."
+
+# 1. ファイルサイズチェック
+echo "📁 ファイルサイズ分析..."
+find packages -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -n | tail -10
+
+# 2. 依存関係の循環チェック
+echo "🔄 循環依存チェック..."
+npx madge --circular packages/
+
+# 3. 複雑度チェック
+echo "🧮 コード複雑度チェック..."
+npx complexity-report packages/ --format json > complexity-report.json
+
+# 4. 重複コードチェック
+echo "👥 重複コードチェック..."
+npx jscpd packages/
+
+echo "📈 メトリクス分析完了！詳細はレポートファイルを確認してください。"
+```
+
+## 🎨 UI/UX 開発効率化
+
+### Tailwind CSS ユーティリティ
+```css
+/* styles/td-components.css */
+/* TDプロジェクト専用のコンポーネントクラス */
+
+.td-button {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+}
+
+.td-button-primary {
+  @apply td-button bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.td-button-secondary {
+  @apply td-button bg-gray-200 text-gray-800 hover:bg-gray-300;
+}
+
+.td-card {
+  @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
+}
+
+.td-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.td-form-group {
+  @apply mb-4;
+}
+
+.td-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+```
+
+### コンポーネントテンプレート
+```bash
+#!/bin/bash
+# scripts/create-component.sh
+# 新しいコンポーネント作成スクリプト
+
+component_name=$1
+if [ -z "$component_name" ]; then
+    echo "使用方法: ./create-component.sh ComponentName"
+    exit 1
+fi
+
+component_dir="packages/web-ui/app/components/$component_name"
+mkdir -p "$component_dir"
+
+# コンポーネントファイル作成
+cat > "$component_dir/index.tsx" << EOF
+import type { ComponentProps } from 'react';
+
+interface ${component_name}Props extends ComponentProps<'div'> {
+  // プロップスの型定義をここに追加
+}
+
+export function ${component_name}({ className, ...props }: ${component_name}Props) {
+  return (
+    <div className={\`td-component \${className || ''}\`} {...props}>
+      {/* TDコンポーネント: ${component_name} */}
+      <p>Hello from ${component_name}!</p>
+    </div>
+  );
+}
+EOF
+
+# Storiesファイル作成
+cat > "$component_dir/${component_name}.stories.tsx" << EOF
+import type { Meta, StoryObj } from '@storybook/react';
+import { ${component_name} } from './index';
+
+const meta: Meta<typeof ${component_name}> = {
+  title: 'Components/${component_name}',
+  component: ${component_name},
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {},
+};
+EOF
+
+# テストファイル作成
+cat > "$component_dir/${component_name}.test.tsx" << EOF
+import { render, screen } from '@testing-library/react';
+import { ${component_name} } from './index';
+
+describe('${component_name}', () => {
+  it('renders correctly', () => {
+    render(<${component_name} />);
+    expect(screen.getByText('Hello from ${component_name}!')).toBeInTheDocument();
+  });
+});
+EOF
+
+echo "✅ TDが${component_name}コンポーネントを作成しました！"
+echo "📁 作成場所: $component_dir"
+```
+
+---
+
+## 🎯 効率化のまとめ
+
+### TDからの効率化メッセージ
+```
+🤖 「効率的な開発のコツは、小さな積み重ねです！
+
+1. 🕐 時間管理を大切に（ポモドーロテクニック）
+2. ⚡ よく使うコマンドはエイリアス化
+3. 🔍 自動化できることは積極的に自動化
+4. 📊 定期的な振り返りで改善点を見つける
+5. 🤝 チームメンバーとTipsを共有
+
+TDと一緒に、楽しく効率的な開発を続けましょう！
+困ったときは、いつでもTDに相談してくださいね♪」
+```
+
+### 継続的改善のサイクル
+1. **測定**: 現在の開発効率を把握
+2. **分析**: ボトルネックや改善点を特定
+3. **実装**: 効率化策を導入
+4. **評価**: 効果を測定・検証
+5. **共有**: 成功事例をチーム内で共有
+
+**TDの最終アドバイス**: 「効率化は手段であって目的ではありません。最終的にはより良いプロダクトを作ることが目標です。TDと一緒に、ユーザーに価値を届ける開発を続けましょう！✨」

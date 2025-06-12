@@ -1,7 +1,7 @@
 {
   "name": "qa-workbench",
   "displayName": "QA Workbench",
-  "description": "QAエンジニアの専用作業台 - データ醸造から品質管理まで、助手のブリューがサポート",
+  "description": "QAエンジニアの専用作業台 - データ生成から品質管理まで、助手のブリューがサポート",
   "version": "0.1.0",
   "publisher": "qa-workbench",
   "engines": {
@@ -13,7 +13,7 @@
   ],
   "keywords": [
     "qa workbench",
-    "data brewing",
+    "data generation",
     "quality assurance",
     "test data",
     "brew assistant",
@@ -30,13 +30,13 @@
       },
       {
         "command": "qa-workbench.brewPassword",
-        "title": "パスワード醸造",
+        "title": "パスワード生成",
         "category": "QA Workbench",
         "icon": "$(key)"
       },
       {
         "command": "qa-workbench.brewPersonalInfo",
-        "title": "個人情報醸造",
+        "title": "個人情報生成",
         "category": "QA Workbench",
         "icon": "$(person)"
       }

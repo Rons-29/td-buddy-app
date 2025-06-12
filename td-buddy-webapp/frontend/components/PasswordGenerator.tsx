@@ -15,7 +15,7 @@ import {
 import { CompositionSelector } from './CompositionSelector';
 import { CustomCharsetsEditor } from './CustomCharsetsEditor';
 import { CustomSymbolsInput } from './CustomSymbolsInput';
-import BrewCharacter';
+import BrewCharacter from './BrewCharacter';
 import { ActionButton } from './ui/ActionButton';
 
 export const PasswordGenerator: React.FC = () => {
@@ -47,7 +47,7 @@ export const PasswordGenerator: React.FC = () => {
   // コピー完了メッセージ用の状態を追加
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
 
-  // 大量醸造用プログレス状態
+  // 大量生成用プログレス状態
   const [generationProgress, setGenerationProgress] = useState<{
     current: number;
     total: number;
@@ -59,13 +59,13 @@ export const PasswordGenerator: React.FC = () => {
   const [displayLimit, setDisplayLimit] = useState(100); // 初期表示数
   const [showAllResults, setShowAllResults] = useState(false);
 
-  // TDキャラクター状態（既存）
+  // Brewキャラクター状態（既存）
   const [brewState, setBrewState] = useState<TDState>({
     emotion: 'happy',
     animation: 'float',
     message: APP_CONFIG.isOfflineMode
       ? TD_MESSAGES.OFFLINE_MODE
-      : 'パスワード醸造の準備ができました！構成プリセットをお選びください♪',
+      : 'パスワード生成の準備ができました！構成プリセットをお選びください♪',
     showSpeechBubble: true,
   });
 
@@ -105,7 +105,7 @@ export const PasswordGenerator: React.FC = () => {
       }));
     }
 
-    // TDキャラクターの反応
+    // Brewキャラクターの反応
     setBrewState(prev => ({
       ...prev,
       emotion: 'happy',
@@ -204,7 +204,7 @@ export const PasswordGenerator: React.FC = () => {
     }
   };
 
-  // パスワード醸造API呼び出し（構成プリセット対応）
+  // パスワード生成API呼び出し（構成プリセット対応）
   const generatePasswords = async () => {
     setIsGenerating(true);
     setApiError(null);
@@ -332,20 +332,20 @@ export const PasswordGenerator: React.FC = () => {
       emotion: 'thinking',
       animation: 'wiggle',
       message: isLargeGeneration
-        ? `${totalCount}個の大量醸造を開始します！TDが頑張ります♪`
-        : 'パスワードを醸造中です... しばらくお待ちください♪',
+        ? `${totalCount}個の大量生成を開始します！TDが頑張ります♪`
+        : 'パスワードを生成中です... しばらくお待ちください♪',
       showSpeechBubble: true,
     }));
 
     try {
-      // 大量醸造の場合はチャンク処理
+      // 大量生成の場合はチャンク処理
       if (isLargeGeneration) {
         await generatePasswordsInChunks(totalCount, safeConfig);
       } else {
         await generatePasswordsSingle(totalCount, safeConfig);
       }
     } catch (error) {
-      console.error('パスワード醸造エラー:', error);
+      console.error('パスワード生成エラー:', error);
       setApiError(
         error instanceof Error ? error.message : '不明なエラーが発生しました'
       );
@@ -391,7 +391,7 @@ export const PasswordGenerator: React.FC = () => {
         ...prev,
         emotion: 'excited',
         animation: 'heartbeat',
-        message: `🍺 ローカル醸造完了！${localResult.strength}強度のパスワードを${localResult.passwords.length}個醸造しました♪`,
+        message: `🍺 ローカル生成完了！${localResult.strength}強度のパスワードを${localResult.passwords.length}個醸造しました♪`,
         showSpeechBubble: true,
       }));
 
@@ -458,7 +458,7 @@ export const PasswordGenerator: React.FC = () => {
     }, 3000);
   };
 
-  // チャンク生成（大量醸造用）
+  // チャンク生成（大量生成用）
   const generatePasswordsInChunks = async (
     totalCount: number,
     safeConfig: any
@@ -498,7 +498,7 @@ export const PasswordGenerator: React.FC = () => {
         ...prev,
         emotion: 'thinking',
         animation: i % 2 === 0 ? 'bounce' : 'wiggle',
-        message: `醸造中... ${allPasswords.length}/${totalCount} (${Math.round(
+        message: `生成中... ${allPasswords.length}/${totalCount} (${Math.round(
           (allPasswords.length / totalCount) * 100
         )}%) - 速度: ${progress.speed}個/秒`,
         showSpeechBubble: true,
@@ -597,8 +597,8 @@ export const PasswordGenerator: React.FC = () => {
       emotion: 'excited',
       animation: 'heartbeat',
       message: APP_CONFIG.isOfflineMode
-        ? `🎉 ${totalCount}個のローカル大量醸造完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`
-        : `🎉 ${totalCount}個の大量醸造完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`,
+        ? `🎉 ${totalCount}個のローカル大量生成完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`
+        : `🎉 ${totalCount}個の大量生成完了！平均速度: ${avgSpeed}個/秒 - お疲れさまでした♪`,
       showSpeechBubble: true,
     }));
 
@@ -616,7 +616,7 @@ export const PasswordGenerator: React.FC = () => {
       // 結果エリア下部にメッセージ表示
       setCopyMessage(`✅ パスワード ${index + 1} をコピーしました！`);
 
-      // TDキャラクターにも軽く反応させる（オプション）
+      // Brewキャラクターにも軽く反応させる（オプション）
       setBrewState(prev => ({
         ...prev,
         emotion: 'happy',
@@ -652,7 +652,7 @@ export const PasswordGenerator: React.FC = () => {
         `✅ ${result.passwords.length}個すべてのパスワードをコピーしました！`
       );
 
-      // TDキャラクターにも軽く反応させる（オプション）
+      // Brewキャラクターにも軽く反応させる（オプション）
       setBrewState(prev => ({
         ...prev,
         emotion: 'excited',
@@ -710,7 +710,7 @@ export const PasswordGenerator: React.FC = () => {
       <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex justify-between items-center mb-2">
           <div className="text-sm font-medium text-blue-800">
-            大量醸造中... ({generationProgress.current}/
+            大量生成中... ({generationProgress.current}/
             {generationProgress.total})
           </div>
           <div className="text-sm text-blue-600">{percentage}%</div>
@@ -856,7 +856,7 @@ export const PasswordGenerator: React.FC = () => {
       {/* ヘッダー */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-amber-900 mb-2">
-          🔐 QA Workbench パスワード醸造
+          🔐 QA Workbench パスワード生成
         </h1>
         <p className="text-amber-600">
           構成プリセット機能で、より実用的なパスワードを丁寧に醸造します
@@ -876,7 +876,7 @@ export const PasswordGenerator: React.FC = () => {
 
       {/* 設定エリア（フル幅） */}
       <div className="bg-white rounded-lg shadow-md p-4 lg:p-6">
-        <h2 className="text-xl font-semibold mb-4">🎯 醸造設定</h2>
+        <h2 className="text-xl font-semibold mb-4">🎯 生成設定</h2>
 
         {/* 構成プリセット選択（フル幅） */}
         <CompositionSelector
@@ -907,13 +907,13 @@ export const PasswordGenerator: React.FC = () => {
             </div>
           </div>
 
-          {/* 醸造個数 */}
+          {/* 生成個数 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              醸造個数
+              生成個数
               {criteria.count > 100 && (
                 <span className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded">
-                  大量醸造
+                  大量生成
                 </span>
               )}
             </label>
@@ -1277,11 +1277,11 @@ export const PasswordGenerator: React.FC = () => {
         </div>
       )}
 
-      {/* 醸造結果（下部にフル幅表示） */}
+      {/* 生成結果（下部にフル幅表示） */}
       {result && (
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">🔐 醸造結果</h2>
+            <h2 className="text-xl font-semibold">🔐 生成結果</h2>
             <div className="flex items-center gap-2">
               <ActionButton
                 type="replace"

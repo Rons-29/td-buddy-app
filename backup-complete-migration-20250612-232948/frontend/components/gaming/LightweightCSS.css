@@ -1,0 +1,439 @@
+/**
+ * 軽量ゲーミング要素CSS
+ * TestData Buddy (TD) - Performance Optimized Gaming Styles
+ * ハードウェアアクセラレーション最適化済み
+ */
+
+/* =================================
+   ハードウェアアクセラレーション基盤
+   ================================= */
+
+.hw-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* =================================
+   軽量アニメーション
+   （CPU負荷を最小限に抑制）
+   ================================= */
+
+.td-fade-in {
+  animation: tdFadeIn 0.3s ease-out forwards;
+}
+
+.td-slide-up {
+  animation: tdSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.td-pulse {
+  animation: tdPulse 2s infinite;
+}
+
+.td-bounce {
+  animation: tdBounce 0.6s ease-out;
+}
+
+@keyframes tdFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tdSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tdPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes tdBounce {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  75% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* =================================
+   軽量ホバーエフェクト
+   ================================= */
+
+.td-hover-lift {
+  transition: transform 0.2s ease-out;
+}
+
+.td-hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.td-hover-glow {
+  transition: box-shadow 0.3s ease-out;
+}
+
+.td-hover-glow:hover {
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+.td-hover-scale {
+  transition: transform 0.2s ease-out;
+}
+
+.td-hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* =================================
+   パフォーマンス適応型スタイル
+   ================================= */
+
+/* 低パフォーマンスモード */
+.performance-low * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.performance-low .td-hover-lift:hover,
+.performance-low .td-hover-scale:hover {
+  transform: none !important;
+}
+
+/* 中パフォーマンスモード */
+.performance-medium .td-pulse,
+.performance-medium .td-bounce {
+  animation-duration: 1s; /* アニメーション短縮 */
+}
+
+/* 高パフォーマンスモード */
+.performance-high .td-enhanced-glow {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 40px rgba(59, 130, 246, 0.2),
+    0 0 60px rgba(59, 130, 246, 0.1);
+}
+
+/* =================================
+   軽量統計カード
+   ================================= */
+
+.td-stat-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.td-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.td-stat-card:hover::before {
+  opacity: 1;
+}
+
+.td-stat-card.td-level-up {
+  animation: tdBounce 0.6s ease-out;
+}
+
+.td-stat-card.td-level-up::before {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  opacity: 1;
+}
+
+/* =================================
+   軽量プログレスバー
+   ================================= */
+
+.td-progress-container {
+  background: #f1f5f9;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 12px;
+  position: relative;
+}
+
+.td-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  border-radius: 8px;
+  transition: width 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.td-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: tdProgressShine 2s infinite;
+}
+
+@keyframes tdProgressShine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* パフォーマンス適応 */
+.performance-low .td-progress-bar::after {
+  animation: none;
+}
+
+/* =================================
+   軽量通知システム
+   ================================= */
+
+.td-notification {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  max-width: 350px;
+}
+
+.td-notification.show {
+  transform: translateX(0);
+}
+
+.td-notification.achievement {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 10px 25px rgba(251, 191, 36, 0.3);
+}
+
+.td-notification.achievement::before {
+  content: '🎉';
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+/* =================================
+   TDキャラクター表示
+   ================================= */
+
+.td-character {
+  display: inline-block;
+  font-size: 2.5rem;
+  transition: transform 0.3s ease-out;
+  position: relative;
+}
+
+.td-character.mood-happy {
+  animation: tdPulse 3s infinite;
+}
+
+.td-character.mood-excited {
+  animation: tdBounce 1s ease-out;
+}
+
+.td-character.mood-working::after {
+  content: '⚙️';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 1rem;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =================================
+   レスポンシブ最適化
+   ================================= */
+
+@media (max-width: 768px) {
+  /* モバイルではアニメーションを軽量化 */
+  .td-stat-card {
+    transition-duration: 0.1s;
+  }
+
+  .td-progress-bar::after {
+    animation-duration: 3s; /* アニメーション速度を下げる */
+  }
+
+  .td-character {
+    font-size: 2rem; /* サイズを小さく */
+  }
+}
+
+@media (max-width: 480px) {
+  /* 超小画面では最小限のアニメーション */
+  .td-pulse,
+  .td-bounce {
+    animation: none;
+  }
+
+  .td-hover-lift:hover,
+  .td-hover-scale:hover {
+    transform: none;
+  }
+}
+
+/* =================================
+   省電力モード対応
+   ================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  /* アクセシビリティ: アニメーション削減設定時 */
+  * {
+    animation-duration: 0.01s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01s !important;
+  }
+
+  .td-pulse,
+  .td-bounce,
+  .td-progress-bar::after {
+    animation: none !important;
+  }
+}
+
+/* =================================
+   バッテリー節約モード
+   ================================= */
+
+.battery-saver .td-pulse,
+.battery-saver .td-bounce,
+.battery-saver .td-progress-bar::after {
+  animation: none;
+}
+
+.battery-saver .td-hover-lift:hover,
+.battery-saver .td-hover-scale:hover,
+.battery-saver .td-hover-glow:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* =================================
+   デバッグ・パフォーマンス表示
+   ================================= */
+
+.td-performance-indicator {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  z-index: 9999;
+  font-family: monospace;
+}
+
+.td-performance-indicator.good {
+  border-left: 4px solid #22c55e;
+}
+
+.td-performance-indicator.warning {
+  border-left: 4px solid #fbbf24;
+}
+
+.td-performance-indicator.critical {
+  border-left: 4px solid #ef4444;
+}
+
+/* =================================
+   ユーティリティクラス
+   ================================= */
+
+.td-gpu-layer {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.td-no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.td-smooth-edges {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =================================
+   ダークモード対応
+   ================================= */
+
+@media (prefers-color-scheme: dark) {
+  .td-stat-card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #f8fafc;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .td-progress-container {
+    background: #475569;
+  }
+
+  .td-performance-indicator {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+  }
+}

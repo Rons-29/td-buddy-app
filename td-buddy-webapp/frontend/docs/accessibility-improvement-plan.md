@@ -1,4 +1,4 @@
-# 🛡️ TestData Buddy アクセシビリティ改善計画
+# 🛡️ QA Workbench アクセシビリティ改善計画
 
 ## 📊 現状評価サマリー
 
@@ -221,4 +221,4 @@ export const useKeyboardNavigation = (items: string[]) => {
 
 ---
 
-**最終目標**: TestData Buddy を、すべてのユーザーが等しく利用できる、業界最高水準のアクセシブルなツールにする
+**最終目標**: QA Workbench を、すべてのユーザーが等しく利用できる、業界最高水準のアクセシブルなツールにする

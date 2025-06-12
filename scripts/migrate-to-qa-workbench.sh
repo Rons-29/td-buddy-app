@@ -43,7 +43,7 @@ find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's
 
 # 3. 生成 → 醸造 変更
 echo "🔄 生成→醸造変更中..."
-find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/パスワード生成/パスワード醸造/g' 2>/dev/null || true
+find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/パスワード生成/パスワード生成/g' 2>/dev/null || true
 find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/データ生成/データ醸造/g' 2>/dev/null || true
 find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/個人情報生成/個人情報醸造/g' 2>/dev/null || true
 find td-buddy-webapp/frontend -name "*.tsx" -o -name "*.ts" | xargs sed -i '' 's/生成ツール/醸造ツール/g' 2>/dev/null || true

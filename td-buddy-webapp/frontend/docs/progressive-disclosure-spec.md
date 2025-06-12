@@ -1,12 +1,12 @@
 # 🔄 Progressive Disclosure 設計仕様書
 
-## TestData Buddy 段階的開示システム
+## QA Workbench 段階的開示システム
 
 ### 🎯 Progressive Disclosure とは
 
 **定義**: ユーザーに必要な情報・機能を段階的に提示し、認知負荷を軽減する UX パターン
 
-**TestData Buddy での適用理由**:
+**QA Workbench での適用理由**:
 
 - 多機能すぎて初心者が迷う問題を解決
 - TD キャラクターによる自然なガイダンス実現

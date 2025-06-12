@@ -152,7 +152,7 @@ const TDCharacter = ({
 
     const messages = {
       1: {
-        welcome: 'TestData Buddyへようこそ！まずは基本機能から始めましょう♪',
+        welcome: 'QA Workbenchへようこそ！まずは基本機能から始めましょう♪',
         helping: 'TDがサポートします。分からないことがあれば聞いてくださいね',
         success: '素晴らしい！データ生成が完了しました🎉',
         error: 'エラーが発生しました。一緒に解決しましょう',
@@ -391,7 +391,7 @@ describe('ProgressiveContainer', () => {
       </ProgressiveProvider>
     );
 
-    expect(screen.getByText(/TestData Buddyへようこそ/)).toBeInTheDocument();
+    expect(screen.getByText(/QA Workbenchへようこそ/)).toBeInTheDocument();
   });
 });
 ```

@@ -1,0 +1,71 @@
+{
+  "name": "qa-workbench-project",
+  "version": "1.0.0",
+  "description": "QA Workbench - QAエンジニアの専用作業台。助手のBrewがデータ醸造から品質管理までサポート",
+  "private": true,
+  "workspaces": [
+    "td-buddy-webapp",
+    "td-buddy-webapp/frontend",
+    "td-buddy-webapp/backend"
+  ],
+  "scripts": {
+    "start-dev": "./start-dev.sh",
+    "dev": "cd td-buddy-webapp && npm run dev",
+    "dev:webapp": "cd td-buddy-webapp && npm run dev",
+    "dev:webapp:frontend": "cd td-buddy-webapp && npm run dev:frontend",
+    "dev:webapp:backend": "cd td-buddy-webapp && npm run dev:backend",
+    "build": "npm run build:webapp && npm run build:vscode",
+    "build:webapp": "cd td-buddy-webapp && npm run build",
+    "build:vscode": "npm run compile",
+    "test": "npm run test:webapp && npm run test:vscode",
+    "test:webapp": "cd td-buddy-webapp && npm run test",
+    "test:vscode": "npm run pretest && node ./out/test/runTest.js",
+    "test:with-server": "cd td-buddy-webapp && npm run test:with-server",
+    "test:with-server:unit": "cd td-buddy-webapp && npm run test:with-server:unit",
+    "test:with-server:integration": "cd td-buddy-webapp && npm run test:with-server:integration",
+    "test:with-server:e2e": "cd td-buddy-webapp && npm run test:with-server:e2e",
+    "test:with-server:all": "cd td-buddy-webapp && npm run test:with-server:all",
+    "lint": "npm run lint:webapp && npm run lint:vscode",
+    "lint:webapp": "cd td-buddy-webapp && npm run lint",
+    "lint:vscode": "eslint src --ext ts",
+    "clean": "cd td-buddy-webapp && npm run clean && rm -rf out",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package:vscode": "vsce package",
+    "install:all": "npm install && cd td-buddy-webapp && npm install"
+  },
+  "keywords": [
+    "qa-workbench",
+    "brew-assistant",
+    "qa",
+    "testing",
+    "data-brewing",
+    "quality-assurance",
+    "ai",
+    "vscode-extension",
+    "web-app"
+  ],
+  "author": "Brew Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.28.0",
+    "typescript": "^5.0.0",
+    "@vscode/test-electron": "^2.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brew-team/qa-workbench"
+  },
+  "homepage": "https://qa-workbench.dev",
+  "bugs": {
+    "url": "https://github.com/brew-team/qa-workbench/issues"
+  }
+}

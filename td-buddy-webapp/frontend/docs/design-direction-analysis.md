@@ -1,4 +1,4 @@
-# 🎨 TestData Buddy UI 設計方向性分析
+# 🎨 QA Workbench UI 設計方向性分析
 
 ## 📊 専門的評価マトリックス
 
@@ -193,6 +193,6 @@ const useProgressiveFocus = level => {
 
 ## 🏁 結論
 
-**A) Progressive Disclosure（段階的開示）** が、現在の TestData Buddy の課題を最も効果的に解決し、TD キャラクターの魅力を最大限に活かせる設計方向性です。
+**A) Progressive Disclosure（段階的開示）** が、現在の QA Workbench の課題を最も効果的に解決し、TD キャラクターの魅力を最大限に活かせる設計方向性です。
 
 既に実装済みのアクセシビリティ基盤との親和性も高く、段階的な実装により リスクを最小化しながら大幅な改善効果を得られます。

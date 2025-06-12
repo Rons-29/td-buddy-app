@@ -1,10 +1,10 @@
-# 🎨 TestData Buddy UI/UX 改善計画書
+# 🎨 QA Workbench UI/UX 改善計画書
 
 ## Progressive Disclosure 方式による段階的体験向上
 
 ### 📋 プロジェクト概要
 
-**目標**: QA エンジニア向け TestData Buddy の使いやすさを劇的に向上させる
+**目標**: QA エンジニア向け QA Workbench の使いやすさを劇的に向上させる
 **アプローチ**: Progressive Disclosure（段階的開示）による認知負荷軽減
 **期間**: 12 週間（3 段階の Phase 構成）
 **優先度**: 高（アクセシビリティ・モバイル対応の改善が急務）
@@ -41,7 +41,7 @@
 
 ### 💡 TD からのメッセージ
 
-> 🤖 **TD より**: 「Progressive Disclosure で、みんなが使いやすい TestData Buddy に進化します！初心者も上級者も、それぞれのペースで快適に使ってもらえるよう、TD が全力でサポートします ♪」
+> 🤖 **TD より**: 「Progressive Disclosure で、みんなが使いやすい QA Workbench に進化します！初心者も上級者も、それぞれのペースで快適に使ってもらえるよう、TD が全力でサポートします ♪」
 
 ### 📂 関連ドキュメント
 

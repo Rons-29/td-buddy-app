@@ -1,0 +1,79 @@
+title: "機能要望: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🤖 TDからのメッセージ
+        「機能要望をディスカッションで提案していただき、ありがとうございます！みんなで議論して、より良い機能を作りましょう♪」
+
+  - type: textarea
+    id: feature-overview
+    attributes:
+      label: 📋 機能概要
+      description: 提案する機能について簡潔に説明してください
+      placeholder: 例：テストデータをExcel形式でエクスポートする機能
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: 🎯 解決したい課題
+      description: この機能で解決したい問題や改善したい点
+      placeholder: 現在のCSV出力だけでは、複雑なデータ構造を表現するのが難しい...
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-scenario
+    attributes:
+      label: 📝 ユーザーシナリオ
+      description: 実際の利用場面を具体的に説明してください
+      placeholder: |
+        QAエンジニアとして、
+        複雑なテストデータをExcel形式で出力したいときに、
+        複数シートに分けてデータを整理したい
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: business-value
+    attributes:
+      label: 📊 ビジネス価値
+      options:
+        - label: 高：重要な業務改善につながる
+        - label: 中：利便性が向上する
+        - label: 低：あると便利
+
+  - type: checkboxes
+    id: urgency
+    attributes:
+      label: ⏰ 緊急度
+      options:
+        - label: 高：早急に必要
+        - label: 中：次のリリースで欲しい
+        - label: 低：いつかあると良い
+
+  - type: textarea
+    id: implementation-ideas
+    attributes:
+      label: 💡 実装のアイデア
+      description: 実装方法について何かアイデアがあれば
+      placeholder: ExcelJSライブラリを使用して、複数シート対応...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 代替案
+      description: 他に考えられる解決方法があれば
+      placeholder: CSV複数ファイル出力、JSON形式での詳細出力など...
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: ✅ 受け入れ条件
+      description: この機能が完成とみなされる条件
+      placeholder: |
+        - Excel形式（.xlsx）でデータを出力できる
+        - 複数シートに分けてデータを整理できる
+        - 既存のCSV出力機能と併用できる

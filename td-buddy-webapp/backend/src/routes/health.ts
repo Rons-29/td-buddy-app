@@ -6,7 +6,7 @@ const router = express.Router();
 // システム状態チェック
 router.get('/', async (req, res) => {
   const startTime = process.hrtime();
-  
+
   try {
     // メモリ使用量取得
     const memoryUsage = process.memoryUsage();
@@ -16,13 +16,13 @@ router.get('/', async (req, res) => {
 
     // レスポンス時間計算
     const [seconds, nanoseconds] = process.hrtime(startTime);
-    const responseTime = Math.round((seconds * 1000) + (nanoseconds / 1000000));
+    const responseTime = Math.round(seconds * 1000 + nanoseconds / 1000000);
 
     // 各サービスの状態チェック（現在はモック）
     const services = {
-      database: 'healthy' as const,  // SQLite接続チェック用
-      claude: 'healthy' as const,    // Claude API接続チェック用
-      storage: 'healthy' as const,   // ファイルストレージチェック用
+      database: 'healthy' as const, // SQLite接続チェック用
+      claude: 'healthy' as const, // Claude API接続チェック用
+      storage: 'healthy' as const, // ファイルストレージチェック用
     };
 
     // システム情報取得
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 
     const healthResponse: HealthCheckResponse = {
       status: 'ok',
-      message: '🤖 TestData Buddy Backend is healthy and ready!',
+      message: '🍺 QA Workbench Backend is healthy and ready!',
       timestamp: new Date().toISOString(),
       version: '1.0.0',
       uptime: Math.round(uptime),
@@ -42,10 +42,10 @@ router.get('/', async (req, res) => {
         memoryUsage: {
           used: Math.round(usedMemory / 1024 / 1024), // MB
           total: Math.round(totalMemory / 1024 / 1024), // MB
-          percentage: memoryPercentage
+          percentage: memoryPercentage,
         },
-        cpuUsage: 0 // CPU使用率は将来実装
-      }
+        cpuUsage: 0, // CPU使用率は将来実装
+      },
     };
 
     // TD からのメッセージ
@@ -54,10 +54,11 @@ router.get('/', async (req, res) => {
       'データ生成の準備、万全です♪',
       'TDのエンジン、絶好調です！',
       'API サーバー、元気いっぱいです🚀',
-      'セキュリティチェックも完了しています✅'
+      'セキュリティチェックも完了しています✅',
     ];
 
-    const randomMessage = tdHealthMessages[Math.floor(Math.random() * tdHealthMessages.length)];
+    const randomMessage =
+      tdHealthMessages[Math.floor(Math.random() * tdHealthMessages.length)];
 
     res.status(200).json({
       success: true,
@@ -68,24 +69,24 @@ router.get('/', async (req, res) => {
         nodeVersion,
         platform,
         environment: process.env.NODE_ENV || 'development',
-        pid: process.pid
-      }
+        pid: process.pid,
+      },
     });
-
   } catch (error) {
     console.error('Health check error:', error);
-    
+
     res.status(503).json({
       success: false,
       error: {
         code: 'HEALTH_CHECK_FAILED',
         message: 'ヘルスチェックに失敗しました',
         statusCode: 503,
-        tdMessage: 'システムに問題が発生しているようです。管理者に連絡してください。',
+        tdMessage:
+          'システムに問題が発生しているようです。管理者に連絡してください。',
         timestamp: new Date().toISOString(),
         path: req.originalUrl,
-        method: req.method
-      }
+        method: req.method,
+      },
     });
   }
 });
@@ -102,7 +103,7 @@ router.get('/detailed', async (req, res) => {
       uptime: process.uptime(),
       argv: process.argv,
       execPath: process.execPath,
-      cwd: process.cwd()
+      cwd: process.cwd(),
     };
 
     // メモリ詳細情報
@@ -112,16 +113,17 @@ router.get('/detailed', async (req, res) => {
       heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024), // MB
       heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024), // MB
       external: Math.round(memoryUsage.external / 1024 / 1024), // MB
-      arrayBuffers: Math.round(memoryUsage.arrayBuffers / 1024 / 1024) // MB
+      arrayBuffers: Math.round(memoryUsage.arrayBuffers / 1024 / 1024), // MB
     };
 
     // 環境変数情報（機密情報を除く）
     const envInfo = {
       nodeEnv: process.env.NODE_ENV,
       port: process.env.PORT,
-      timezone: process.env.TZ || Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timezone:
+        process.env.TZ || Intl.DateTimeFormat().resolvedOptions().timeZone,
       hasClaudeApiKey: !!process.env.CLAUDE_API_KEY,
-      hasDatabaseUrl: !!process.env.DATABASE_URL
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
     };
 
     res.status(200).json({
@@ -130,15 +132,14 @@ router.get('/detailed', async (req, res) => {
         process: processInfo,
         memory: memoryInfo,
         environment: envInfo,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       tdMessage: '詳細なシステム情報をお届けします！技術者向けの情報ですね📊',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Detailed health check error:', error);
-    
+
     res.status(500).json({
       success: false,
       error: {
@@ -148,10 +149,10 @@ router.get('/detailed', async (req, res) => {
         tdMessage: '詳細情報の取得に失敗しました。再度お試しください。',
         timestamp: new Date().toISOString(),
         path: req.originalUrl,
-        method: req.method
-      }
+        method: req.method,
+      },
     });
   }
 });
 
-export default router; 
+export default router;

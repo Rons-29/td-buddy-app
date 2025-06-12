@@ -4,6 +4,7 @@ import { FileText, GripVertical, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { useButtonState } from '../hooks/useButtonState';
 import { DEFAULT_SETTINGS } from '../types/csv-detailed-settings';
+import BrewCharacter from './BrewCharacter';
 import { DataTypeDetailSettings } from './csv/DataTypeDetailSettings';
 import { ActionButton } from './ui/ActionButton';
 import {
@@ -13,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/Card';
-import BrewCharacter';
 
 // 型定義
 interface CSVColumn {
@@ -590,9 +590,17 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [rowCount, setRowCount] = useState(100);
   const [error, setError] = useState<string | null>(null);
-  const [brewMood, setTdMood] = useState<TDMood>('happy');
-  const [brewMessage, setTdMessage] = useState(
-    'CSVテストデータ醸造の準備ができました！'
+  const [brewMood, setBrewMood] = useState<
+    | 'happy'
+    | 'excited'
+    | 'success'
+    | 'neutral'
+    | 'error'
+    | 'thinking'
+    | 'working'
+  >('happy');
+  const [brewMessage, setBrewMessage] = useState(
+    'CSVテストデータ生成の準備ができました！'
   );
   const [isCopied, setIsCopied] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -678,8 +686,8 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       }));
 
       setColumns(updatedColumns);
-      setTdMood('success');
-      setTdMessage(
+      setBrewMood('success');
+      setBrewMessage(
         '✨ カラムの順序を変更しました！ドラッグ&ドロップ便利ですね♪'
       );
     },
@@ -690,7 +698,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const saveUserPreset = useCallback(
     (name: string, description: string) => {
       if (columns.length === 0) {
-        setTdMessage(
+        setBrewMessage(
           'カラムが設定されていません。まずはカラムを追加してくださいね！'
         );
         return;
@@ -709,8 +717,8 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       };
 
       setUserPresets(prev => [...prev, newPreset]);
-      setTdMood('success');
-      setTdMessage(
+      setBrewMood('success');
+      setBrewMessage(
         `🎉 ユーザープリセット「${name}」を保存しました！いつでも再利用できます♪`
       );
     },
@@ -739,9 +747,9 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
 
       setColumns(newColumns);
       setShowPresets(false);
-      setTdMood('success');
-      setTdMessage(
-        `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ醸造できます♪`
+      setBrewMood('success');
+      setBrewMessage(
+        `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
       );
     },
     [userPresets]
@@ -762,8 +770,8 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       };
 
       setColumns(prev => [...prev, duplicatedColumn]);
-      setTdMood('success');
-      setTdMessage(
+      setBrewMood('success');
+      setBrewMessage(
         `✨ 「${originalColumn.name}」カラムを複製しました！設定もそのままコピーされています♪`
       );
     },
@@ -813,7 +821,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
             toggleMessage = `${totalColumns}個のカラムを必須に変更しました！`;
           }
 
-          setTdMessage(
+          setBrewMessage(
             `✨ ${toggleMessage} 赤い背景色で必須カラムを確認できます♪`
           );
           break;
@@ -833,11 +841,11 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
 
     setSelectedColumns([]);
     setShowBulkEdit(false);
-    setTdMood('success');
+    setBrewMood('success');
 
     // toggleRequiredの場合は既にメッセージが設定されているので、他の操作のみメッセージを設定
     if (op !== 'toggleRequired') {
-      setTdMessage(
+      setBrewMessage(
         `✨ ${columnIds.length}個のカラムに一括編集を適用しました！効率的ですね♪`
       );
     }
@@ -862,7 +870,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       order: columns.length,
     };
     setColumns(prev => [...prev, newColumn]);
-    setTdMessage(
+    setBrewMessage(
       '新しいカラムを追加しました！データタイプを選択してくださいね♪'
     );
   }, [columns.length]);
@@ -871,7 +879,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const saveTemplate = useCallback(
     (name: string, description: string) => {
       if (columns.length === 0) {
-        setTdMessage(
+        setBrewMessage(
           'カラムが設定されていません。まずはカラムを追加してくださいね！'
         );
         return;
@@ -892,8 +900,8 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
 
       setTemplates(prev => [...prev, newTemplate]);
       setShowTemplateManager(false);
-      setTdMood('success');
-      setTdMessage(
+      setBrewMood('success');
+      setBrewMessage(
         `🎉 テンプレート「${name}」を保存しました！設定がすべて保存されています♪`
       );
     },
@@ -918,8 +926,8 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       );
 
       setShowTemplateManager(false);
-      setTdMood('success');
-      setTdMessage(
+      setBrewMood('success');
+      setBrewMessage(
         `✨ テンプレート「${template.name}」を読み込みました！すべての設定が復元されています♪`
       );
     },
@@ -947,8 +955,8 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
     link.click();
 
     URL.revokeObjectURL(url);
-    setTdMood('success');
-    setTdMessage(
+    setBrewMood('success');
+    setBrewMessage(
       '🎉 プリセット・テンプレートをエクスポートしました！ファイルをダウンロードしています♪'
     );
   }, [userPresets, templates]);
@@ -993,13 +1001,13 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
             ]);
           }
 
-          setTdMood('success');
-          setTdMessage(
+          setBrewMood('success');
+          setBrewMessage(
             `✨ インポート完了！プリセット${importedData.userPresets.length}個、テンプレート${importedData.templates.length}個を追加しました♪`
           );
         } catch (error) {
-          setTdMood('error');
-          setTdMessage(
+          setBrewMood('error');
+          setBrewMessage(
             '❌ ファイルの読み込みに失敗しました。正しいファイルを選択してください。'
           );
         }
@@ -1015,7 +1023,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   // カラム削除
   const removeColumn = useCallback((columnId: string) => {
     setColumns(prev => prev.filter(col => col.id !== columnId));
-    setTdMessage(
+    setBrewMessage(
       'カラムを削除しました。他にも調整が必要でしたらお知らせください！'
     );
   }, []);
@@ -1033,7 +1041,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
               const dataTypeInfo = getDataTypeInfo(updates.dataType);
               if (dataTypeInfo) {
                 updatedCol.name = dataTypeInfo.suggestedName;
-                setTdMessage(
+                setBrewMessage(
                   `データタイプを「${dataTypeInfo.label}」に変更し、カラム名を「${dataTypeInfo.suggestedName}」に自動設定しました！`
                 );
               }
@@ -1047,7 +1055,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
               updates.required !== col.required
             ) {
               const requiredStatus = updates.required ? '必須' : '任意';
-              setTdMessage(
+              setBrewMessage(
                 `「${col.name}」カラムを${requiredStatus}に設定しました！${
                   updates.required
                     ? '📍 必須カラムには赤い背景色がつきます'
@@ -1069,7 +1077,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const handleSettingsChange = useCallback(
     (columnId: string, settings: any) => {
       updateColumn(columnId, { settings });
-      setTdMessage('🔧 詳細設定を更新しました！データ醸造時に反映されます♪');
+      setBrewMessage('🔧 詳細設定を更新しました！データ生成時に反映されます♪');
     },
     [updateColumn]
   );
@@ -1082,7 +1090,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
     }));
   }, []);
 
-  // データ醸造関数
+  // データ生成関数
   const generateDataValue = useCallback(
     (dataType: DataType, rowIndex: number): any => {
       switch (dataType) {
@@ -1274,17 +1282,19 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
     []
   );
 
-  // データ醸造
+  // データ生成
   const generateData = useCallback(async () => {
     if (columns.length === 0) {
-      setTdMessage('まずはカラムを追加してくださいね！');
-      setTdMood('thinking');
+      setBrewMessage('まずはカラムを追加してくださいね！');
+      setBrewMood('thinking');
       return;
     }
 
     setIsGenerating(true);
-    setTdMood('working');
-    setTdMessage(`${rowCount}件のテストデータを醸造中です...お待ちください！`);
+    setBrewMood('working');
+    setBrewMessage(
+      `${rowCount}件のテストデータを生成中です...お待ちください！`
+    );
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1301,18 +1311,18 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       );
 
       setRows(generatedRows);
-      setTdMood('success');
-      setTdMessage(
-        `🎉 ${rowCount}件のテストデータを醸造完了しました！データをご確認ください♪`
+      setBrewMood('success');
+      setBrewMessage(
+        `🎉 ${rowCount}件のテストデータを生成完了しました！データをご確認ください♪`
       );
 
-      // 生成ボタンの状態を「醸造完了」に変更
+      // 生成ボタンの状態を「生成完了」に変更
       setButtonActive('generate');
     } catch (error) {
       console.error('Data generation failed:', error);
-      setTdMood('error');
-      setTdMessage(
-        'データ醸造中にエラーが発生しました。もう一度お試しください。'
+      setBrewMood('error');
+      setBrewMessage(
+        'データ生成中にエラーが発生しました。もう一度お試しください。'
       );
     } finally {
       setIsGenerating(false);
@@ -1322,7 +1332,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   // CSVエクスポート
   const exportToCSV = useCallback(() => {
     if (rows.length === 0) {
-      setTdMessage('まずはデータを醸造してくださいね！');
+      setBrewMessage('まずはデータを生成してくださいね！');
       return;
     }
 
@@ -1367,15 +1377,15 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      setTdMood('success');
-      setTdMessage('CSVファイルのダウンロードが完了しました！');
+      setBrewMood('success');
+      setBrewMessage('CSVファイルのダウンロードが完了しました！');
 
       // ダウンロードボタンの状態を「ダウンロード済み」に変更
       setButtonActive('download');
     } catch (error) {
       console.error('CSV export failed:', error);
-      setTdMood('error');
-      setTdMessage('CSVエクスポート中にエラーが発生しました。');
+      setBrewMood('error');
+      setBrewMessage('CSVエクスポート中にエラーが発生しました。');
     } finally {
       setIsExporting(false);
     }
@@ -1389,7 +1399,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mb-2">
             <FileText className="h-8 w-8 text-blue-600" />
             <CardTitle className="text-2xl font-bold text-blue-800">
-              📋 CSV テストデータ醸造
+              📋 CSV テストデータ生成
             </CardTitle>
           </div>
           <CardDescription className="text-blue-700">
@@ -1398,10 +1408,10 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
         </CardHeader>
       </Card>
 
-      {/* TDキャラクター */}
+      {/* Brewキャラクター */}
       <Card className="border-blue-200">
         <CardContent className="pt-6">
-          <EnhancedTDCharacter mood={brewMood} message={brewMessage} />
+          <BrewCharacter emotion={brewMood} message={brewMessage} />
         </CardContent>
       </Card>
 
@@ -1781,12 +1791,12 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
         </div>
       )}
 
-      {/* データ醸造設定セクション */}
+      {/* データ生成設定セクション */}
       <Card className="border-blue-200">
         <CardHeader>
           <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            データ醸造設定
+            データ生成設定
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -2469,7 +2479,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                     className="flex-1"
                     disabled={columns.length === 0}
                   >
-                    🚀 データ醸造実行
+                    🚀 データ生成実行
                   </ActionButton>
                   <ActionButton
                     type="clear"

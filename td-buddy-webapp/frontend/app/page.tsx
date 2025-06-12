@@ -13,7 +13,7 @@ export default function Home() {
           <p className="text-xl text-amber-600 mb-6">
             QAエンジニアの専用作業台、助手のブリューと一緒に
             <br />
-            品質の高いデータを醸造しましょう！
+            品質の高いデータを生成しましょう！
           </p>
           <div className="inline-block bg-amber-100 border border-amber-300 rounded-lg p-4">
             <p className="text-amber-800 font-medium">
@@ -24,34 +24,34 @@ export default function Home() {
 
         {/* 機能カード */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {/* パスワード醸造 */}
+          {/* パスワード生成 */}
           <div className="td-card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
             <div className="text-3xl mb-3">🔐</div>
             <h3 className="text-lg font-semibold text-blue-800 mb-2">
-              パスワード醸造
+              パスワード生成
             </h3>
             <p className="text-blue-600 mb-4">
               セキュアで強力なパスワードを丁寧に醸造します
             </p>
             <Link href="/password">
               <button className="td-button bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
-                醸造開始
+                生成開始
               </button>
             </Link>
           </div>
 
-          {/* 個人情報醸造 */}
+          {/* 個人情報生成 */}
           <div className="td-card p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
             <div className="text-3xl mb-3">👤</div>
             <h3 className="text-lg font-semibold text-green-800 mb-2">
-              個人情報醸造
+              個人情報生成
             </h3>
             <p className="text-green-600 mb-4">
               テスト用の架空の個人データを安全に醸造します
             </p>
             <Link href="/personal">
               <button className="td-button bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors">
-                醸造開始
+                生成開始
               </button>
             </Link>
           </div>
@@ -76,10 +76,10 @@ export default function Home() {
           <div className="td-card p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200">
             <div className="text-3xl mb-3">📤</div>
             <h3 className="text-lg font-semibold text-blue-800 mb-2">
-              データ醸造出力
+              データ生成出力
             </h3>
             <p className="text-blue-600 mb-4">
-              JSON/XML/YAML/SQL形式での高度なデータ醸造エクスポート
+              JSON/XML/YAML/SQL形式での高度なデータ生成エクスポート
             </p>
             <Link href="/export">
               <button className="td-button bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
@@ -95,11 +95,11 @@ export default function Home() {
               数値・真偽値醸造
             </h3>
             <p className="text-green-600 mb-4">
-              整数、小数点、通貨、科学記法、真偽値など多様な数値データ醸造
+              整数、小数点、通貨、科学記法、真偽値など多様な数値データ生成
             </p>
             <Link href="/number-boolean">
               <button className="td-button bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                醸造開始
+                生成開始
               </button>
             </Link>
           </div>
@@ -107,14 +107,14 @@ export default function Home() {
           {/* AI連携 */}
           <div className="td-card p-6">
             <div className="text-3xl mb-3">🧠</div>
-            <h3 className="text-lg font-semibold text-td-primary-800 mb-2">
+            <h3 className="text-lg font-semibold text-orange-800 mb-2">
               AI チャット
             </h3>
-            <p className="text-td-primary-600 mb-4">
-              自然言語でデータ醸造条件を指定できます
+            <p className="text-orange-600 mb-4">
+              自然言語でデータ生成条件を指定できます
             </p>
             <Link href="/ai-chat">
-              <button className="td-button bg-td-primary-500 text-white px-4 py-2 rounded-md hover:bg-td-primary-600 transition-colors">
+              <button className="td-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors">
                 チャット開始
               </button>
             </Link>
@@ -127,7 +127,7 @@ export default function Home() {
               CSV詳細設定
             </h3>
             <p className="text-orange-600 mb-4">
-              高度なCSVデータ醸造・カスタマイズ機能
+              高度なCSVデータ生成・カスタマイズ機能
             </p>
             <Link href="/csv-detailed">
               <button className="td-button bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
@@ -158,7 +158,7 @@ export default function Home() {
             <h3 className="text-lg font-semibold text-teal-800 mb-2">
               UUID生成
             </h3>
-            <p className="text-teal-600 mb-4">ユニークなID・識別子を大量醸造</p>
+            <p className="text-teal-600 mb-4">ユニークなID・識別子を大量生成</p>
             <Link href="/uuid">
               <button className="td-button bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
                 生成開始
@@ -198,11 +198,11 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* 実用データ醸造 */}
+          {/* 実用データ生成 */}
           <div className="td-card p-6 bg-gradient-to-br from-gray-50 to-slate-50 border-2 border-gray-200">
             <div className="text-3xl mb-3">🏢</div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              実用データ醸造
+              実用データ生成
             </h3>
             <p className="text-gray-600 mb-4">
               企業・住所・電話番号など実用的なテストデータ
@@ -231,7 +231,7 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-amber-600">データ醸造エンジン稼働中</span>
+              <span className="text-amber-600">データ生成エンジン稼働中</span>
             </div>
           </div>
         </div>
@@ -240,7 +240,7 @@ export default function Home() {
         <div className="text-center mt-12 text-amber-500">
           <p>🍺 QA Workbench - ブリューがあなたの品質作業をサポート</p>
           <p className="text-sm mt-2">
-            「一緒に素晴らしいデータを醸造しましょう！」
+            「一緒に素晴らしいデータを生成しましょう！」
           </p>
         </div>
       </div>

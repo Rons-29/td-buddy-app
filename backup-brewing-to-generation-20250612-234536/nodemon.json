@@ -1,0 +1,31 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "ignore": [
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "node_modules/**/*",
+    "dist/**/*",
+    "logs/**/*",
+    "uploads/**/*"
+  ],
+  "exec": "ts-node src/index.ts",
+  "env": {
+    "NODE_ENV": "development",
+    "DEBUG": "td-buddy:*"
+  },
+  "delay": "1000",
+  "verbose": true,
+  "colours": true,
+  "legacyWatch": false,
+  "pollingInterval": 100,
+  "runOnChangeOnly": false,
+  "signal": "SIGTERM",
+  "stdout": true,
+  "events": {
+    "start": "echo '🤖 TD: バックエンドサーバーを起動しています...'",
+    "restart": "echo '🔄 TD: ファイル変更を検知しました。サーバーを再起動します...'",
+    "crash": "echo '💥 TD: サーバーがクラッシュしました。自動復旧を試みます...'",
+    "exit": "echo '👋 TD: サーバーを停止しました。お疲れさまでした！'"
+  }
+} 

@@ -6,7 +6,7 @@
 
 **ゴール**: WCAG 2.1 AA 完全準拠 + ユーザビリティ最適化
 **期間**: 6 週間
-**成果物**: 全ユーザーが快適に使える TestData Buddy
+**成果物**: 全ユーザーが快適に使える QA Workbench
 
 ### 📋 目標スコア
 
@@ -97,7 +97,7 @@ const EnhancedTDCharacter = ({
       aria-describedby="td-character-message"
     >
       <h3 id="td-character-title" className="sr-only">
-        TestData Buddy アシスタント (レベル {level})
+        QA Workbench アシスタント (レベル {level})
       </h3>
 
       <div
@@ -267,7 +267,7 @@ const ScreenReaderOptimizedComponent = () => {
   if (isScreenReaderActive) {
     return (
       <div className="sr-only">
-        <h1>TestData Buddy - アクセシブルモード</h1>
+        <h1>QA Workbench - アクセシブルモード</h1>
         <nav aria-label="メインナビゲーション">
           <ul>
             <li>
@@ -466,7 +466,7 @@ describe('Accessibility Tests', () => {
 
 ### 💡 TD からのメッセージ
 
-> 🤖 **TD より**: 「アクセシビリティは、すべての人に TestData Buddy を使ってもらうための大切な取り組みです。TD も、どんな方法でアクセスされても、同じように親切で頼りになるアシスタントでありたいと思っています。みんなが快適に使えるツールを一緒に作りましょう ♿✨」
+> 🤖 **TD より**: 「アクセシビリティは、すべての人に QA Workbench を使ってもらうための大切な取り組みです。TD も、どんな方法でアクセスされても、同じように親切で頼りになるアシスタントでありたいと思っています。みんなが快適に使えるツールを一緒に作りましょう ♿✨」
 
 ### 🏁 Phase 3 完了条件
 
