@@ -6,13 +6,9 @@ import { NumberBooleanTDCard } from '../../components/NumberBooleanTDCard';
 import { GeneratedNumberBoolean } from '../../types/numberboolean';
 
 export default function NumberBooleanPage() {
-<<<<<<< HEAD
   const [generatedData, setGeneratedData] = useState<GeneratedNumberBoolean[]>(
     []
   );
-=======
-  const [generatedData, setGeneratedData] = useState<GeneratedNumberBoolean[]>([]);
->>>>>>> feature/TD-616-number-boolean-generation
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedType, setSelectedType] = useState<string>('integer');
 
@@ -33,11 +29,7 @@ export default function NumberBooleanPage() {
   };
 
   return (
-<<<<<<< HEAD
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
-=======
-    <div className="min-h-screen bg-gray-50">
->>>>>>> feature/TD-616-number-boolean-generation
       {/* ヘッダー */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,7 +40,6 @@ export default function NumberBooleanPage() {
               </h1>
             </div>
             <nav className="flex space-x-4">
-<<<<<<< HEAD
               <a
                 href="/"
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
@@ -77,21 +68,6 @@ export default function NumberBooleanPage() {
                 href="/number-boolean"
                 className="bg-green-100 text-green-700 px-3 py-2 rounded-md text-sm font-medium"
               >
-=======
-              <a href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                ホーム
-              </a>
-              <a href="/password" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                パスワード
-              </a>
-              <a href="/personal" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                個人情報
-              </a>
-              <a href="/datetime" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                日時
-              </a>
-              <a href="/number-boolean" className="bg-blue-100 text-blue-700 px-3 py-2 rounded-md text-sm font-medium">
->>>>>>> feature/TD-616-number-boolean-generation
                 数値・真偽値
               </a>
             </nav>
@@ -104,11 +80,7 @@ export default function NumberBooleanPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* 生成機能 (左側・メイン) */}
           <div className="lg:col-span-2">
-<<<<<<< HEAD
             <NumberBooleanGenerator
-=======
-            <NumberBooleanGenerator 
->>>>>>> feature/TD-616-number-boolean-generation
               onGenerate={handleGenerate}
               onGenerationStart={handleGenerationStart}
               onGenerationEnd={handleGenerationEnd}
@@ -139,11 +111,7 @@ export default function NumberBooleanPage() {
                   </button>
                   <button
                     onClick={() => window.print()}
-<<<<<<< HEAD
                     className="w-full bg-green-100 hover:bg-green-200 text-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-=======
-                    className="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
->>>>>>> feature/TD-616-number-boolean-generation
                   >
                     🖨️ 印刷
                   </button>
@@ -166,39 +134,27 @@ export default function NumberBooleanPage() {
                     <span>📚</span>
                     <div>
                       <div className="font-medium">使い方ガイド</div>
-<<<<<<< HEAD
                       <div className="text-xs text-indigo-600">
                         基本的な操作方法を確認
                       </div>
-=======
-                      <div className="text-xs text-indigo-600">基本的な操作方法を確認</div>
->>>>>>> feature/TD-616-number-boolean-generation
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span>🎯</span>
                     <div>
                       <div className="font-medium">ユースケース例</div>
-<<<<<<< HEAD
                       <div className="text-xs text-indigo-600">
                         実際の活用方法を学習
                       </div>
-=======
-                      <div className="text-xs text-indigo-600">実際の活用方法を学習</div>
->>>>>>> feature/TD-616-number-boolean-generation
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span>🤖</span>
                     <div>
                       <div className="font-medium">TDに質問</div>
-<<<<<<< HEAD
                       <div className="text-xs text-indigo-600">
                         AIアシスタントに相談
                       </div>
-=======
-                      <div className="text-xs text-indigo-600">AIアシスタントに相談</div>
->>>>>>> feature/TD-616-number-boolean-generation
                     </div>
                   </div>
                 </div>
@@ -215,17 +171,12 @@ export default function NumberBooleanPage() {
             <div className="flex items-center gap-2">
               <span className="text-2xl">🤖</span>
               <div>
-<<<<<<< HEAD
                 <div className="font-semibold text-gray-900">
                   TestData Buddy
                 </div>
                 <div className="text-sm text-gray-600">
                   AI連携型テストデータ生成ツール
                 </div>
-=======
-                <div className="font-semibold text-gray-900">TestData Buddy</div>
-                <div className="text-sm text-gray-600">AI連携型テストデータ生成ツール</div>
->>>>>>> feature/TD-616-number-boolean-generation
               </div>
             </div>
             <div className="text-sm text-gray-500">
@@ -236,8 +187,4 @@ export default function NumberBooleanPage() {
       </footer>
     </div>
   );
-<<<<<<< HEAD
 }
-=======
-} 
->>>>>>> feature/TD-616-number-boolean-generation
