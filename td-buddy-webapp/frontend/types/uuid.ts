@@ -4,29 +4,29 @@
 
 // UUID生成リクエスト
 export interface UuidGenerateRequest {
-  count: number;                     // 生成個数 (1-10000)
-  version: 'v1' | 'v4' | 'v6' | 'v7' | 'mixed';  // UUIDバージョン
-  format: 'standard' | 'compact' | 'uppercase' | 'with-prefix' | 'sql-friendly';  // 出力フォーマット
-  includeTimestamp?: boolean;        // タイムスタンプ付きの場合 (v1, v6, v7)
-  includeMacAddress?: boolean;       // MACアドレス付きの場合 (v1)
-  namespace?: string;                // 名前空間指定 (v3, v5)
-  customPrefix?: string;             // カスタムプレフィックス
+  count: number; // 生成個数 (1-10000)
+  version: 'v1' | 'v4' | 'v6' | 'v7' | 'mixed'; // UUIDバージョン
+  format: 'standard' | 'compact' | 'uppercase' | 'with-prefix' | 'sql-friendly'; // 出力フォーマット
+  includeTimestamp?: boolean; // タイムスタンプ付きの場合 (v1, v6, v7)
+  includeMacAddress?: boolean; // MACアドレス付きの場合 (v1)
+  namespace?: string; // 名前空間指定 (v3, v5)
+  customPrefix?: string; // カスタムプレフィックス
 }
 
 // UUID生成アイテム
 export interface UuidItem {
-  id: string;                        // 一意識別子
-  uuid: string;                      // 生成されたUUID
-  version: string;                   // 使用したバージョン
-  format: string;                    // 適用したフォーマット
-  timestamp?: string | undefined;    // タイムスタンプ (該当する場合)
-  macAddress?: string | undefined;   // MACアドレス (該当する場合)
-  namespace?: string | undefined;    // 名前空間 (該当する場合)
-  generatedAt: string;               // 生成日時
+  id: string; // 一意識別子
+  uuid: string; // 生成されたUUID
+  version: string; // 使用したバージョン
+  format: string; // 適用したフォーマット
+  timestamp?: string | undefined; // タイムスタンプ (該当する場合)
+  macAddress?: string | undefined; // MACアドレス (該当する場合)
+  namespace?: string | undefined; // 名前空間 (該当する場合)
+  generatedAt: string; // 生成日時
   metadata: {
-    isValid: boolean;                // UUID形式の妥当性
-    entropy: number;                 // エントロピー値
-    randomness: 'low' | 'medium' | 'high' | 'cryptographic';  // ランダム性レベル
+    isValid: boolean; // UUID形式の妥当性
+    entropy: number; // エントロピー値
+    randomness: 'low' | 'medium' | 'high' | 'cryptographic'; // ランダム性レベル
   };
 }
 
@@ -40,15 +40,20 @@ export interface UuidGenerateResponse {
     formatDistribution: Record<string, number>;
     averageEntropy: number;
   };
+  metadata?: {
+    isValid: boolean;
+    entropy: number;
+    randomness: 'low' | 'medium' | 'high' | 'cryptographic';
+  };
   generatedAt: string;
   expiresAt: string;
 }
 
 // UUID検証リクエスト
 export interface UuidValidateRequest {
-  uuids: string[];                   // 検証対象のUUID配列
-  strictMode?: boolean;              // 厳密検証モード
-  checkDuplicates?: boolean;         // 重複チェック
+  uuids: string[]; // 検証対象のUUID配列
+  strictMode?: boolean; // 厳密検証モード
+  checkDuplicates?: boolean; // 重複チェック
 }
 
 // UUID検証レスポンス
@@ -140,4 +145,4 @@ export interface UuidHistoryItem {
 export interface UuidHistoryResponse {
   history: UuidHistoryItem[];
   total: number;
-} 
+}

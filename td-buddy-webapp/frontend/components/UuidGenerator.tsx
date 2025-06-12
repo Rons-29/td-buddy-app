@@ -114,8 +114,18 @@ export const UuidGenerator: React.FC = () => {
 
         const convertedResult: UuidGenerateResponse = {
           uuids: localResult.uuids,
+          criteria: criteria,
+          statistics: {
+            totalGenerated: localResult.uuids.length,
+            versionDistribution: {
+              [criteria.version]: localResult.uuids.length,
+            },
+            formatDistribution: { [criteria.format]: localResult.uuids.length },
+            averageEntropy: localResult.metadata?.entropy || 0,
+          },
           metadata: localResult.metadata,
           generatedAt: localResult.generatedAt,
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         };
 
         setResult(convertedResult);
