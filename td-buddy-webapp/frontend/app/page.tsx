@@ -105,53 +105,76 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* CSV テストデータ生成 - ブルー系に統一 */}
-          <div className="td-card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-            <div className="text-3xl mb-3">📊</div>
-            <h3 className="text-lg font-semibold text-blue-800 mb-2">
-              CSV テストデータ生成
+          {/* AI連携 */}
+          <div className="td-card p-6">
+            <div className="text-3xl mb-3">🧠</div>
+            <h3 className="text-lg font-semibold text-td-primary-800 mb-2">
+              AI チャット
             </h3>
-            <p className="text-blue-600 mb-4">
-              ドラッグ&ドロップ対応のCSVデータ生成・プレビュー
+            <p className="text-td-primary-600 mb-4">
+              自然言語でデータ生成条件を指定できます
             </p>
-            <div className="flex gap-2">
-              <Link href="/csv-test">
-                <button className="td-button bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 transition-colors text-sm">
-                  基本版
-                </button>
-              </Link>
-              <Link href="/csv-detailed">
-                <button className="td-button bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm">
-                  詳細版
-                </button>
-              </Link>
-            </div>
+            <Link href="/ai-chat">
+              <button className="td-button bg-td-primary-500 text-white px-4 py-2 rounded-md hover:bg-td-primary-600 transition-colors">
+                チャット開始
+              </button>
+            </Link>
           </div>
 
-          {/* 日付・時刻データ生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-green-50 to-teal-50 border-2 border-green-200">
-            <div className="text-3xl mb-3">📅</div>
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
-              日付・時刻データ生成
+          {/* CSV詳細設定 */}
+          <div className="td-card p-6 bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200">
+            <div className="text-3xl mb-3">📊</div>
+            <h3 className="text-lg font-semibold text-orange-800 mb-2">
+              CSV詳細設定
             </h3>
-            <p className="text-green-600 mb-4">
-              世界標準時間対応・複数フォーマット出力
+            <p className="text-orange-600 mb-4">
+              高度なCSVデータ生成・カスタマイズ機能
+            </p>
+            <Link href="/csv-detailed">
+              <button className="td-button bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+                詳細設定
+              </button>
+            </Link>
+          </div>
+
+          {/* 日時生成 */}
+          <div className="td-card p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200">
+            <div className="text-3xl mb-3">📅</div>
+            <h3 className="text-lg font-semibold text-indigo-800 mb-2">
+              日時生成
+            </h3>
+            <p className="text-indigo-600 mb-4">
+              様々な形式の日付・時刻データを生成
             </p>
             <Link href="/datetime">
-              <button className="td-button bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              <button className="td-button bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
                 生成開始
               </button>
             </Link>
           </div>
 
-          {/* カラーデータ生成 */}
+          {/* UUID生成 */}
+          <div className="td-card p-6 bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200">
+            <div className="text-3xl mb-3">🆔</div>
+            <h3 className="text-lg font-semibold text-teal-800 mb-2">
+              UUID生成
+            </h3>
+            <p className="text-teal-600 mb-4">ユニークなID・識別子を大量生成</p>
+            <Link href="/uuid">
+              <button className="td-button bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+                生成開始
+              </button>
+            </Link>
+          </div>
+
+          {/* カラー生成 */}
           <div className="td-card p-6 bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200">
             <div className="text-3xl mb-3">🎨</div>
             <h3 className="text-lg font-semibold text-pink-800 mb-2">
-              カラーデータ生成
+              カラー生成
             </h3>
             <p className="text-pink-600 mb-4">
-              HEX・RGB・HSL・CSS名対応、カラースキーム設定
+              HEX・RGB・HSL形式のカラーコードを生成
             </p>
             <Link href="/colors">
               <button className="td-button bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
@@ -160,50 +183,34 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* UUID生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200">
-            <div className="text-3xl mb-3">🆔</div>
-            <h3 className="text-lg font-semibold text-purple-800 mb-2">
-              UUID生成
-            </h3>
-            <p className="text-purple-600 mb-4">
-              各種UUID形式に対応した一意識別子生成
-            </p>
-            <Link href="/uuid">
-              <button className="td-button bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成開始
-              </button>
-            </Link>
-          </div>
-
-          {/* ファイル容量テスト */}
-          <div className="td-card p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200">
+          {/* ファイルサイズテスト */}
+          <div className="td-card p-6 bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-200">
             <div className="text-3xl mb-3">📁</div>
-            <h3 className="text-lg font-semibold text-orange-800 mb-2">
-              ファイル容量テスト
+            <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+              ファイルサイズテスト
             </h3>
-            <p className="text-orange-600 mb-4">
-              指定サイズのテストファイル生成・青空文庫データ対応
+            <p className="text-yellow-600 mb-4">
+              指定サイズのテストファイルを生成（1GB対応）
             </p>
             <Link href="/file-size-test">
-              <button className="td-button bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+              <button className="td-button bg-gradient-to-r from-yellow-500 to-amber-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
                 生成開始
               </button>
             </Link>
           </div>
 
-          {/* AI連携 - パープル系に統一 */}
-          <div className="td-card p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200">
-            <div className="text-3xl mb-3">🧠</div>
-            <h3 className="text-lg font-semibold text-purple-800 mb-2">
-              AI チャット
+          {/* 実用データ生成 */}
+          <div className="td-card p-6 bg-gradient-to-br from-gray-50 to-slate-50 border-2 border-gray-200">
+            <div className="text-3xl mb-3">🏢</div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              実用データ生成
             </h3>
-            <p className="text-purple-600 mb-4">
-              自然言語でデータ生成条件を指定できます
+            <p className="text-gray-600 mb-4">
+              企業・住所・電話番号など実用的なテストデータ
             </p>
-            <Link href="/ai-chat">
-              <button className="td-button bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition-colors">
-                チャット開始
+            <Link href="/practical-data">
+              <button className="td-button bg-gradient-to-r from-gray-500 to-slate-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
+                生成開始
               </button>
             </Link>
           </div>
@@ -220,14 +227,24 @@ export default function Home() {
               <span className="text-td-primary-600">接続良好</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-td-secondary-500 rounded-full"></div>
-              <span className="text-td-primary-600">準備完了</span>
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-td-primary-600">AI連携準備完了</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-td-primary-500 rounded-full"></div>
-              <span className="text-td-primary-600">Version 1.0.0</span>
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-td-primary-600">
+                データ生成エンジン稼働中
+              </span>
             </div>
           </div>
+        </div>
+
+        {/* フッター */}
+        <div className="text-center mt-12 text-td-primary-500">
+          <p>🤖 TestData Buddy - あなたの開発を支える最高の相棒</p>
+          <p className="text-sm mt-2">
+            「一緒に素晴らしいテストデータを作りましょう！」
+          </p>
         </div>
       </div>
     </div>

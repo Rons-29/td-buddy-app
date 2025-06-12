@@ -11,6 +11,7 @@ interface NumberBooleanTDCardProps {
 
 const tdTips = {
   integer: [
+<<<<<<< HEAD
     '🔢 整数は計算の基本！カウンターやID生成に最適ですよ',
     '✨ 境界値テストには最小値・最大値周辺の数字がお勧めです',
     '🎯 負の数も含めると、より実用的なテストができますね',
@@ -60,6 +61,57 @@ export function NumberBooleanTDCard({
   generatedData,
   isGenerating,
   selectedType,
+=======
+    "🔢 整数は計算の基本！カウンターやID生成に最適ですよ",
+    "✨ 境界値テストには最小値・最大値周辺の数字がお勧めです",
+    "🎯 負の数も含めると、より実用的なテストができますね"
+  ],
+  float: [
+    "🌊 小数点数は精密な計算に欠かせません！",
+    "📊 測定値やスコアの表現に最適な数値ですね",
+    "🎵 桁数を調整して、用途に合わせてカスタマイズしましょう"
+  ],
+  percentage: [
+    "📈 パーセンテージは進捗管理に大活躍します！",
+    "🎪 0-100%の範囲で、直感的な表現ができますよ",
+    "⚖️ 成功率や完了率の可視化にぴったりです"
+  ],
+  currency: [
+    "💰 通貨表示で、より現実的なテストデータが作れます！",
+    "🌍 各国の通貨形式に対応していますよ",
+    "📱 ECサイトのテストには通貨データが必須ですね"
+  ],
+  scientific: [
+    "🔬 科学記法は大きな数や小さな数を表現するのに便利！",
+    "🚀 物理計算や工学計算でよく使われます",
+    "⚗️ 実験データの表現にも最適ですよ"
+  ],
+  boolean: [
+    "⚡ 真偽値はプログラムの制御に欠かせません！",
+    "🎲 確率を調整して、リアルなシミュレーションができます",
+    "🔀 A/Bテストのデータ生成にも便利ですよ"
+  ],
+  special: [
+    "🌟 特殊値でエッジケースをテストしましょう！",
+    "🛡️ NaNやInfinityの処理確認は重要です",
+    "🔍 堅牢なアプリケーション作りに役立ちますよ"
+  ]
+};
+
+const tdReactions = [
+  "数値生成、お任せください！💪",
+  "完璧なデータができあがりました！✨",
+  "統計的に美しい分布ですね～📊",
+  "このデータでテストが捗りそうです♪",
+  "TDも満足の仕上がりです！🎉",
+  "品質の高い数値データをお届け！🚀"
+];
+
+export function NumberBooleanTDCard({ 
+  generatedData, 
+  isGenerating, 
+  selectedType 
+>>>>>>> feature/TD-616-number-boolean-generation
 }: NumberBooleanTDCardProps) {
   const [currentTip, setCurrentTip] = useState<string>('');
   const [currentReaction, setCurrentReaction] = useState<string>('');
@@ -75,8 +127,12 @@ export function NumberBooleanTDCard({
   // 生成完了時のリアクション
   useEffect(() => {
     if (generatedData.length > 0) {
+<<<<<<< HEAD
       const randomReaction =
         tdReactions[Math.floor(Math.random() * tdReactions.length)];
+=======
+      const randomReaction = tdReactions[Math.floor(Math.random() * tdReactions.length)];
+>>>>>>> feature/TD-616-number-boolean-generation
       setCurrentReaction(randomReaction);
     }
   }, [generatedData.length]);
@@ -85,16 +141,26 @@ export function NumberBooleanTDCard({
   const calculateStats = () => {
     if (generatedData.length === 0) return null;
 
+<<<<<<< HEAD
     // 数値のみをフィルタリング
     const numericValues = generatedData
       .map(item => item.rawValue)
       .filter((val): val is number => typeof val === 'number');
+=======
+    const numericValues = generatedData
+      .map(item => item.rawValue)
+      .filter(val => typeof val === 'number' && !isNaN(val));
+>>>>>>> feature/TD-616-number-boolean-generation
 
     if (numericValues.length === 0) {
       return {
         total: generatedData.length,
         type: 'non-numeric',
+<<<<<<< HEAD
         summary: `${generatedData.length}件の${selectedType}データを生成しました`,
+=======
+        summary: `${generatedData.length}件の${selectedType}データを生成しました`
+>>>>>>> feature/TD-616-number-boolean-generation
       };
     }
 
@@ -109,7 +175,11 @@ export function NumberBooleanTDCard({
       min,
       max,
       sum: sum.toFixed(2),
+<<<<<<< HEAD
       type: 'numeric',
+=======
+      type: 'numeric'
+>>>>>>> feature/TD-616-number-boolean-generation
     };
   };
 
@@ -135,9 +205,13 @@ export function NumberBooleanTDCard({
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
             <div>
               <p className="font-medium text-blue-900">精密な数値を計算中...</p>
+<<<<<<< HEAD
               <p className="text-sm text-blue-700">
                 統計的に美しい分布を生成しています✨
               </p>
+=======
+              <p className="text-sm text-blue-700">統計的に美しい分布を生成しています✨</p>
+>>>>>>> feature/TD-616-number-boolean-generation
             </div>
           </div>
         </div>
@@ -180,6 +254,7 @@ export function NumberBooleanTDCard({
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">生成件数:</span>
+<<<<<<< HEAD
                 <span className="font-medium text-blue-900 ml-2">
                   {stats.total}件
                 </span>
@@ -189,6 +264,13 @@ export function NumberBooleanTDCard({
                 <span className="font-medium text-blue-900 ml-2">
                   {selectedType}
                 </span>
+=======
+                <span className="font-medium text-blue-900 ml-2">{stats.total}件</span>
+              </div>
+              <div>
+                <span className="text-gray-600">データ型:</span>
+                <span className="font-medium text-blue-900 ml-2">{selectedType}</span>
+>>>>>>> feature/TD-616-number-boolean-generation
               </div>
             </div>
 
@@ -197,6 +279,7 @@ export function NumberBooleanTDCard({
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">平均値:</span>
+<<<<<<< HEAD
                     <span className="font-mono text-blue-900 ml-2">
                       {stats.average}
                     </span>
@@ -218,6 +301,21 @@ export function NumberBooleanTDCard({
                     <span className="font-mono text-blue-900 ml-2">
                       {stats.max}
                     </span>
+=======
+                    <span className="font-mono text-blue-900 ml-2">{stats.average}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">合計値:</span>
+                    <span className="font-mono text-blue-900 ml-2">{stats.sum}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">最小値:</span>
+                    <span className="font-mono text-blue-900 ml-2">{stats.min}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">最大値:</span>
+                    <span className="font-mono text-blue-900 ml-2">{stats.max}</span>
+>>>>>>> feature/TD-616-number-boolean-generation
                   </div>
                 </div>
               </div>
@@ -233,9 +331,16 @@ export function NumberBooleanTDCard({
           <div>
             <p className="font-medium text-indigo-900 mb-1">TDからの応援</p>
             <p className="text-sm text-indigo-800">
+<<<<<<< HEAD
               {generatedData.length > 0
                 ? '素晴らしいデータが生成できました！このデータでテストを頑張ってください♪'
                 : '数値生成の準備は万端です！どんな数値でもTDにお任せください！'}
+=======
+              {generatedData.length > 0 
+                ? "素晴らしいデータが生成できました！このデータでテストを頑張ってください♪"
+                : "数値生成の準備は万端です！どんな数値でもTDにお任せください！"
+              }
+>>>>>>> feature/TD-616-number-boolean-generation
             </p>
           </div>
         </div>
@@ -282,9 +387,13 @@ export function NumberBooleanTDCard({
               <li>• A/Bテストのシミュレーションに</li>
             </>
           )}
+<<<<<<< HEAD
           {!['integer', 'float', 'percentage', 'currency', 'boolean'].includes(
             selectedType
           ) && (
+=======
+          {!['integer', 'float', 'percentage', 'currency', 'boolean'].includes(selectedType) && (
+>>>>>>> feature/TD-616-number-boolean-generation
             <>
               <li>• 高度な数値処理のテストに</li>
               <li>• エッジケースの検証に</li>
@@ -321,4 +430,8 @@ export function NumberBooleanTDCard({
       )}
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+} 
+>>>>>>> feature/TD-616-number-boolean-generation
