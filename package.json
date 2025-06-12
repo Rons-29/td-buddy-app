@@ -1,9 +1,9 @@
 {
-  "name": "testdata-buddy",
-  "displayName": "TestData Buddy",
-  "description": "AI連携型テストデータ生成ツール",
+  "name": "qa-workbench",
+  "displayName": "QA Workbench",
+  "description": "QAエンジニアの専用作業台 - データ醸造から品質管理まで、助手のブリューがサポート",
   "version": "0.1.0",
-  "publisher": "testdata-buddy",
+  "publisher": "qa-workbench",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -12,36 +12,38 @@
     "Testing"
   ],
   "keywords": [
+    "qa workbench",
+    "data brewing",
+    "quality assurance",
     "test data",
-    "generator",
-    "password",
-    "mock data"
+    "brew assistant",
+    "qa tools"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "testdata-buddy.helloWorld",
-        "title": "Hello World",
-        "category": "TestData Buddy"
+        "command": "qa-workbench.helloWorld",
+        "title": "Hello from Brew",
+        "category": "QA Workbench"
       },
       {
-        "command": "testdata-buddy.generatePassword",
-        "title": "パスワード生成",
-        "category": "TestData Buddy",
+        "command": "qa-workbench.brewPassword",
+        "title": "パスワード醸造",
+        "category": "QA Workbench",
         "icon": "$(key)"
       },
       {
-        "command": "testdata-buddy.generatePersonalInfo",
-        "title": "個人情報生成",
-        "category": "TestData Buddy",
+        "command": "qa-workbench.brewPersonalInfo",
+        "title": "個人情報醸造",
+        "category": "QA Workbench",
         "icon": "$(person)"
       }
     ],
     "keybindings": [
       {
-        "command": "testdata-buddy.generatePassword",
+        "command": "qa-workbench.brewPassword",
         "key": "ctrl+alt+p",
         "mac": "cmd+alt+p"
       }
@@ -66,4 +68,4 @@
     "@vscode/test-electron": "^2.2.0"
   },
   "dependencies": {}
-} 
+}
