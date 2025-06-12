@@ -1,6 +1,6 @@
 /**
  * 国際化（i18n）対応システム
- * TestData Buddy (TD) - Internationalization System
+ * QA Workbench (TD) - Internationalization System
  */
 
 export type SupportedLanguage = 'ja' | 'en' | 'zh-CN' | 'ko';
@@ -66,7 +66,7 @@ export interface TranslationKeys {
   };
 
   // TDメッセージ
-  tdMessages: {
+  brewMessages: {
     greeting: string;
     dataGenerationComplete: string;
     errorSupport: string;
@@ -159,8 +159,8 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       info: '情報',
     },
     csv: {
-      title: 'CSV詳細データ生成',
-      subtitle: 'テストデータ生成ツール',
+      title: 'CSV詳細データ醸造',
+      subtitle: 'テストデータ醸造ツール',
       columnName: '列名',
       dataType: 'データ型',
       settings: '設定',
@@ -174,7 +174,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       selectDataType: 'データ型を選択',
       previewData: 'データプレビュー',
       noPreviewData: 'プレビューデータがありません',
-      generateSuccess: 'データ生成が完了しました',
+      generateSuccess: 'データ醸造が完了しました',
       copySuccess: 'クリップボードにコピーしました',
       importCsv: 'CSVインポート',
       exportCsv: 'CSVエクスポート',
@@ -190,10 +190,10 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       date: '日付',
       age: '年齢',
     },
-    tdMessages: {
+    brewMessages: {
       greeting: 'こんにちは！TDと一緒にテストデータを作りましょう♪',
       dataGenerationComplete:
-        'データ生成が完了しました！品質チェックもOKです✨',
+        'データ醸造が完了しました！品質チェックもOKです✨',
       errorSupport: '問題が発生しました。TDがサポートします',
       qualityCheck: '品質チェック完了！',
       securityCheck: 'セキュリティチェック完了！',
@@ -305,7 +305,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       date: 'Date',
       age: 'Age',
     },
-    tdMessages: {
+    brewMessages: {
       greeting: "Hello! Let's create test data together with TD ♪",
       dataGenerationComplete: 'Data generation completed! Quality check OK ✨',
       errorSupport: 'An issue occurred. TD will support you',
@@ -419,7 +419,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       date: '日期',
       age: '年龄',
     },
-    tdMessages: {
+    brewMessages: {
       greeting: '你好！让我们与TD一起创建测试数据吧♪',
       dataGenerationComplete: '数据生成完成！质量检查通过✨',
       errorSupport: '出现问题。TD将为您提供支持',
@@ -533,7 +533,7 @@ const translations: Record<SupportedLanguage, TranslationKeys> = {
       date: '날짜',
       age: '나이',
     },
-    tdMessages: {
+    brewMessages: {
       greeting: '안녕하세요! TD와 함께 테스트 데이터를 만들어요♪',
       dataGenerationComplete: '데이터 생성 완료! 품질 검사도 OK✨',
       errorSupport: '문제가 발생했습니다. TD가 지원하겠습니다',
@@ -626,7 +626,7 @@ export class I18nManager {
       this.setLanguage(detectedLang);
     } catch (error) {
       console.warn(
-        '🤖 TDからの警告: 言語設定の初期化でエラーが発生しました',
+        '🍺 ブリューからの警告: 言語設定の初期化でエラーが発生しました',
         error
       );
       // エラー時はデフォルト言語(ja)を使用
@@ -676,13 +676,13 @@ export class I18nManager {
         }
       } catch (error) {
         console.warn(
-          '🤖 TDからの警告: 言語設定の保存でエラーが発生しました',
+          '🍺 ブリューからの警告: 言語設定の保存でエラーが発生しました',
           error
         );
       }
     }
 
-    console.log(`🌐 TDからのメッセージ: 言語を${language}に変更しました`);
+    console.log(`🌐 ブリューからのメッセージ: 言語を${language}に変更しました`);
   }
 
   /**
@@ -720,8 +720,8 @@ export class I18nManager {
   /**
    * TDメッセージを言語に応じて生成
    */
-  static tdMessage(messageKey: string, params?: Record<string, any>): string {
-    let message = this.t(`tdMessages.${messageKey}`);
+  static brewMessage(messageKey: string, params?: Record<string, any>): string {
+    let message = this.t(`brewMessages.${messageKey}`);
 
     // パラメータの置換
     if (params) {
@@ -907,7 +907,7 @@ export function useTranslation() {
     formatDate: I18nManager.formatDate.bind(I18nManager),
     formatTime: I18nManager.formatTime.bind(I18nManager),
     formatFileSize: I18nManager.formatFileSize.bind(I18nManager),
-    tdMessage: I18nManager.tdMessage.bind(I18nManager),
+    brewMessage: I18nManager.brewMessage.bind(I18nManager),
   };
 }
 

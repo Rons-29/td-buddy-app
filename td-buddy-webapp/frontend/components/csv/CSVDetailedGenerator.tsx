@@ -114,7 +114,7 @@ const CSVDetailedGenerator = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Table className="h-8 w-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">CSV詳細データ生成</h1>
+              <h1 className="text-2xl font-bold text-gray-900">CSV詳細データ醸造</h1>
             </div>
             <Button
               onClick={generateData}
@@ -122,7 +122,7 @@ const CSVDetailedGenerator = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2"
             >
               <Settings className="h-4 w-4" />
-              {isGenerating ? '生成中...' : 'データ生成'}
+              {isGenerating ? '醸造中...' : 'データ醸造'}
             </Button>
           </div>
 

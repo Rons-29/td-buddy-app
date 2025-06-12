@@ -47,7 +47,7 @@ export class UltraFastGenerator {
       const basePattern = this.getBasePattern(fileType);
       const patternSize = new Blob([basePattern]).size;
 
-      // 超高速生成ループ
+      // 超高速醸造ループ
       while (processedBytes < targetBytes) {
         if (abortSignal?.aborted) {
           throw new Error('生成がキャンセルされました');
@@ -124,7 +124,7 @@ export class UltraFastGenerator {
       return blob;
     } catch (error) {
       throw new Error(
-        `超高速生成エラー: ${
+        `超高速醸造エラー: ${
           error instanceof Error ? error.message : '不明なエラー'
         }`
       );
@@ -137,19 +137,19 @@ export class UltraFastGenerator {
   private getBasePattern(fileType: string): string {
     switch (fileType) {
       case 'txt':
-        return 'TestData Buddy (TD) は QA エンジニアの最高の相棒です。効率的なテストデータ生成で品質向上をサポートします。\n';
+        return 'QA Workbench (TD) は QA エンジニアの最高の相棒です。効率的なテストデータ醸造で品質向上をサポートします。\n';
 
       case 'json':
-        return '{"id":1,"name":"TestData","content":"TD Buddy generated data","timestamp":"2024-01-01T00:00:00Z","active":true},\n';
+        return '{"id":1,"name":"TestData","content":"Brew Assistant generated data","timestamp":"2024-01-01T00:00:00Z","active":true},\n';
 
       case 'xml':
-        return '<record><id>1</id><name>TestData</name><content>TD Buddy generated data</content><timestamp>2024-01-01T00:00:00Z</timestamp></record>\n';
+        return '<record><id>1</id><name>TestData</name><content>Brew Assistant generated data</content><timestamp>2024-01-01T00:00:00Z</timestamp></record>\n';
 
       case 'csv':
-        return '1,"TestData","TD Buddy generated data","2024-01-01T00:00:00Z",true\n';
+        return '1,"TestData","Brew Assistant generated data","2024-01-01T00:00:00Z",true\n';
 
       default:
-        return 'TD Buddy - 超高速テストデータ生成中...\n';
+        return 'Brew Assistant - 超高速テストデータ醸造中...\n';
     }
   }
 
@@ -168,7 +168,7 @@ export class UltraFastGenerator {
 }
 
 /**
- * 超高速生成のエントリーポイント
+ * 超高速醸造のエントリーポイント
  */
 export async function generateUltraFast(
   targetBytes: number,

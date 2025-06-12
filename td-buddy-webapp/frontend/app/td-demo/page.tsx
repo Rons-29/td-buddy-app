@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 // 依存関係がインストール後にインポート可能になります
-// import TDCharacter from '../../components/TDCharacter';
+// import BrewCharacter';
 // import { TDEmotion, TDAnimation, TDSize } from '../../types/td-character';
 
 // 仮のコンポーネント（依存関係インストール後に実際のコンポーネントと置き換え）
@@ -30,7 +30,7 @@ const TDCharacterDemo = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-td-primary-800 mb-4">
-          🤖 TDキャラクター デモページ
+          🍺 TDキャラクター デモページ
         </h1>
         <p className="text-td-primary-600">
           TDキャラクターの様々な表情・アニメーション・サイズを確認できます
@@ -48,7 +48,7 @@ const TDCharacterDemo = () => {
           <div className="flex justify-center mb-6">
             <div className="text-center">
               {/* 仮の表示（依存関係インストール後に実際のコンポーネントと置き換え） */}
-              <div className="text-6xl td-heartbeat mb-4">🤖</div>
+              <div className="text-6xl td-heartbeat mb-4">🍺</div>
               <div className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-td-primary-100 text-td-primary-800">
                 フレンドリー
               </div>
@@ -193,10 +193,10 @@ const TDCharacterDemo = () => {
         <div className="bg-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
           <div className="text-gray-700">
             {`// TDキャラクターの基本的な使用方法
-import TDCharacter from './components/TDCharacter';
+import BrewCharacter';
 
 // 基本表示
-<TDCharacter 
+<BrewCharacter 
   emotion="${currentEmotion}"
   animation="${currentAnimation}"
   size="${currentSize}"
@@ -205,7 +205,7 @@ import TDCharacter from './components/TDCharacter';
 />
 
 // クリック可能
-<TDCharacter 
+<BrewCharacter 
   emotion="excited"
   onClick={() => console.log('TDクリック!')}
 />

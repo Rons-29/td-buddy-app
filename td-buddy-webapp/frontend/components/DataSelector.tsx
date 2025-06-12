@@ -24,7 +24,7 @@ export interface DataSelectorProps {
   enableSearch?: boolean;
   enableFiltering?: boolean;
   maxDisplayItems?: number;
-  tdMessage?: string;
+  brewMessage?: string;
 }
 
 const DataSelector: React.FC<DataSelectorProps> = ({
@@ -36,7 +36,7 @@ const DataSelector: React.FC<DataSelectorProps> = ({
   enableSearch = true,
   enableFiltering = true,
   maxDisplayItems = 50,
-  tdMessage = "データを選択してください♪"
+  brewMessage = "データを選択してください♪"
 }) => {
   // State管理
   const [searchQuery, setSearchQuery] = useState('');
@@ -183,8 +183,8 @@ const DataSelector: React.FC<DataSelectorProps> = ({
       {/* TDメッセージ */}
       <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex items-center space-x-2">
-          <div className="text-lg">🤖</div>
-          <p className="text-blue-800 text-sm">{tdMessage}</p>
+          <div className="text-lg">🍺</div>
+          <p className="text-blue-800 text-sm">{brewMessage}</p>
         </div>
       </div>
 

@@ -51,7 +51,7 @@ describe("ファイル容量テスト機能", () => {
       const jsonData = JSON.parse(content);
       expect(jsonData).toHaveProperty("metadata");
       expect(jsonData).toHaveProperty("content");
-      expect(jsonData.metadata).toHaveProperty("generator", "TestData Buddy");
+      expect(jsonData.metadata).toHaveProperty("generator", "QA Workbench");
     });
 
     test("CSV形式の生成", () => {
@@ -83,7 +83,7 @@ describe("ファイル容量テスト機能", () => {
       const content = generateContentByType(targetSize, "yaml");
 
       expect(content).toContain("metadata:");
-      expect(content).toContain('generator: "TestData Buddy"');
+      expect(content).toContain('generator: "QA Workbench"');
       expect(content).toContain("content: |");
     });
   });

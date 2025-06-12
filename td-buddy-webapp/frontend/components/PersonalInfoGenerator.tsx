@@ -24,7 +24,7 @@ import {
   CardTitle,
 } from './ui/Card';
 import { DataTable } from './ui/DataTable';
-import { EnhancedTDCharacter, TDMood } from './ui/EnhancedTDCharacter';
+import BrewCharacter';
 import { FieldOption, FieldSelector } from './ui/FieldSelector';
 
 // 簡易版の型定義
@@ -114,9 +114,9 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<PersonalInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [tdMood, setTdMood] = useState<TDMood>('happy');
-  const [tdMessage, setTdMessage] =
-    useState('個人情報生成の準備ができました！');
+  const [brewMood, setTdMood] = useState<TDMood>('happy');
+  const [brewMessage, setTdMessage] =
+    useState('個人情報醸造の準備ができました！');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [isCopied, setIsCopied] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -146,15 +146,17 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   }, []);
 
   const copyAllData = useCallback(async () => {
-    if (result.length === 0) return;
+    if (result.length === 0) {
+      return;
+    }
 
     setIsCopied(true); // コピー開始時にtrueにセット
     const selectedFields = fieldOptions.filter(f => f.selected);
 
     try {
       // データをテキスト形式で整形（絵文字付き）
-      let allDataText = `🤖 TestData Buddy - 生成データ (${result.length}件)\n`;
-      allDataText += `📅 生成日時: ${new Date().toLocaleString('ja-JP')}\n`;
+      let allDataText = `🍺 QA Workbench - 醸造データ (${result.length}件)\n`;
+      allDataText += `📅 醸造日時: ${new Date().toLocaleString('ja-JP')}\n`;
       allDataText += `${'='.repeat(60)}\n\n`;
 
       result.forEach((person, index) => {
@@ -240,8 +242,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
       });
 
       allDataText += `${'='.repeat(60)}\n`;
-      allDataText += `✨ TDからのメッセージ: データのご利用ありがとうございます！\n`;
-      allDataText += `🔧 生成ツール: TestData Buddy\n`;
+      allDataText += `✨ ブリューからのメッセージ: データのご利用ありがとうございます！\n`;
+      allDataText += `🔧 醸造ツール: QA Workbench\n`;
 
       await navigator.clipboard.writeText(allDataText);
       setTdMood('success');
@@ -272,7 +274,9 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   }, [result, fieldOptions]);
 
   const exportToCsv = async () => {
-    if (result.length === 0) return;
+    if (result.length === 0) {
+      return;
+    }
 
     setIsExporting(true); // エクスポート開始
     const selectedFields = fieldOptions.filter(f => f.selected).map(f => f.id);
@@ -292,7 +296,9 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
         }
       );
 
-      if (!response.ok) throw new Error('CSV export failed');
+      if (!response.ok) {
+        throw new Error('CSV export failed');
+      }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -324,14 +330,14 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
     if (selectedFields.length === 0) {
       setError('フィールドを最低1つ選択してください');
       setTdMood('thinking');
-      setTdMessage('どのフィールドを生成しますか？');
+      setTdMessage('どのフィールドを醸造しますか？');
       return;
     }
 
     setIsGenerating(true);
     setError(null);
     setTdMood('working');
-    setTdMessage(`${count}件の個人情報を生成中です...`);
+    setTdMessage(`${count}件の個人情報を醸造中です...`);
 
     try {
       const response = await fetch(
@@ -358,7 +364,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
         setResult(data.data.persons);
         setTdMood('success');
         setTdMessage(
-          `✨ ${data.data.persons.length}件の個人情報を生成しました！`
+          `✨ ${data.data.persons.length}件の個人情報を醸造しました！`
         );
       } else {
         throw new Error('API レスポンスエラー');
@@ -446,22 +452,22 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                 </div>
               </div>
               <div>
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
-                  個人情報生成ツール
+                <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent">
+                  個人情報醸造ツール
                 </h1>
                 <div className="flex items-center justify-center space-x-2 mt-2">
-                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                  <Sparkles className="h-4 w-4 text-amber-500" />
                   <span className="text-sm text-gray-600 font-medium">
-                    Powered by TD Buddy
+                    Powered by Brew Assistant
                   </span>
-                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                  <Sparkles className="h-4 w-4 text-amber-500" />
                 </div>
               </div>
             </div>
             <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-              QAテスト用のリアルで実用的な個人情報データを生成します。
+              QAテスト用のリアルで実用的な個人情報データを丁寧に醸造します。
               <br />
-              <span className="text-blue-600 font-medium">
+              <span className="text-amber-600 font-medium">
                 安全・高速・日本語対応
               </span>
             </p>
@@ -488,7 +494,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        生成数
+                        醸造数
                       </label>
                       <div className="flex items-center space-x-4">
                         <input
@@ -551,7 +557,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                       {count > 100 && (
                         <p className="text-sm text-amber-600 mt-2">
                           ⚠️
-                          大量データ生成により処理時間が長くなる場合があります
+                          大量データ醸造により処理時間が長くなる場合があります
                         </p>
                       )}
                     </div>
@@ -559,7 +565,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                     {/* フィールド選択 */}
                     <div className="flex items-center justify-between">
                       <label className="block text-sm font-semibold text-gray-700">
-                        生成フィールド選択
+                        醸造フィールド選択
                       </label>
                       <div className="flex items-center space-x-2 text-sm text-gray-500">
                         <span>{selectedFieldCount}個選択中</span>
@@ -592,7 +598,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                     >
                       <span className="relative z-10">
                         {isGenerating
-                          ? 'データ生成中...'
+                          ? 'データ醸造中...'
                           : `${count}件の個人情報を生成`}
                       </span>
 
@@ -614,7 +620,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
                         <div className="p-2 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-lg">
                           <CheckCircle className="h-5 w-5 text-white" />
                         </div>
-                        <span>生成結果 ({result.length}件)</span>
+                        <span>醸造結果 ({result.length}件)</span>
                       </CardTitle>
                       <div className="flex items-center space-x-2">
                         {/* 表示モード切り替え */}
@@ -800,8 +806,8 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               <Card variant="glass" className="backdrop-blur-xl sticky top-8">
                 <CardContent className="p-6">
                   <EnhancedTDCharacter
-                    mood={tdMood}
-                    message={tdMessage}
+                    mood={brewMood}
+                    message={brewMessage}
                     animation={isGenerating ? 'spin' : 'float'}
                     size="lg"
                     interactive={!isGenerating}
@@ -831,7 +837,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               {result.length > 0 && (
                 <Card variant="glass" className="backdrop-blur-xl">
                   <CardHeader>
-                    <CardTitle className="text-lg">生成統計</CardTitle>
+                    <CardTitle className="text-lg">醸造統計</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between text-sm">

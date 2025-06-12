@@ -13,7 +13,7 @@ export interface CSVPreset {
   }>;
   sampleData?: string[];
   usage: string;
-  tdMessage: string;
+  brewMessage: string;
 }
 
 export const csvPresets: CSVPreset[] = [
@@ -25,7 +25,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'ecommerce',
     difficulty: 'beginner',
     usage: 'ユーザー管理システム、顧客分析、マーケティング施策テスト',
-    tdMessage: 'ECサイトの運営には欠かせない顧客データです♪',
+    brewMessage: 'ECサイトの運営には欠かせない顧客データです♪',
     columns: [
       { name: 'user_id', dataType: 'number', required: true, description: 'ユーザーID（連番）' },
       { name: 'name', dataType: 'text', required: true, description: '顧客名' },
@@ -46,7 +46,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'ecommerce',
     difficulty: 'intermediate',
     usage: '商品管理システム、在庫管理、価格分析',
-    tdMessage: '魅力的な商品データでECサイトを盛り上げましょう！',
+    brewMessage: '魅力的な商品データでECサイトを盛り上げましょう！',
     columns: [
       { name: 'product_id', dataType: 'text', required: true, description: '商品ID（SKU）' },
       { name: 'product_name', dataType: 'text', required: true, description: '商品名' },
@@ -67,7 +67,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'ecommerce',
     difficulty: 'advanced',
     usage: '注文管理システム、売上分析、配送管理',
-    tdMessage: '売上アップにつながる注文データを作成しました♪',
+    brewMessage: '売上アップにつながる注文データを作成しました♪',
     columns: [
       { name: 'order_id', dataType: 'text', required: true, description: '注文ID' },
       { name: 'user_id', dataType: 'number', required: true, description: 'ユーザーID' },
@@ -90,7 +90,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'user',
     difficulty: 'intermediate',
     usage: '人事管理システム、勤怠管理、給与計算',
-    tdMessage: '働きやすい職場のための従業員データです！',
+    brewMessage: '働きやすい職場のための従業員データです！',
     columns: [
       { name: 'employee_id', dataType: 'text', required: true, description: '従業員ID' },
       { name: 'name', dataType: 'text', required: true, description: '氏名' },
@@ -111,7 +111,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'user',
     difficulty: 'beginner',
     usage: '学校管理システム、成績管理、出席管理',
-    tdMessage: '次世代を担う学生たちのデータです♪',
+    brewMessage: '次世代を担う学生たちのデータです♪',
     columns: [
       { name: 'student_id', dataType: 'text', required: true, description: '学籍番号' },
       { name: 'name', dataType: 'text', required: true, description: '氏名' },
@@ -134,7 +134,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'business',
     difficulty: 'advanced',
     usage: 'CRM システム、営業分析、売上予測',
-    tdMessage: '営業成績アップのためのデータ分析に活用してください！',
+    brewMessage: '営業成績アップのためのデータ分析に活用してください！',
     columns: [
       { name: 'lead_id', dataType: 'text', required: true, description: '見込み客ID' },
       { name: 'company_name', dataType: 'text', required: true, description: '会社名' },
@@ -155,7 +155,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'business',
     difficulty: 'intermediate',
     usage: '在庫管理システム、物流管理、発注システム',
-    tdMessage: '効率的な在庫管理でコスト削減を実現しましょう♪',
+    brewMessage: '効率的な在庫管理でコスト削減を実現しましょう♪',
     columns: [
       { name: 'item_code', dataType: 'text', required: true, description: '商品コード' },
       { name: 'item_name', dataType: 'text', required: true, description: '商品名' },
@@ -178,7 +178,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'system',
     difficulty: 'beginner',
     usage: 'アプリ開発、認証システム、ユーザー管理',
-    tdMessage: 'セキュアなシステム構築のためのユーザーデータです！',
+    brewMessage: 'セキュアなシステム構築のためのユーザーデータです！',
     columns: [
       { name: 'user_id', dataType: 'text', required: true, description: 'ユーザーID' },
       { name: 'username', dataType: 'text', required: true, description: 'ユーザー名' },
@@ -199,7 +199,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'system',
     difficulty: 'advanced',
     usage: 'ログ分析、システム監視、セキュリティ監査',
-    tdMessage: 'システムの健康状態を把握するための重要なログデータです♪',
+    brewMessage: 'システムの健康状態を把握するための重要なログデータです♪',
     columns: [
       { name: 'log_id', dataType: 'text', required: true, description: 'ログID' },
       { name: 'timestamp', dataType: 'date', required: true, description: 'タイムスタンプ' },
@@ -222,7 +222,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'custom',
     difficulty: 'advanced',
     usage: '決済システム、会計システム、金融分析',
-    tdMessage: '金融業界の厳格な要件にも対応したデータです！',
+    brewMessage: '金融業界の厳格な要件にも対応したデータです！',
     columns: [
       { name: 'transaction_id', dataType: 'text', required: true, description: '取引ID' },
       { name: 'account_number', dataType: 'text', required: true, description: '口座番号' },
@@ -243,7 +243,7 @@ export const csvPresets: CSVPreset[] = [
     category: 'custom',
     difficulty: 'intermediate',
     usage: 'アンケートシステム、市場分析、顧客分析',
-    tdMessage: 'お客様の声を大切にするアンケートデータです♪',
+    brewMessage: 'お客様の声を大切にするアンケートデータです♪',
     columns: [
       { name: 'response_id', dataType: 'text', required: true, description: '回答ID' },
       { name: 'respondent_id', dataType: 'text', required: false, description: '回答者ID' },

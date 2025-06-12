@@ -16,14 +16,14 @@ export const EnvironmentInfo: React.FC = () => {
         className="bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
         title="環境情報を表示"
       >
-        🤖
+        🍺
       </button>
 
       {/* 環境情報パネル */}
       {isVisible && (
         <div className="absolute bottom-12 left-0 bg-white border-2 border-blue-200 rounded-lg shadow-xl p-4 min-w-80">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-bold text-blue-600">🤖 TD環境情報</h3>
+            <h3 className="text-lg font-bold text-blue-600">🍺 TD環境情報</h3>
             <button
               onClick={() => setIsVisible(false)}
               className="text-gray-500 hover:text-gray-700"
@@ -73,13 +73,13 @@ export const EnvironmentInfo: React.FC = () => {
                   <span className="w-4 h-4 mr-2">
                     {envInfo.features.localGeneration ? '✅' : '❌'}
                   </span>
-                  ローカル生成
+                  ローカル醸造
                 </div>
                 <div className="flex items-center text-xs">
                   <span className="w-4 h-4 mr-2">
                     {envInfo.features.apiGeneration ? '✅' : '❌'}
                   </span>
-                  API生成
+                  API醸造
                 </div>
                 <div className="flex items-center text-xs">
                   <span className="w-4 h-4 mr-2">

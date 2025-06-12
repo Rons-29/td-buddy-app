@@ -19,24 +19,24 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   ),
-  title: 'TestData Buddy - AI連携型テストデータ生成ツール',
+  title: 'QA Workbench - AI連携型テストデータ醸造ツール',
   description:
-    'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
-  keywords: ['テストデータ', 'QA', 'AI', 'データ生成', 'パスワード生成'],
+    'QAエンジニアのための最高のテストデータ醸造相棒、ブリューと一緒に効率的なテスト環境を構築しましょう',
+  keywords: ['テストデータ', 'QA', 'AI', 'データ醸造', 'パスワード醸造'],
   authors: [{ name: 'TD Team' }],
   openGraph: {
-    title: 'TestData Buddy - AI連携型テストデータ生成ツール',
+    title: 'QA Workbench - AI連携型テストデータ醸造ツール',
     description:
-      'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
+      'QAエンジニアのための最高のテストデータ醸造相棒、ブリューと一緒に効率的なテスト環境を構築しましょう',
     type: 'website',
     locale: 'ja_JP',
-    siteName: 'TestData Buddy',
+    siteName: 'QA Workbench',
   },
   twitter: {
     card: 'summary',
-    title: 'TestData Buddy - AI連携型テストデータ生成ツール',
+    title: 'QA Workbench - AI連携型テストデータ醸造ツール',
     description:
-      'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
+      'QAエンジニアのための最高のテストデータ醸造相棒、ブリューと一緒に効率的なテスト環境を構築しましょう',
   },
   icons: {
     icon: '/td-favicon.svg',
@@ -79,9 +79,9 @@ export default function RootLayout({
                   href="/"
                   className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
                 >
-                  <div className="text-2xl">🤖</div>
+                  <div className="text-2xl">🍺</div>
                   <h1 className="text-xl font-bold text-td-primary-800">
-                    TestData Buddy
+                    QA Workbench
                   </h1>
                 </Link>
 
@@ -91,7 +91,7 @@ export default function RootLayout({
                     href="/personal"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors"
                   >
-                    個人情報生成
+                    個人情報醸造
                   </Link>
                   <Link
                     href="/uuid"
@@ -125,7 +125,7 @@ export default function RootLayout({
                     href="/password"
                     className="text-td-primary-600 hover:text-td-primary-800 font-medium transition-colors"
                   >
-                    パスワード生成
+                    パスワード醸造
                   </Link>
                 </nav>
 
@@ -141,7 +141,7 @@ export default function RootLayout({
           <footer className="bg-td-primary-800 text-white py-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <p className="text-sm">
-                © 2024 TestData Buddy - QAエンジニアの最高の相棒 🤖
+                © 2024 QA Workbench - QAエンジニアの最高の相棒 🍺
               </p>
             </div>
           </footer>

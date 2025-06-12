@@ -38,7 +38,7 @@ const ColorDataGenerator: React.FC = () => {
   const [showImageExtractor, setShowImageExtractor] = useState(false);
   
   // TDキャラクター状態
-  const [tdMessage, setTdMessage] = useState('カラーデータ生成の準備完了です！設定を調整してください♪');
+  const [brewMessage, setTdMessage] = useState('カラーデータ醸造の準備完了です！設定を調整してください♪');
 
   // カラースキーム設定
   const colorSchemes = {
@@ -78,7 +78,7 @@ const ColorDataGenerator: React.FC = () => {
     }
 
     setIsGenerating(true);
-    setTdMessage(`${settings.count}件のカラーデータを生成中...`);
+    setTdMessage(`${settings.count}件のカラーデータを醸造中...`);
 
     const results: Array<{value: string, color: string}> = [];
     
@@ -174,7 +174,7 @@ const ColorDataGenerator: React.FC = () => {
     }
 
     setGeneratedColors(results);
-    setTdMessage(`✅ ${settings.count}件のカラーデータを生成しました！`);
+    setTdMessage(`✅ ${settings.count}件のカラーデータを醸造しました！`);
     setIsGenerating(false);
   }, [settings, hslToHex]);
 
@@ -277,7 +277,7 @@ const ColorDataGenerator: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
               <Palette className="h-8 w-8 text-pink-600" />
-              <h1 className="text-2xl font-bold text-td-gray-900">カラーデータ生成</h1>
+              <h1 className="text-2xl font-bold text-td-gray-900">カラーデータ醸造</h1>
               <span className="px-3 py-1 bg-pink-100 text-pink-800 text-sm rounded-full">
                 画像抽出対応
               </span>
@@ -310,8 +310,8 @@ const ColorDataGenerator: React.FC = () => {
         {/* TDキャラクターメッセージ */}
         <div className="mb-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
           <div className="flex items-center space-x-3">
-            <div className="text-2xl">🤖</div>
-            <p className="text-pink-800 font-medium">{tdMessage}</p>
+            <div className="text-2xl">🍺</div>
+            <p className="text-pink-800 font-medium">{brewMessage}</p>
           </div>
         </div>
 
@@ -542,7 +542,7 @@ const ColorDataGenerator: React.FC = () => {
             <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
               <h2 className="text-xl font-semibold text-td-gray-900 mb-6 flex items-center gap-2">
                 <Settings className="h-5 w-5" />
-                生成設定
+                醸造設定
               </h2>
               
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -636,17 +636,17 @@ const ColorDataGenerator: React.FC = () => {
                   variant="primary"
                   disabled={isGenerating}
                 >
-                  {isGenerating ? '生成中...' : 'カラーを生成'}
+                  {isGenerating ? '醸造中...' : 'カラーを生成'}
                 </Button>
               </div>
             </div>
 
-            {/* 生成結果 */}
+            {/* 醸造結果 */}
             {generatedColors.length > 0 && (
               <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-td-gray-800">
-                    生成結果 ({generatedColors.length}件)
+                    醸造結果 ({generatedColors.length}件)
                   </h3>
                   <div className="flex gap-2">
                     <Button

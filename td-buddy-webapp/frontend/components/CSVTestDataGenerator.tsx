@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/Card';
-import { EnhancedTDCharacter, TDMood } from './ui/EnhancedTDCharacter';
+import BrewCharacter';
 
 // 型定義
 export interface CSVColumn {
@@ -173,14 +173,14 @@ const CSVTestDataGenerator: React.FC = () => {
   const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
 
   // TDキャラクター状態
-  const [tdMessage, setTdMessage] = useState(
-    'CSVテスト用データ生成の準備完了です！カラムを追加またはプリセットを選択してください♪'
+  const [brewMessage, setTdMessage] = useState(
+    'CSVテスト用データ醸造の準備完了です！カラムを追加またはプリセットを選択してください♪'
   );
 
   // TDキャラクター状態を追加
-  const [tdMood, setTdMood] = useState<TDMood>('happy');
+  const [brewMood, setTdMood] = useState<TDMood>('happy');
 
-  // データ生成用の基本データ
+  // データ醸造用の基本データ
   const JAPANESE_DATA = {
     lastNames: [
       '佐藤',
@@ -281,7 +281,7 @@ const CSVTestDataGenerator: React.FC = () => {
     setColumns(newColumns);
     setSelectedPresetId(presetId);
     setShowPresetManager(false);
-    setTdMessage(`${preset.name}プリセットを適用しました！${preset.tdMessage}`);
+    setTdMessage(`${preset.name}プリセットを適用しました！${preset.brewMessage}`);
   }, []);
 
   // フィルタされたプリセット
@@ -378,7 +378,7 @@ const CSVTestDataGenerator: React.FC = () => {
     [draggedColumnId, columns]
   );
 
-  // データ生成
+  // データ醸造
   const generateData = useCallback(() => {
     if (columns.length === 0) {
       setTdMessage('まずカラムを定義またはプリセットを選択してください');
@@ -386,12 +386,12 @@ const CSVTestDataGenerator: React.FC = () => {
     }
 
     setIsGenerating(true);
-    setTdMessage(`${rowCount}件のテストデータを生成中...`);
+    setTdMessage(`${rowCount}件のテストデータを醸造中...`);
 
     // 自動インクリメントカウンターをリセット
     autoIncrementRefs.clear();
 
-    // 改良されたダミーデータ生成
+    // 改良されたダミーデータ醸造
     const generatedRows: CSVRow[] = [];
     for (let i = 0; i < rowCount; i++) {
       const rowData: Record<string, any> = {};
@@ -534,7 +534,7 @@ const CSVTestDataGenerator: React.FC = () => {
               JAPANESE_DATA.words[
                 Math.floor(Math.random() * JAPANESE_DATA.words.length)
               ]
-            }のサンプル段落です。テストデータとして使用されており、実際の内容ではありません。データ生成の確認用として作成されています。`;
+            }のサンプル段落です。テストデータとして使用されており、実際の内容ではありません。データ醸造の確認用として作成されています。`;
             rowData[col.id] = paragraphText;
             break;
 
@@ -646,7 +646,7 @@ const CSVTestDataGenerator: React.FC = () => {
 
     setRows(generatedRows);
     setShowDataTable(true);
-    setTdMessage(`✅ ${rowCount}件のテストデータを生成しました！`);
+    setTdMessage(`✅ ${rowCount}件のテストデータを醸造しました！`);
     setIsGenerating(false);
   }, [columns, rowCount]);
 
@@ -722,7 +722,7 @@ const CSVTestDataGenerator: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mb-2">
             <Database className="h-8 w-8 text-orange-600" />
             <CardTitle className="text-2xl font-bold text-orange-800">
-              📋 CSV テストデータ生成
+              📋 CSV テストデータ醸造
             </CardTitle>
           </div>
           <CardDescription className="text-orange-700">
@@ -734,7 +734,7 @@ const CSVTestDataGenerator: React.FC = () => {
       {/* TDキャラクター */}
       <Card className="border-orange-200">
         <CardContent className="pt-6">
-          <EnhancedTDCharacter mood={tdMood} message={tdMessage} />
+          <EnhancedTDCharacter mood={brewMood} message={brewMessage} />
         </CardContent>
       </Card>
 
@@ -841,12 +841,12 @@ const CSVTestDataGenerator: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* データ生成設定セクション */}
+      {/* データ醸造設定セクション */}
       <Card className="border-orange-200">
         <CardHeader>
           <CardTitle className="text-lg text-orange-800 flex items-center gap-2">
             <Database className="h-5 w-5" />
-            データ生成設定
+            データ醸造設定
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -917,12 +917,12 @@ const CSVTestDataGenerator: React.FC = () => {
               {isGenerating ? (
                 <>
                   <div className="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full" />
-                  生成中...
+                  醸造中...
                 </>
               ) : (
                 <>
                   <Database className="h-4 w-4 mr-2" />
-                  データ生成
+                  データ醸造
                 </>
               )}
             </Button>

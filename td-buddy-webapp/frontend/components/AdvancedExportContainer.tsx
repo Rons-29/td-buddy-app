@@ -481,7 +481,7 @@ export function AdvancedExportContainer() {
             </div>
           </div>
 
-          {/* TDからのヒント */}
+          {/* ブリューからのヒント */}
           <div className="bg-td-accent-50 border border-td-accent-200 rounded-lg p-4">
             <div className="flex items-start space-x-3">
               <div className="w-8 h-8 bg-td-accent-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 text-sm">

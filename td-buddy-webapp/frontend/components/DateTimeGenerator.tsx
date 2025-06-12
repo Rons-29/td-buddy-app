@@ -69,7 +69,7 @@ const DateTimeGenerator: React.FC = () => {
   const [customTime, setCustomTime] = useState('');
 
   // TDキャラクター状態
-  const [tdMessage, setTdMessage] = useState(
+  const [brewMessage, setTdMessage] = useState(
     '🌍 時差確認・世界時間比較の準備完了です！リアルタイムで世界各地の時間をチェックできます♪'
   );
 
@@ -225,7 +225,7 @@ const DateTimeGenerator: React.FC = () => {
     [updateWorldTimeComparison]
   );
 
-  // データ生成（改良版）
+  // データ醸造（改良版）
   const generateDateTime = useCallback(() => {
     if (settings.count < 1 || settings.count > 1000) {
       setTdMessage('生成件数は1〜1000件の範囲で設定してください');
@@ -233,7 +233,7 @@ const DateTimeGenerator: React.FC = () => {
     }
 
     setIsGenerating(true);
-    setTdMessage(`${settings.count}件の日付・時刻データを生成中...`);
+    setTdMessage(`${settings.count}件の日付・時刻データを醸造中...`);
 
     // 非同期で生成処理を実行
     setTimeout(() => {
@@ -305,7 +305,7 @@ const DateTimeGenerator: React.FC = () => {
       }
 
       setGeneratedData(results);
-      setTdMessage(`✅ ${settings.count}件の日付・時刻データを生成しました！`);
+      setTdMessage(`✅ ${settings.count}件の日付・時刻データを醸造しました！`);
       setIsGenerating(false);
       setButtonActive('generate'); // ボタン状態を更新
       setIndividualCopyStates({}); // 個別コピー状態をリセット
@@ -386,8 +386,8 @@ const DateTimeGenerator: React.FC = () => {
                 size="sm"
               >
                 {showDataGenerator
-                  ? 'データ生成を閉じる'
-                  : '日付・時刻データ生成'}
+                  ? 'データ醸造を閉じる'
+                  : '日付・時刻データ醸造'}
               </Button>
 
               <Button
@@ -407,8 +407,8 @@ const DateTimeGenerator: React.FC = () => {
         {/* TDキャラクターメッセージ */}
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center space-x-3">
-            <div className="text-2xl">🤖</div>
-            <p className="text-green-800 font-medium">{tdMessage}</p>
+            <div className="text-2xl">🍺</div>
+            <p className="text-green-800 font-medium">{brewMessage}</p>
           </div>
         </div>
 
@@ -736,14 +736,14 @@ const DateTimeGenerator: React.FC = () => {
               </div>
             )}
 
-            {/* データ生成セクション（切り替え可能） */}
+            {/* データ醸造セクション（切り替え可能） */}
             {showDataGenerator && (
               <>
                 {/* 設定パネル */}
                 <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
                   <h2 className="text-xl font-semibold text-td-gray-900 mb-6 flex items-center gap-2">
                     <Settings className="h-5 w-5" />
-                    日付・時刻データ生成設定
+                    日付・時刻データ醸造設定
                   </h2>
 
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -868,17 +868,17 @@ const DateTimeGenerator: React.FC = () => {
                       disabled={isGenerating}
                       size="md"
                     >
-                      {isGenerating ? '生成中...' : undefined}
+                      {isGenerating ? '醸造中...' : undefined}
                     </ActionButton>
                   </div>
                 </div>
 
-                {/* 生成結果 */}
+                {/* 醸造結果 */}
                 {generatedData.length > 0 && (
                   <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-td-gray-800">
-                        生成結果 ({generatedData.length}件)
+                        醸造結果 ({generatedData.length}件)
                       </h3>
                       <div className="flex gap-2">
                         <ActionButton
@@ -964,7 +964,7 @@ const DateTimeGenerator: React.FC = () => {
 
                   <div>
                     <h4 className="font-medium text-td-gray-800 mb-2">
-                      📅 日付・時刻データ生成
+                      📅 日付・時刻データ醸造
                     </h4>
                     <ul className="space-y-1">
                       <li>• 出力形式を選択</li>

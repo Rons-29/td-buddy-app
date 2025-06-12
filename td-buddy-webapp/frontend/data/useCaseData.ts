@@ -1,6 +1,6 @@
 /**
  * 活用例データ定義
- * TD Buddy - UseCase Data
+ * Brew Assistant - UseCase Data
  * 
  * @description 実用的な活用例のデータセット
  * @version 1.0.0
@@ -16,7 +16,7 @@ export const USE_CASES: UseCaseExample[] = [
     description: '生成したパスワードをExcelで開いて、強度や文字種を手動確認',
     category: 'debug',
     format: 'csv',
-    scenario: 'パスワード生成機能の動作確認時',
+    scenario: 'パスワード醸造機能の動作確認時',
     config: {
       format: 'csv',
       count: 100,
@@ -47,7 +47,7 @@ a.click();`,
   {
     id: 'api-testing',
     title: 'REST API テストデータ',
-    description: 'Postman/Insomniaで使用する実用的なJSONテストデータ生成',
+    description: 'Postman/Insomniaで使用する実用的なJSONテストデータ醸造',
     category: 'automation',
     format: 'json',
     scenario: 'ユーザー登録APIの動作テスト時',
@@ -56,7 +56,7 @@ a.click();`,
       count: 50,
       options: { pretty: true, includeMetadata: true }
     },
-    codeExample: `// API テスト用データ生成
+    codeExample: `// API テスト用データ醸造
 const response = await fetch('/api/export/personal?format=json&count=50&pretty=true');
 const testData = await response.json();
 
@@ -97,7 +97,7 @@ pm.test("User creation test", () => {
       count: 1000000,
       options: { tableName: 'performance_test_users', batchSize: 1000, includeHeaders: true }
     },
-    codeExample: `-- 大量テストデータ生成（100万件）
+    codeExample: `-- 大量テストデータ醸造（100万件）
 /api/export/personal?format=sql&count=1000000&tableName=load_test_users
 
 -- 生成されたSQL実行例
@@ -131,7 +131,7 @@ EXPLAIN SELECT * FROM load_test_users WHERE fullName LIKE '田中%';`,
   {
     id: 'security-testing',
     title: 'セキュリティテスト',
-    description: '脆弱性検証用の危険パターンデータ生成',
+    description: '脆弱性検証用の危険パターンデータ醸造',
     category: 'security',
     format: 'json',
     scenario: 'XSS・SQLインジェクション検証時',

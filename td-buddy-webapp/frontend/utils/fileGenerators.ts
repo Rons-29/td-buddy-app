@@ -1,5 +1,5 @@
 // 実際に使用可能なファイル生成ユーティリティ
-// TestData Buddy - ファイル容量テスト機能
+// QA Workbench - ファイル容量テスト機能
 // 厳密なサイズ計算（1MB = 1024KB = 1,048,576 bytes）
 
 import { AOZORA_BUNKO_SAMPLES } from '../data/aozora-bunko-samples';
@@ -93,7 +93,7 @@ export function generateAozoraBunkoContent(
 
   // ヘッダー情報
   content += '='.repeat(50) + '\n';
-  content += 'TestData Buddy - 青空文庫テストデータ\n';
+  content += 'QA Workbench - 青空文庫テストデータ\n';
   content += `生成日時: ${new Date().toLocaleString()}\n`;
   content += `目標サイズ: ${formatBytes(targetBytes)}\n`;
   content += '='.repeat(50) + '\n\n';
@@ -139,7 +139,7 @@ export function generateAozoraBunkoContent(
  */
 export function generateRealPDF(
   targetBytes: number,
-  title: string = 'TestData Buddy 生成文書'
+  title: string = 'QA Workbench 生成文書'
 ): Uint8Array {
   // 青空文庫コンテンツを取得
   const textContent = generateAozoraBunkoContent(
@@ -423,7 +423,7 @@ export function generateRealTextFile(
       case 'json':
         const jsonContent: any = {
           metadata: {
-            generator: 'TestData Buddy',
+            generator: 'QA Workbench',
             timestamp: new Date().toISOString(),
             targetSize: targetBytes,
             actualSize: 0,
@@ -454,7 +454,7 @@ export function generateRealTextFile(
               jsonString = JSON.stringify(jsonContent, null, 2);
             } catch (error) {
               console.warn('JSONパディング生成エラー:', error);
-              jsonContent.padding = 'パディングデータ生成エラー';
+              jsonContent.padding = 'パディングデータ醸造エラー';
               jsonString = JSON.stringify(jsonContent, null, 2);
             }
           }
@@ -466,7 +466,7 @@ export function generateRealTextFile(
         let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <testdata>
   <metadata>
-    <generator>TestData Buddy</generator>
+    <generator>QA Workbench</generator>
     <timestamp>${new Date().toISOString()}</timestamp>
     <targetSize>${targetBytes}</targetSize>
     <source>aozora-bunko</source>
@@ -508,9 +508,9 @@ ${baseContent.substring(0, Math.min(baseContent.length, 50000))}
         return xmlContent;
 
       case 'yaml':
-        let yamlContent = `# TestData Buddy - Generated Content
+        let yamlContent = `# QA Workbench - Generated Content
 metadata:
-  generator: "TestData Buddy"
+  generator: "QA Workbench"
   timestamp: "${new Date().toISOString()}"
   targetSize: ${targetBytes}
   source: "aozora-bunko"
@@ -571,7 +571,7 @@ ${baseContent
   } catch (error) {
     console.error('ファイル生成エラー:', error);
     throw new Error(
-      `ファイル生成中にエラーが発生しました: ${
+      `ファイル醸造中にエラーが発生しました: ${
         error instanceof Error ? error.message : 'Unknown error'
       }`
     );

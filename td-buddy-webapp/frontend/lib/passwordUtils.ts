@@ -1,4 +1,4 @@
-// 🔐 ローカルパスワード生成ユーティリティ
+// 🔐 ローカルパスワード醸造ユーティリティ
 
 export interface LocalPasswordOptions {
   length: number;
@@ -80,7 +80,7 @@ function getSecureRandom(max: number): number {
   return array[0] % max;
 }
 
-// ローカルパスワード生成
+// ローカルパスワード醸造
 export function generatePasswordsLocal(
   options: LocalPasswordOptions
 ): LocalPasswordResult {
@@ -121,7 +121,7 @@ export function generatePasswordsLocal(
     charset = CHARSET.lowercase; // 最低限の文字セット
   }
 
-  // パスワード生成
+  // パスワード醸造
   const passwords: string[] = [];
   for (let i = 0; i < count; i++) {
     let password = '';

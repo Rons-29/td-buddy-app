@@ -127,7 +127,7 @@ export class UltraPreciseGenerator {
       });
 
       console.log(
-        `✅ 超精密生成完了: ${this.formatBytes(
+        `✅ 超精密醸造完了: ${this.formatBytes(
           targetBytes
         )} (誤差0バイト) in ${totalTime.toFixed(2)}秒`
       );
@@ -379,7 +379,7 @@ export class UltraPreciseGenerator {
     ctx.fillStyle = 'white';
     ctx.font = `${Math.max(12, size / 20)}px Arial`;
     ctx.textAlign = 'center';
-    ctx.fillText('TestData Buddy', size / 2, size / 2);
+    ctx.fillText('QA Workbench', size / 2, size / 2);
     ctx.fillText(`${this.formatBytes(targetBytes)}`, size / 2, size / 2 + 30);
 
     // プログレス更新

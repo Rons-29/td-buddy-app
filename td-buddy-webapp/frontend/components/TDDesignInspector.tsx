@@ -195,7 +195,7 @@ TD Element Info:
           className="bg-td-primary-600 text-white p-3 rounded-full shadow-lg hover:bg-td-primary-700 transition-all transform hover:scale-105"
           title="TD Design Inspector"
         >
-          🤖
+          🍺
         </button>
 
         {/* インスペクターパネル */}
@@ -317,7 +317,7 @@ TD Element Info:
               </div>
             )}
 
-            {/* TDからのメッセージ */}
+            {/* ブリューからのメッセージ */}
             <div className="mt-4 p-3 bg-td-secondary-50 rounded-lg">
               <p className="text-sm text-td-secondary-700">
                 💡 <strong>TDのヒント:</strong> TD Design Systemの要素には{' '}

@@ -1,6 +1,6 @@
 /**
  * パフォーマンス最適化システム
- * TestData Buddy (TD) - Performance Optimization & Memory Management
+ * QA Workbench (TD) - Performance Optimization & Memory Management
  */
 
 export interface PerformanceMetrics {
@@ -82,7 +82,7 @@ export class PerformanceOptimizer {
     // ブラウザ環境でのみ実行
     if (typeof window === 'undefined') {
       console.log(
-        '🚀 TDからのメッセージ: サーバー環境のため、パフォーマンス監視をスキップします'
+        '🚀 ブリューからのメッセージ: サーバー環境のため、パフォーマンス監視をスキップします'
       );
       return;
     }
@@ -103,7 +103,7 @@ export class PerformanceOptimizer {
       observer.observe({ entryTypes: ['measure', 'navigation', 'paint'] });
     }
 
-    console.log('🚀 TDからのメッセージ: パフォーマンス監視を開始しました');
+    console.log('🚀 ブリューからのメッセージ: パフォーマンス監視を開始しました');
   }
 
   /**
@@ -167,7 +167,7 @@ export class PerformanceOptimizer {
         break;
       default:
         console.warn(
-          `🤖 TDからの警告: 自動最適化できません - ${suggestion.message}`
+          `🍺 ブリューからの警告: 自動最適化できません - ${suggestion.message}`
         );
     }
   }
@@ -186,7 +186,7 @@ export class PerformanceOptimizer {
       window.gc();
     }
 
-    console.log('🧹 TDからのメッセージ: メモリクリーンアップを実行しました');
+    console.log('🧹 ブリューからのメッセージ: メモリクリーンアップを実行しました');
   }
 
   /**
@@ -205,7 +205,7 @@ export class PerformanceOptimizer {
       });
 
       console.log(
-        `🧹 TDからのメッセージ: ${toDelete.length}個のキャッシュエントリを削除しました`
+        `🧹 ブリューからのメッセージ: ${toDelete.length}個のキャッシュエントリを削除しました`
       );
     }
   }
@@ -231,7 +231,7 @@ export class PerformanceOptimizer {
         type: 'memory',
         severity: 'medium',
         message: 'メモリ使用量が60%を超えています',
-        solution: 'データ生成の同時実行数を減らすことを推奨します',
+        solution: 'データ醸造の同時実行数を減らすことを推奨します',
         estimatedImprovement: 'メモリ使用量を10-15%削減',
       });
     }
@@ -293,7 +293,7 @@ export class PerformanceOptimizer {
   }
 
   /**
-   * データ生成の最適化
+   * データ醸造の最適化
    */
   optimizeDataGeneration(
     rowCount: number,
@@ -317,7 +317,7 @@ export class PerformanceOptimizer {
       chunkSize = Math.max(100, chunkSize / 2);
       maxConcurrent = Math.max(1, maxConcurrent - 1);
       recommendation =
-        'TDからの提案: メモリ不足のため、処理サイズを縮小しました';
+        'ブリューからの提案: メモリ不足のため、処理サイズを縮小しました';
     }
 
     // データサイズに基づく調整
@@ -325,7 +325,7 @@ export class PerformanceOptimizer {
       useWorker = true;
       chunkSize = Math.min(chunkSize, 500);
       recommendation =
-        'TDからの提案: 大量データのため、Web Workerでの処理を推奨します';
+        'ブリューからの提案: 大量データのため、Web Workerでの処理を推奨します';
     }
 
     // CPU負荷に基づく調整
@@ -498,7 +498,7 @@ export class PerformanceOptimizer {
    */
   updateConfig(newConfig: Partial<PerformanceConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    console.log('⚙️ TDからのメッセージ: パフォーマンス設定を更新しました');
+    console.log('⚙️ ブリューからのメッセージ: パフォーマンス設定を更新しました');
   }
 
   /**
@@ -542,7 +542,7 @@ export class PerformanceOptimizer {
       clearInterval(this.memoryWatcher);
       this.memoryWatcher = null;
     }
-    console.log('⏹️ TDからのメッセージ: パフォーマンス監視を停止しました');
+    console.log('⏹️ ブリューからのメッセージ: パフォーマンス監視を停止しました');
   }
 
   /**
@@ -565,16 +565,16 @@ export class TDPerformanceHelper {
    */
   static explainScore(score: number, grade: string): string {
     const explanations = {
-      A: '🌟 TDからのメッセージ: 素晴らしいパフォーマンスです！最適化が効いています',
-      B: '👍 TDからのメッセージ: 良好なパフォーマンスです。さらなる改善の余地があります',
-      C: '⚠️ TDからのメッセージ: パフォーマンスに改善の余地があります',
-      D: '🔧 TDからのメッセージ: パフォーマンス改善が必要です',
-      F: '🚨 TDからの警告: 深刻なパフォーマンス問題があります',
+      A: '🌟 ブリューからのメッセージ: 素晴らしいパフォーマンスです！最適化が効いています',
+      B: '👍 ブリューからのメッセージ: 良好なパフォーマンスです。さらなる改善の余地があります',
+      C: '⚠️ ブリューからのメッセージ: パフォーマンスに改善の余地があります',
+      D: '🔧 ブリューからのメッセージ: パフォーマンス改善が必要です',
+      F: '🚨 ブリューからの警告: 深刻なパフォーマンス問題があります',
     };
 
     return (
       explanations[grade as keyof typeof explanations] ||
-      'TDからのメッセージ: パフォーマンスを確認中です'
+      'ブリューからのメッセージ: パフォーマンスを確認中です'
     );
   }
 
@@ -607,24 +607,24 @@ export class TDPerformanceHelper {
     if (percentage < 50) {
       return {
         status: 'excellent',
-        message: '🟢 TDからのメッセージ: メモリ使用量は最適です',
+        message: '🟢 ブリューからのメッセージ: メモリ使用量は最適です',
       };
     } else if (percentage < 70) {
       return {
         status: 'good',
-        message: '🟡 TDからのメッセージ: メモリ使用量は正常範囲内です',
+        message: '🟡 ブリューからのメッセージ: メモリ使用量は正常範囲内です',
       };
     } else if (percentage < 85) {
       return {
         status: 'warning',
-        message: '🟠 TDからの注意: メモリ使用量が高めです',
+        message: '🟠 ブリューからの注意: メモリ使用量が高めです',
         recommendation:
-          'データ生成のチャンクサイズを小さくすることを推奨します',
+          'データ醸造のチャンクサイズを小さくすることを推奨します',
       };
     } else {
       return {
         status: 'critical',
-        message: '🔴 TDからの警告: メモリ使用量が危険レベルです',
+        message: '🔴 ブリューからの警告: メモリ使用量が危険レベルです',
         recommendation:
           '直ちにメモリクリーンアップを実行し、処理を一時停止してください',
       };

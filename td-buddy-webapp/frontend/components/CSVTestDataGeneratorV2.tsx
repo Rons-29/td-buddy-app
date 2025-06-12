@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/Card';
-import { EnhancedTDCharacter, TDMood } from './ui/EnhancedTDCharacter';
+import BrewCharacter';
 
 // 型定義
 interface CSVColumn {
@@ -590,9 +590,9 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [rowCount, setRowCount] = useState(100);
   const [error, setError] = useState<string | null>(null);
-  const [tdMood, setTdMood] = useState<TDMood>('happy');
-  const [tdMessage, setTdMessage] = useState(
-    'CSVテストデータ生成の準備ができました！'
+  const [brewMood, setTdMood] = useState<TDMood>('happy');
+  const [brewMessage, setTdMessage] = useState(
+    'CSVテストデータ醸造の準備ができました！'
   );
   const [isCopied, setIsCopied] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -741,7 +741,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       setShowPresets(false);
       setTdMood('success');
       setTdMessage(
-        `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
+        `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ醸造できます♪`
       );
     },
     [userPresets]
@@ -1069,7 +1069,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const handleSettingsChange = useCallback(
     (columnId: string, settings: any) => {
       updateColumn(columnId, { settings });
-      setTdMessage('🔧 詳細設定を更新しました！データ生成時に反映されます♪');
+      setTdMessage('🔧 詳細設定を更新しました！データ醸造時に反映されます♪');
     },
     [updateColumn]
   );
@@ -1082,7 +1082,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
     }));
   }, []);
 
-  // データ生成関数
+  // データ醸造関数
   const generateDataValue = useCallback(
     (dataType: DataType, rowIndex: number): any => {
       switch (dataType) {
@@ -1274,7 +1274,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
     []
   );
 
-  // データ生成
+  // データ醸造
   const generateData = useCallback(async () => {
     if (columns.length === 0) {
       setTdMessage('まずはカラムを追加してくださいね！');
@@ -1284,7 +1284,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
 
     setIsGenerating(true);
     setTdMood('working');
-    setTdMessage(`${rowCount}件のテストデータを生成中です...お待ちください！`);
+    setTdMessage(`${rowCount}件のテストデータを醸造中です...お待ちください！`);
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1303,16 +1303,16 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       setRows(generatedRows);
       setTdMood('success');
       setTdMessage(
-        `🎉 ${rowCount}件のテストデータを生成完了しました！データをご確認ください♪`
+        `🎉 ${rowCount}件のテストデータを醸造完了しました！データをご確認ください♪`
       );
 
-      // 生成ボタンの状態を「生成完了」に変更
+      // 生成ボタンの状態を「醸造完了」に変更
       setButtonActive('generate');
     } catch (error) {
       console.error('Data generation failed:', error);
       setTdMood('error');
       setTdMessage(
-        'データ生成中にエラーが発生しました。もう一度お試しください。'
+        'データ醸造中にエラーが発生しました。もう一度お試しください。'
       );
     } finally {
       setIsGenerating(false);
@@ -1322,7 +1322,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   // CSVエクスポート
   const exportToCSV = useCallback(() => {
     if (rows.length === 0) {
-      setTdMessage('まずはデータを生成してくださいね！');
+      setTdMessage('まずはデータを醸造してくださいね！');
       return;
     }
 
@@ -1389,7 +1389,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mb-2">
             <FileText className="h-8 w-8 text-blue-600" />
             <CardTitle className="text-2xl font-bold text-blue-800">
-              📋 CSV テストデータ生成
+              📋 CSV テストデータ醸造
             </CardTitle>
           </div>
           <CardDescription className="text-blue-700">
@@ -1401,7 +1401,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       {/* TDキャラクター */}
       <Card className="border-blue-200">
         <CardContent className="pt-6">
-          <EnhancedTDCharacter mood={tdMood} message={tdMessage} />
+          <EnhancedTDCharacter mood={brewMood} message={brewMessage} />
         </CardContent>
       </Card>
 
@@ -1769,10 +1769,10 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                 )}
               </div>
 
-              {/* TDからのメッセージ */}
+              {/* ブリューからのメッセージ */}
               <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-700 text-center">
-                  🤖 <strong>TDからのTip:</strong>{' '}
+                  🍺 <strong>ブリューからのTip:</strong>{' '}
                   プリセットを適用後も、カラムの追加・削除・並び替えが可能です。お気軽にカスタマイズしてくださいね♪
                 </p>
               </div>
@@ -1781,12 +1781,12 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
         </div>
       )}
 
-      {/* データ生成設定セクション */}
+      {/* データ醸造設定セクション */}
       <Card className="border-blue-200">
         <CardHeader>
           <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            データ生成設定
+            データ醸造設定
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -2469,7 +2469,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                     className="flex-1"
                     disabled={columns.length === 0}
                   >
-                    🚀 データ生成実行
+                    🚀 データ醸造実行
                   </ActionButton>
                   <ActionButton
                     type="clear"

@@ -25,7 +25,7 @@ export default function ExportPage() {
           </p>
         </div>
 
-        {/* TDからのメッセージ */}
+        {/* ブリューからのメッセージ */}
         <div className="bg-td-accent-50 border border-td-accent-200 rounded-lg p-6 mb-8">
           <div className="flex items-start space-x-4">
             <div className="w-12 h-12 bg-td-accent-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">

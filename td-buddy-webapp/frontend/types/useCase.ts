@@ -1,6 +1,6 @@
 /**
  * 活用例表示UI機能の型定義
- * TD Buddy - UseCase Showcase Types
+ * Brew Assistant - UseCase Showcase Types
  * 
  * @description UseCaseShowcaseコンポーネントで使用する型定義
  * @version 1.0.0

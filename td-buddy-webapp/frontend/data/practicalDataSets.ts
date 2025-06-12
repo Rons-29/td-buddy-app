@@ -5,7 +5,7 @@ export interface PracticalDataSet {
   description: string;
   items: string[];
   useCase: string;
-  tdMessage: string;
+  brewMessage: string;
 }
 
 // 🎮 ゲーム関連データセット
@@ -36,7 +36,7 @@ export const gameDataSets: PracticalDataSet[] = [
       'CA - カナダ'
     ],
     useCase: '多地域展開ゲームのリージョン設定テスト',
-    tdMessage: 'ゲームの多地域展開に必要なリージョンデータです！施策の同時リリースにお役立てください♪'
+    brewMessage: 'ゲームの多地域展開に必要なリージョンデータです！施策の同時リリースにお役立てください♪'
   },
   {
     id: 'game-events',
@@ -62,7 +62,7 @@ export const gameDataSets: PracticalDataSet[] = [
       'バランス調整'
     ],
     useCase: 'ゲーム内施策・イベントの管理・テスト',
-    tdMessage: 'ゲーム施策の同時リリースに最適なイベントリストです！どの施策を選択しますか？♪'
+    brewMessage: 'ゲーム施策の同時リリースに最適なイベントリストです！どの施策を選択しますか？♪'
   },
   {
     id: 'game-currencies',
@@ -86,7 +86,7 @@ export const gameDataSets: PracticalDataSet[] = [
       'VIPポイント'
     ],
     useCase: 'ゲーム内経済システムのテスト',
-    tdMessage: 'ゲーム内通貨の管理にお使いください！バランス調整のテストに最適です♪'
+    brewMessage: 'ゲーム内通貨の管理にお使いください！バランス調整のテストに最適です♪'
   }
 ];
 
@@ -115,7 +115,7 @@ export const ecommerceDataSets: PracticalDataSet[] = [
       'ジュエリー・アクセサリー'
     ],
     useCase: 'ECサイトの商品分類・検索機能テスト',
-    tdMessage: 'ECサイトのカテゴリ管理にお役立てください！どの商品カテゴリをテストしますか？♪'
+    brewMessage: 'ECサイトのカテゴリ管理にお役立てください！どの商品カテゴリをテストしますか？♪'
   },
   {
     id: 'shipping-methods',
@@ -140,7 +140,7 @@ export const ecommerceDataSets: PracticalDataSet[] = [
       'ネコポス'
     ],
     useCase: '配送システム・物流機能のテスト',
-    tdMessage: '配送オプションのテストにお使いください！物流システムの検証に最適です♪'
+    brewMessage: '配送オプションのテストにお使いください！物流システムの検証に最適です♪'
   }
 ];
 
@@ -172,7 +172,7 @@ export const businessDataSets: PracticalDataSet[] = [
       '購買部'
     ],
     useCase: '企業内システム・組織管理のテスト',
-    tdMessage: '企業システムの部署管理機能テストにお役立てください♪'
+    brewMessage: '企業システムの部署管理機能テストにお役立てください♪'
   },
   {
     id: 'meeting-types',
@@ -200,7 +200,7 @@ export const businessDataSets: PracticalDataSet[] = [
       '振り返り会議'
     ],
     useCase: '会議・スケジュール管理システムのテスト',
-    tdMessage: '会議管理システムのテストデータとしてお使いください！効率的な会議運営をサポートします♪'
+    brewMessage: '会議管理システムのテストデータとしてお使いください！効率的な会議運営をサポートします♪'
   }
 ];
 
@@ -232,7 +232,7 @@ export const designDataSets: PracticalDataSet[] = [
       'アラート'
     ],
     useCase: 'UI/UXデザインのコンポーネントテスト',
-    tdMessage: 'UIコンポーネントのテストにお役立てください！使いやすいデザイン作りをサポートします♪'
+    brewMessage: 'UIコンポーネントのテストにお役立てください！使いやすいデザイン作りをサポートします♪'
   }
 ];
 
@@ -264,7 +264,7 @@ export const regionDataSets: PracticalDataSet[] = [
       'スリランカ'
     ],
     useCase: 'アジア地域向けサービスの地域設定テスト',
-    tdMessage: 'アジア地域展開のテストにお使いください！多地域サービスの検証に最適です♪'
+    brewMessage: 'アジア地域展開のテストにお使いください！多地域サービスの検証に最適です♪'
   }
 ];
 
@@ -293,7 +293,7 @@ export const webDevDataSets: PracticalDataSet[] = [
       'ドメイン移行'
     ],
     useCase: 'Web系リリース管理・デプロイ時間の調整',
-    tdMessage: 'グローバルWebサービスのリリース時間調整にお役立てください！各地域の影響を最小化しましょう♪'
+    brewMessage: 'グローバルWebサービスのリリース時間調整にお役立てください！各地域の影響を最小化しましょう♪'
   },
   {
     id: 'maintenance-types',
@@ -318,7 +318,7 @@ export const webDevDataSets: PracticalDataSet[] = [
       '監視システム調整'
     ],
     useCase: 'Webサービスメンテナンス時間の最適化',
-    tdMessage: '各地域のピークタイムを避けた最適なメンテナンス時間を見つけましょう！サービス影響を最小化します♪'
+    brewMessage: '各地域のピークタイムを避けた最適なメンテナンス時間を見つけましょう！サービス影響を最小化します♪'
   },
   {
     id: 'campaign-types',
@@ -343,7 +343,7 @@ export const webDevDataSets: PracticalDataSet[] = [
       'オンライン説明会'
     ],
     useCase: 'グローバルキャンペーンの同時開催時間調整',
-    tdMessage: '世界同時キャンペーンの開始時間調整にお使いください！最大の効果を狙いましょう♪'
+    brewMessage: '世界同時キャンペーンの開始時間調整にお使いください！最大の効果を狙いましょう♪'
   },
   {
     id: 'support-categories',
@@ -368,7 +368,7 @@ export const webDevDataSets: PracticalDataSet[] = [
       'カスタマイズ相談'
     ],
     useCase: '24時間サポート体制の時間管理・引き継ぎ調整',
-    tdMessage: 'グローバルサポート体制の時間調整にお役立てください！24時間切れ目ないサポートを実現しましょう♪'
+    brewMessage: 'グローバルサポート体制の時間調整にお役立てください！24時間切れ目ないサポートを実現しましょう♪'
   }
 ];
 
@@ -397,7 +397,7 @@ export const marketingDataSets: PracticalDataSet[] = [
       'Reddit Ads'
     ],
     useCase: 'グローバル広告キャンペーンの配信時間調整',
-    tdMessage: '世界各地での広告配信タイミングの最適化にお使いください！ROI最大化を目指しましょう♪'
+    brewMessage: '世界各地での広告配信タイミングの最適化にお使いください！ROI最大化を目指しましょう♪'
   },
   {
     id: 'analytics-metrics',
@@ -422,7 +422,7 @@ export const marketingDataSets: PracticalDataSet[] = [
       'CPC（クリック単価）'
     ],
     useCase: 'グローバル分析レポートの時間軸調整',
-    tdMessage: '各地域の分析レポート集計時間を調整して、正確なデータ分析を実現しましょう♪'
+    brewMessage: '各地域の分析レポート集計時間を調整して、正確なデータ分析を実現しましょう♪'
   }
 ];
 

@@ -158,12 +158,12 @@ export function UuidUseCases({ className = '' }: UuidUseCasesProps) {
         </div>
       )}
 
-      {/* TDからのメッセージ */}
+      {/* ブリューからのメッセージ */}
       <div className="mt-8 bg-td-primary-50 border border-td-primary-200 rounded-xl p-6">
         <div className="flex items-start">
-          <div className="text-3xl mr-4">🤖</div>
+          <div className="text-3xl mr-4">🍺</div>
           <div>
-            <p className="text-sm text-td-primary-800 font-semibold mb-2">TDからのアドバイス</p>
+            <p className="text-sm text-td-primary-800 font-semibold mb-2">ブリューからのアドバイス</p>
             <p className="text-sm text-td-primary-700 leading-relaxed">
               UUIDは一意性が保証された便利な識別子です！用途に応じて適切なバージョンを選択し、
               セキュリティを向上させましょう。どの活用事例も実際のプロジェクトで活用できます♪

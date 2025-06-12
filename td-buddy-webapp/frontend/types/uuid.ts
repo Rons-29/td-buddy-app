@@ -4,7 +4,7 @@
 
 // UUID生成リクエスト
 export interface UuidGenerateRequest {
-  count: number; // 生成個数 (1-10000)
+  count: number; // 醸造個数 (1-10000)
   version: 'v1' | 'v4' | 'v6' | 'v7' | 'mixed'; // UUIDバージョン
   format: 'standard' | 'compact' | 'uppercase' | 'with-prefix' | 'sql-friendly'; // 出力フォーマット
   includeTimestamp?: boolean; // タイムスタンプ付きの場合 (v1, v6, v7)
@@ -81,7 +81,7 @@ export interface ApiResponse<T = any> {
     code: string;
     message: string;
     statusCode: number;
-    tdMessage: string;
+    brewMessage: string;
     timestamp: string;
     path: string;
     method: string;
@@ -89,7 +89,7 @@ export interface ApiResponse<T = any> {
     details?: any;
   };
   message?: string;
-  tdMessage?: string;
+  brewMessage?: string;
   timestamp: string;
   metadata?: {
     page?: number;

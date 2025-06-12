@@ -33,7 +33,7 @@ export interface TDState {
   lastActivity: Date;
 }
 
-// TDからのメッセージ定義
+// ブリューからのメッセージ定義
 export interface TDMessage {
   id: string;
   emotion: TDEmotion;
@@ -64,7 +64,7 @@ export const EMOTION_EMOJIS: Record<TDEmotion, string> = {
   error: '😅',
   sleepy: '😴',
   curious: '🤨',
-  friendly: '🤖'
+  friendly: '🍺'
 };
 
 // 感情と日本語ラベルのマッピング

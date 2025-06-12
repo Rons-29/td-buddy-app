@@ -141,7 +141,7 @@ export function TextGeneratorTab() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-td-accent-50 rounded-lg p-6 border border-td-accent-200">
             <h3 className="text-lg font-semibold text-td-accent-800 mb-4 flex items-center">
-              ⚙️ 生成設定
+              ⚙️ 醸造設定
             </h3>
             
             {/* プリセット長さ選択 */}
@@ -289,7 +289,7 @@ export function TextGeneratorTab() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  生成中...
+                  醸造中...
                 </span>
               ) : (
                 '🎯 テキスト生成'
@@ -304,7 +304,7 @@ export function TextGeneratorTab() {
           <div className="bg-white rounded-lg border border-td-primary-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-td-primary-800 flex items-center">
-                📄 生成結果
+                📄 醸造結果
               </h3>
               {generatedText && (
                 <div className="flex space-x-2">

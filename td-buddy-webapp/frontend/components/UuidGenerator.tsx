@@ -21,7 +21,7 @@ import {
   UuidGenerateRequest,
   UuidGenerateResponse,
 } from '../types/uuid';
-import TDCharacter from './TDCharacter';
+import BrewCharacter';
 
 export const UuidGenerator: React.FC = () => {
   // 基本設定状態
@@ -43,7 +43,7 @@ export const UuidGenerator: React.FC = () => {
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
 
   // TDキャラクター状態
-  const [tdState, setTdState] = useState<TDState>({
+  const [brewState, setBrewState] = useState<TDState>({
     emotion: 'happy',
     animation: 'float',
     message: APP_CONFIG.isOfflineMode
@@ -68,7 +68,7 @@ export const UuidGenerator: React.FC = () => {
     }));
 
     // TDキャラクターの反応
-    setTdState(prev => ({
+    setBrewState(prev => ({
       ...prev,
       emotion: 'happy',
       animation: 'bounce',
@@ -77,14 +77,14 @@ export const UuidGenerator: React.FC = () => {
     }));
 
     setTimeout(() => {
-      setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+      setBrewState(prev => ({ ...prev, showSpeechBubble: false }));
     }, 3000);
   };
 
   // UUID生成API呼び出し
   const generateUuids = async () => {
     if (criteria.count < 1 || criteria.count > 10000) {
-      setApiError('生成個数は1〜10000の範囲で指定してください');
+      setApiError('醸造個数は1〜10000の範囲で指定してください');
       return;
     }
 
@@ -94,7 +94,7 @@ export const UuidGenerator: React.FC = () => {
 
     try {
       // TDキャラクターの状態更新
-      setTdState(prev => ({
+      setBrewState(prev => ({
         ...prev,
         emotion: 'thinking',
         animation: 'bounce',
@@ -104,7 +104,7 @@ export const UuidGenerator: React.FC = () => {
         showSpeechBubble: true,
       }));
 
-      // オフラインモード時はローカル生成
+      // オフラインモード時はローカル醸造
       if (APP_CONFIG.isOfflineMode) {
         const localResult = generateUuidsLocal({
           count: criteria.count,
@@ -131,22 +131,22 @@ export const UuidGenerator: React.FC = () => {
         setResult(convertedResult);
 
         // 成功時のTDキャラクター反応
-        setTdState(prev => ({
+        setBrewState(prev => ({
           ...prev,
           emotion: 'excited',
           animation: 'bounce',
-          message: `🤖 ローカル生成完了！${criteria.count}個のUUID生成完了！品質も完璧です♪`,
+          message: `🍺 ローカル醸造完了！${criteria.count}個のUUID醸造完了！品質も完璧です♪`,
           showSpeechBubble: true,
         }));
 
         setTimeout(() => {
-          setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+          setBrewState(prev => ({ ...prev, showSpeechBubble: false }));
         }, 4000);
 
         return;
       }
 
-      // API生成（レガシー - バックエンド設定完了後に有効）
+      // API醸造（レガシー - バックエンド設定完了後に有効）
       const apiUrl = APP_CONFIG.getApiUrl('/api/uuid/generate');
       if (!apiUrl) {
         throw new Error('API接続が利用できません');
@@ -170,25 +170,25 @@ export const UuidGenerator: React.FC = () => {
       setResult(data.data!);
 
       // 成功時のTDキャラクター反応
-      setTdState(prev => ({
+      setBrewState(prev => ({
         ...prev,
         emotion: 'excited',
         animation: 'bounce',
         message:
-          data.tdMessage ||
-          `${criteria.count}個のUUID生成完了！品質も完璧です♪`,
+          data.brewMessage ||
+          `${criteria.count}個のUUID醸造完了！品質も完璧です♪`,
         showSpeechBubble: true,
       }));
 
       setTimeout(() => {
-        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+        setBrewState(prev => ({ ...prev, showSpeechBubble: false }));
       }, 4000);
     } catch (error: any) {
       console.error('❌ UUID生成エラー:', error);
       setApiError(error.message);
 
       // エラー時のTDキャラクター反応
-      setTdState(prev => ({
+      setBrewState(prev => ({
         ...prev,
         emotion: 'error',
         animation: 'wiggle',
@@ -208,7 +208,7 @@ export const UuidGenerator: React.FC = () => {
       setCopyMessage(`UUID ${index + 1} をコピーしました！`);
 
       // TDキャラクターの反応
-      setTdState(prev => ({
+      setBrewState(prev => ({
         ...prev,
         emotion: 'happy',
         animation: 'bounce',
@@ -219,7 +219,7 @@ export const UuidGenerator: React.FC = () => {
       setTimeout(() => {
         setCopiedIndex(null);
         setCopyMessage(null);
-        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+        setBrewState(prev => ({ ...prev, showSpeechBubble: false }));
       }, 2000);
     } catch (error) {
       console.error('❌ コピーエラー:', error);
@@ -238,7 +238,7 @@ export const UuidGenerator: React.FC = () => {
       setCopyMessage(`全${result.uuids.length}個のUUIDをコピーしました！`);
 
       // TDキャラクターの反応
-      setTdState(prev => ({
+      setBrewState(prev => ({
         ...prev,
         emotion: 'excited',
         animation: 'pulse',
@@ -248,7 +248,7 @@ export const UuidGenerator: React.FC = () => {
 
       setTimeout(() => {
         setCopyMessage(null);
-        setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+        setBrewState(prev => ({ ...prev, showSpeechBubble: false }));
       }, 3000);
     } catch (error) {
       console.error('❌ 一括コピーエラー:', error);
@@ -311,22 +311,22 @@ export const UuidGenerator: React.FC = () => {
         <div className="flex items-center justify-center space-x-3">
           <Fingerprint className="w-8 h-8 text-purple-600" />
           <h1 className="text-3xl font-bold text-gray-900">
-            UUID/GUID生成ツール
+            UUID/GUID醸造ツール
           </h1>
           <Hash className="w-8 h-8 text-blue-600" />
         </div>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          各種バージョン・フォーマット対応のUUID生成ツール。データベースID、セッション管理、テストデータ作成に最適です。
+          各種バージョン・フォーマット対応のUUID醸造ツール。データベースID、セッション管理、テストデータ作成に最適です。
         </p>
       </div>
 
       {/* TDキャラクター */}
       <div className="flex justify-center">
-        <TDCharacter
-          emotion={tdState.emotion}
-          animation={tdState.animation}
-          message={tdState.message}
-          showSpeechBubble={tdState.showSpeechBubble}
+        <BrewCharacter
+          emotion={brewState.emotion}
+          animation={brewState.animation}
+          message={brewState.message}
+          showSpeechBubble={brewState.showSpeechBubble}
         />
       </div>
 
@@ -334,7 +334,7 @@ export const UuidGenerator: React.FC = () => {
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
         <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
           <Settings2 className="w-5 h-5 mr-2 text-purple-600" />
-          UUID生成設定
+          UUID醸造設定
         </h3>
 
         {/* プリセット選択 */}
@@ -373,7 +373,7 @@ export const UuidGenerator: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                生成個数
+                醸造個数
               </label>
               <input
                 type="number"
@@ -506,7 +506,7 @@ export const UuidGenerator: React.FC = () => {
             {isGenerating ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>UUID生成中...</span>
+                <span>UUID醸造中...</span>
               </>
             ) : (
               <>
@@ -541,13 +541,13 @@ export const UuidGenerator: React.FC = () => {
         </div>
       )}
 
-      {/* 生成結果 */}
+      {/* 醸造結果 */}
       {result && (
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold text-gray-800 flex items-center">
               <Database className="w-5 h-5 mr-2 text-purple-600" />
-              生成結果 ({result.uuids.length}個)
+              醸造結果 ({result.uuids.length}個)
             </h3>
             <div className="flex items-center space-x-2">
               <button
@@ -574,7 +574,7 @@ export const UuidGenerator: React.FC = () => {
           {/* 統計情報 */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-blue-50 p-3 rounded-lg">
-              <div className="text-sm text-blue-600 font-medium">生成個数</div>
+              <div className="text-sm text-blue-600 font-medium">醸造個数</div>
               <div className="text-lg font-bold text-blue-800">
                 {result.statistics.totalGenerated}
               </div>

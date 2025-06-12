@@ -70,7 +70,7 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
 
   const moodMessages: Record<TDMood, string[]> = {
     happy: [
-      'データ生成の準備ができました！',
+      'データ醸造の準備ができました！',
       '今日も一緒に頑張りましょう♪',
       'TDがサポートします！'
     ],
@@ -80,7 +80,7 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
       '最高のデータを作りましょう！'
     ],
     working: [
-      'データ生成中です...',
+      'データ醸造中です...',
       'もう少しお待ちください',
       '品質の高いデータを作成中'
     ],

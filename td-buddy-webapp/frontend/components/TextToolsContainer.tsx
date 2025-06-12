@@ -110,7 +110,7 @@ export function TextToolsContainer() {
             </div>
             <div>
               <p className="text-sm text-td-gray-600">
-                TDからのメッセージ
+                ブリューからのメッセージ
               </p>
               <p className="text-td-gray-800 font-medium">
                 文字・テキストの処理はTDにお任せください！📝✨

@@ -109,7 +109,7 @@ export const DEFAULT_UUID_PRESETS: Record<string, UuidPreset> = {
 
   'bulk-generation': {
     id: 'bulk-generation',
-    name: '大量生成',
+    name: '大量醸造',
     description: '一度に大量のUUIDを生成。テストデータ作成に最適',
     icon: '📦',
     criteria: {

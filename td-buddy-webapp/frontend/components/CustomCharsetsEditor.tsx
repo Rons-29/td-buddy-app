@@ -279,7 +279,7 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
     setValidationErrors(errors);
   }, [charsets]);
 
-  // プレビューパスワード生成
+  // プレビューパスワード醸造
   useEffect(() => {
     if (charsets.length === 0) {
       setPreviewPassword('');
@@ -391,7 +391,7 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-medium text-gray-800">カスタム文字種エディター</h3>
-            <p className="text-sm text-gray-600">独自の文字種を定義してパスワード生成をカスタマイズ</p>
+            <p className="text-sm text-gray-600">独自の文字種を定義してパスワード醸造をカスタマイズ</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -499,7 +499,7 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
                   onClick={() => {
                     // プレビューを再生成
                     const timestamp = Date.now();
-                    setPreviewPassword('生成中...');
+                    setPreviewPassword('醸造中...');
                     setTimeout(() => {
                       // useEffectが動作してプレビューが更新される
                     }, 100);
@@ -529,7 +529,7 @@ export const CustomCharsetsEditor: React.FC<CustomCharsetsEditorProps> = ({
                 <li>• 各文字種から最低限の文字数が必ずパスワードに含まれます</li>
                 <li>• 文字種名は分かりやすい名前を付けてください</li>
                 <li>• 重複した文字は自動的に除去されます</li>
-                <li>• 無効にした文字種はパスワード生成に使用されません</li>
+                <li>• 無効にした文字種はパスワード醸造に使用されません</li>
                 <li>• <span className="bg-yellow-100 px-1 rounded">🆕 ドラッグ&ドロップで並び順を変更できます</span></li>
                 <li>• <span className="bg-yellow-100 px-1 rounded">🆕 ハンドル（⋮⋮）をドラッグして順序を入れ替え</span></li>
                 <li>• プリセットから簡単に文字種を追加できます</li>

@@ -1,4 +1,4 @@
-// パスワード生成設定の型
+// パスワード醸造設定の型
 export interface PasswordCriteria {
   length: number;
   count: number;
@@ -42,7 +42,7 @@ export interface PasswordPreset {
   category: 'security' | 'custom' | 'web' | 'enterprise' | 'other';
 }
 
-// パスワード生成結果の型
+// パスワード醸造結果の型
 export interface PasswordResult {
   passwords: string[];
   strength: 'weak' | 'medium' | 'strong' | 'very-strong';
@@ -55,7 +55,7 @@ export interface PasswordResult {
 export interface APIResponse {
   success: boolean;
   data: PasswordResult;
-  tdMessage: string;
+  brewMessage: string;
   timestamp: string;
   requestId: string;
 }

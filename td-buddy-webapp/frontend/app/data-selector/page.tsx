@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 import DataSelector, { SelectableDataItem } from '../../components/DataSelector';
 import { Button } from '../../components/ui/Button';
 
-// サンプルデータ生成
+// サンプルデータ醸造
 const generateSampleData = (): SelectableDataItem[] => {
   const data: SelectableDataItem[] = [];
 
@@ -115,7 +115,7 @@ const generateSampleData = (): SelectableDataItem[] => {
 export default function DataSelectorPage() {
   const [sampleData, setSampleData] = useState<SelectableDataItem[]>(generateSampleData);
   const [selectedItems, setSelectedItems] = useState<SelectableDataItem[]>([]);
-  const [tdMessage, setTdMessage] = useState('データ選択デモページへようこそ！様々なテストデータから自由に選択できます♪');
+  const [brewMessage, setTdMessage] = useState('データ選択デモページへようこそ！様々なテストデータから自由に選択できます♪');
 
   // 選択変更ハンドラ
   const handleSelectionChange = useCallback((items: SelectableDataItem[]) => {
@@ -226,8 +226,8 @@ export default function DataSelectorPage() {
         {/* TDキャラクターメッセージ */}
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center space-x-3">
-            <div className="text-2xl">🤖</div>
-            <p className="text-blue-800 font-medium">{tdMessage}</p>
+            <div className="text-2xl">🍺</div>
+            <p className="text-blue-800 font-medium">{brewMessage}</p>
           </div>
         </div>
 
@@ -268,7 +268,7 @@ export default function DataSelectorPage() {
           enableSearch={true}
           enableFiltering={true}
           maxDisplayItems={50}
-          tdMessage={tdMessage}
+          brewMessage={brewMessage}
         />
 
         {/* 選択済みデータの詳細 */}

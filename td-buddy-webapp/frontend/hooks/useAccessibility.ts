@@ -86,13 +86,13 @@ export const useAccessibility = () => {
   }, []);
 
   /**
-   * データ生成の進捗状況を通知
+   * データ醸造の進捗状況を通知
    * @param progress 進捗率 (0-100)
    * @param status 現在のステータス
    */
   const announceProgress = useCallback(
     (progress: number, status: string) => {
-      const progressMessage = `データ生成中：${Math.round(
+      const progressMessage = `データ醸造中：${Math.round(
         progress
       )}%完了。${status}`;
       announceToScreenReader(progressMessage, 'polite');
@@ -126,12 +126,12 @@ export const useAccessibility = () => {
 
   /**
    * TDキャラクターからのメッセージを通知
-   * @param message TDからのメッセージ
+   * @param message ブリューからのメッセージ
    */
   const announceTDMessage = useCallback(
     (message: string) => {
-      const tdMessage = `TDからのメッセージ：${message}`;
-      announceToScreenReader(tdMessage, 'polite');
+      const brewMessage = `ブリューからのメッセージ：${message}`;
+      announceToScreenReader(brewMessage, 'polite');
     },
     [announceToScreenReader]
   );

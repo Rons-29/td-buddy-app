@@ -53,7 +53,7 @@ export default function NumberBooleanGuidePage() {
                 href="/number-boolean"
                 className="text-green-600 hover:text-green-700 px-3 py-2 rounded-md text-sm font-medium"
               >
-                生成ツールに戻る
+                醸造ツールに戻る
               </a>
               <a
                 href="/"
@@ -70,15 +70,15 @@ export default function NumberBooleanGuidePage() {
         {/* イントロダクション */}
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-8 mb-8">
           <div className="flex items-start gap-4">
-            <div className="text-6xl">🤖</div>
+            <div className="text-6xl">🍺</div>
             <div>
               <h2 className="text-2xl font-bold text-green-900 mb-3">
-                TDくんの数値・真偽値生成ガイド
+                ブリューの数値・真偽値生成ガイド
               </h2>
               <p className="text-green-800 mb-4">
                 こんにちは！TDです♪
                 数値・真偽値生成機能の使い方を詳しく説明します。
-                実際のユースケースとベストプラクティスを学んで、効率的なテストデータ生成をマスターしましょう！
+                実際のユースケースとベストプラクティスを学んで、効率的なテストデータ醸造をマスターしましょう！
               </p>
               <div className="bg-white border border-green-300 rounded-lg p-4">
                 <h3 className="font-semibold text-green-900 mb-2">
@@ -290,7 +290,7 @@ export default function NumberBooleanGuidePage() {
         {/* ベストプラクティス */}
         <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-8 mt-8">
           <h2 className="text-xl font-semibold text-yellow-900 mb-4 flex items-center gap-2">
-            ⭐ TDくんからのベストプラクティス
+            ⭐ ブリューからのベストプラクティス
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -312,7 +312,7 @@ export default function NumberBooleanGuidePage() {
                 <li>• 小数点精度の設定ミス</li>
                 <li>• 範囲設定での論理エラー</li>
                 <li>• 型変換時の精度落ち</li>
-                <li>• パフォーマンスを考慮しない大量生成</li>
+                <li>• パフォーマンスを考慮しない大量醸造</li>
               </ul>
             </div>
           </div>
@@ -321,9 +321,9 @@ export default function NumberBooleanGuidePage() {
         {/* フッター */}
         <div className="text-center mt-8 py-8 border-t border-gray-200">
           <div className="flex items-center justify-center gap-2 text-gray-600">
-            <span className="text-2xl">🤖</span>
+            <span className="text-2xl">🍺</span>
             <span>
-              TDくんと一緒に、効率的なテストデータ生成をマスターしましょう！
+              ブリューと一緒に、効率的なテストデータ醸造をマスターしましょう！
             </span>
           </div>
           <div className="mt-4">
@@ -331,7 +331,7 @@ export default function NumberBooleanGuidePage() {
               href="/number-boolean"
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
             >
-              数値・真偽値生成ツールを使う
+              数値・真偽値醸造ツールを使う
             </a>
           </div>
         </div>

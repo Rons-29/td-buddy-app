@@ -221,11 +221,11 @@ export function NumberBooleanGenerator({
         </div>
       </div>
 
-      {/* 生成設定 */}
+      {/* 醸造設定 */}
       <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            ⚙️ 生成設定
+            ⚙️ 醸造設定
           </h2>
           <button
             onClick={() => setState(prev => ({ ...prev, showAdvancedOptions: !prev.showAdvancedOptions }))}
@@ -428,7 +428,7 @@ export function NumberBooleanGenerator({
             {state.isGenerating ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                生成中...
+                醸造中...
               </>
             ) : (
               <>
@@ -439,12 +439,12 @@ export function NumberBooleanGenerator({
         </div>
       </div>
 
-      {/* 生成結果 */}
+      {/* 醸造結果 */}
       {state.generatedData.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              📊 生成結果 ({state.generatedData.length}件)
+              📊 醸造結果 ({state.generatedData.length}件)
             </h2>
             <div className="flex gap-2">
               <button
@@ -457,10 +457,10 @@ export function NumberBooleanGenerator({
           </div>
 
           {/* TDメッセージ */}
-          {state.generatedData[0]?.tdMessage && (
+          {state.generatedData[0]?.brewMessage && (
             <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
-              <p className="font-medium">🤖 TDからのメッセージ</p>
-              <p className="text-sm">{state.generatedData[0].tdMessage}</p>
+              <p className="font-medium">🍺 ブリューからのメッセージ</p>
+              <p className="text-sm">{state.generatedData[0].brewMessage}</p>
             </div>
           )}
 

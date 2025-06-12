@@ -1,7 +1,7 @@
 {
   "name": "td-buddy-frontend",
   "version": "1.0.0",
-  "description": "TestData Buddy Frontend - Next.js + TailwindCSS",
+  "description": "QA Workbench Frontend - Next.js + TailwindCSS",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",

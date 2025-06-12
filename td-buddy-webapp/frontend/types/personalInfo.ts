@@ -1,4 +1,4 @@
-// 個人情報生成関連の型定義
+// 個人情報醸造関連の型定義
 
 export interface PersonalInfoGenerateRequest {
   count: number;

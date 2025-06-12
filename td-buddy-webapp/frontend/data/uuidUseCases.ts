@@ -280,7 +280,7 @@ function logWithCorrelation(correlationId, message) {
     recommendedVersion: 'v4',
     codeExample: {
       language: 'javascript',
-      code: `// テストデータ生成ヘルパー
+      code: `// テストデータ醸造ヘルパー
 class TestDataHelper {
   constructor() {
     this.testRunId = uuidv4();

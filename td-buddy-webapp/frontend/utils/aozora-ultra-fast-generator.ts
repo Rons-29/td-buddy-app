@@ -1,5 +1,5 @@
 // 青空文庫ベース超高速ファイル生成器
-// 名作文学を活用した実用的なファイルを超高速生成
+// 名作文学を活用した実用的なファイルを超高速醸造
 
 import { AOZORA_BUNKO_SAMPLES } from '../data/aozora-bunko-samples';
 
@@ -55,7 +55,7 @@ export class AozoraUltraFastGenerator {
       );
       const patternSize = new Blob([basePattern]).size;
 
-      // 超高速生成ループ
+      // 超高速醸造ループ
       while (processedBytes < targetBytes) {
         if (abortSignal?.aborted) {
           throw new Error('生成がキャンセルされました');
@@ -295,7 +295,7 @@ export class AozoraUltraFastGenerator {
 }
 
 /**
- * 青空文庫ベース超高速生成のエントリーポイント
+ * 青空文庫ベース超高速醸造のエントリーポイント
  */
 export async function generateAozoraUltraFast(
   targetBytes: number,

@@ -23,7 +23,7 @@ export class PreciseTurboGenerator {
   private static readonly PROGRESS_UPDATE_INTERVAL = 500 * 1024 * 1024; // 500MBごとに更新（最小限）
 
   /**
-   * 精密超高速生成
+   * 精密超高速醸造
    */
   async generate(
     targetBytes: number,
@@ -57,7 +57,7 @@ export class PreciseTurboGenerator {
 
       const chunks: Uint8Array[] = [];
 
-      // 超高速生成ループ
+      // 超高速醸造ループ
       while (processedBytes < targetBytes) {
         if (abortSignal?.aborted) {
           throw new Error('生成がキャンセルされました');
@@ -136,7 +136,7 @@ export class PreciseTurboGenerator {
       });
 
       console.log(
-        `🎯 精密生成完了: 目標=${this.formatBytes(
+        `🎯 精密醸造完了: 目標=${this.formatBytes(
           targetBytes
         )}, 実際=${this.formatBytes(actualSize)}, 時間=${totalTime.toFixed(
           2
@@ -540,7 +540,7 @@ export class PreciseTurboGenerator {
 }
 
 /**
- * 精密超高速生成エントリーポイント
+ * 精密超高速醸造エントリーポイント
  */
 export async function generatePreciseTurbo(
   targetBytes: number,

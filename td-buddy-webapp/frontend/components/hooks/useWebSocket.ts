@@ -167,7 +167,7 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
       setProgressData({
         progress: 40,
         status: 'AI解析完了',
-        currentStep: 'データ生成準備',
+        currentStep: 'データ醸造準備',
         totalSteps: 3,
         isActive: true,
         timestamp: data.timestamp
@@ -187,13 +187,13 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
       });
     });
 
-    // データ生成関連イベント
+    // データ醸造関連イベント
     socket.on('data_generation_start', (data) => {
-      console.log('📊 データ生成開始:', data);
+      console.log('📊 データ醸造開始:', data);
       setProgressData({
         progress: 50,
-        status: 'データ生成中...',
-        currentStep: 'データ生成',
+        status: 'データ醸造中...',
+        currentStep: 'データ醸造',
         totalSteps: 3,
         isActive: true,
         timestamp: data.timestamp
@@ -201,12 +201,12 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
     });
 
     socket.on('data_generation_progress', (data) => {
-      console.log('📈 データ生成進行:', data);
+      console.log('📈 データ醸造進行:', data);
       const progress = 50 + (data.progress * 0.4); // 50-90%の範囲
       setProgressData({
         progress: Math.round(progress),
         status: data.message,
-        currentStep: 'データ生成',
+        currentStep: 'データ醸造',
         totalSteps: 3,
         isActive: true,
         timestamp: data.timestamp
@@ -214,10 +214,10 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
     });
 
     socket.on('data_generation_complete', (data) => {
-      console.log('🎉 データ生成完了:', data);
+      console.log('🎉 データ醸造完了:', data);
       setProgressData({
         progress: 100,
-        status: 'データ生成完了',
+        status: 'データ醸造完了',
         currentStep: '完了',
         totalSteps: 3,
         isActive: false,
@@ -226,11 +226,11 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
     });
 
     socket.on('data_generation_error', (data) => {
-      console.error('❌ データ生成エラー:', data);
+      console.error('❌ データ醸造エラー:', data);
       setProgressData({
         progress: 50,
         status: 'エラー発生',
-        currentStep: 'データ生成',
+        currentStep: 'データ醸造',
         totalSteps: 3,
         isActive: false,
         error: data.error,
@@ -391,7 +391,7 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
       setProgressData({
         progress: 40,
         status: 'AI解析完了',
-        currentStep: 'データ生成準備',
+        currentStep: 'データ醸造準備',
         totalSteps: 3,
         isActive: true,
         timestamp: data.timestamp
@@ -411,13 +411,13 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
       });
     });
 
-    // データ生成関連イベント
+    // データ醸造関連イベント
     socket.on('data_generation_start', (data) => {
-      console.log('📊 データ生成開始:', data);
+      console.log('📊 データ醸造開始:', data);
       setProgressData({
         progress: 50,
-        status: 'データ生成中...',
-        currentStep: 'データ生成',
+        status: 'データ醸造中...',
+        currentStep: 'データ醸造',
         totalSteps: 3,
         isActive: true,
         timestamp: data.timestamp
@@ -425,12 +425,12 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
     });
 
     socket.on('data_generation_progress', (data) => {
-      console.log('📈 データ生成進行:', data);
+      console.log('📈 データ醸造進行:', data);
       const progress = 50 + (data.progress * 0.4); // 50-90%の範囲
       setProgressData({
         progress: Math.round(progress),
         status: data.message,
-        currentStep: 'データ生成',
+        currentStep: 'データ醸造',
         totalSteps: 3,
         isActive: true,
         timestamp: data.timestamp
@@ -438,10 +438,10 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
     });
 
     socket.on('data_generation_complete', (data) => {
-      console.log('🎉 データ生成完了:', data);
+      console.log('🎉 データ醸造完了:', data);
       setProgressData({
         progress: 100,
-        status: 'データ生成完了',
+        status: 'データ醸造完了',
         currentStep: '完了',
         totalSteps: 3,
         isActive: false,
@@ -450,11 +450,11 @@ export function useWebSocket(url?: string): UseWebSocketReturn {
     });
 
     socket.on('data_generation_error', (data) => {
-      console.error('❌ データ生成エラー:', data);
+      console.error('❌ データ醸造エラー:', data);
       setProgressData({
         progress: 50,
         status: 'エラー発生',
-        currentStep: 'データ生成',
+        currentStep: 'データ醸造',
         totalSteps: 3,
         isActive: false,
         error: data.error,

@@ -1,6 +1,6 @@
 /**
- * 改良版CSV詳細データ生成コンポーネント
- * TestData Buddy (TD) - Enhanced CSV Generator with Advanced Features
+ * 改良版CSV詳細データ醸造コンポーネント
+ * QA Workbench (TD) - Enhanced CSV Generator with Advanced Features
  */
 
 'use client';
@@ -18,8 +18,8 @@ import {
   CsvTemplate,
 } from '../../utils/csvTemplateManager';
 import { PerformanceOptimizer } from '../../utils/performanceOptimizer';
-import type { TDEmotion } from '../TDCharacter';
-import TDCharacter from '../TDCharacter';
+import BrewCharacter';
+import BrewCharacter';
 
 interface EnhancedCSVGeneratorProps {
   className?: string;
@@ -41,11 +41,11 @@ export function EnhancedCSVGenerator({
   // 翻訳関数を簡素化（SSR対応）
   const t = (key: string) => {
     const translations: Record<string, string> = {
-      'csv.title': 'CSV詳細データ生成',
-      'csv.subtitle': 'テストデータ生成ツール',
+      'csv.title': 'CSV詳細データ醸造',
+      'csv.subtitle': 'テストデータ醸造ツール',
       'csv.addColumn': '列を追加',
       'csv.columnName': '列名',
-      'csv.generate': 'データ生成',
+      'csv.generate': 'データ醸造',
       'csv.downloadCsv': 'CSVダウンロード',
       'csv.saveTemplate': 'テンプレート保存',
       'csv.preview': 'プレビュー',
@@ -68,7 +68,7 @@ export function EnhancedCSVGenerator({
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   };
-  const tdMessage = (key: string) => `TDメッセージ: ${key}`;
+  const brewMessage = (key: string) => `TDメッセージ: ${key}`;
 
   // 基本状態管理
   const [config, setConfig] = useState<CsvConfig>({
@@ -202,7 +202,7 @@ export function EnhancedCSVGenerator({
     []
   );
 
-  // プレビューデータ生成
+  // プレビューデータ醸造
   const generatePreview = useCallback(() => {
     if (config.columns.length === 0) {
       setPreviewData([]);
@@ -223,13 +223,13 @@ export function EnhancedCSVGenerator({
     setPreviewData(rows);
   }, [config]);
 
-  // データ生成
+  // データ醸造
   const generateCSV = useCallback(async () => {
     if (config.columns.length === 0) return;
 
     setUIState(prev => ({ ...prev, isGenerating: true }));
     setTdEmotion('working');
-    setTdCurrentMessage('データ生成中です！少々お待ちください♪');
+    setTdCurrentMessage('データ醸造中です！少々お待ちください♪');
 
     try {
       // パフォーマンス最適化の提案を取得
@@ -242,7 +242,7 @@ export function EnhancedCSVGenerator({
         console.log(optimization.recommendation);
       }
 
-      // データ生成
+      // データ醸造
       const headers = config.columns.map(col => col.name);
       const rows: string[][] = [headers];
 
@@ -257,11 +257,11 @@ export function EnhancedCSVGenerator({
       onGenerate?.(rows);
 
       setTdEmotion('success');
-      setTdCurrentMessage('データ生成が完了しました！品質チェックもOKです✨');
+      setTdCurrentMessage('データ醸造が完了しました！品質チェックもOKです✨');
 
-      console.log(tdMessage('dataGenerationComplete'));
+      console.log(brewMessage('dataGenerationComplete'));
     } catch (error) {
-      console.error('データ生成エラー:', error);
+      console.error('データ醸造エラー:', error);
       setTdEmotion('error');
       setTdCurrentMessage(
         '申し訳ありません！エラーが発生しました。一緒に解決しましょう'
@@ -275,7 +275,7 @@ export function EnhancedCSVGenerator({
         setTdCurrentMessage('次はどんなデータを作りましょうか？');
       }, 3000);
     }
-  }, [config, onGenerate, performanceOptimizer, tdMessage]);
+  }, [config, onGenerate, performanceOptimizer, brewMessage]);
 
   // CSV ダウンロード
   const downloadCSV = useCallback(() => {
@@ -324,9 +324,9 @@ export function EnhancedCSVGenerator({
       CSVTemplateManager.incrementUsage(template.id);
       setUIState(prev => ({ ...prev, showTemplateModal: false }));
 
-      console.log(tdMessage('templateLoaded'));
+      console.log(brewMessage('templateLoaded'));
     },
-    [tdMessage]
+    [brewMessage]
   );
 
   // テンプレート保存
@@ -346,11 +346,11 @@ export function EnhancedCSVGenerator({
 
     if (result.success) {
       loadTemplates();
-      console.log(tdMessage('templateSaved'));
+      console.log(brewMessage('templateSaved'));
     } else {
       alert(result.message);
     }
-  }, [config, loadTemplates, tdMessage]);
+  }, [config, loadTemplates, brewMessage]);
 
   // バッチジョブ追加
   const addToBatch = useCallback(() => {
@@ -393,7 +393,7 @@ export function EnhancedCSVGenerator({
 
           {/* TDキャラクター */}
           <div className="ml-4">
-            <TDCharacter
+            <BrewCharacter
               emotion={tdEmotion}
               size="medium"
               animation="heartbeat"
@@ -421,7 +421,7 @@ export function EnhancedCSVGenerator({
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex space-x-8">
           {[
-            { id: 'generator', label: 'データ生成' },
+            { id: 'generator', label: 'データ醸造' },
             { id: 'templates', label: 'テンプレート' },
             { id: 'batch', label: 'バッチ処理' },
             { id: 'performance', label: 'パフォーマンス' },
@@ -506,7 +506,7 @@ export function EnhancedCSVGenerator({
             </div>
           </div>
 
-          {/* 生成設定 */}
+          {/* 醸造設定 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -535,7 +535,7 @@ export function EnhancedCSVGenerator({
               disabled={uiState.isGenerating || config.columns.length === 0}
               className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-50"
             >
-              {uiState.isGenerating ? '生成中...' : t('csv.generate')}
+              {uiState.isGenerating ? '醸造中...' : t('csv.generate')}
             </button>
 
             <button

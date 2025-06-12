@@ -10,7 +10,7 @@ export default function PracticalDataPage() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [tdMessage, setTdMessage] = useState('実用的なデータリストへようこそ！ビジネスで実際に使用されるデータから選択できます♪');
+  const [brewMessage, setTdMessage] = useState('実用的なデータリストへようこそ！ビジネスで実際に使用されるデータから選択できます♪');
 
   // カテゴリ一覧
   const categories = ['all', 'game', 'ecommerce', 'business', 'design', 'region', 'web-dev', 'marketing'];
@@ -45,7 +45,7 @@ export default function PracticalDataPage() {
   const handleDataSetSelect = (dataSet: PracticalDataSet) => {
     setSelectedDataSet(dataSet);
     setSelectedItems([]);
-    setTdMessage(dataSet.tdMessage);
+    setTdMessage(dataSet.brewMessage);
   };
 
   // アイテム選択切り替え
@@ -134,8 +134,8 @@ export default function PracticalDataPage() {
         {/* TDメッセージ */}
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center space-x-3">
-            <div className="text-2xl">🤖</div>
-            <p className="text-blue-800 font-medium">{tdMessage}</p>
+            <div className="text-2xl">🍺</div>
+            <p className="text-blue-800 font-medium">{brewMessage}</p>
           </div>
         </div>
 

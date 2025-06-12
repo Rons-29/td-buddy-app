@@ -112,7 +112,7 @@ export const AccessibleTabNavigation: React.FC<
       <div
         ref={tabListRef}
         role="tablist"
-        aria-label="データ生成機能"
+        aria-label="データ醸造機能"
         className={getTabListStyles()}
         onKeyDown={handleTabKeyDown}
       >

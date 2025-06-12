@@ -207,7 +207,7 @@ export const CompactPanel: React.FC<CompactPanelProps> = ({
         {showTip && (
           <div className="td-tip-compact">
             <p className="td-tip-text">
-              💡 <span className="font-medium">TDからのTip:</span> {tipText}
+              💡 <span className="font-medium">ブリューからのTip:</span> {tipText}
             </p>
           </div>
         )}

@@ -119,7 +119,7 @@ export class UnifiedGenerator {
       });
 
       console.log(
-        `✅ 統一生成完了: ${this.formatBytes(
+        `✅ 統一醸造完了: ${this.formatBytes(
           targetBytes
         )} (誤差0バイト) in ${totalTime.toFixed(2)}秒`
       );

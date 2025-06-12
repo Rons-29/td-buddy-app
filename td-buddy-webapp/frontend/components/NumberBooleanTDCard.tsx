@@ -38,7 +38,7 @@ const tdTips = {
   boolean: [
     '⚡ 真偽値はプログラムの制御に欠かせません！',
     '🎲 確率を調整して、リアルなシミュレーションができます',
-    '🔀 A/Bテストのデータ生成にも便利ですよ',
+    '🔀 A/Bテストのデータ醸造にも便利ですよ',
   ],
   special: [
     '🌟 特殊値でエッジケースをテストしましょう！',
@@ -72,7 +72,7 @@ export function NumberBooleanTDCard({
     setCurrentTip(randomTip);
   }, [selectedType]);
 
-  // 生成完了時のリアクション
+  // 醸造完了時のリアクション
   useEffect(() => {
     if (generatedData.length > 0) {
       const randomReaction =
@@ -94,7 +94,7 @@ export function NumberBooleanTDCard({
       return {
         total: generatedData.length,
         type: 'non-numeric',
-        summary: `${generatedData.length}件の${selectedType}データを生成しました`,
+        summary: `${generatedData.length}件の${selectedType}データを醸造しました`,
       };
     }
 
@@ -119,11 +119,11 @@ export function NumberBooleanTDCard({
     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 space-y-4">
       {/* TDキャラクター */}
       <div className="flex items-center gap-3">
-        <div className="text-4xl">🤖</div>
+        <div className="text-4xl">🍺</div>
         <div>
-          <h3 className="font-bold text-blue-900">TDくん</h3>
+          <h3 className="font-bold text-blue-900">ブリュー</h3>
           <p className="text-sm text-blue-700">
-            {isGenerating ? '数値生成中...' : '数値生成の専門家'}
+            {isGenerating ? '数値醸造中...' : '数値生成の専門家'}
           </p>
         </div>
       </div>
@@ -133,7 +133,7 @@ export function NumberBooleanTDCard({
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-blue-700">
             <div className="animate-spin h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full"></div>
-            <span className="text-sm">数値を生成しています...</span>
+            <span className="text-sm">数値を醸造しています...</span>
           </div>
           <div className="bg-blue-100 p-3 rounded text-blue-800 text-sm">
             💡 {currentTip}
@@ -141,7 +141,7 @@ export function NumberBooleanTDCard({
         </div>
       )}
 
-      {/* 生成完了時の表示 */}
+      {/* 醸造完了時の表示 */}
       {!isGenerating && generatedData.length > 0 && (
         <div className="space-y-4">
           {/* TDのリアクション */}
@@ -211,7 +211,7 @@ export function NumberBooleanTDCard({
       {!isGenerating && generatedData.length === 0 && (
         <div className="space-y-3">
           <div className="text-blue-700 text-sm">
-            どのような数値データを生成しましょうか？
+            どのような数値データを醸造しましょうか？
           </div>
           <div className="bg-blue-100 p-3 rounded text-blue-800 text-sm">
             💡 {currentTip}
@@ -219,13 +219,13 @@ export function NumberBooleanTDCard({
         </div>
       )}
 
-      {/* TDからの一言アドバイス */}
+      {/* ブリューからの一言アドバイス */}
       <div className="border-t border-blue-200 pt-4">
         <div className="bg-gradient-to-r from-blue-100 to-indigo-100 p-3 rounded-lg">
           <div className="flex items-start gap-2">
             <span className="text-lg">💬</span>
             <div className="text-blue-800 text-sm">
-              <div className="font-medium mb-1">TDからのアドバイス</div>
+              <div className="font-medium mb-1">ブリューからのアドバイス</div>
               <div>
                 数値データのテストでは、境界値（最小・最大値）と特殊値（0、負数、小数点など）を含めることが重要です。統計的な分布も考慮して、より実用的なテストデータを作成しましょう！
               </div>

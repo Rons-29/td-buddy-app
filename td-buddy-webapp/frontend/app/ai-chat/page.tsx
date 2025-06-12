@@ -8,7 +8,7 @@ import { ProgressIndicator } from '../../components/ui/ProgressIndicator'
 import { DataGenerationSteps } from '../../components/ui/DataGenerationSteps'
 
 // TDCharacterを動的インポートしてSSRエラーを回避
-const TDCharacter = dynamic(() => import('../../components/TDCharacter'), {
+const TDCharacter = dynamic(() => import BrewCharacter'), {
   ssr: false,
   loading: () => <div className="w-10 h-10 bg-td-primary-200 rounded-full animate-pulse"></div>
 })
@@ -137,7 +137,7 @@ export default function AIChatPage() {
     },
     {
       id: 'generate',
-      title: 'データ生成',
+      title: 'データ醸造',
       description: '指定された条件に基づいてテストデータを生成',
       status: 'pending'
     },
@@ -182,8 +182,8 @@ export default function AIChatPage() {
       // 初回アクセス時のウェルカムメッセージ
       setTimeout(() => {
         addMessage('system', 
-          '🎉 TestData Buddy AI へようこそ！\n\n' +
-          '🤖 TDです♪ 自然な日本語でテストデータの生成要求をお聞かせください！\n\n' +
+          '🎉 QA Workbench AI へようこそ！\n\n' +
+          '🍺 TDです♪ 自然な日本語でテストデータの生成要求をお聞かせください！\n\n' +
           '✨ 新機能：自動保存\n' +
           '💾 チャット履歴と生成データが自動的に保存されます\n' +
           '🔄 次回アクセス時に前回の続きから始められます\n\n' +
@@ -239,7 +239,7 @@ export default function AIChatPage() {
     if (mounted && lastGeneratedData) {
       saveToLocalStorage(AUTO_SAVE_KEYS.LAST_GENERATED_DATA, lastGeneratedData)
       
-      // データ生成数を更新
+      // データ醸造数を更新
       setSessionState(prev => ({
         ...prev,
         totalDataGenerated: prev.totalDataGenerated + lastGeneratedData.count,
@@ -346,7 +346,7 @@ export default function AIChatPage() {
       // Step 1: AI解析リクエスト
       updateStepStatus('parse', 'active')
       updateProgress(10, 'AI解析中...', '自然言語解析', true)
-      addMessage('system', '🤖 自然言語を解析中...')
+      addMessage('system', '🍺 自然言語を解析中...')
       
       const parseStartTime = Date.now()
       
@@ -386,8 +386,8 @@ export default function AIChatPage() {
 
       // 解析結果の表示
       addMessage('assistant', 
-        `✅ 解析完了！以下の条件でデータを生成します:\n\n` +
-        `📊 生成数: ${parsedParams.count}件\n` +
+        `✅ 解析完了！以下の条件でデータを醸造します:\n\n` +
+        `📊 醸造数: ${parsedParams.count}件\n` +
         `🏷️ 含めるフィールド: ${parsedParams.includeFields.join(', ')}\n` +
         (parsedParams.filters?.ageRange ? `👤 年齢: ${parsedParams.filters.ageRange.min}-${parsedParams.filters.ageRange.max}歳\n` : '') +
         (parsedParams.filters?.gender && parsedParams.filters.gender !== 'both' ? `⚥ 性別: ${parsedParams.filters.gender}\n` : '') +
@@ -395,10 +395,10 @@ export default function AIChatPage() {
         { parsedParams }
       )
 
-      // Step 2: データ生成リクエスト
+      // Step 2: データ醸造リクエスト
       updateStepStatus('generate', 'active')
-      updateProgress(40, 'データ生成中...', 'データ生成', true)
-      addMessage('system', '⚡ データ生成中...')
+      updateProgress(40, 'データ醸造中...', 'データ醸造', true)
+      addMessage('system', '⚡ データ醸造中...')
 
       const generateStartTime = Date.now()
       const generateResponse = await fetch('/api/personal/generate', {
@@ -420,13 +420,13 @@ export default function AIChatPage() {
 
       if (!generateResult.success) {
         updateStepStatus('generate', 'error', generateDuration)
-        updateProgress(40, 'エラー発生', 'データ生成でエラー', false, generateResult.error)
-        addMessage('assistant', `データ生成エラー: ${generateResult.error}`)
+        updateProgress(40, 'エラー発生', 'データ醸造でエラー', false, generateResult.error)
+        addMessage('assistant', `データ醸造エラー: ${generateResult.error}`)
         return
       }
 
       updateStepStatus('generate', 'completed', generateDuration)
-      updateProgress(70, 'データ生成完了', 'データ生成', true)
+      updateProgress(70, 'データ醸造完了', 'データ醸造', true)
 
       // Step 3: 品質検証
       updateStepStatus('validate', 'active')
@@ -446,10 +446,10 @@ export default function AIChatPage() {
         updateProgress(100, '完了', 'すべての処理が完了', false)
       }, 500)
 
-      // 生成完了メッセージ
+      // 醸造完了メッセージ
       addMessage('assistant', 
-        `🎉 データ生成完了！\n\n` +
-        `✅ ${generatedData.count}件のテストデータを生成しました\n` +
+        `🎉 データ醸造完了！\n\n` +
+        `✅ ${generatedData.count}件のテストデータを醸造しました\n` +
         `📈 生成時間: ${generateResult.metadata?.duration || 'N/A'}ms\n` +
         `🚀 スループット: ${generateResult.metadata?.throughput || 'N/A'} items/sec\n\n` +
         `下記のプレビューまたはダウンロードボタンからデータをご確認ください。`,
@@ -511,7 +511,7 @@ export default function AIChatPage() {
     if (!lastParsedParams) return
 
     addMessage('user', '同じ条件でデータを再生成')
-    addMessage('system', '🔄 データ再生成中...')
+    addMessage('system', '🔄 データ再醸造中...')
     setIsLoading(true)
 
     try {
@@ -541,8 +541,8 @@ export default function AIChatPage() {
         setLastGeneratedData(generatedData)
 
         addMessage('assistant', 
-          `🔄 データ再生成完了！\n\n` +
-          `✅ ${generatedData.count}件の新しいテストデータを生成しました`
+          `🔄 データ再醸造完了！\n\n` +
+          `✅ ${generatedData.count}件の新しいテストデータを醸造しました`
         )
       } else {
         addMessage('assistant', `再生成エラー: ${generateResult.error}`)
@@ -681,7 +681,7 @@ export default function AIChatPage() {
             </div>
           </div>
           <p className="text-td-primary-600 text-lg max-w-2xl mx-auto">
-            自然な日本語でテストデータ生成を依頼してください。AIが要求を理解して最適なデータを生成します
+            自然な日本語でテストデータ醸造を依頼してください。AIが要求を理解して最適なデータを醸造します
           </p>
         </div>
 
@@ -696,8 +696,8 @@ export default function AIChatPage() {
                     <span className="text-white text-lg font-bold">TD</span>
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold">TestData Buddy AI</h3>
-                    <p className="text-td-primary-100 text-sm">自然言語データ生成アシスタント</p>
+                    <h3 className="text-white font-semibold">QA Workbench AI</h3>
+                    <p className="text-td-primary-100 text-sm">自然言語データ醸造アシスタント</p>
                   </div>
                   <div className="ml-auto flex items-center gap-2">
                     {mounted && isConnected ? (

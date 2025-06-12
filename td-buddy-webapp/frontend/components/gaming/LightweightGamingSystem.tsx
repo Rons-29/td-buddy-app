@@ -1,6 +1,6 @@
 /**
  * 軽量ゲーミングシステム
- * TestData Buddy (TD) - Lightweight Gaming Components
+ * QA Workbench (TD) - Lightweight Gaming Components
  * パフォーマンス重視の設計
  */
 
@@ -69,11 +69,11 @@ export const LightweightStatsDisplay = memo(
 
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {/* データ生成数 */}
+        {/* データ醸造数 */}
         <div
           className={`${getOptimizedStyles.container} ${getOptimizedStyles.animation}`}
         >
-          <div className="text-sm opacity-80 mb-1">総データ生成</div>
+          <div className="text-sm opacity-80 mb-1">総データ醸造</div>
           <div className={getOptimizedStyles.number}>
             {stats.count.toLocaleString()}
           </div>
@@ -250,7 +250,7 @@ export const LightweightTDCharacter = memo(
         case 'focused':
           return '🧐';
         default:
-          return '🤖';
+          return '🍺';
       }
     }, [mood]);
 
@@ -323,7 +323,7 @@ export class AdaptiveGamingSystem {
         performanceMode: 'low',
       };
       console.log(
-        '🤖 TDからのメッセージ: パフォーマンス重視モードに切り替えました'
+        '🍺 ブリューからのメッセージ: パフォーマンス重視モードに切り替えました'
       );
     } else if (score < 80 || memoryUsage > 0.6) {
       // 中パフォーマンス時：基本的な機能

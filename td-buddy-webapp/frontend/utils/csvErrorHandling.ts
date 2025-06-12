@@ -1,6 +1,6 @@
 /**
  * CSV詳細機能のエラーハンドリング・バリデーション
- * TestData Buddy (TD) - Enhanced Error Handling
+ * QA Workbench (TD) - Enhanced Error Handling
  */
 
 export interface ValidationError {
@@ -309,7 +309,7 @@ export class CSVValidator {
   }
 
   /**
-   * 生成設定のバリデーション
+   * 醸造設定のバリデーション
    */
   static validateGenerationSettings(rowCount: number, columns: any[]): ValidationResult {
     const errors: ValidationError[] = [];
@@ -373,7 +373,7 @@ export class ErrorMessageLocalizer {
   private static readonly messages = {
     // 一般的なエラー
     VALIDATION_FAILED: 'バリデーションに失敗しました',
-    GENERATION_FAILED: 'データ生成に失敗しました',
+    GENERATION_FAILED: 'データ醸造に失敗しました',
     
     // 列関連
     NO_COLUMNS: '列が設定されていません',
@@ -433,9 +433,9 @@ export class TDErrorHandler {
    */
   static formatTDError(error: ValidationError): string {
     const messages = {
-      error: '🚨 TDからの重要な警告',
-      warning: '⚠️ TDからの注意事項',
-      info: '💡 TDからのアドバイス'
+      error: '🚨 ブリューからの重要な警告',
+      warning: '⚠️ ブリューからの注意事項',
+      info: '💡 ブリューからのアドバイス'
     };
 
     const prefix = messages[error.severity];
@@ -446,7 +446,7 @@ export class TDErrorHandler {
    * TDキャラクター付き成功メッセージ
    */
   static formatSuccessMessage(message: string): string {
-    return `✅ TDからのメッセージ: ${message}`;
+    return `✅ ブリューからのメッセージ: ${message}`;
   }
 
   /**
@@ -487,7 +487,7 @@ export class TDErrorHandler {
     };
 
     const solution = solutions[error.code as keyof typeof solutions];
-    return solution ? `💡 TDからの解決策: ${solution}` : '';
+    return solution ? `💡 ブリューからの解決策: ${solution}` : '';
   }
 }
 
@@ -512,11 +512,11 @@ export class PerformanceMonitor {
 
     let recommendation = '';
     if (duration > 30000) { // 30秒以上
-      recommendation = 'TDからの提案: 生成に時間がかかっています。件数を減らすことをお勧めします。';
+      recommendation = 'ブリューからの提案: 生成に時間がかかっています。件数を減らすことをお勧めします。';
     } else if (duration > 10000) { // 10秒以上
-      recommendation = 'TDからの提案: 少し時間がかかりました。大量データの場合は分割生成をお勧めします。';
+      recommendation = 'ブリューからの提案: 少し時間がかかりました。大量データの場合は分割生成をお勧めします。';
     } else {
-      recommendation = 'TDからのメッセージ: 高速生成完了！素晴らしいパフォーマンスです♪';
+      recommendation = 'ブリューからのメッセージ: 高速醸造完了！素晴らしいパフォーマンスです♪';
     }
 
     return {

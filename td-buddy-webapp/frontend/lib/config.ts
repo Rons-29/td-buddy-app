@@ -1,4 +1,4 @@
-// 🌐 TestData Buddy 設定管理
+// 🌐 QA Workbench 設定管理
 
 export const APP_CONFIG = {
   // 環境判定
@@ -15,13 +15,19 @@ export const APP_CONFIG = {
   // オフラインモード判定ロジック
   get isOfflineMode() {
     // 明示的にオフラインモードが指定されている場合
-    if (this.OFFLINE_MODE) return true;
+    if (this.OFFLINE_MODE) {
+      return true;
+    }
 
     // 明示的にAPIが無効化されている場合
-    if (!this.API_ENABLED) return true;
+    if (!this.API_ENABLED) {
+      return true;
+    }
 
     // 本番環境では現在オフラインモード（バックエンド未設定のため）
-    if (this.isProduction) return true;
+    if (this.isProduction) {
+      return true;
+    }
 
     // ローカル開発環境ではAPI接続を試行
     return false;
@@ -31,7 +37,7 @@ export const APP_CONFIG = {
   getApiUrl(endpoint: string) {
     if (this.isOfflineMode) {
       console.warn(
-        '🤖 TDからのお知らせ: オフラインモードです。API機能は無効化されています'
+        '🍺 ブリューからのお知らせ: オフラインモードです。API機能は無効化されています'
       );
       return null;
     }
@@ -53,16 +59,16 @@ export const APP_CONFIG = {
   },
 };
 
-// TDからのメッセージ
+// ブリューからのメッセージ
 export const TD_MESSAGES = {
   OFFLINE_MODE:
-    '🤖 TDからのお知らせ: 現在オフラインモードで動作中です。一部機能は制限されますが、基本的なデータ生成は可能です♪',
+    '🍺 ブリューからのお知らせ: 現在オフラインモードで醸造中です。一部機能は制限されますが、基本的なデータ醸造は可能です♪',
   API_DISABLED:
-    '🤖 TDからのお知らせ: API機能は現在利用できません。ローカル生成機能をお使いください',
+    '🍺 ブリューからのお知らせ: API機能は現在利用できません。ローカル醸造機能をお使いください',
   PRODUCTION_NOTICE:
-    '🤖 TDからのお知らせ: 本番環境にアクセスいただき、ありがとうございます！バックエンド設定完了まで一部機能は制限されます',
+    '🍺 ブリューからのお知らせ: 本番環境にアクセスいただき、ありがとうございます！バックエンド設定完了まで一部機能は制限されます',
   DEVELOPMENT_MODE:
-    '🤖 TDからのお知らせ: 開発モードで動作中です。APIサーバーが起動していれば、全機能をお使いいただけます♪',
+    '🍺 ブリューからのお知らせ: 開発モードで醸造中です。APIサーバーが起動していれば、全機能をお使いいただけます♪',
   API_CONNECTION_ERROR:
-    '🤖 TDからのお知らせ: APIサーバーに接続できませんでした。ローカル生成機能に切り替えます',
+    '🍺 ブリューからのお知らせ: APIサーバーに接続できませんでした。ローカル醸造機能に切り替えます',
 };

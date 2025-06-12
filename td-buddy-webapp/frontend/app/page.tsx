@@ -24,7 +24,7 @@ export default function Home() {
 
         {/* 機能カード */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {/* パスワード生成 */}
+          {/* パスワード醸造 */}
           <div className="td-card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
             <div className="text-3xl mb-3">🔐</div>
             <h3 className="text-lg font-semibold text-blue-800 mb-2">
@@ -40,7 +40,7 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* 個人情報生成 */}
+          {/* 個人情報醸造 */}
           <div className="td-card p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
             <div className="text-3xl mb-3">👤</div>
             <h3 className="text-lg font-semibold text-green-800 mb-2">
@@ -111,7 +111,7 @@ export default function Home() {
               AI チャット
             </h3>
             <p className="text-td-primary-600 mb-4">
-              自然言語でデータ生成条件を指定できます
+              自然言語でデータ醸造条件を指定できます
             </p>
             <Link href="/ai-chat">
               <button className="td-button bg-td-primary-500 text-white px-4 py-2 rounded-md hover:bg-td-primary-600 transition-colors">
@@ -127,7 +127,7 @@ export default function Home() {
               CSV詳細設定
             </h3>
             <p className="text-orange-600 mb-4">
-              高度なCSVデータ生成・カスタマイズ機能
+              高度なCSVデータ醸造・カスタマイズ機能
             </p>
             <Link href="/csv-detailed">
               <button className="td-button bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
@@ -158,7 +158,7 @@ export default function Home() {
             <h3 className="text-lg font-semibold text-teal-800 mb-2">
               UUID生成
             </h3>
-            <p className="text-teal-600 mb-4">ユニークなID・識別子を大量生成</p>
+            <p className="text-teal-600 mb-4">ユニークなID・識別子を大量醸造</p>
             <Link href="/uuid">
               <button className="td-button bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
                 生成開始
@@ -198,11 +198,11 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* 実用データ生成 */}
+          {/* 実用データ醸造 */}
           <div className="td-card p-6 bg-gradient-to-br from-gray-50 to-slate-50 border-2 border-gray-200">
             <div className="text-3xl mb-3">🏢</div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              実用データ生成
+              実用データ醸造
             </h3>
             <p className="text-gray-600 mb-4">
               企業・住所・電話番号など実用的なテストデータ

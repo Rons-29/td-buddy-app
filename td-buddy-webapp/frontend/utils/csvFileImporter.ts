@@ -1,6 +1,6 @@
 /**
  * CSV ファイルインポート機能
- * TestData Buddy (TD) - CSV Import & Configuration Detection
+ * QA Workbench (TD) - CSV Import & Configuration Detection
  */
 
 import {
@@ -541,7 +541,7 @@ export class TDImportHelper {
    */
   static summarizeImport(result: ImportResult): string {
     if (!result.success) {
-      return `🚨 TDからの警告: インポートに失敗しました\n${result.error}`;
+      return `🚨 ブリューからの警告: インポートに失敗しました\n${result.error}`;
     }
 
     const config = result.config!;
@@ -551,7 +551,7 @@ export class TDImportHelper {
       return acc;
     }, {} as Record<string, number>);
 
-    let message = `✅ TDからのメッセージ: CSVインポート完了！\n\n`;
+    let message = `✅ ブリューからのメッセージ: CSVインポート完了！\n\n`;
     message += `📊 検出結果:\n`;
     message += `- 列数: ${columnCount}列\n`;
 
@@ -567,7 +567,7 @@ export class TDImportHelper {
       });
     }
 
-    message += `\n💡 TDからのアドバイス: 設定を確認して、必要に応じて調整してください♪`;
+    message += `\n💡 ブリューからのアドバイス: 設定を確認して、必要に応じて調整してください♪`;
     return message;
   }
 
@@ -626,7 +626,7 @@ export class TDImportHelper {
     }
 
     if (suggestions.length === 0) {
-      suggestions.push('✨ TDからのメッセージ: 設定は最適化されています！');
+      suggestions.push('✨ ブリューからのメッセージ: 設定は最適化されています！');
     }
 
     return suggestions;

@@ -1,6 +1,6 @@
 /**
  * CSV バッチ処理機能
- * TestData Buddy (TD) - Batch Processing System
+ * QA Workbench (TD) - Batch Processing System
  */
 
 import { CsvConfig } from '../types/csvDataTypes';
@@ -114,7 +114,7 @@ export class CSVBatchProcessor {
     this.jobs.set(jobId, job);
     this.queueJob(jobId);
 
-    console.log(`🤖 TDからのメッセージ: バッチジョブ「${name}」を追加しました`);
+    console.log(`🍺 ブリューからのメッセージ: バッチジョブ「${name}」を追加しました`);
 
     // 自動実行が停止している場合は開始
     if (!this.isProcessing) {
@@ -145,7 +145,7 @@ export class CSVBatchProcessor {
       jobIds.push(jobId);
     });
 
-    console.log(`🤖 TDからのメッセージ: ${jobs.length}個のバッチジョブを追加しました`);
+    console.log(`🍺 ブリューからのメッセージ: ${jobs.length}個のバッチジョブを追加しました`);
     return jobIds;
   }
 
@@ -176,7 +176,7 @@ export class CSVBatchProcessor {
     if (this.isProcessing) return;
 
     this.isProcessing = true;
-    console.log('🚀 TDからのメッセージ: バッチ処理を開始します');
+    console.log('🚀 ブリューからのメッセージ: バッチ処理を開始します');
 
     while (this.processingQueue.length > 0) {
       const runningJobs: string[] = [];
@@ -203,7 +203,7 @@ export class CSVBatchProcessor {
     }
 
     this.isProcessing = false;
-    console.log('✅ TDからのメッセージ: すべてのバッチ処理が完了しました');
+    console.log('✅ ブリューからのメッセージ: すべてのバッチ処理が完了しました');
   }
 
   /**
@@ -219,12 +219,12 @@ export class CSVBatchProcessor {
       job.startedAt = new Date().toISOString();
       job.progress = 0;
 
-      console.log(`🔄 TDからのメッセージ: 「${job.name}」の処理を開始します`);
+      console.log(`🔄 ブリューからのメッセージ: 「${job.name}」の処理を開始します`);
 
       // パフォーマンス監視開始
       PerformanceMonitor.startGeneration();
 
-      // CSV データ生成
+      // CSV データ醸造
       const csvData = await this.generateCSVData(job);
 
       // ファイル保存
@@ -245,7 +245,7 @@ export class CSVBatchProcessor {
         duration: performance.duration
       };
 
-      console.log(`✅ TDからのメッセージ: 「${job.name}」が完了しました (${performance.duration}ms)`);
+      console.log(`✅ ブリューからのメッセージ: 「${job.name}」が完了しました (${performance.duration}ms)`);
 
     } catch (error) {
       // ジョブ失敗
@@ -253,12 +253,12 @@ export class CSVBatchProcessor {
       job.error = error instanceof Error ? error.message : '不明なエラー';
       job.progress = 0;
 
-      console.error(`❌ TDからのエラー: 「${job.name}」が失敗しました:`, job.error);
+      console.error(`❌ ブリューからのエラー: 「${job.name}」が失敗しました:`, job.error);
     }
   }
 
   /**
-   * CSV データ生成（チャンク処理対応）
+   * CSV データ醸造（チャンク処理対応）
    */
   private async generateCSVData(job: BatchJob): Promise<string> {
     const { config, count } = job;
@@ -273,7 +273,7 @@ export class CSVBatchProcessor {
       const chunkEnd = Math.min(chunkStart + chunkSize, count);
       const chunkRowCount = chunkEnd - chunkStart;
 
-      // チャンク内のデータ生成
+      // チャンク内のデータ醸造
       for (let i = 0; i < chunkRowCount; i++) {
         const row = config.columns.map(col => 
           String(generateData(col.dataType, col.settings || {}))
@@ -387,7 +387,7 @@ export class CSVBatchProcessor {
       this.processingQueue.splice(queueIndex, 1);
     }
 
-    console.log(`⏹️ TDからのメッセージ: 「${job.name}」をキャンセルしました`);
+    console.log(`⏹️ ブリューからのメッセージ: 「${job.name}」をキャンセルしました`);
     return true;
   }
 
@@ -402,7 +402,7 @@ export class CSVBatchProcessor {
     this.processingQueue = [];
     this.isProcessing = false;
 
-    console.log(`⏹️ TDからのメッセージ: ${cancelledCount}個のジョブをキャンセルしました`);
+    console.log(`⏹️ ブリューからのメッセージ: ${cancelledCount}個のジョブをキャンセルしました`);
     return cancelledCount;
   }
 
@@ -422,7 +422,7 @@ export class CSVBatchProcessor {
       this.jobs.delete(job.id);
     });
 
-    console.log(`🧹 TDからのメッセージ: ${completedJobs.length}個の完了ジョブをクリアしました`);
+    console.log(`🧹 ブリューからのメッセージ: ${completedJobs.length}個の完了ジョブをクリアしました`);
     return completedJobs.length;
   }
 
@@ -510,7 +510,7 @@ export class CSVBatchProcessor {
     });
 
     const blob = new Blob([combinedContent], { type: 'text/plain' });
-    console.log(`📦 TDからのメッセージ: ${completedJobs.length}個のファイルを結合しました`);
+    console.log(`📦 ブリューからのメッセージ: ${completedJobs.length}個のファイルを結合しました`);
     
     return blob;
   }
@@ -524,7 +524,7 @@ export class TDBatchHelper {
    * バッチ処理状況の要約メッセージ
    */
   static summarizeStatus(status: BatchProcessingStatus): string {
-    let message = `📊 TDからのバッチ処理状況:\n\n`;
+    let message = `📊 ブリューからのバッチ処理状況:\n\n`;
     message += `- 総ジョブ数: ${status.totalJobs}個\n`;
     message += `- 完了: ${status.completedJobs}個\n`;
     message += `- 実行中: ${status.runningJobs}個\n`;
@@ -542,9 +542,9 @@ export class TDBatchHelper {
     }
 
     if (status.overallProgress === 100) {
-      message += `\n\n🎉 TDからのメッセージ: すべてのバッチ処理が完了しました！`;
+      message += `\n\n🎉 ブリューからのメッセージ: すべてのバッチ処理が完了しました！`;
     } else if (status.runningJobs > 0) {
-      message += `\n\n🤖 TDからのメッセージ: 現在処理中です。しばらくお待ちください♪`;
+      message += `\n\n🍺 ブリューからのメッセージ: 現在処理中です。しばらくお待ちください♪`;
     }
 
     return message;
@@ -572,17 +572,17 @@ export class TDBatchHelper {
       chunkSize = 5000;
       maxConcurrent = 4;
       delayBetweenJobs = 100;
-      recommendation = 'TDからの提案: 小規模データです。高速処理設定を推奨します';
+      recommendation = 'ブリューからの提案: 小規模データです。高速処理設定を推奨します';
     } else if (totalDataSize < 10 * 1024 * 1024) { // 10MB未満
       chunkSize = 2000;
       maxConcurrent = 3;
       delayBetweenJobs = 300;
-      recommendation = 'TDからの提案: 中規模データです。バランス重視の設定を推奨します';
+      recommendation = 'ブリューからの提案: 中規模データです。バランス重視の設定を推奨します';
     } else { // 10MB以上
       chunkSize = 1000;
       maxConcurrent = 2;
       delayBetweenJobs = 1000;
-      recommendation = 'TDからの提案: 大規模データです。安定性重視の設定を推奨します';
+      recommendation = 'ブリューからの提案: 大規模データです。安定性重視の設定を推奨します';
     }
 
     return {
@@ -606,10 +606,10 @@ export class TDBatchHelper {
 
     for (const [keyword, solution] of Object.entries(solutions)) {
       if (error.includes(keyword)) {
-        return `💡 TDからの解決策: ${solution}`;
+        return `💡 ブリューからの解決策: ${solution}`;
       }
     }
 
-    return '💡 TDからの提案: サポートチームにお問い合わせください';
+    return '💡 ブリューからの提案: サポートチームにお問い合わせください';
   }
 } 

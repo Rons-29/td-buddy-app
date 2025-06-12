@@ -149,7 +149,7 @@ export default function NumberBooleanPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span>🤖</span>
+                    <span>🍺</span>
                     <div>
                       <div className="font-medium">TDに質問</div>
                       <div className="text-xs text-indigo-600">
@@ -169,18 +169,18 @@ export default function NumberBooleanPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🤖</span>
+              <span className="text-2xl">🍺</span>
               <div>
                 <div className="font-semibold text-gray-900">
-                  TestData Buddy
+                  QA Workbench
                 </div>
                 <div className="text-sm text-gray-600">
-                  AI連携型テストデータ生成ツール
+                  AI連携型テストデータ醸造ツール
                 </div>
               </div>
             </div>
             <div className="text-sm text-gray-500">
-              © 2024 TestData Buddy. TDがサポートしています♪
+              © 2024 QA Workbench. TDがサポートしています♪
             </div>
           </div>
         </div>

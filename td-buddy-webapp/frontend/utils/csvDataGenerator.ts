@@ -1,5 +1,5 @@
 /**
- * CSV用簡易データ生成器
+ * CSV用簡易データ醸造器
  */
 export class CsvDataGenerator {
   
@@ -129,7 +129,7 @@ export class CsvDataGenerator {
   }
 
   /**
-   * 統合データ生成メソッド（互換性のため）
+   * 統合データ醸造メソッド（互換性のため）
    */
   static generateData(settings: any): string {
     // 簡易実装

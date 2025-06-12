@@ -1,6 +1,6 @@
 /**
- * CSV詳細データ生成機能のテストスイート
- * TestData Buddy (TD) - Comprehensive Testing
+ * CSV詳細データ醸造機能のテストスイート
+ * QA Workbench (TD) - Comprehensive Testing
  */
 
 import { describe, expect, test } from 'vitest';
@@ -14,8 +14,8 @@ import {
     ValidationResult
 } from '../utils/csvErrorHandling';
 
-describe('CSV詳細データ生成機能', () => {
-  describe('データ生成テスト', () => {
+describe('CSV詳細データ醸造機能', () => {
+  describe('データ醸造テスト', () => {
     test('日本語名前の生成', () => {
       const result = generateData('name', {});
       expect(typeof result).toBe('string');
@@ -195,7 +195,7 @@ describe('CSV詳細データ生成機能', () => {
       };
 
       const formattedMessage = TDErrorHandler.formatTDError(error);
-      expect(formattedMessage).toContain('🚨 TDからの重要な警告');
+      expect(formattedMessage).toContain('🚨 ブリューからの重要な警告');
       expect(formattedMessage).toContain('テストエラー');
     });
 
@@ -208,12 +208,12 @@ describe('CSV詳細データ生成機能', () => {
       };
 
       const formattedMessage = TDErrorHandler.formatTDError(warning);
-      expect(formattedMessage).toContain('⚠️ TDからの注意事項');
+      expect(formattedMessage).toContain('⚠️ ブリューからの注意事項');
     });
 
     test('成功メッセージのフォーマット', () => {
       const message = TDErrorHandler.formatSuccessMessage('完了しました');
-      expect(message).toContain('✅ TDからのメッセージ');
+      expect(message).toContain('✅ ブリューからのメッセージ');
       expect(message).toContain('完了しました');
     });
 
@@ -242,7 +242,7 @@ describe('CSV詳細データ生成機能', () => {
       };
 
       const solution = TDErrorHandler.suggestSolution(error);
-      expect(solution).toContain('💡 TDからの解決策');
+      expect(solution).toContain('💡 ブリューからの解決策');
       expect(solution.length).toBeGreaterThan(0);
     });
   });
@@ -269,13 +269,13 @@ describe('CSV詳細データ生成機能', () => {
       PerformanceMonitor.startGeneration();
       const result = PerformanceMonitor.endGeneration(100, 3);
       
-      expect(result.recommendation).toContain('TDからのメッセージ');
-      expect(result.recommendation).toContain('高速生成完了');
+      expect(result.recommendation).toContain('ブリューからのメッセージ');
+      expect(result.recommendation).toContain('高速醸造完了');
     });
   });
 
-  describe('大量データ生成テスト', () => {
-    test('1000件のデータ生成', () => {
+  describe('大量データ醸造テスト', () => {
+    test('1000件のデータ醸造', () => {
       const config: CsvConfig = {
         columns: [
           { name: '名前', type: 'name' },
@@ -305,7 +305,7 @@ describe('CSV詳細データ生成機能', () => {
     test('メモリ効率性の確認', () => {
       const initialMemory = (performance as any).memory?.usedJSHeapSize || 0;
       
-      // 中規模データ生成
+      // 中規模データ醸造
       const rows: string[][] = [];
       for (let i = 0; i < 5000; i++) {
         const row = [
@@ -412,7 +412,7 @@ describe('統合テスト', () => {
     );
     expect(generationValidation.isValid).toBe(true);
 
-    // データ生成
+    // データ醸造
     PerformanceMonitor.startGeneration();
     
     const headers = config.columns.map(col => col.name);
@@ -478,9 +478,9 @@ describe('統合テスト', () => {
     };
 
     const summary = TDErrorHandler.summarizeErrors(result);
-    expect(summary).toContain('TDからの');
+    expect(summary).toContain('ブリューからの');
     
     const successMessage = TDErrorHandler.formatSuccessMessage('テスト完了');
-    expect(successMessage).toContain('✅ TDからのメッセージ');
+    expect(successMessage).toContain('✅ ブリューからのメッセージ');
   });
 }); 

@@ -54,7 +54,7 @@ export function DataGenerationSteps({ steps, currentStepId }: DataGenerationStep
   return (
     <div className="bg-white rounded-xl border border-td-primary-100 p-4 shadow-sm">
       <h3 className="text-sm font-semibold text-td-primary-800 mb-3 flex items-center gap-2">
-        🤖 <span>TDの作業進捗</span>
+        🍺 <span>TDの作業進捗</span>
       </h3>
       
       <div className="space-y-1">

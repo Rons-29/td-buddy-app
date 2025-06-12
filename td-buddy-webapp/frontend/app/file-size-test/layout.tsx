@@ -4,7 +4,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: '⚡ 超高速ファイル生成（5秒以内目標） | TD Buddy',
+  title: '⚡ 超高速ファイル生成（5秒以内目標） | Brew Assistant',
   description: '青空文庫の名作を活用した実用的なテストファイルを5秒以内で生成',
 };
 

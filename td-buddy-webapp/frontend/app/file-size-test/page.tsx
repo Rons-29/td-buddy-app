@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import TDCharacter from '../../components/TDCharacter';
+import BrewCharacter';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -34,7 +34,7 @@ export default function FileSizeTestPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState<UltraPreciseProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tdMessage, setTdMessage] = useState<string>(
+  const [brewMessage, setTdMessage] = useState<string>(
     'ファイルサイズテスト機能です！どんなサイズでも生成できます♪'
   );
 
@@ -80,13 +80,13 @@ export default function FileSizeTestPage() {
         break;
       case 'generating':
         const percentage = progressData.percentage.toFixed(1);
-        setTdMessage(`生成中... ${percentage}% 完了！頑張ってます♪`);
+        setTdMessage(`醸造中... ${percentage}% 完了！頑張ってます♪`);
         break;
       case 'finalizing':
         setTdMessage('最終調整中...もうすぐ完了です！');
         break;
       case 'complete':
-        setTdMessage('生成完了！完璧なファイルができました✨');
+        setTdMessage('醸造完了！完璧なファイルができました✨');
         break;
     }
   }, []);
@@ -248,8 +248,8 @@ export default function FileSizeTestPage() {
 
         {/* TDキャラクター */}
         <div className="mb-6">
-          <TDCharacter
-            message={tdMessage}
+          <BrewCharacter
+            message={brewMessage}
             emotion={isGenerating ? 'working' : error ? 'error' : 'happy'}
             showSpeechBubble={true}
           />
@@ -259,7 +259,7 @@ export default function FileSizeTestPage() {
           {/* 設定パネル */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              🎛️ 生成設定
+              🎛️ 醸造設定
             </h2>
 
             {/* ファイルサイズ設定 */}
@@ -406,7 +406,7 @@ export default function FileSizeTestPage() {
                 }
                 className="flex-1"
               >
-                {isGenerating ? '🔄 生成中...' : '🚀 超精密生成開始'}
+                {isGenerating ? '🔄 醸造中...' : '🚀 超精密生成開始'}
               </Button>
               {isGenerating && (
                 <Button

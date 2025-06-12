@@ -49,7 +49,7 @@ export interface GeneratedNumberBoolean {
     digits: number;
     category: string;
   };
-  tdMessage: string;
+  brewMessage: string;
   generatedAt: Date;
 }
 
@@ -60,7 +60,7 @@ export interface NumberBooleanGenerationResult {
   count: number;
   options: NumberBooleanOptions;
   message: string;
-  tdMessage: string;
+  brewMessage: string;
   generatedAt: Date;
 }
 

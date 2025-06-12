@@ -1,6 +1,6 @@
 /**
  * CSV設定テンプレート管理機能
- * TestData Buddy (TD) - Template Management System
+ * QA Workbench (TD) - Template Management System
  */
 
 import { ColumnConfig, CsvConfig } from '../types/csvDataTypes';
@@ -548,7 +548,7 @@ export class CSVTemplateManager {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
     } catch (error) {
-      console.warn('TDからの警告: テンプレート読み込みエラー', error);
+      console.warn('ブリューからの警告: テンプレート読み込みエラー', error);
       return [];
     }
   }
@@ -560,7 +560,7 @@ export class CSVTemplateManager {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(templates));
     } catch (error) {
-      console.error('TDからのエラー: テンプレート保存エラー', error);
+      console.error('ブリューからのエラー: テンプレート保存エラー', error);
       throw new Error('テンプレートの保存に失敗しました');
     }
   }
@@ -897,7 +897,7 @@ export class TDTemplateHelper {
    * テンプレート操作結果のTDメッセージ
    */
   static formatOperationResult(result: TemplateOperationResult): string {
-    const prefix = result.success ? '✅ TDからのメッセージ' : '🚨 TDからの警告';
+    const prefix = result.success ? '✅ ブリューからのメッセージ' : '🚨 ブリューからの警告';
     return `${prefix}: ${result.message}`;
   }
 
@@ -968,7 +968,7 @@ export class TDTemplateHelper {
       )})\n`;
     });
 
-    explanation += `\n💡 TDからのアドバイス: このテンプレートは${template.category}カテゴリでよく使われています♪`;
+    explanation += `\n💡 ブリューからのアドバイス: このテンプレートは${template.category}カテゴリでよく使われています♪`;
 
     return explanation;
   }
