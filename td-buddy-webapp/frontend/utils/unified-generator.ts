@@ -342,10 +342,10 @@ trailer<</Size 5/Root 1 0 R>>startxref
               )
             : AOZORA_BUNKO_SAMPLES;
         const work = works[Math.floor(Math.random() * works.length)];
-        return this.toSafeAscii(work.title + ' ' + work.content).substring(
-          0,
-          maxLength
-        );
+        return this.normalizeText(
+          work.title + ' ' + work.content,
+          true
+        ).substring(0, maxLength);
       case 'random':
         return 'TestData' + Math.random().toString(36).substring(2, maxLength);
       case 'zero':
@@ -356,16 +356,26 @@ trailer<</Size 5/Root 1 0 R>>startxref
   }
 
   /**
-   * ASCII安全変換
+   * テキスト正規化（エンコーディング安全版）
    */
-  private toSafeAscii(text: string): string {
-    return text
-      .replace(/[あ-ん]/g, 'a')
-      .replace(/[ア-ン]/g, 'A')
-      .replace(/[一-龯]/g, 'K')
-      .replace(/[^\x00-\x7F]/g, 'X')
-      .replace(/\s+/g, ' ')
+  private normalizeText(text: string, asciiOnly: boolean = false): string {
+    let normalized = text
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .replace(/\t/g, '    ')
       .trim();
+
+    // ASCII安全モード（エンコーディング問題回避）
+    if (asciiOnly) {
+      normalized = normalized
+        .replace(/[あ-ん]/g, 'a')
+        .replace(/[ア-ン]/g, 'A')
+        .replace(/[一-龯]/g, 'K')
+        .replace(/[^\x00-\x7F]/g, 'X')
+        .replace(/\s+/g, ' ');
+    }
+
+    return normalized;
   }
 
   /**

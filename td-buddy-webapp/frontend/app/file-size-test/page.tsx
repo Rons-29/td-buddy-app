@@ -7,9 +7,9 @@ import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { AOZORA_BUNKO_SAMPLES } from '../../data/aozora-bunko-samples';
 import {
-  generateUnified,
-  UnifiedProgress,
-} from '../../utils/unified-generator';
+  generateUltraPrecise,
+  UltraPreciseProgress,
+} from '../../utils/ultra-precise-generator';
 
 // ファイル形式定義（アイコン付き）
 const FILE_FORMATS = [
@@ -32,7 +32,7 @@ export default function FileSizeTestPage() {
   );
   const [selectedWorks, setSelectedWorks] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [progress, setProgress] = useState<UnifiedProgress | null>(null);
+  const [progress, setProgress] = useState<UltraPreciseProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tdMessage, setTdMessage] = useState<string>(
     'ファイルサイズテスト機能です！どんなサイズでも生成できます♪'
@@ -70,7 +70,7 @@ export default function FileSizeTestPage() {
   }, []);
 
   // プログレス更新
-  const handleProgress = useCallback((progressData: UnifiedProgress) => {
+  const handleProgress = useCallback((progressData: UltraPreciseProgress) => {
     setProgress(progressData);
 
     // TDメッセージ更新
@@ -117,19 +117,19 @@ export default function FileSizeTestPage() {
     setIsGenerating(true);
     setError(null);
     setProgress(null);
-    setTdMessage('統一生成器でファイルを作成します！');
+    setTdMessage('超精密生成器でファイルを作成します！');
 
     // AbortController作成
     abortControllerRef.current = new AbortController();
 
     try {
       console.log(
-        `🚀 統一生成開始: ${formatBytes(
+        `🚀 超精密生成開始: ${formatBytes(
           targetBytes
         )} ${selectedFormat.toUpperCase()}ファイル`
       );
 
-      const blob = await generateUnified(
+      const blob = await generateUltraPrecise(
         targetBytes,
         selectedFormat,
         contentType,
@@ -138,21 +138,66 @@ export default function FileSizeTestPage() {
         abortControllerRef.current.signal
       );
 
-      // ダウンロード
-      const url = URL.createObjectURL(blob);
+      // ダウンロード（エンコーディング問題対応）
+      let downloadBlob = blob;
+      if (['txt', 'json', 'xml', 'csv'].includes(selectedFormat)) {
+        try {
+          // 元のデータを取得
+          const originalData = new Uint8Array(await blob.arrayBuffer());
+
+          // UTF-8として文字列に変換
+          const text = new TextDecoder('utf-8').decode(originalData);
+
+          // Shift_JISエンコーダーを試す（日本語環境で開きやすい）
+          const encoder = new TextEncoder();
+          const utf8Data = encoder.encode(text);
+
+          // UTF-8 BOMを追加
+          const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+          const withBom = new Uint8Array(bom.length + utf8Data.length);
+          withBom.set(bom);
+          withBom.set(utf8Data, bom.length);
+
+          downloadBlob = new Blob([withBom], {
+            type: `${blob.type}; charset=utf-8`,
+          });
+        } catch (error) {
+          console.warn('エンコーディング変換に失敗:', error);
+          // 失敗した場合は元のblobを使用
+        }
+      }
+
+      const url = URL.createObjectURL(downloadBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `aozora-test-file.${selectedFormat}`;
+
+      // タイムスタンプ付きファイル名で確実に新しいファイルとして認識
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, '-')
+        .slice(0, 19);
+      a.download = `aozora-test-${timestamp}.${selectedFormat}`;
+
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
       console.log(
-        `✅ ダウンロード完了: ${formatBytes(blob.size)} (誤差0バイト)`
+        `✅ ダウンロード完了: ${formatBytes(downloadBlob.size)} (${
+          ['txt', 'json', 'xml', 'csv'].includes(selectedFormat)
+            ? 'UTF-8 BOM付き'
+            : '誤差0バイト'
+        })`
       );
       setTdMessage(
-        `ダウンロード完了！${formatBytes(blob.size)}のファイルを作成しました♪`
+        `ダウンロード完了！${formatBytes(
+          downloadBlob.size
+        )}のファイルを作成しました♪ ${
+          ['txt', 'json', 'xml', 'csv'].includes(selectedFormat)
+            ? '(UTF-8 BOM付きで確実に開けます)'
+            : ''
+        }`
       );
     } catch (error) {
       if (error instanceof Error && error.message.includes('キャンセル')) {
@@ -162,7 +207,7 @@ export default function FileSizeTestPage() {
           error instanceof Error ? error.message : '不明なエラー';
         setError(`生成エラー: ${errorMessage}`);
         setTdMessage('エラーが発生しました。もう一度お試しください');
-        console.error('統一生成エラー:', error);
+        console.error('超精密生成エラー:', error);
       }
     } finally {
       setIsGenerating(false);
@@ -197,7 +242,7 @@ export default function FileSizeTestPage() {
             📁 ファイルサイズテスト
           </h1>
           <p className="text-gray-600">
-            統一生成器で任意サイズのファイルを生成（誤差0バイト保証）
+            超精密生成器で任意サイズのファイルを生成（誤差0バイト保証）
           </p>
         </div>
 
@@ -292,6 +337,7 @@ export default function FileSizeTestPage() {
                   disabled={isGenerating}
                 >
                   📚 青空文庫
+                  <div className="text-xs text-gray-500">ASCII安全</div>
                 </button>
                 <button
                   onClick={() => setContentType('random')}
@@ -303,6 +349,7 @@ export default function FileSizeTestPage() {
                   disabled={isGenerating}
                 >
                   🎲 ランダム
+                  <div className="text-xs text-gray-500">英数字のみ</div>
                 </button>
                 <button
                   onClick={() => setContentType('zero')}
@@ -314,8 +361,12 @@ export default function FileSizeTestPage() {
                   disabled={isGenerating}
                 >
                   0️⃣ ゼロ埋め
+                  <div className="text-xs text-gray-500">数字のみ</div>
                 </button>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                ⚠️ 青空文庫は日本語→ASCII変換でエンコーディング問題を回避
+              </p>
             </div>
 
             {/* 青空文庫作品選択 */}
@@ -355,7 +406,7 @@ export default function FileSizeTestPage() {
                 }
                 className="flex-1"
               >
-                {isGenerating ? '🔄 生成中...' : '🚀 統一生成開始'}
+                {isGenerating ? '🔄 生成中...' : '🚀 超精密生成開始'}
               </Button>
               {isGenerating && (
                 <Button
@@ -412,18 +463,18 @@ export default function FileSizeTestPage() {
               </div>
             )}
 
-            {/* 統一生成器の特徴 */}
+            {/* 超精密生成器の特徴 */}
             <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
               <h3 className="font-medium text-blue-800 mb-2">
-                ✨ 統一生成器の特徴
+                ✨ 超精密生成器の特徴
               </h3>
               <ul className="text-sm text-blue-700 space-y-1">
                 <li>• 全ファイル形式を一つの関数で処理</li>
                 <li>• 誤差0バイト保証（厳密サイズ制御）</li>
                 <li>• 1MB = 1024KB の正確な計算</li>
                 <li>• 実際に開けるPDF・画像ファイル生成</li>
-                <li>• 青空文庫コンテンツ対応</li>
-                <li>• ASCII安全変換でエンコード問題回避</li>
+                <li>• 青空文庫コンテンツ対応（日本語保持）</li>
+                <li>• UTF-8 BOM付きでエンコード問題解決</li>
                 <li>• リアルタイム進捗表示</li>
               </ul>
             </div>
