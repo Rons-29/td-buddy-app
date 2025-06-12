@@ -2,10 +2,7 @@
 // TestData Buddy - ファイル容量テスト機能
 // 厳密なサイズ計算（1MB = 1024KB = 1,048,576 bytes）
 
-import {
-  AOZORA_BUNKO_SAMPLES,
-  selectOptimalWorks,
-} from '../data/aozora-bunko-samples';
+import { AOZORA_BUNKO_SAMPLES } from '../data/aozora-bunko-samples';
 
 /**
  * 厳密なサイズ計算（1MB = 1024KB = 1,048,576 bytes）
@@ -31,73 +28,108 @@ export function calculateExactSizeInBytes(
 }
 
 /**
- * 青空文庫テキストから指定サイズのコンテンツを生成
+ * メモリ効率的な文字列パディング生成
+ */
+function generateSafePadding(targetSize: number, charSize: number = 3): string {
+  const MAX_CHUNK_SIZE = 100000; // 10万文字ずつ処理
+  const totalChars = Math.floor(targetSize / charSize);
+
+  if (totalChars <= 0) return '';
+
+  let result = '';
+  let remainingChars = totalChars;
+
+  while (remainingChars > 0) {
+    const chunkSize = Math.min(remainingChars, MAX_CHUNK_SIZE);
+    result += 'あ'.repeat(chunkSize);
+    remainingChars -= chunkSize;
+  }
+
+  return result;
+}
+
+/**
+ * 青空文庫作品から適切な作品を選択
+ */
+function selectOptimalWorks(targetBytes: number): string[] {
+  const avgWorkSize = 2000; // 1作品あたりの平均文字数
+  const estimatedWorksNeeded = Math.max(
+    1,
+    Math.floor(targetBytes / avgWorkSize)
+  );
+
+  // 利用可能な作品数を超えないよう調整
+  const actualWorksNeeded = Math.min(
+    estimatedWorksNeeded,
+    AOZORA_BUNKO_SAMPLES.length
+  );
+
+  return AOZORA_BUNKO_SAMPLES.slice(0, actualWorksNeeded).map(work => work.id);
+}
+
+/**
+ * 青空文庫コンテンツ生成（メモリ効率化版）
  */
 export function generateAozoraBunkoContent(
   targetBytes: number,
   selectedWorks?: string[]
 ): string {
-  const worksToUse = selectedWorks?.length
-    ? AOZORA_BUNKO_SAMPLES.filter(work => selectedWorks.includes(work.id))
-    : AOZORA_BUNKO_SAMPLES;
+  // 最大サイズ制限を設定（50MB）
+  const MAX_FILE_SIZE = 50 * SIZE_UNITS.MB;
+  if (targetBytes > MAX_FILE_SIZE) {
+    throw new Error(
+      `ファイルサイズが大きすぎます。最大${formatBytes(
+        MAX_FILE_SIZE
+      )}まで対応しています。`
+    );
+  }
+
+  const works = selectedWorks || selectOptimalWorks(targetBytes);
+  const selectedSamples = AOZORA_BUNKO_SAMPLES.filter(work =>
+    works.includes(work.id)
+  );
 
   let content = '';
-  let currentSize = 0;
-  let workIndex = 0;
 
-  // タイトルとヘッダーを追加
-  const header = `# TestData Buddy - ファイル容量テスト用データ
-# 生成日時: ${new Date().toISOString()}
-# 目標サイズ: ${targetBytes} bytes (${(targetBytes / SIZE_UNITS.KB).toFixed(
-    2
-  )} KB)
-# 青空文庫作品より生成
+  // ヘッダー情報
+  content += '='.repeat(50) + '\n';
+  content += 'TestData Buddy - 青空文庫テストデータ\n';
+  content += `生成日時: ${new Date().toLocaleString()}\n`;
+  content += `目標サイズ: ${formatBytes(targetBytes)}\n`;
+  content += '='.repeat(50) + '\n\n';
 
-======================================================
+  // 青空文庫作品を追加
+  selectedSamples.forEach((work, index) => {
+    content += `【作品 ${index + 1}】\n`;
+    content += `タイトル: ${work.title}\n`;
+    content += `著者: ${work.author}\n`;
+    content += `概要: ${work.description}\n`;
+    content += '-'.repeat(30) + '\n';
+    content += work.content + '\n\n';
+  });
 
-`;
+  // 現在のサイズを確認
+  const currentSize = Buffer.byteLength(content, 'utf8');
 
-  content += header;
-  currentSize = Buffer.byteLength(content, 'utf8');
+  // 不足分をパディングで補完（安全な方式）
+  if (currentSize < targetBytes) {
+    const paddingSize = targetBytes - currentSize - 100; // バッファを残す
+    if (paddingSize > 0) {
+      content += '\n' + '='.repeat(50) + '\n';
+      content += '以下、サイズ調整用パディング:\n';
+      content += '-'.repeat(30) + '\n';
 
-  // 目標サイズに達するまでテキストを繰り返し追加
-  while (currentSize < targetBytes) {
-    const work = worksToUse[workIndex % worksToUse.length];
-
-    const workSection = `
-
-【${work.title}】
-作者: ${work.author}
-
-${work.content}
-
-出典: ${work.originalSource}
-説明: ${work.description}
-
-======================================================
-
-`;
-
-    const sectionSize = Buffer.byteLength(workSection, 'utf8');
-
-    if (currentSize + sectionSize <= targetBytes) {
-      content += workSection;
-      currentSize += sectionSize;
-    } else {
-      // 残りサイズに合わせて調整
-      const remainingSize = targetBytes - currentSize;
-      const remainingText =
-        '残り' + remainingSize + 'バイト分のパディング文字: ';
-      const paddingSize =
-        remainingSize - Buffer.byteLength(remainingText, 'utf8');
-
-      if (paddingSize > 0) {
-        content += remainingText + 'あ'.repeat(Math.floor(paddingSize / 3)); // 日本語文字は3バイト
+      try {
+        const padding = generateSafePadding(paddingSize);
+        content += padding;
+      } catch (error) {
+        console.warn('パディング生成でエラー:', error);
+        // エラーが発生した場合は短いパディングで代替
+        content += 'パディングデータ（エラーのため短縮）\n'.repeat(
+          Math.min(1000, Math.floor(paddingSize / 50))
+        );
       }
-      break;
     }
-
-    workIndex++;
   }
 
   return content;
@@ -322,80 +354,117 @@ export function generateRealJPEG(targetBytes: number): Uint8Array {
 }
 
 /**
- * 実際のテキストファイルを生成（青空文庫ベース）
+ * バイト数をフォーマット
+ */
+function formatBytes(bytes: number): string {
+  if (bytes >= SIZE_UNITS.GB) {
+    return `${(bytes / SIZE_UNITS.GB).toFixed(2)} GB`;
+  } else if (bytes >= SIZE_UNITS.MB) {
+    return `${(bytes / SIZE_UNITS.MB).toFixed(2)} MB`;
+  } else if (bytes >= SIZE_UNITS.KB) {
+    return `${(bytes / SIZE_UNITS.KB).toFixed(2)} KB`;
+  } else {
+    return `${bytes} B`;
+  }
+}
+
+/**
+ * 実際のテキストファイル生成（エラーハンドリング強化版）
  */
 export function generateRealTextFile(
   targetBytes: number,
   fileType: 'txt' | 'json' | 'csv' | 'xml' | 'yaml' = 'txt'
 ): string {
-  const baseContent = generateAozoraBunkoContent(
-    targetBytes * 0.8,
-    selectOptimalWorks(targetBytes * 0.8)
-  ); // 余裕を持たせる
+  try {
+    // 最大サイズチェック
+    const MAX_FILE_SIZE = 50 * SIZE_UNITS.MB;
+    if (targetBytes > MAX_FILE_SIZE) {
+      throw new Error(
+        `ファイルサイズが大きすぎます。最大${formatBytes(
+          MAX_FILE_SIZE
+        )}まで対応しています。`
+      );
+    }
 
-  switch (fileType) {
-    case 'json':
-      const jsonContent: any = {
-        metadata: {
-          generator: 'TestData Buddy',
-          timestamp: new Date().toISOString(),
-          targetSize: targetBytes,
-          actualSize: 0,
-          source: 'aozora-bunko',
-        },
-        content: baseContent,
-        authors: AOZORA_BUNKO_SAMPLES.map(work => work.author),
-        works: AOZORA_BUNKO_SAMPLES.map(work => ({
-          id: work.id,
-          title: work.title,
-        })),
-      };
-      let jsonString = JSON.stringify(jsonContent, null, 2);
+    const selectedWorks = selectOptimalWorks(targetBytes);
+    const baseContent = generateAozoraBunkoContent(
+      targetBytes * 0.8,
+      selectedWorks
+    ); // 80%をベースコンテンツに
 
-      // サイズ調整
-      const currentJsonSize = Buffer.byteLength(jsonString, 'utf8');
-      if (currentJsonSize < targetBytes) {
-        const padding = ' '.repeat(targetBytes - currentJsonSize - 10);
-        jsonContent.metadata.padding = padding;
-        jsonString = JSON.stringify(jsonContent, null, 2);
-      }
+    switch (fileType) {
+      case 'csv':
+        let csvContent = 'ID,タイトル,著者,概要,本文の一部\n';
 
-      // Update actual size after padding
-      jsonContent.metadata.actualSize = Buffer.byteLength(jsonString, 'utf8');
-      if (jsonContent.metadata.actualSize !== currentJsonSize) {
-        jsonString = JSON.stringify(jsonContent, null, 2);
-      }
+        AOZORA_BUNKO_SAMPLES.forEach((work, index) => {
+          const excerpt = work.content
+            .substring(0, 100)
+            .replace(/"/g, '""')
+            .replace(/\n/g, ' ');
+          csvContent += `"${work.id}","${work.title}","${work.author}","${work.description}","${excerpt}"\n`;
+        });
 
-      return jsonString;
-
-    case 'csv':
-      const lines = baseContent.split('\n');
-      let csvContent = 'id,line_number,content,author,length\n';
-
-      lines.forEach((line, index) => {
-        const author =
-          AOZORA_BUNKO_SAMPLES[index % AOZORA_BUNKO_SAMPLES.length].author;
-        csvContent += `${index + 1},${index + 1},"${line.replace(
-          /"/g,
-          '""'
-        )}","${author}",${line.length}\n`;
-      });
-
-      // サイズ調整
-      const currentCsvSize = Buffer.byteLength(csvContent, 'utf8');
-      if (currentCsvSize < targetBytes) {
-        const paddingLines = Math.floor((targetBytes - currentCsvSize) / 50);
-        for (let i = 0; i < paddingLines; i++) {
-          csvContent += `${lines.length + i + 1},${
-            lines.length + i + 1
-          },"パディング行データ","青空文庫",10\n`;
+        // サイズ調整
+        const currentCsvSize = Buffer.byteLength(csvContent, 'utf8');
+        if (currentCsvSize < targetBytes) {
+          const paddingSize = targetBytes - currentCsvSize - 100;
+          if (paddingSize > 0) {
+            csvContent += '\n# パディング行\n';
+            const paddingLines = Math.floor(paddingSize / 50);
+            for (let i = 0; i < Math.min(paddingLines, 10000); i++) {
+              csvContent += `"padding-${i}","パディングデータ","テスト","サイズ調整用","${generateSafePadding(
+                20
+              )}"\n`;
+            }
+          }
         }
-      }
 
-      return csvContent;
+        return csvContent;
 
-    case 'xml':
-      let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+      case 'json':
+        const jsonContent: any = {
+          metadata: {
+            generator: 'TestData Buddy',
+            timestamp: new Date().toISOString(),
+            targetSize: targetBytes,
+            actualSize: 0,
+            source: 'aozora-bunko',
+          },
+          content: baseContent.substring(
+            0,
+            Math.min(baseContent.length, 10000)
+          ), // JSONでは短めに
+          authors: AOZORA_BUNKO_SAMPLES.map(work => work.author),
+          works: AOZORA_BUNKO_SAMPLES.map(work => ({
+            id: work.id,
+            title: work.title,
+          })),
+        };
+
+        // サイズ調整用のパディングフィールドを追加
+        let jsonString = JSON.stringify(jsonContent, null, 2);
+        const currentJsonSize = Buffer.byteLength(jsonString, 'utf8');
+
+        if (currentJsonSize < targetBytes) {
+          const paddingSize = targetBytes - currentJsonSize - 100;
+          if (paddingSize > 0) {
+            try {
+              jsonContent.padding = generateSafePadding(
+                Math.min(paddingSize, 1000000)
+              ); // 最大1MBのパディング
+              jsonString = JSON.stringify(jsonContent, null, 2);
+            } catch (error) {
+              console.warn('JSONパディング生成エラー:', error);
+              jsonContent.padding = 'パディングデータ生成エラー';
+              jsonString = JSON.stringify(jsonContent, null, 2);
+            }
+          }
+        }
+
+        return jsonString;
+
+      case 'xml':
+        let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <testdata>
   <metadata>
     <generator>TestData Buddy</generator>
@@ -408,26 +477,39 @@ ${AOZORA_BUNKO_SAMPLES.map(
   work => `    <author id="${work.id}">${work.author}</author>`
 ).join('\n')}
   </authors>
-  <content><![CDATA[${baseContent}]]></content>
+  <content><![CDATA[
+${baseContent.substring(0, Math.min(baseContent.length, 50000))}
+  ]]></content>
 </testdata>`;
 
-      // サイズ調整
-      const currentXmlSize = Buffer.byteLength(xmlContent, 'utf8');
-      if (currentXmlSize < targetBytes) {
-        const padding =
-          '\n<!-- パディングコメント: ' +
-          'あ'.repeat(Math.floor((targetBytes - currentXmlSize - 50) / 3)) +
-          ' -->';
-        xmlContent = xmlContent.replace(
-          '</testdata>',
-          padding + '\n</testdata>'
-        );
-      }
+        // サイズ調整
+        const currentXmlSize = Buffer.byteLength(xmlContent, 'utf8');
+        if (currentXmlSize < targetBytes) {
+          const paddingSize = targetBytes - currentXmlSize - 100;
+          if (paddingSize > 0) {
+            try {
+              const padding =
+                '\n<!-- パディングコメント: ' +
+                generateSafePadding(Math.min(paddingSize, 500000)) +
+                ' -->';
+              xmlContent = xmlContent.replace(
+                '</testdata>',
+                padding + '\n</testdata>'
+              );
+            } catch (error) {
+              console.warn('XMLパディング生成エラー:', error);
+              xmlContent = xmlContent.replace(
+                '</testdata>',
+                '\n<!-- パディング生成エラー -->\n</testdata>'
+              );
+            }
+          }
+        }
 
-      return xmlContent;
+        return xmlContent;
 
-    case 'yaml':
-      let yamlContent = `# TestData Buddy - Generated Content
+      case 'yaml':
+        let yamlContent = `# TestData Buddy - Generated Content
 metadata:
   generator: "TestData Buddy"
   timestamp: "${new Date().toISOString()}"
@@ -441,36 +523,59 @@ ${AOZORA_BUNKO_SAMPLES.map(
 
 content: |
 ${baseContent
+  .substring(0, Math.min(baseContent.length, 30000))
   .split('\n')
   .map(line => '  ' + line)
   .join('\n')}`;
 
-      // サイズ調整
-      const currentYamlSize = Buffer.byteLength(yamlContent, 'utf8');
-      if (currentYamlSize < targetBytes) {
-        const padding =
-          '\n# パディング: ' +
-          'あ'.repeat(Math.floor((targetBytes - currentYamlSize - 20) / 3));
-        yamlContent += padding;
-      }
+        // サイズ調整
+        const currentYamlSize = Buffer.byteLength(yamlContent, 'utf8');
+        if (currentYamlSize < targetBytes) {
+          const paddingSize = targetBytes - currentYamlSize - 50;
+          if (paddingSize > 0) {
+            try {
+              const padding =
+                '\n# パディング: ' +
+                generateSafePadding(Math.min(paddingSize, 300000));
+              yamlContent += padding;
+            } catch (error) {
+              console.warn('YAMLパディング生成エラー:', error);
+              yamlContent += '\n# パディング生成エラー';
+            }
+          }
+        }
 
-      return yamlContent;
+        return yamlContent;
 
-    default:
-      let txtContent = baseContent;
+      default: // txt
+        let txtContent = baseContent;
 
-      // サイズ調整
-      const currentTxtSize = Buffer.byteLength(txtContent, 'utf8');
-      if (currentTxtSize < targetBytes) {
-        const padding =
-          '\n\n' +
-          '='.repeat(50) +
-          '\n追加パディング:\n' +
-          'あ'.repeat(Math.floor((targetBytes - currentTxtSize - 100) / 3));
-        txtContent += padding;
-      }
+        // サイズ調整
+        const currentTxtSize = Buffer.byteLength(txtContent, 'utf8');
+        if (currentTxtSize < targetBytes) {
+          const paddingSize = targetBytes - currentTxtSize - 100;
+          if (paddingSize > 0) {
+            txtContent += '\n\n' + '='.repeat(50) + '\n追加パディング:\n';
+            try {
+              txtContent += generateSafePadding(paddingSize);
+            } catch (error) {
+              console.warn('テキストパディング生成エラー:', error);
+              txtContent += 'パディング生成エラーが発生しました。\n'.repeat(
+                Math.min(1000, Math.floor(paddingSize / 30))
+              );
+            }
+          }
+        }
 
-      return txtContent;
+        return txtContent;
+    }
+  } catch (error) {
+    console.error('ファイル生成エラー:', error);
+    throw new Error(
+      `ファイル生成中にエラーが発生しました: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
   }
 }
 
