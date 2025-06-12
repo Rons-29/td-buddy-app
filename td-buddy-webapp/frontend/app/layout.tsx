@@ -15,11 +15,28 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  ),
   title: 'TestData Buddy - AI連携型テストデータ生成ツール',
   description:
     'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
   keywords: ['テストデータ', 'QA', 'AI', 'データ生成', 'パスワード生成'],
   authors: [{ name: 'TD Team' }],
+  openGraph: {
+    title: 'TestData Buddy - AI連携型テストデータ生成ツール',
+    description:
+      'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
+    type: 'website',
+    locale: 'ja_JP',
+    siteName: 'TestData Buddy',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'TestData Buddy - AI連携型テストデータ生成ツール',
+    description:
+      'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
+  },
   icons: {
     icon: '/td-favicon.svg',
     shortcut: '/td-favicon.svg',

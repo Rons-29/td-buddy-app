@@ -190,7 +190,7 @@ export default function Home() {
               ファイルサイズテスト
             </h3>
             <p className="text-yellow-600 mb-4">
-              指定サイズのテストファイルを生成（1GB対応）
+              指定サイズのテストファイルを生成（1GB対応・青空文庫データ対応）
             </p>
             <Link href="/file-size-test">
               <button className="td-button bg-gradient-to-r from-yellow-500 to-amber-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">

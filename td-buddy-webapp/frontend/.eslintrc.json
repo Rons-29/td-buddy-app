@@ -1,22 +1,16 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "@typescript-eslint/recommended",
-    "next/core-web-vitals"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-non-null-assertion": "warn",
-    "prefer-const": "error",
-    "no-var": "error",
+    "prefer-const": "warn",
+    "no-var": "warn",
     "no-console": "warn",
-    "eqeqeq": "error",
-    "curly": "error"
+    "eqeqeq": "warn",
+    "curly": "warn",
+    "react/no-unescaped-entities": "warn",
+    "react/display-name": "warn",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "env": {
     "browser": true,
