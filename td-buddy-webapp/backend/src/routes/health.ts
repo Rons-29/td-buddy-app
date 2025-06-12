@@ -1,5 +1,5 @@
-import express from 'express';
-import { HealthCheckResponse } from '../types/api';
+import express 
+ HealthCheckResponse } 
 
 const router = express.Router();
 
@@ -73,7 +73,7 @@ router.get('/', async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Health check error:', error);
+    logger.error('Health check error:', error);
 
     res.status(503).json({
       success: false,
@@ -138,7 +138,7 @@ router.get('/detailed', async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Detailed health check error:', error);
+    logger.error('Detailed health check error:', error);
 
     res.status(500).json({
       success: false,

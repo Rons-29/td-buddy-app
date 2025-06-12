@@ -1,5 +1,5 @@
-import { Server as SocketIOServer } from 'socket.io';
-import { Server as HTTPServer } from 'http';
+ Server as SocketIOServer } 
+ Server as HTTPServer } 
 
 /**
  * WebSocketサービスクラス
@@ -31,7 +31,7 @@ export class WebSocketService {
 
   private setupEventHandlers() {
     this.io.on('connection', (socket) => {
-      console.log('🔌 WebSocket接続確立:', socket.id);
+      logger.log('🔌 WebSocket接続確立:', socket.id);
 
       // クライアント接続時の初期化
       socket.emit('connection_established', {
@@ -43,7 +43,7 @@ export class WebSocketService {
       // AIチャットルームに参加
       socket.on('join_ai_chat', (data) => {
         socket.join('ai_chat');
-        console.log('🍺 AIチャットルーム参加:', socket.id);
+        logger.log('🍺 AIチャットルーム参加:', socket.id);
         
         socket.emit('joined_ai_chat', {
           message: 'AIチャットルームに参加しました',
@@ -54,7 +54,7 @@ export class WebSocketService {
       // データ生成ルームに参加
       socket.on('join_data_generation', (data) => {
         socket.join('data_generation');
-        console.log('📊 データ生成ルーム参加:', socket.id);
+        logger.log('📊 データ生成ルーム参加:', socket.id);
         
         socket.emit('joined_data_generation', {
           message: 'データ生成ルームに参加しました',
@@ -64,12 +64,12 @@ export class WebSocketService {
 
       // 切断時の処理
       socket.on('disconnect', (reason) => {
-        console.log('❌ WebSocket切断:', socket.id, '理由:', reason);
+        logger.log('❌ WebSocket切断:', socket.id, '理由:', reason);
       });
 
       // エラーハンドリング
       socket.on('error', (error) => {
-        console.error('❌ WebSocketエラー:', error);
+        logger.error('❌ WebSocketエラー:', error);
         socket.emit('error_occurred', {
           error: 'WebSocket通信エラーが発生しました',
           timestamp: new Date().toISOString()
@@ -107,7 +107,7 @@ export class WebSocketService {
   /**
    * AI解析完了の通知
    */
-  notifyAIAnalysisComplete(sessionId: string, parsedParams: any) {
+  notifyAIAnalysisComplete(sessionId: string, parsedParams: Record<string, unknown>) {
     this.io.to('ai_chat').emit('ai_analysis_complete', {
       sessionId,
       parsedParams,
@@ -133,7 +133,7 @@ export class WebSocketService {
   /**
    * データ生成開始の通知
    */
-  notifyDataGenerationStart(sessionId: string, params: any) {
+  notifyDataGenerationStart(sessionId: string, params: Record<string, unknown>) {
     this.io.to('data_generation').emit('data_generation_start', {
       sessionId,
       params,
@@ -146,7 +146,7 @@ export class WebSocketService {
   /**
    * データ生成進行状況の通知
    */
-  notifyDataGenerationProgress(sessionId: string, currentCount: number, totalCount: number, sampleData?: any) {
+  notifyDataGenerationProgress(sessionId: string, currentCount: number, totalCount: number, sampleData?: Record<string, unknown>) {
     const progress = Math.round((currentCount / totalCount) * 100);
     
     this.io.to('data_generation').emit('data_generation_progress', {
@@ -163,7 +163,7 @@ export class WebSocketService {
   /**
    * データ生成完了の通知
    */
-  notifyDataGenerationComplete(sessionId: string, generatedData: any, stats: any) {
+  notifyDataGenerationComplete(sessionId: string, generatedData: Record<string, unknown>, stats: Record<string, unknown>) {
     this.io.to('data_generation').emit('data_generation_complete', {
       sessionId,
       generatedData,
@@ -199,7 +199,7 @@ export class WebSocketService {
   /**
    * 特定のクライアントへのメッセージ送信
    */
-  sendToClient(socketId: string, event: string, data: any) {
+  sendToClient(socketId: string, event: string) {
     this.io.to(socketId).emit(event, data);
   }
 
@@ -233,7 +233,7 @@ export class WebSocketService {
       ...progressData,
       timestamp: new Date().toISOString()
     });
-    console.log(`📊 進捗更新をブロードキャスト (${room}):`, progressData);
+    logger.log(`📊 進捗更新をブロードキャスト (${room}):`, progressData);
   }
 
   /**
@@ -250,7 +250,7 @@ export class WebSocketService {
       ...stepData,
       timestamp: new Date().toISOString()
     });
-    console.log(`📋 ステップ更新をブロードキャスト (${room}):`, stepData);
+    logger.log(`📋 ステップ更新をブロードキャスト (${room}):`, stepData);
   }
 
   /**
@@ -268,13 +268,13 @@ export interface WebSocketEvents {
   // AI解析関連
   ai_analysis_start: { sessionId: string; userInput: string; message: string; timestamp: string; stage: string };
   ai_analysis_progress: { sessionId: string; stage: string; progress: number; message: string; timestamp: string };
-  ai_analysis_complete: { sessionId: string; parsedParams: any; message: string; timestamp: string; stage: string };
+  ai_analysis_complete: { sessionId: string; parsedParams: Record<string, unknown>; message: string; timestamp: string; stage: string };
   ai_analysis_error: { sessionId: string; error: string; message: string; timestamp: string; stage: string };
 
   // データ生成関連
-  data_generation_start: { sessionId: string; params: any; message: string; timestamp: string; totalCount: number };
-  data_generation_progress: { sessionId: string; currentCount: number; totalCount: number; progress: number; sampleData?: any; message: string; timestamp: string };
-  data_generation_complete: { sessionId: string; generatedData: any; stats: any; message: string; timestamp: string };
+  data_generation_start: { sessionId: string; params: Record<string, unknown>; message: string; timestamp: string; totalCount: number };
+  data_generation_progress: { sessionId: string; currentCount: number; totalCount: number; progress: number; sampleData?: Record<string, unknown>; message: string; timestamp: string };
+  data_generation_complete: { sessionId: string; generatedData: Record<string, unknown>; stats: Record<string, unknown>; message: string; timestamp: string };
   data_generation_error: { sessionId: string; error: string; message: string; timestamp: string };
 
   // システム通知

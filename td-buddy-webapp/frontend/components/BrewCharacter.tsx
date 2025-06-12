@@ -47,7 +47,6 @@ const BrewCharacter: React.FC<BrewCharacterProps> = ({
   className = '',
 }) => {
   const [currentMessage, setCurrentMessage] = useState<string>(message || '');
-  const [isVisible, setIsVisible] = useState<boolean>(true);
 
   useEffect(() => {
     if (message) {

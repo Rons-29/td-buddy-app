@@ -1,6 +1,6 @@
-import express from 'express';
-import { UuidService } from '../services/UuidService';
-import { ApiResponse, UuidGenerateRequest, UuidValidateRequest } from '../types/api';
+import express 
+ UuidService } 
+ ApiResponse, UuidGenerateRequest, UuidValidateRequest } 
 
 const router = express.Router();
 const uuidService = new UuidService();
@@ -62,7 +62,7 @@ router.post('/generate', async (req: express.Request, res: express.Response) => 
     const ipAddress = req.ip;
     const userAgent = req.headers['user-agent'];
 
-    console.log(`🍺 Brew: ${criteria.version}バージョンのUUIDを${criteria.count}個生成を開始します`);
+    logger.log(`🍺 Brew: ${criteria.version}バージョンのUUIDを${criteria.count}個生成を開始します`);
 
     const result = await uuidService.generateUuids(
       criteria,
@@ -85,7 +85,7 @@ router.post('/generate', async (req: express.Request, res: express.Response) => 
     return res.json(response);
 
   } catch (error: any) {
-    console.error('❌ UUID生成API エラー:', error);
+    logger.error('❌ UUID生成API エラー:', error);
     
     const response: ApiResponse = {
       success: false,
@@ -130,7 +130,7 @@ router.post('/validate', async (req: express.Request, res: express.Response) => 
 
     const request: UuidValidateRequest = req.body;
     
-    console.log(`🍺 Brew: ${request.uuids.length}個のUUIDの検証を開始します`);
+    logger.log(`🍺 Brew: ${request.uuids.length}個のUUIDの検証を開始します`);
 
     const result = await uuidService.validateUuids(request);
 
@@ -148,7 +148,7 @@ router.post('/validate', async (req: express.Request, res: express.Response) => 
     return res.json(response);
 
   } catch (error: any) {
-    console.error('❌ UUID検証API エラー:', error);
+    logger.error('❌ UUID検証API エラー:', error);
     
     const response: ApiResponse = {
       success: false,
@@ -213,7 +213,7 @@ router.get('/history', async (req: express.Request, res: express.Response) => {
     return res.json(response);
 
   } catch (error: any) {
-    console.error('❌ UUID履歴取得API エラー:', error);
+    logger.error('❌ UUID履歴取得API エラー:', error);
     
     const response: ApiResponse = {
       success: false,
@@ -238,7 +238,7 @@ router.get('/statistics', async (req: express.Request, res: express.Response) =>
   const startTime = Date.now();
   
   try {
-    console.log('🍺 Brew: UUID統計情報を取得中...');
+    logger.log('🍺 Brew: UUID統計情報を取得中...');
 
     const result = await uuidService.getStatistics();
 
@@ -256,7 +256,7 @@ router.get('/statistics', async (req: express.Request, res: express.Response) =>
     return res.json(response);
 
   } catch (error: any) {
-    console.error('❌ UUID統計取得API エラー:', error);
+    logger.error('❌ UUID統計取得API エラー:', error);
     
     const response: ApiResponse = {
       success: false,

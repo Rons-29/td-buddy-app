@@ -589,7 +589,6 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const [rows, setRows] = useState<CSVRow[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [rowCount, setRowCount] = useState(100);
-  const [error, setError] = useState<string | null>(null);
   const [brewMood, setBrewMood] = useState<
     | 'happy'
     | 'excited'
@@ -602,7 +601,6 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const [brewMessage, setBrewMessage] = useState(
     'CSVテストデータ生成の準備ができました！'
   );
-  const [isCopied, setIsCopied] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSettings, setExportSettings] = useState<ExportSettings>({
     encoding: 'utf-8-bom',

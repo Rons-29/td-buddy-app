@@ -1,4 +1,4 @@
-import { performance } from 'perf_hooks';
+ performance } 
 
 export interface PerformanceMetrics {
   operation: string;

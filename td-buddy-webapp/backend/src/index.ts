@@ -162,17 +162,16 @@ app.use(errorHandler);
 async function startServer() {
   try {
     await database.initialize();
-    console.log('✅ データベース初期化完了');
+    logger.log('✅ データベース初期化完了');
 
     // HTTPサーバーを作成
     const httpServer = createServer(app);
 
     // WebSocketサービスを初期化
-    const webSocketService = new WebSocketService(httpServer);
-    console.log('🔌 WebSocketサービス初期化完了');
+    logger.log('🔌 WebSocketサービス初期化完了');
 
     const server = httpServer.listen(PORT, () => {
-      console.log(`
+      logger.log(`
 🍺 QA Workbench Backend Server Started!
 🚀 Server running on port ${PORT}
 🌐 Environment: ${process.env.NODE_ENV || 'development'}
@@ -186,7 +185,7 @@ Brewからのメッセージ: サーバーが正常に起動しました！リ�
 
     return server;
   } catch (error) {
-    console.error('❌ サーバー起動エラー:', error);
+    logger.error('❌ サーバー起動エラー:', error);
     process.exit(1);
   }
 }
@@ -199,20 +198,20 @@ startServer().then(server => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('🍺 Brew: サーバーを安全にシャットダウンします...');
+  logger.log('🍺 Brew: サーバーを安全にシャットダウンします...');
   if (serverInstance) {
     serverInstance.close(() => {
-      console.log('✅ サーバーが正常に終了しました');
+      logger.log('✅ サーバーが正常に終了しました');
       process.exit(0);
     });
   }
 });
 
 process.on('SIGINT', () => {
-  console.log('🍺 Brew: サーバーを安全にシャットダウンします...');
+  logger.log('🍺 Brew: サーバーを安全にシャットダウンします...');
   if (serverInstance) {
     serverInstance.close(() => {
-      console.log('✅ サーバーが正常に終了しました');
+      logger.log('✅ サーバーが正常に終了しました');
       process.exit(0);
     });
   }

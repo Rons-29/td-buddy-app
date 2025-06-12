@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
-import { tdLog } from './requestLogger';
+ Request, Response, NextFunction } 
 
 export interface ErrorWithStatus extends Error {
   status?: number;
@@ -194,18 +193,18 @@ function logError(err: Error | TDError, requestId: string, req: Request): void {
 
   // エラーレベルに応じたログ出力
   if (err instanceof TDError && err.status < 500) {
-    console.warn('🟡 Client Error:', JSON.stringify(logData, null, 2));
+    logger.warn('🟡 Client Error:', JSON.stringify(logData, null, 2));
   } else {
-    console.error('🔴 Server Error:', JSON.stringify(logData, null, 2));
+    logger.error('🔴 Server Error:', JSON.stringify(logData, null, 2));
   }
 
   // Brewからのメッセージ
   if (err instanceof PasswordGenerationError) {
-    console.log('🍺 Brew: パスワード生成でエラーが発生しました。設定を確認してください。');
+    logger.log('🍺 Brew: パスワード生成でエラーが発生しました。設定を確認してください。');
   } else if (err instanceof AIServiceError) {
-    console.log('🍺 Brew: AI連携サービスに問題があります。しばらく待ってから再試行してください。');
+    logger.log('🍺 Brew: AI連携サービスに問題があります。しばらく待ってから再試行してください。');
   } else if (err instanceof RateLimitError) {
-    console.log('🍺 Brew: リクエスト制限に達しました。少し間隔を空けてからお試しください。');
+    logger.log('🍺 Brew: リクエスト制限に達しました。少し間隔を空けてからお試しください。');
   }
 }
 
@@ -221,9 +220,9 @@ export function notFoundHandler(
 
 // 非同期エラーキャッチ用ラッパー
 export function asyncHandler<T>(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<T>
+  fn: (req: Request, res: Response) => Promise<T>
 ) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, res: Response): void => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 }
@@ -278,8 +277,8 @@ export function throwIfNotPositive(value: number, fieldName: string): void {
 export function setupGlobalErrorHandlers(): void {
   // 未処理の Promise rejection をキャッチ
   process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
-    console.error('🚨 Unhandled Promise Rejection at:', promise, 'reason:', reason);
-    console.log('🍺 Brew: 予期しないエラーが発生しました。システムを安全にシャットダウンします。');
+    logger.error('🚨 Unhandled Promise Rejection at:', promise, 'reason:', reason);
+    logger.log('🍺 Brew: 予期しないエラーが発生しました。システムを安全にシャットダウンします。');
     
     // ログに記録後、プロセスを終了
     setTimeout(() => {
@@ -289,8 +288,8 @@ export function setupGlobalErrorHandlers(): void {
 
   // 未処理の例外をキャッチ
   process.on('uncaughtException', (error: Error) => {
-    console.error('🚨 Uncaught Exception:', error);
-    console.log('🍺 Brew: 重大なエラーが発生しました。即座にシャットダウンします。');
+    logger.error('🚨 Uncaught Exception:', error);
+    logger.log('🍺 Brew: 重大なエラーが発生しました。即座にシャットダウンします。');
     
     // 即座にプロセスを終了
     process.exit(1);
@@ -298,13 +297,13 @@ export function setupGlobalErrorHandlers(): void {
 
   // SIGTERM シグナルの処理
   process.on('SIGTERM', () => {
-    console.log('🍺 Brew: SIGTERMを受信しました。安全にシャットダウンします...');
+    logger.log('🍺 Brew: SIGTERMを受信しました。安全にシャットダウンします...');
     process.exit(0);
   });
 
   // SIGINT シグナルの処理 (Ctrl+C)
   process.on('SIGINT', () => {
-    console.log('\n🍺 Brew: SIGINTを受信しました。安全にシャットダウンします...');
+    logger.log('\n🍺 Brew: SIGINTを受信しました。安全にシャットダウンします...');
     process.exit(0);
   });
 } 

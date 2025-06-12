@@ -7,7 +7,7 @@
  * @version 1.0.0
  */
 
-import { PersonalInfoService } from '../services/PersonalInfoService';
+ PersonalInfoService } 
 
 describe('🎯 Data Quality Tests', () => {
   let personalInfoService: PersonalInfoService;
@@ -422,6 +422,6 @@ describe('🎯 Data Quality Tests', () => {
 });
 
 // Brew からのメッセージ
-console.log(
+logger.log(
   '🍺 Brew: データ品質テストを実行中です！生成データの品質を徹底的にチェックしましょう♪'
 );

@@ -7,8 +7,8 @@
  * @version 1.0.0
  */
 
-import { PersonalInfoService } from '../services/PersonalInfoService';
-import { PersonalInfoGenerateRequest } from '../types/personalInfo';
+ PersonalInfoService } 
+ PersonalInfoGenerateRequest } 
 
 describe('🚨 Error Handling Tests', () => {
   let personalInfoService: PersonalInfoService;
@@ -321,4 +321,4 @@ describe('🚨 Error Handling Tests', () => {
 });
 
 // TD からのメッセージ
-console.log('🍺 Brew: エラーハンドリングテストを実行中です！システムの堅牢性をチェックしましょう♪'); 
+logger.log('🍺 Brew: エラーハンドリングテストを実行中です！システムの堅牢性をチェックしましょう♪'); 

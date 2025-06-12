@@ -1,6 +1,6 @@
-import Database from 'better-sqlite3';
-import fs from 'fs';
-import path from 'path';
+import Database 
+import fs 
+import path 
 
 export class DatabaseService {
   private db: Database.Database | null = null;
@@ -19,7 +19,7 @@ export class DatabaseService {
     if (!this.db) {
       this.db = new Database(this.dbPath);
       this.db.pragma('journal_mode = WAL');
-      console.log('✅ SQLite Database connected:', this.dbPath);
+      logger.log('✅ SQLite Database connected:', this.dbPath);
     }
   }
 
@@ -27,7 +27,7 @@ export class DatabaseService {
     if (this.db) {
       this.db.close();
       this.db = null;
-      console.log('📡 Database disconnected');
+      logger.log('📡 Database disconnected');
     }
   }
 
@@ -37,7 +37,7 @@ export class DatabaseService {
       const result = this.db!.prepare(sql).run(...params);
       return result;
     } catch (error) {
-      console.error('❌ Database run error:', error);
+      logger.error('❌ Database run error:', error);
       throw error;
     }
   }
@@ -48,7 +48,7 @@ export class DatabaseService {
       const results = this.db!.prepare(sql).all(...params);
       return results;
     } catch (error) {
-      console.error('❌ Database query error:', error);
+      logger.error('❌ Database query error:', error);
       throw error;
     }
   }
@@ -59,7 +59,7 @@ export class DatabaseService {
       const result = this.db!.prepare(sql).get(...params);
       return result;
     } catch (error) {
-      console.error('❌ Database get error:', error);
+      logger.error('❌ Database get error:', error);
       throw error;
     }
   }
@@ -157,7 +157,7 @@ export class DatabaseService {
       await this.run(createTable);
     }
     
-    console.log('✅ Database tables initialized');
+    logger.log('✅ Database tables initialized');
   }
 
   async cleanupExpiredData(): Promise<void> {
@@ -174,7 +174,7 @@ export class DatabaseService {
       'DELETE FROM generated_uuids WHERE expires_at < ?',
       [now]
     );
-    console.log(`🧹 Cleanup: ${deletedPasswords.changes + deletedPersonalInfo.changes + deletedUuids.changes} expired records deleted`);
+    logger.log(`🧹 Cleanup: ${deletedPasswords.changes + deletedPersonalInfo.changes + deletedUuids.changes} expired records deleted`);
   }
 
   async getStats(): Promise<any> {

@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 
-import * as path from 'path';
-import * as fs from 'fs';
-import { database } from '../database/database';
+import * as path 
+import * as fs 
+ database } 
 
 // コマンドライン引数の処理
 const args = process.argv.slice(2);
@@ -11,7 +11,7 @@ const command = args[0] || 'help';
 // データベース初期化スクリプト
 class DatabaseInitializer {
   async init(): Promise<void> {
-    console.log(`
+    logger.log(`
 🍺 QA Workbench データベース初期化スクリプト
 
 🏗️  データベースの初期化を開始します...
@@ -20,16 +20,16 @@ class DatabaseInitializer {
     try {
       // データベース接続
       await database.connect();
-      console.log('✅ データベース接続成功');
+      logger.log('✅ データベース接続成功');
 
       // テーブル初期化
       await database.initialize();
-      console.log('✅ テーブル初期化完了');
+      logger.log('✅ テーブル初期化完了');
 
       // データベース統計表示
       await this.showStats();
 
-      console.log(`
+      logger.log(`
 🎉 データベース初期化が完了しました！
 
 🍺 Brewからのメッセージ:
@@ -42,7 +42,7 @@ class DatabaseInitializer {
       `);
 
     } catch (error) {
-      console.error('❌ データベース初期化エラー:', error);
+      logger.error('❌ データベース初期化エラー:', error);
       process.exit(1);
     } finally {
       await database.disconnect();
@@ -50,7 +50,7 @@ class DatabaseInitializer {
   }
 
   async reset(): Promise<void> {
-    console.log(`
+    logger.log(`
 ⚠️  データベースリセット
     
 すべてのデータが削除されます。
@@ -59,15 +59,15 @@ class DatabaseInitializer {
 
     // 開発環境のみ許可
     if (process.env.NODE_ENV === 'production') {
-      console.error('❌ 本番環境でのデータベースリセットは禁止されています');
+      logger.error('❌ 本番環境でのデータベースリセットは禁止されています');
       process.exit(1);
     }
 
     // 確認プロンプト（非対話的環境では強制実行）
     if (process.stdin.isTTY && !args.includes('--force')) {
-      console.log('本当にリセットしますか？ (yes/no)');
+      logger.log('本当にリセットしますか？ (yes/no)');
       // 簡略化のため --force フラグで実行
-      console.log('--force フラグを使用して強制実行してください');
+      logger.log('--force フラグを使用して強制実行してください');
       process.exit(0);
     }
 
@@ -81,20 +81,20 @@ class DatabaseInitializer {
       
       if (fs.existsSync(dbPath)) {
         fs.unlinkSync(dbPath);
-        console.log(`🗑️  データベースファイルを削除しました: ${dbPath}`);
+        logger.log(`🗑️  データベースファイルを削除しました: ${dbPath}`);
       }
 
       // 再初期化
       await this.init();
 
     } catch (error) {
-      console.error('❌ データベースリセットエラー:', error);
+      logger.error('❌ データベースリセットエラー:', error);
       process.exit(1);
     }
   }
 
   async cleanup(): Promise<void> {
-    console.log(`
+    logger.log(`
 🧹 期限切れデータのクリーンアップ
     `);
 
@@ -103,7 +103,7 @@ class DatabaseInitializer {
       await database.cleanupExpiredData();
       await this.showStats();
 
-      console.log(`
+      logger.log(`
 ✅ クリーンアップ完了
 
 🍺 Brewからのメッセージ:
@@ -111,7 +111,7 @@ class DatabaseInitializer {
       `);
 
     } catch (error) {
-      console.error('❌ クリーンアップエラー:', error);
+      logger.error('❌ クリーンアップエラー:', error);
       process.exit(1);
     } finally {
       await database.disconnect();
@@ -122,7 +122,7 @@ class DatabaseInitializer {
     try {
       const stats = await database.getStats();
       
-      console.log(`
+      logger.log(`
 📊 データベース統計:
 ┌─────────────────┬────────┐
 │ テーブル        │ 件数   │
@@ -138,12 +138,12 @@ class DatabaseInitializer {
       `);
 
     } catch (error) {
-      console.error('❌ 統計取得エラー:', error);
+      logger.error('❌ 統計取得エラー:', error);
     }
   }
 
   async backup(): Promise<void> {
-    console.log(`
+    logger.log(`
 💾 データベースバックアップ
     `);
 
@@ -151,7 +151,7 @@ class DatabaseInitializer {
       const dbPath = process.env.DATABASE_URL?.replace('file:', '') || './data/td-buddy.db';
       
       if (!fs.existsSync(dbPath)) {
-        console.error('❌ データベースファイルが存在しません');
+        logger.error('❌ データベースファイルが存在しません');
         process.exit(1);
       }
 
@@ -169,7 +169,7 @@ class DatabaseInitializer {
       fs.copyFileSync(dbPath, backupPath);
 
       const stats = fs.statSync(backupPath);
-      console.log(`✅ バックアップ完了:
+      logger.log(`✅ バックアップ完了:
 📁 パス: ${backupPath}
 💾 サイズ: ${this.formatFileSize(stats.size)}
 ⏰ 作成日時: ${new Date().toLocaleString('ja-JP')}
@@ -178,19 +178,19 @@ class DatabaseInitializer {
 「データベースのバックアップが完了しました！安心ですね♪」`);
 
     } catch (error) {
-      console.error('❌ バックアップエラー:', error);
+      logger.error('❌ バックアップエラー:', error);
       process.exit(1);
     }
   }
 
   async migrate(): Promise<void> {
-    console.log(`
+    logger.log(`
 🔄 データベースマイグレーション
     `);
 
     // 将来のマイグレーション機能用のプレースホルダー
-    console.log('📋 マイグレーション機能は Phase 2 で実装予定です');
-    console.log('🍺 Brew: 現在のところ、必要なマイグレーションはありません！');
+    logger.log('📋 マイグレーション機能は Phase 2 で実装予定です');
+    logger.log('🍺 Brew: 現在のところ、必要なマイグレーションはありません！');
   }
 
   private formatFileSize(bytes: number): string {
@@ -204,7 +204,7 @@ class DatabaseInitializer {
   }
 
   showHelp(): void {
-    console.log(`
+    logger.log(`
 🍺 QA Workbench データベース管理ツール
 
 使用方法:
@@ -263,20 +263,20 @@ async function main() {
 
 // エラーハンドリング
 process.on('uncaughtException', (error) => {
-  console.error('💥 予期せぬエラー:', error);
-  console.log('🍺 Brew: 申し訳ありません。データベース操作中にエラーが発生しました。');
+  logger.error('💥 予期せぬエラー:', error);
+  logger.log('🍺 Brew: 申し訳ありません。データベース操作中にエラーが発生しました。');
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason) => {
-  console.error('💥 未処理のPromise拒否:', reason);
-  console.log('🍺 Brew: Promise関連のエラーが発生しました。');
+  logger.error('💥 未処理のPromise拒否:', reason);
+  logger.log('🍺 Brew: Promise関連のエラーが発生しました。');
   process.exit(1);
 });
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  console.log('\n🍺 Brew: データベース操作を中断します...');
+  logger.log('\n🍺 Brew: データベース操作を中断します...');
   await database.disconnect();
   process.exit(0);
 });
@@ -284,7 +284,7 @@ process.on('SIGINT', async () => {
 // スクリプト実行
 if (require.main === module) {
   main().catch((error) => {
-    console.error('❌ スクリプト実行エラー:', error);
+    logger.error('❌ スクリプト実行エラー:', error);
     process.exit(1);
   });
 } 

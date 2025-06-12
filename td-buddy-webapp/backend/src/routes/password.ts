@@ -1,7 +1,7 @@
-import express, { Request, Response } from 'express';
-import { ValidationError } from '../middleware/errorHandler';
-import { CompositionPasswordService } from '../services/CompositionPasswordService';
-import { PasswordService } from '../services/passwordService';
+ Request, Response } 
+ ValidationError } 
+ CompositionPasswordService } 
+ PasswordService } 
 import {
   APIResponse,
   CompositionPasswordRequest,
@@ -72,7 +72,7 @@ router.post('/generate', async (req: Request, res: Response) => {
 
     res.json(response);
   } catch (error) {
-    console.error('パスワード生成エラー:', error);
+    logger.error('パスワード生成エラー:', error);
 
     const response: APIResponse<null> = {
       success: false,
@@ -107,7 +107,7 @@ router.post(
       const userAgent = req.headers['user-agent'];
 
       // リクエスト詳細をログ出力
-      console.log(
+      logger.log(
         '🔍 リクエスト詳細:',
         JSON.stringify(
           {
@@ -155,7 +155,7 @@ router.post(
 
       res.json(response);
     } catch (error) {
-      console.error('構成プリセット付きパスワード生成エラー:', error);
+      logger.error('構成プリセット付きパスワード生成エラー:', error);
 
       const response: APIResponse<null> = {
         success: false,
@@ -207,7 +207,7 @@ router.get('/presets', async (req: Request, res: Response) => {
 
     res.json(response);
   } catch (error) {
-    console.error('プリセット取得エラー:', error);
+    logger.error('プリセット取得エラー:', error);
 
     const response: APIResponse<null> = {
       success: false,
@@ -255,7 +255,7 @@ router.post('/analyze', async (req: Request, res: Response) => {
 
     res.json(response);
   } catch (error) {
-    console.error('パスワード分析エラー:', error);
+    logger.error('パスワード分析エラー:', error);
 
     const response: APIResponse<null> = {
       success: false,

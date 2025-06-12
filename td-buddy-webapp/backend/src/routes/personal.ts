@@ -1,9 +1,9 @@
-import crypto from 'crypto';
-import { Request, Response, Router } from 'express';
-import { database } from '../database/database';
-import { ValidationError } from '../middleware/errorHandler';
-import { PersonalInfoService } from '../services/PersonalInfoService';
-import { PersonalInfoGenerateRequest } from '../types/personalInfo';
+import crypto 
+ Request, Response, Router } 
+ database } 
+ ValidationError } 
+ PersonalInfoService } 
+ PersonalInfoGenerateRequest } 
 
 const router = Router();
 const personalInfoService = new PersonalInfoService();
@@ -35,7 +35,7 @@ router.post('/generate', async (req: Request, res: Response) => {
     if (!criteria.includeFields || criteria.includeFields.length === 0) {
       // デフォルトフィールドを設定
       criteria.includeFields = ['fullName', 'email', 'phone', 'address'];
-      console.log('🍺 Brew: デフォルトフィールドを適用しました');
+      logger.log('🍺 Brew: デフォルトフィールドを適用しました');
     }
 
     // 有効なフィールドのチェック
@@ -67,7 +67,7 @@ router.post('/generate', async (req: Request, res: Response) => {
       );
     }
 
-    console.log(
+    logger.log(
       `🍺 Brew: 個人情報生成開始 - ${
         criteria.count
       }件, フィールド: [${criteria.includeFields.join(', ')}]`
@@ -101,7 +101,7 @@ router.post('/generate', async (req: Request, res: Response) => {
 
     const responseTime = Date.now() - startTime;
 
-    console.log(
+    logger.log(
       `✅ TD: 個人情報生成完了 - ${result.persons.length}件生成 (${responseTime}ms)`
     );
 
@@ -113,7 +113,7 @@ router.post('/generate', async (req: Request, res: Response) => {
       generatedAt: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('❌ 個人情報生成エラー:', error);
+    logger.error('❌ 個人情報生成エラー:', error);
 
     if (error instanceof ValidationError) {
       res.status(400).json({
@@ -165,7 +165,7 @@ router.get('/history', async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('❌ 履歴取得エラー:', error);
+    logger.error('❌ 履歴取得エラー:', error);
     res.status(500).json({
       success: false,
       error: {
@@ -240,13 +240,13 @@ router.post('/export/csv', async (req: Request, res: Response) => {
       .toISOString()
       .slice(0, 10)}.csv`;
 
-    console.log(`📊 TD: CSVエクスポート完了 - ${persons.length}件`);
+    logger.log(`📊 TD: CSVエクスポート完了 - ${persons.length}件`);
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.status(200).send('\uFEFF' + csvContent); // BOM付きでUTF-8
   } catch (error) {
-    console.error('❌ CSVエクスポートエラー:', error);
+    logger.error('❌ CSVエクスポートエラー:', error);
 
     if (error instanceof ValidationError) {
       res.status(400).json({
@@ -309,7 +309,7 @@ router.get('/stats', async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.error('❌ 統計情報取得エラー:', error);
+    logger.error('❌ 統計情報取得エラー:', error);
     res.status(500).json({
       success: false,
       error: {

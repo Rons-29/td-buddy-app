@@ -1,21 +1,20 @@
-import express from 'express';
-import { AIService } from '../services/AIService';
-import { PersonalInfoService } from '../services/PersonalInfoService';
-import { RequestValidator } from '../services/validation/RequestValidator';
+import express 
+ AIService } 
+ PersonalInfoService } 
+ RequestValidator } 
 
 const router = express.Router();
 let aiService: AIService | null = null;
-const personalInfoService = new PersonalInfoService();
 
 // AI Service初期化関数
 async function initializeAI() {
   try {
-    console.log('🍺 Brew AI Service初期化開始...');
+    logger.log('🍺 Brew AI Service初期化開始...');
     aiService = new AIService();
     await aiService.initialize();
-    console.log('✅ AI Service初期化完了');
+    logger.log('✅ AI Service初期化完了');
   } catch (error) {
-    console.warn('⚠️ AI Service初期化失敗（デモモードで継続）:', error);
+    logger.warn('⚠️ AI Service初期化失敗（デモモードで継続）:', error);
     // AIサービスが使用できない場合でも、アプリケーションは継続動作
     aiService = null;
   }
@@ -23,7 +22,7 @@ async function initializeAI() {
 
 // AI Service初期化実行
 initializeAI().catch(error => {
-  console.warn('⚠️ AI初期化で予期しないエラー:', error);
+  logger.warn('⚠️ AI初期化で予期しないエラー:', error);
 });
 
 /**
@@ -55,7 +54,7 @@ router.post('/parse', async (req, res) => {
 
     // AIサービスが利用できない場合のフォールバック
     if (!aiService) {
-      console.log('🔄 AIサービス未初期化 - フォールバック処理実行');
+      logger.log('🔄 AIサービス未初期化 - フォールバック処理実行');
 
       // シンプルなパターンマッチングによる解析
       const fallbackResult = parseFallback(message);
@@ -72,9 +71,9 @@ router.post('/parse', async (req, res) => {
     }
 
     // AIサービスを使用した解析
-    console.log('🧠 AI自然言語解析開始:', message);
+    logger.log('🧠 AI自然言語解析開始:', message);
     const result = await aiService.parseNaturalLanguageRequest(message);
-    console.log('✅ AI解析完了:', result);
+    logger.log('✅ AI解析完了:', result);
 
     return res.json({
       success: true,
@@ -82,7 +81,7 @@ router.post('/parse', async (req, res) => {
       source: 'ai',
     });
   } catch (error) {
-    console.error('❌ AI解析エラー:', error);
+    logger.error('❌ AI解析エラー:', error);
 
     // エラー時のフォールバック
     const fallbackMessage = req.body?.message || 'デフォルト要求';
@@ -176,10 +175,10 @@ function parseFallback(message: string) {
 
     result.params.includeFields = Array.from(fields);
 
-    console.log('🔄 フォールバック解析結果:', result);
+    logger.log('🔄 フォールバック解析結果:', result);
     return result;
   } catch (error) {
-    console.error('❌ フォールバック解析エラー:', error);
+    logger.error('❌ フォールバック解析エラー:', error);
     return result; // デフォルト値を返す
   }
 }
@@ -205,7 +204,7 @@ router.get('/status', async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('❌ AI状態確認エラー:', error);
+    logger.error('❌ AI状態確認エラー:', error);
 
     return res.status(500).json({
       success: false,

@@ -76,7 +76,7 @@ export class DateTimeService {
         brewMessage: this.getBrewMessage(options.format, count),
         generatedAt: new Date(),
       };
-    } catch (error: any) {
+    } catch (error: string | Date) {
       return {
         success: false,
         data: [],
@@ -308,7 +308,7 @@ export class DateTimeService {
    * 営業日に調整
    */
   private adjustToBusinessDay(date: Date, options: DateTimeOptions): Date {
-    let adjustedDate = new Date(date);
+    const adjustedDate = new Date(date);
     let attempts = 0;
     const maxAttempts = 100;
 

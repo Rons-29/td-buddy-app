@@ -1,11 +1,11 @@
 // Enhanced Export Service - ファイル出力機能強化
 // Step 12: JSON/XML/YAML/SQL出力対応
 
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs 
+import * as path 
 
 export interface ExportData {
-  [key: string]: any;
+  [key: string]: Record<string, unknown>;
 }
 
 export interface ExportOptions {
@@ -93,7 +93,7 @@ export class ExportService {
       const stats = await fs.stat(filePath);
       const processingTime = Date.now() - startTime;
 
-      console.log(`📊 TD: ${options.format.toUpperCase()}エクスポート完了 - ${recordCount}件 (${processingTime}ms)`);
+      logger.log(`📊 TD: ${options.format.toUpperCase()}エクスポート完了 - ${recordCount}件 (${processingTime}ms)`);
 
       return {
         success: true,
@@ -107,7 +107,7 @@ export class ExportService {
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown export error';
-      console.error('❌ エクスポートエラー:', error);
+      logger.error('❌ エクスポートエラー:', error);
       return {
         success: false,
         filename: '',
@@ -163,7 +163,7 @@ export class ExportService {
       await fileHandle.close();
       const stats = await fs.stat(filePath);
 
-      console.log(`📊 TD: ストリーミング${options.format.toUpperCase()}エクスポート完了 - ${data.length}件`);
+      logger.log(`📊 TD: ストリーミング${options.format.toUpperCase()}エクスポート完了 - ${data.length}件`);
 
       return {
         success: true,
@@ -403,7 +403,7 @@ export class ExportService {
     return value;
   }
 
-  private formatCsvValue(value: any): string {
+  private formatCsvValue(value: Record<string, unknown>): string {
     if (value === null || value === undefined) return '';
     if (typeof value === 'object') return JSON.stringify(value);
     return String(value);
@@ -413,7 +413,7 @@ export class ExportService {
     return tag.replace(/[^a-zA-Z0-9_-]/g, '_');
   }
 
-  private escapeXmlValue(value: any): string {
+  private escapeXmlValue(value: Record<string, unknown>): string {
     if (value === null || value === undefined) return '';
     const str = typeof value === 'object' ? JSON.stringify(value) : String(value);
     return str
@@ -424,7 +424,7 @@ export class ExportService {
       .replace(/'/g, '&apos;');
   }
 
-  private formatYamlValue(value: any): string {
+  private formatYamlValue(value: Record<string, unknown>): string {
     if (value === null || value === undefined) return 'null';
     if (typeof value === 'string') {
       // 特殊文字を含む場合はクォート
@@ -437,7 +437,7 @@ export class ExportService {
     return String(value);
   }
 
-  private formatSqlValue(value: any): string {
+  private formatSqlValue(value: Record<string, unknown>): string {
     if (value === null || value === undefined) return 'NULL';
     if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
     if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';

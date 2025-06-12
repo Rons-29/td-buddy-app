@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+ Request, Response, NextFunction } 
 
 /**
  * リクエストログミドルウェア
@@ -13,7 +13,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
   const ip = req.ip || req.connection.remoteAddress || 'Unknown';
 
   // リクエスト開始ログ
-  console.log(`📝 [${timestamp}] ${method} ${url} - IP: ${ip}`);
+  logger.log(`📝 [${timestamp}] ${method} ${url} - IP: ${ip}`);
 
   // レスポンス完了時のログ
   res.on('finish', () => {
@@ -21,11 +21,11 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
     const statusCode = res.statusCode;
     const statusEmoji = statusCode >= 400 ? '❌' : statusCode >= 300 ? '⚠️' : '✅';
     
-    console.log(`${statusEmoji} [${timestamp}] ${method} ${url} - ${statusCode} - ${duration}ms - IP: ${ip}`);
+    logger.log(`${statusEmoji} [${timestamp}] ${method} ${url} - ${statusCode} - ${duration}ms - IP: ${ip}`);
     
     // エラー時の詳細ログ
     if (statusCode >= 400) {
-      console.log(`🔍 Error Details - UA: ${userAgent}, Body: ${JSON.stringify(req.body)}`);
+      logger.log(`🔍 Error Details - UA: ${userAgent}, Body: ${JSON.stringify(req.body)}`);
     }
   });
 
@@ -39,58 +39,12 @@ export const tdLog = (message: string, level: 'info' | 'warn' | 'error' = 'info'
   const timestamp = new Date().toISOString();
   const emoji = level === 'error' ? '🚨' : level === 'warn' ? '⚠️' : '🍺';
   
-  console.log(`${emoji} TD [${timestamp}]: ${message}`);
+  logger.log(`${emoji} TD [${timestamp}]: ${message}`);
 };
 
 // 機密情報をサニタイズする関数
-const sanitizeRequestBody = (body: any): any => {
-  const sensitiveFields = [
-    'password', 'token', 'apiKey', 'secret', 'key',
-    'authorization', 'auth', 'credential', 'private'
-  ];
-
-  if (typeof body !== 'object' || body === null) {
-    return body;
-  }
-
-  const sanitized = { ...body };
-
-  Object.keys(sanitized).forEach(key => {
-    const lowerKey = key.toLowerCase();
-    if (sensitiveFields.some(field => lowerKey.includes(field))) {
-      sanitized[key] = '[REDACTED]';
-    } else if (typeof sanitized[key] === 'object' && sanitized[key] !== null) {
-      sanitized[key] = sanitizeRequestBody(sanitized[key]);
-    }
-  });
-
-  return sanitized;
-};
 
 // Brewからのログメッセージ生成
-const getTDLogMessage = (statusCode: number, duration: number): string => {
-  let performanceMessage = '';
-  if (duration < 100) {
-    performanceMessage = '⚡ 高速レスポンス！';
-  } else if (duration < 500) {
-    performanceMessage = '👍 良好なレスポンス速度';
-  } else if (duration < 1000) {
-    performanceMessage = '⏰ 少し時間がかかりました';
-  } else {
-    performanceMessage = '🐌 レスポンスが遅めです';
-  }
-
-  let statusMessage = '';
-  if (statusCode >= 200 && statusCode < 300) {
-    statusMessage = '🍺 Brew: リクエストが正常に処理されました！';
-  } else if (statusCode >= 400 && statusCode < 500) {
-    statusMessage = '🍺 Brew: クライアントエラーが発生しました';
-  } else if (statusCode >= 500) {
-    statusMessage = '🍺 Brew: サーバーエラーが発生しました';
-  }
-
-  return `- Performance: ${performanceMessage}\n- TD Message: ${statusMessage}`;
-};
 
 // APIアクセス統計用（将来の拡張用）
 export const apiStats = {

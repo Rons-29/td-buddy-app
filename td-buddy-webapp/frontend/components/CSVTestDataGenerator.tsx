@@ -160,9 +160,7 @@ const CSVTestDataGenerator: React.FC = () => {
 
   // モーダル状態
   const [showPresetManager, setShowPresetManager] = useState(false);
-  const [showGuide, setShowGuide] = useState(false);
   const [showDataTable, setShowDataTable] = useState(false);
-  const [showFileImporter, setShowFileImporter] = useState(false);
 
   // プリセット関連状態
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

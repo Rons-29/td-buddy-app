@@ -1,7 +1,7 @@
-import crypto from 'crypto';
-import { database } from '../database/database';
-import { InsertGeneratedPassword } from '../types/database';
-import { PasswordGenerateRequest, PasswordGenerateResponse } from '../types/api';
+import crypto 
+ database } 
+ InsertGeneratedPassword } 
+ PasswordGenerateRequest, PasswordGenerateResponse } 
 
 export class PasswordService {
   private readonly DEFAULT_CHARACTERS = {
@@ -46,13 +46,13 @@ export class PasswordService {
       await this.saveToDatabase(passwords, criteria, strength, estimatedCrackTime, userSession, ipAddress, userAgent);
 
       const processingTime = Date.now() - startTime;
-      console.log(`✅ パスワード生成完了: ${passwords.length}件 (${processingTime}ms)`);
-      console.log(`🍺 Brew: ${strength}レベルのパスワードを生成しました！`);
+      logger.log(`✅ パスワード生成完了: ${passwords.length}件 (${processingTime}ms)`);
+      logger.log(`🍺 Brew: ${strength}レベルのパスワードを生成しました！`);
 
       return response;
 
     } catch (error) {
-      console.error('❌ パスワード生成エラー:', error);
+      logger.error('❌ パスワード生成エラー:', error);
       throw new Error('パスワード生成に失敗しました');
     }
   }
@@ -202,11 +202,11 @@ export class PasswordService {
         ]);
       }
 
-      console.log(`💾 パスワード${passwords.length}件をデータベースに保存しました`);
-      console.log(`⏰ 有効期限: ${expiresAt.toLocaleString('ja-JP')}`);
+      logger.log(`💾 パスワード${passwords.length}件をデータベースに保存しました`);
+      logger.log(`⏰ 有効期限: ${expiresAt.toLocaleString('ja-JP')}`);
 
     } catch (error) {
-      console.error('❌ データベース保存エラー:', error);
+      logger.error('❌ データベース保存エラー:', error);
       // データベース保存に失敗してもパスワード生成は継続
     }
   }
@@ -396,7 +396,7 @@ export class PasswordService {
       };
 
     } catch (error) {
-      console.error('❌ 履歴取得エラー:', error);
+      logger.error('❌ 履歴取得エラー:', error);
       throw new Error('生成履歴の取得に失敗しました');
     }
   }
@@ -453,7 +453,7 @@ export class PasswordService {
       };
 
     } catch (error) {
-      console.error('❌ 統計取得エラー:', error);
+      logger.error('❌ 統計取得エラー:', error);
       throw new Error('統計情報の取得に失敗しました');
     }
   }

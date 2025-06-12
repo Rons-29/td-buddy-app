@@ -1,6 +1,6 @@
-import { Request, Response, Router } from 'express';
-import { database } from '../database/database';
-import { NumberBooleanOptions, NumberBooleanService } from '../services/NumberBooleanService';
+ Request, Response, Router } 
+ database } 
+ NumberBooleanOptions, NumberBooleanService } 
 
 const router = Router();
 const numberBooleanService = new NumberBooleanService();
@@ -93,7 +93,7 @@ router.post('/generate', async (req: Request, res: Response) => {
     return res.json(result);
 
   } catch (error: any) {
-    console.error('数値・真偽値生成エラー:', error);
+    logger.error('数値・真偽値生成エラー:', error);
     return res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -131,7 +131,7 @@ router.post('/validate', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('数値・真偽値検証エラー:', error);
+    logger.error('数値・真偽値検証エラー:', error);
     return res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -177,7 +177,7 @@ router.get('/history', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('履歴取得エラー:', error);
+    logger.error('履歴取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -243,7 +243,7 @@ router.get('/statistics', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('統計取得エラー:', error);
+    logger.error('統計取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -322,7 +322,7 @@ router.get('/presets', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('プリセット取得エラー:', error);
+    logger.error('プリセット取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',

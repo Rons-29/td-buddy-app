@@ -1,9 +1,8 @@
-import crypto from 'crypto';
+import crypto 
 import {
   PersonalInfoGenerateRequest,
   PersonalInfoGenerateResponse,
   PersonalInfoItem,
-  PersonalInfoField,
   ValidationResult
 } from '../types/personalInfo';
 import {
@@ -11,15 +10,12 @@ import {
   KANA_MAPPING,
   PREFECTURES,
   CITIES,
-  STREET_PATTERNS,
-  BUILDING_PATTERNS,
   COMPANIES,
   JOB_TITLES,
   EMAIL_DOMAINS,
   PHONE_AREA_CODES
 } from '../data/japaneseData';
-import { COMPLETE_KANA_MAPPING, SINGLE_CHAR_MAPPING } from '../data/kanaMapping';
-import { PerformanceService } from './PerformanceService';
+ PerformanceService } 
 
 /**
  * バリデーションエラークラス
@@ -48,7 +44,7 @@ export class PersonalInfoService {
       }
 
       // 生成開始ログ
-      console.log(`🍺 TDが個人情報生成を開始: ${request.count}件, ${request.includeFields.join(', ')}`);
+      logger.log(`🍺 TDが個人情報生成を開始: ${request.count}件, ${request.includeFields.join(', ')}`);
 
       // 重複除去のためのトラッキングセット
       const usedEmails = new Set<string>();
@@ -92,9 +88,9 @@ export class PersonalInfoService {
       const performanceMetric = this.performanceService.endTimer(timerId, persons.length);
 
       // 生成完了ログ
-      console.log(`✅ 個人情報生成完了: ${persons.length}件 (${duration.toFixed(2)}ms, ${itemsPerSecond.toFixed(2)} items/sec)`);
+      logger.log(`✅ 個人情報生成完了: ${persons.length}件 (${duration.toFixed(2)}ms, ${itemsPerSecond.toFixed(2)} items/sec)`);
       if (attempts - persons.length > 0) {
-        console.log(`🔄 重複除去: ${attempts - persons.length}件の重複を除去`);
+        logger.log(`🔄 重複除去: ${attempts - persons.length}件の重複を除去`);
       }
 
       const now = new Date();
@@ -113,7 +109,7 @@ export class PersonalInfoService {
         expiresAt: expiresAt.toISOString()
       };
     } catch (error) {
-      console.error('❌ 個人情報生成エラー:', error);
+      logger.error('❌ 個人情報生成エラー:', error);
       throw error;
     }
   }

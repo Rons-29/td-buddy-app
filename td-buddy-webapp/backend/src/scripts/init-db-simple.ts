@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path 
+import * as fs 
 
 // 簡単なデータベース初期化スクリプト
 class SimpleDBInitializer {
@@ -12,7 +12,7 @@ class SimpleDBInitializer {
   }
 
   async init(): Promise<void> {
-    console.log(`
+    logger.log(`
 🍺 QA Workbench データベース初期化スクリプト
 
 🏗️  データベースの初期化を開始します...
@@ -23,13 +23,13 @@ class SimpleDBInitializer {
       const dbDir = path.dirname(this.dbPath);
       if (!fs.existsSync(dbDir)) {
         fs.mkdirSync(dbDir, { recursive: true });
-        console.log(`📁 データベースディレクトリを作成しました: ${dbDir}`);
+        logger.log(`📁 データベースディレクトリを作成しました: ${dbDir}`);
       }
 
       // 空のデータベースファイルを作成（better-sqlite3インストール後に初期化）
       if (!fs.existsSync(this.dbPath)) {
         fs.writeFileSync(this.dbPath, '');
-        console.log(`💾 データベースファイルを作成しました: ${this.dbPath}`);
+        logger.log(`💾 データベースファイルを作成しました: ${this.dbPath}`);
       }
 
       // 関連ディレクトリの作成
@@ -37,11 +37,11 @@ class SimpleDBInitializer {
       dirs.forEach(dir => {
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
-          console.log(`📁 ディレクトリを作成しました: ${dir}`);
+          logger.log(`📁 ディレクトリを作成しました: ${dir}`);
         }
       });
 
-      console.log(`
+      logger.log(`
 🎉 データベース基盤の初期化が完了しました！
 
 📝 次のステップ:
@@ -54,13 +54,13 @@ class SimpleDBInitializer {
       `);
 
     } catch (error) {
-      console.error('❌ データベース初期化エラー:', error);
+      logger.error('❌ データベース初期化エラー:', error);
       process.exit(1);
     }
   }
 
   showHelp(): void {
-    console.log(`
+    logger.log(`
 🍺 QA Workbench 簡易データベース初期化ツール
 
 使用方法:
@@ -99,7 +99,7 @@ async function main() {
 // スクリプト実行
 if (require.main === module) {
   main().catch((error) => {
-    console.error('❌ スクリプト実行エラー:', error);
+    logger.error('❌ スクリプト実行エラー:', error);
     process.exit(1);
   });
 } 

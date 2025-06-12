@@ -7,10 +7,10 @@
  * @version 1.0.0
  */
 
-import request from 'supertest';
-import { Express } from 'express';
-import { PersonalInfoService } from '../services/PersonalInfoService';
-import { PerformanceService } from '../services/PerformanceService';
+import request 
+ Express } 
+ PersonalInfoService } 
+ PerformanceService } 
 
 describe('🧑‍💼 Personal Info Generation Integration Tests', () => {
   let app: Express;
@@ -426,4 +426,4 @@ describe('🧑‍💼 Personal Info Generation Integration Tests', () => {
 });
 
 // TD からのメッセージ
-console.log('🍺 Brew: 個人情報生成機能の統合テストを実行中です！品質を徹底的にチェックしましょう♪'); 
+logger.log('🍺 Brew: 個人情報生成機能の統合テストを実行中です！品質を徹底的にチェックしましょう♪'); 

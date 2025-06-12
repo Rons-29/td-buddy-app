@@ -43,7 +43,7 @@ export class OpenAIAdapter implements IAIAdapter {
       throw new AIAdapterError('OpenAI API initialization failed', this.provider);
     }
 
-    console.log(`✅ OpenAI Adapter initialized: ${this.config.model}`);
+    logger.log(`✅ OpenAI Adapter initialized: ${this.config.model}`);
   }
 
   /**
@@ -141,7 +141,7 @@ export class OpenAIAdapter implements IAIAdapter {
       };
 
     } catch (error: any) {
-      console.error('🔍 Parameter extraction failed:', error);
+      logger.error('🔍 Parameter extraction failed:', error);
       
       return {
         success: false,
@@ -167,7 +167,7 @@ export class OpenAIAdapter implements IAIAdapter {
       });
       return response.content.length > 0;
     } catch (error) {
-      console.error('🔍 OpenAI health check failed:', error);
+      logger.error('🔍 OpenAI health check failed:', error);
       return false;
     }
   }

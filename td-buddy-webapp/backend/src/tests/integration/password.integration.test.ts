@@ -73,7 +73,7 @@ describe('Password Generation Integration Tests', () => {
       expect(response.body.data.passwords).toHaveLength(100);
       expect(duration).toBeLessThan(5000); // 5秒以内に完了
       
-      console.log(`🚀 100件生成完了: ${duration}ms`);
+      logger.log(`🚀 100件生成完了: ${duration}ms`);
     });
 
     it('🧪 紛らわしい文字除外が正しく動作する', async () => {
@@ -249,7 +249,7 @@ describe('Password Generation Integration Tests', () => {
       expect(response.body.data.passwords).toHaveLength(1000);
       expect(duration).toBeLessThan(10000); // 10秒以内
       
-      console.log(`⚡ 1000件生成パフォーマンス: ${duration}ms`);
+      logger.log(`⚡ 1000件生成パフォーマンス: ${duration}ms`);
     });
 
     it('🧪 メモリ使用量テスト', async () => {
@@ -273,7 +273,7 @@ describe('Password Generation Integration Tests', () => {
       // メモリ増加が100MB未満であることを確認
       expect(memoryIncrease).toBeLessThan(100 * 1024 * 1024);
       
-      console.log(`💾 メモリ増加: ${Math.round(memoryIncrease / 1024 / 1024 * 100) / 100}MB`);
+      logger.log(`💾 メモリ増加: ${Math.round(memoryIncrease / 1024 / 1024 * 100) / 100}MB`);
     });
   });
 

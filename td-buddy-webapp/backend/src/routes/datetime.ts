@@ -1,6 +1,6 @@
-import { Request, Response, Router } from 'express';
-import { database } from '../database/database';
-import { DateTimeOptions, DateTimeService } from '../services/DateTimeService';
+ Request, Response, Router } 
+ database } 
+ DateTimeOptions, DateTimeService } 
 
 const router = Router();
 const dateTimeService = new DateTimeService();
@@ -81,7 +81,7 @@ router.post('/generate', async (req: Request, res: Response) => {
     return res.json(result);
 
   } catch (error: any) {
-    console.error('日付・時刻生成エラー:', error);
+    logger.error('日付・時刻生成エラー:', error);
     return res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -119,7 +119,7 @@ router.post('/validate', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('日付・時刻検証エラー:', error);
+    logger.error('日付・時刻検証エラー:', error);
     return res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -165,7 +165,7 @@ router.get('/history', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('履歴取得エラー:', error);
+    logger.error('履歴取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -231,7 +231,7 @@ router.get('/statistics', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('統計取得エラー:', error);
+    logger.error('統計取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
@@ -325,7 +325,7 @@ router.get('/presets', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error('プリセット取得エラー:', error);
+    logger.error('プリセット取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',

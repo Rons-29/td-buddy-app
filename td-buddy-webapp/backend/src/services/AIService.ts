@@ -5,8 +5,8 @@ import {
   AIProvider,
   IAIAdapter,
 } from '../types/aiAdapter';
-import { PersonalInfoGenerateRequest } from '../types/personalInfo';
-import { OpenAIAdapter } from './adapters/OpenAIAdapter';
+ PersonalInfoGenerateRequest } 
+ OpenAIAdapter } 
 
 /**
  * AI Service Manager
@@ -26,7 +26,7 @@ export class AIService {
    * AI Service初期化
    */
   async initialize(): Promise<void> {
-    console.log('🍺 Brew AI Service初期化開始...');
+    logger.log('🍺 Brew AI Service初期化開始...');
 
     try {
       // OpenAI Adapter初期化
@@ -40,7 +40,7 @@ export class AIService {
           temperature: 0.7,
         });
         this.adapters.set('openai', openaiAdapter);
-        console.log('✅ OpenAI Adapter初期化完了');
+        logger.log('✅ OpenAI Adapter初期化完了');
       }
 
       // 将来的にClaude, Geminiも追加予定
@@ -58,18 +58,18 @@ export class AIService {
         const firstProvider = this.adapters.keys().next().value;
         if (firstProvider) {
           this.defaultProvider = firstProvider;
-          console.log(
+          logger.log(
             `⚠️  デフォルトプロバイダーを${this.defaultProvider}に変更`
           );
         }
       }
 
       this.initialized = true;
-      console.log(
+      logger.log(
         `🎉 AI Service初期化完了 - デフォルト: ${this.defaultProvider}`
       );
     } catch (error: any) {
-      console.error('❌ AI Service初期化失敗:', error);
+      logger.error('❌ AI Service初期化失敗:', error);
       throw new AIAdapterError(
         'AI Service initialization failed',
         this.defaultProvider
@@ -101,7 +101,7 @@ export class AIService {
       );
     }
 
-    console.log(`🔍 自然言語解析開始: "${userInput}" (${targetProvider})`);
+    logger.log(`🔍 自然言語解析開始: "${userInput}" (${targetProvider})`);
 
     try {
       const parseRequest: AIParseRequest = {
@@ -125,15 +125,15 @@ export class AIService {
       const result = await adapter.parseGenerationRequest(parseRequest);
 
       if (result.success) {
-        console.log(`✅ 解析成功 - 信頼度: ${result.confidence?.toFixed(2)}`);
-        console.log(`📊 パラメータ: ${JSON.stringify(result.params, null, 2)}`);
+        logger.log(`✅ 解析成功 - 信頼度: ${result.confidence?.toFixed(2)}`);
+        logger.log(`📊 パラメータ: ${JSON.stringify(result.params, null, 2)}`);
       } else {
-        console.log(`⚠️  解析失敗: ${result.error}`);
+        logger.log(`⚠️  解析失敗: ${result.error}`);
       }
 
       return result;
     } catch (error: any) {
-      console.error(`❌ 自然言語解析エラー (${targetProvider}):`, error);
+      logger.error(`❌ 自然言語解析エラー (${targetProvider}):`, error);
 
       return {
         success: false,
@@ -206,7 +206,7 @@ export class AIService {
   setDefaultProvider(provider: AIProvider): boolean {
     if (this.adapters.has(provider)) {
       this.defaultProvider = provider;
-      console.log(`🔄 デフォルトプロバイダーを${provider}に変更`);
+      logger.log(`🔄 デフォルトプロバイダーを${provider}に変更`);
       return true;
     }
     return false;
