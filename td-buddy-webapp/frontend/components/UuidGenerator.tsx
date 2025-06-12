@@ -1,23 +1,36 @@
 'use client';
 
-import { CheckCircle, Copy, Database, Eye, EyeOff, Fingerprint, Hash, RefreshCw, Settings2 } from 'lucide-react';
+import {
+  CheckCircle,
+  Copy,
+  Database,
+  Eye,
+  EyeOff,
+  Fingerprint,
+  Hash,
+  RefreshCw,
+  Settings2,
+} from 'lucide-react';
 import React, { useState } from 'react';
 import { DEFAULT_UUID_PRESETS, PRESET_ORDER } from '../data/uuidPresets';
+import { APP_CONFIG, TD_MESSAGES } from '../lib/config';
+import { generateUuidsLocal } from '../lib/uuidUtils';
 import {
-    ApiResponse,
-    TDState,
-    UuidGenerateRequest,
-    UuidGenerateResponse
+  ApiResponse,
+  TDState,
+  UuidGenerateRequest,
+  UuidGenerateResponse,
 } from '../types/uuid';
 import TDCharacter from './TDCharacter';
 
 export const UuidGenerator: React.FC = () => {
   // 基本設定状態
-  const [selectedPresetId, setSelectedPresetId] = useState<string>('v4-standard');
+  const [selectedPresetId, setSelectedPresetId] =
+    useState<string>('database-id');
   const [criteria, setCriteria] = useState<UuidGenerateRequest>({
     count: 5,
     version: 'v4',
-    format: 'standard'
+    format: 'standard',
   });
 
   // UI状態
@@ -33,30 +46,34 @@ export const UuidGenerator: React.FC = () => {
   const [tdState, setTdState] = useState<TDState>({
     emotion: 'happy',
     animation: 'float',
-    message: 'UUID生成の準備ができました！プリセットをお選びください♪',
-    showSpeechBubble: true
+    message: APP_CONFIG.isOfflineMode
+      ? TD_MESSAGES.OFFLINE_MODE
+      : 'UUID生成の準備ができました！用途に合わせてプリセットをお選びください♪',
+    showSpeechBubble: true,
   });
 
   // プリセット変更時の処理
   const handlePresetChange = (presetId: string) => {
     const preset = DEFAULT_UUID_PRESETS[presetId];
-    if (!preset) return;
+    if (!preset) {
+      return;
+    }
 
     setSelectedPresetId(presetId);
-    
+
     // プリセットの設定をcriteriaに反映
     setCriteria(prev => ({
       ...prev,
-      ...preset.criteria
+      ...preset.criteria,
     }));
-    
+
     // TDキャラクターの反応
     setTdState(prev => ({
       ...prev,
       emotion: 'happy',
       animation: 'bounce',
       message: `${preset.name}に変更しました♪ ${preset.description}`,
-      showSpeechBubble: true
+      showSpeechBubble: true,
     }));
 
     setTimeout(() => {
@@ -66,27 +83,72 @@ export const UuidGenerator: React.FC = () => {
 
   // UUID生成API呼び出し
   const generateUuids = async () => {
+    if (criteria.count < 1 || criteria.count > 10000) {
+      setApiError('生成個数は1〜10000の範囲で指定してください');
+      return;
+    }
+
     setIsGenerating(true);
     setApiError(null);
     setResult(null);
-    
+
     try {
       // TDキャラクターの状態更新
       setTdState(prev => ({
         ...prev,
         emotion: 'thinking',
-        animation: 'spin',
-        message: `${criteria.count}個の${criteria.version}バージョンUUIDを生成中です...`,
-        showSpeechBubble: true
+        animation: 'bounce',
+        message: `${
+          criteria.count
+        }個のUUID生成を開始します！${criteria.version.toUpperCase()}形式で作成中♪`,
+        showSpeechBubble: true,
       }));
 
-      const response = await fetch('http://localhost:3001/api/uuid/generate', {
+      // オフラインモード時はローカル生成
+      if (APP_CONFIG.isOfflineMode) {
+        const localResult = generateUuidsLocal({
+          count: criteria.count,
+          version: criteria.version,
+          format: criteria.format,
+        });
+
+        const convertedResult: UuidGenerateResponse = {
+          uuids: localResult.uuids,
+          metadata: localResult.metadata,
+          generatedAt: localResult.generatedAt,
+        };
+
+        setResult(convertedResult);
+
+        // 成功時のTDキャラクター反応
+        setTdState(prev => ({
+          ...prev,
+          emotion: 'excited',
+          animation: 'bounce',
+          message: `🤖 ローカル生成完了！${criteria.count}個のUUID生成完了！品質も完璧です♪`,
+          showSpeechBubble: true,
+        }));
+
+        setTimeout(() => {
+          setTdState(prev => ({ ...prev, showSpeechBubble: false }));
+        }, 4000);
+
+        return;
+      }
+
+      // API生成（レガシー - バックエンド設定完了後に有効）
+      const apiUrl = APP_CONFIG.getApiUrl('/api/uuid/generate');
+      if (!apiUrl) {
+        throw new Error('API接続が利用できません');
+      }
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Session-ID': `session-${Date.now()}`
+          'X-Session-ID': `session-${Date.now()}`,
         },
-        body: JSON.stringify(criteria)
+        body: JSON.stringify(criteria),
       });
 
       const data: ApiResponse<UuidGenerateResponse> = await response.json();
@@ -96,31 +158,32 @@ export const UuidGenerator: React.FC = () => {
       }
 
       setResult(data.data!);
-      
+
       // 成功時のTDキャラクター反応
       setTdState(prev => ({
         ...prev,
         emotion: 'excited',
         animation: 'bounce',
-        message: data.tdMessage || `${criteria.count}個のUUID生成完了！品質も完璧です♪`,
-        showSpeechBubble: true
+        message:
+          data.tdMessage ||
+          `${criteria.count}個のUUID生成完了！品質も完璧です♪`,
+        showSpeechBubble: true,
       }));
 
       setTimeout(() => {
         setTdState(prev => ({ ...prev, showSpeechBubble: false }));
       }, 4000);
-
     } catch (error: any) {
       console.error('❌ UUID生成エラー:', error);
       setApiError(error.message);
-      
+
       // エラー時のTDキャラクター反応
       setTdState(prev => ({
         ...prev,
         emotion: 'error',
         animation: 'wiggle',
         message: 'UUID生成でエラーが発生しました。設定を確認してください',
-        showSpeechBubble: true
+        showSpeechBubble: true,
       }));
     } finally {
       setIsGenerating(false);
@@ -133,14 +196,14 @@ export const UuidGenerator: React.FC = () => {
       await navigator.clipboard.writeText(uuid);
       setCopiedIndex(index);
       setCopyMessage(`UUID ${index + 1} をコピーしました！`);
-      
+
       // TDキャラクターの反応
       setTdState(prev => ({
         ...prev,
         emotion: 'happy',
         animation: 'bounce',
         message: 'UUIDをクリップボードにコピーしました♪',
-        showSpeechBubble: true
+        showSpeechBubble: true,
       }));
 
       setTimeout(() => {
@@ -155,20 +218,22 @@ export const UuidGenerator: React.FC = () => {
 
   // 全UUIDコピー機能
   const copyAllUuids = async () => {
-    if (!result?.uuids.length) return;
-    
+    if (!result?.uuids.length) {
+      return;
+    }
+
     try {
       const allUuids = result.uuids.map(item => item.uuid).join('\n');
       await navigator.clipboard.writeText(allUuids);
       setCopyMessage(`全${result.uuids.length}個のUUIDをコピーしました！`);
-      
+
       // TDキャラクターの反応
       setTdState(prev => ({
         ...prev,
         emotion: 'excited',
         animation: 'pulse',
         message: `${result.uuids.length}個のUUIDを一括コピーしました！`,
-        showSpeechBubble: true
+        showSpeechBubble: true,
       }));
 
       setTimeout(() => {
@@ -184,7 +249,7 @@ export const UuidGenerator: React.FC = () => {
   const handleCriteriaChange = (key: keyof UuidGenerateRequest, value: any) => {
     setCriteria(prev => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -192,15 +257,40 @@ export const UuidGenerator: React.FC = () => {
   const getRandomnessInfo = (randomness: string) => {
     switch (randomness) {
       case 'cryptographic':
-        return { color: 'text-green-600', bg: 'bg-green-100', icon: '🔒', label: '暗号学的' };
+        return {
+          color: 'text-green-600',
+          bg: 'bg-green-100',
+          icon: '🔒',
+          label: '暗号学的',
+        };
       case 'high':
-        return { color: 'text-blue-600', bg: 'bg-blue-100', icon: '⚡', label: '高い' };
+        return {
+          color: 'text-blue-600',
+          bg: 'bg-blue-100',
+          icon: '⚡',
+          label: '高い',
+        };
       case 'medium':
-        return { color: 'text-yellow-600', bg: 'bg-yellow-100', icon: '⚠️', label: '中程度' };
+        return {
+          color: 'text-yellow-600',
+          bg: 'bg-yellow-100',
+          icon: '⚠️',
+          label: '中程度',
+        };
       case 'low':
-        return { color: 'text-red-600', bg: 'bg-red-100', icon: '📉', label: '低い' };
+        return {
+          color: 'text-red-600',
+          bg: 'bg-red-100',
+          icon: '📉',
+          label: '低い',
+        };
       default:
-        return { color: 'text-gray-600', bg: 'bg-gray-100', icon: '❓', label: '不明' };
+        return {
+          color: 'text-gray-600',
+          bg: 'bg-gray-100',
+          icon: '❓',
+          label: '不明',
+        };
     }
   };
 
@@ -210,7 +300,9 @@ export const UuidGenerator: React.FC = () => {
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center space-x-3">
           <Fingerprint className="w-8 h-8 text-purple-600" />
-          <h1 className="text-3xl font-bold text-gray-900">UUID/GUID生成ツール</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            UUID/GUID生成ツール
+          </h1>
           <Hash className="w-8 h-8 text-blue-600" />
         </div>
         <p className="text-gray-600 max-w-2xl mx-auto">
@@ -220,7 +312,7 @@ export const UuidGenerator: React.FC = () => {
 
       {/* TDキャラクター */}
       <div className="flex justify-center">
-        <TDCharacter 
+        <TDCharacter
           emotion={tdState.emotion}
           animation={tdState.animation}
           message={tdState.message}
@@ -278,7 +370,9 @@ export const UuidGenerator: React.FC = () => {
                 min="1"
                 max="10000"
                 value={criteria.count}
-                onChange={(e) => handleCriteriaChange('count', parseInt(e.target.value) || 1)}
+                onChange={e =>
+                  handleCriteriaChange('count', parseInt(e.target.value) || 1)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -289,7 +383,7 @@ export const UuidGenerator: React.FC = () => {
               </label>
               <select
                 value={criteria.version}
-                onChange={(e) => handleCriteriaChange('version', e.target.value)}
+                onChange={e => handleCriteriaChange('version', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="v1">v1 (タイムスタンプ)</option>
@@ -306,7 +400,7 @@ export const UuidGenerator: React.FC = () => {
               </label>
               <select
                 value={criteria.format}
-                onChange={(e) => handleCriteriaChange('format', e.target.value)}
+                onChange={e => handleCriteriaChange('format', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="standard">標準 (ハイフン付き)</option>
@@ -338,7 +432,12 @@ export const UuidGenerator: React.FC = () => {
                     <input
                       type="checkbox"
                       checked={criteria.includeTimestamp || false}
-                      onChange={(e) => handleCriteriaChange('includeTimestamp', e.target.checked)}
+                      onChange={e =>
+                        handleCriteriaChange(
+                          'includeTimestamp',
+                          e.target.checked
+                        )
+                      }
                       className="mr-2"
                     />
                     タイムスタンプ情報を含める
@@ -353,7 +452,12 @@ export const UuidGenerator: React.FC = () => {
                     <input
                       type="checkbox"
                       checked={criteria.includeMacAddress || false}
-                      onChange={(e) => handleCriteriaChange('includeMacAddress', e.target.checked)}
+                      onChange={e =>
+                        handleCriteriaChange(
+                          'includeMacAddress',
+                          e.target.checked
+                        )
+                      }
                       className="mr-2"
                     />
                     MACアドレス情報を含める
@@ -370,7 +474,9 @@ export const UuidGenerator: React.FC = () => {
                   <input
                     type="text"
                     value={criteria.customPrefix || ''}
-                    onChange={(e) => handleCriteriaChange('customPrefix', e.target.value)}
+                    onChange={e =>
+                      handleCriteriaChange('customPrefix', e.target.value)
+                    }
                     placeholder="例: user_, order_, session_"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
@@ -438,7 +544,11 @@ export const UuidGenerator: React.FC = () => {
                 onClick={() => setShowUuids(!showUuids)}
                 className="flex items-center space-x-1 px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
               >
-                {showUuids ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showUuids ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
                 <span>{showUuids ? '非表示' : '表示'}</span>
               </button>
               <button
@@ -455,21 +565,33 @@ export const UuidGenerator: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-blue-50 p-3 rounded-lg">
               <div className="text-sm text-blue-600 font-medium">生成個数</div>
-              <div className="text-lg font-bold text-blue-800">{result.statistics.totalGenerated}</div>
+              <div className="text-lg font-bold text-blue-800">
+                {result.statistics.totalGenerated}
+              </div>
             </div>
             <div className="bg-green-50 p-3 rounded-lg">
-              <div className="text-sm text-green-600 font-medium">平均エントロピー</div>
-              <div className="text-lg font-bold text-green-800">{result.statistics.averageEntropy.toFixed(1)}</div>
+              <div className="text-sm text-green-600 font-medium">
+                平均エントロピー
+              </div>
+              <div className="text-lg font-bold text-green-800">
+                {result.statistics.averageEntropy.toFixed(1)}
+              </div>
             </div>
             <div className="bg-purple-50 p-3 rounded-lg">
-              <div className="text-sm text-purple-600 font-medium">バージョン分布</div>
+              <div className="text-sm text-purple-600 font-medium">
+                バージョン分布
+              </div>
               <div className="text-lg font-bold text-purple-800">
                 {Object.keys(result.statistics.versionDistribution).join(', ')}
               </div>
             </div>
             <div className="bg-orange-50 p-3 rounded-lg">
-              <div className="text-sm text-orange-600 font-medium">フォーマット</div>
-              <div className="text-lg font-bold text-orange-800">{result.criteria.format}</div>
+              <div className="text-sm text-orange-600 font-medium">
+                フォーマット
+              </div>
+              <div className="text-lg font-bold text-orange-800">
+                {result.criteria.format}
+              </div>
             </div>
           </div>
 
@@ -477,7 +599,9 @@ export const UuidGenerator: React.FC = () => {
           {showUuids && (
             <div className="space-y-2">
               {result.uuids.map((uuidItem, index) => {
-                const randomnessInfo = getRandomnessInfo(uuidItem.metadata.randomness);
+                const randomnessInfo = getRandomnessInfo(
+                  uuidItem.metadata.randomness
+                );
                 return (
                   <div
                     key={uuidItem.id}
@@ -492,14 +616,17 @@ export const UuidGenerator: React.FC = () => {
                           <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
                             {uuidItem.version}
                           </span>
-                          <span className={`text-xs px-2 py-1 rounded ${randomnessInfo.bg} ${randomnessInfo.color}`}>
+                          <span
+                            className={`text-xs px-2 py-1 rounded ${randomnessInfo.bg} ${randomnessInfo.color}`}
+                          >
                             {randomnessInfo.icon} {randomnessInfo.label}
                           </span>
                         </div>
                       </div>
                       {uuidItem.timestamp && (
                         <div className="text-xs text-gray-500 mt-1">
-                          生成時刻: {new Date(uuidItem.timestamp).toLocaleString()}
+                          生成時刻:{' '}
+                          {new Date(uuidItem.timestamp).toLocaleString()}
                         </div>
                       )}
                     </div>
@@ -532,4 +659,4 @@ export const UuidGenerator: React.FC = () => {
       )}
     </div>
   );
-}; 
+};
