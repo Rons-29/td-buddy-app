@@ -144,7 +144,7 @@ export default function NumberBooleanGuidePage() {
                 boolean (真偽値)
               </h3>
               <p className="text-sm text-gray-600">
-                フラグ、状態、有効/無効など
+                フラグ、状態、条件判定など
               </p>
             </div>
           </div>
@@ -153,196 +153,186 @@ export default function NumberBooleanGuidePage() {
         {/* カテゴリフィルター */}
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            🎯 ユースケース別ガイド
+            🗂️ ユースケースを探す
           </h2>
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
             {categories.map(category => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                className={`flex flex-col items-center p-3 rounded-lg border-2 transition-all ${
                   selectedCategory === category.id
-                    ? 'bg-green-100 text-green-700 border-2 border-green-300'
-                    : 'bg-gray-100 text-gray-700 border-2 border-gray-200 hover:bg-gray-200'
+                    ? 'border-green-500 bg-green-50 text-green-700'
+                    : 'border-gray-200 hover:border-gray-300 text-gray-600'
                 }`}
               >
-                <span>{category.icon}</span>
-                {category.name}
+                <span className="text-2xl mb-1">{category.icon}</span>
+                <span className="text-sm font-medium">{category.name}</span>
               </button>
             ))}
           </div>
+        </div>
 
-          {/* ユースケース一覧 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredUseCases.map(useCase => (
-              <div
-                key={useCase.id}
-                className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{useCase.icon}</span>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {useCase.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {useCase.description}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full border ${getDifficultyColor(
-                      useCase.difficulty
-                    )}`}
-                  >
-                    {useCase.difficulty}
-                  </span>
-                </div>
-
-                {/* シナリオ情報 */}
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    📋 シナリオ
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="font-medium text-gray-700">課題:</span>
-                      <span className="text-gray-600 ml-1">
-                        {useCase.scenario.problem}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-700">解決:</span>
-                      <span className="text-gray-600 ml-1">
-                        {useCase.scenario.solution}
-                      </span>
-                    </div>
+        {/* ユースケース一覧 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filteredUseCases.map(useCase => (
+            <div
+              key={useCase.id}
+              className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{useCase.icon}</span>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">
+                      {useCase.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">{useCase.category}</p>
                   </div>
                 </div>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-medium border ${getDifficultyColor(
+                    useCase.difficulty
+                  )}`}
+                >
+                  {useCase.difficulty === 'beginner' && '初級'}
+                  {useCase.difficulty === 'intermediate' && '中級'}
+                  {useCase.difficulty === 'advanced' && '上級'}
+                </span>
+              </div>
 
-                {/* メリット */}
-                <div className="mb-4">
+              <p className="text-gray-700 mb-4">{useCase.description}</p>
+
+              <div className="space-y-3">
+                <div>
                   <h4 className="font-medium text-gray-900 mb-2">
                     ✅ メリット
                   </h4>
                   <ul className="text-sm text-gray-600 space-y-1">
                     {useCase.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-green-500 mt-0.5">•</span>
-                        {benefit}
-                      </li>
+                      <li key={index}>• {benefit}</li>
                     ))}
                   </ul>
                 </div>
 
-                {/* 詳細表示ボタン */}
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    🔗 対応データタイプ
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {useCase.relatedTypes.map((type, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs"
+                      >
+                        {type}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
                 <button
                   onClick={() =>
                     setSelectedUseCase(
                       selectedUseCase === useCase.id ? null : useCase.id
                     )
                   }
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  className="w-full text-green-600 hover:text-green-700 text-sm font-medium mt-2"
                 >
-                  {selectedUseCase === useCase.id
-                    ? '詳細を隠す'
-                    : '実装例を見る'}
+                  {selectedUseCase === useCase.id ? '詳細を隠す' : '詳細を表示'}{' '}
+                  ▼
                 </button>
 
-                {/* 詳細内容 */}
                 {selectedUseCase === useCase.id && (
-                  <div className="mt-4 pt-4 border-t space-y-4">
-                    {useCase.examples.map((example, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-4">
-                        <h5 className="font-medium text-gray-900 mb-2">
-                          {example.title}
-                        </h5>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                          <div>
-                            <span className="text-xs text-red-600 font-medium">
-                              BEFORE
-                            </span>
-                            <div className="bg-red-50 border border-red-200 rounded p-2 text-xs text-red-800 font-mono">
-                              {example.before}
+                  <div className="border-t pt-4 space-y-3">
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        📝 実装例
+                      </h4>
+                      <div className="space-y-4">
+                        {useCase.examples.map((example, index) => (
+                          <div
+                            key={index}
+                            className="bg-gray-50 rounded-lg p-4"
+                          >
+                            <h5 className="font-medium text-gray-900 mb-2">
+                              {example.title}
+                            </h5>
+                            <div className="space-y-3">
+                              <div className="bg-green-50 border border-green-200 p-3 rounded text-sm">
+                                <span className="text-green-600 font-medium">
+                                  AFTER (TDで生成)
+                                </span>
+                                <div className="text-green-800 font-mono">
+                                  {example.after}
+                                </div>
+                              </div>
+                              <div className="bg-blue-50 border border-blue-200 p-3 rounded">
+                                <span className="text-blue-600 font-medium text-sm">
+                                  実装例
+                                </span>
+                                <pre className="text-xs text-blue-800 mt-2 overflow-x-auto">
+                                  <code>{example.code}</code>
+                                </pre>
+                              </div>
                             </div>
                           </div>
-                          <div>
-                            <span className="text-xs text-green-600 font-medium">
-                              AFTER
-                            </span>
-                            <div className="bg-green-50 border border-green-200 rounded p-2 text-xs text-green-800 font-mono">
-                              {example.after}
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-xs text-blue-600 font-medium">
-                            実装例
-                          </span>
-                          <pre className="bg-gray-800 text-gray-200 rounded p-3 text-xs overflow-x-auto">
-                            <code>{example.code}</code>
-                          </pre>
-                        </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* ベストプラクティス */}
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-green-900 mb-4 flex items-center gap-2">
-            ⭐ TDのベストプラクティス
+        <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-8 mt-8">
+          <h2 className="text-xl font-semibold text-yellow-900 mb-4 flex items-center gap-2">
+            ⭐ TDくんからのベストプラクティス
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-semibold text-green-900 mb-3">
-                🎯 効果的な使い方
+              <h3 className="font-semibold text-yellow-900 mb-3">
+                🎯 効率的な設定のコツ
               </h3>
-              <ul className="text-sm text-green-800 space-y-2">
-                <li>• プリセットから始めて、必要に応じてカスタマイズ</li>
-                <li>• 大量データが必要な場合は段階的に生成</li>
-                <li>• 統計的な分散を考慮した範囲設定</li>
-                <li>• 用途に応じた適切な精度設定</li>
+              <ul className="text-sm text-yellow-800 space-y-2">
+                <li>• 境界値（最小・最大）を含めたテストデータ設計</li>
+                <li>• 用途に応じた適切な分布の選択</li>
+                <li>• 特殊値（0、負数、極端な値）の考慮</li>
+                <li>• リアルなデータ分布の模倣</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-green-900 mb-3">⚠️ 注意点</h3>
-              <ul className="text-sm text-green-800 space-y-2">
-                <li>• 本番データと混在させない</li>
-                <li>• 大量生成時はブラウザの負荷に注意</li>
-                <li>• 特殊値使用時のエラーハンドリング</li>
-                <li>• セキュリティ要件の確認</li>
+              <h3 className="font-semibold text-yellow-900 mb-3">
+                ⚠️ よくある注意点
+              </h3>
+              <ul className="text-sm text-yellow-800 space-y-2">
+                <li>• 小数点精度の設定ミス</li>
+                <li>• 範囲設定での論理エラー</li>
+                <li>• 型変換時の精度落ち</li>
+                <li>• パフォーマンスを考慮しない大量生成</li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* TDからのメッセージ */}
-        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-6">
-          <div className="flex items-start gap-4">
-            <div className="text-4xl">🤖</div>
-            <div>
-              <h3 className="font-semibold text-purple-900 mb-2">
-                TDからの最終メッセージ
-              </h3>
-              <p className="text-purple-800 mb-4">
-                数値・真偽値生成は、テストデータ作成の基本中の基本です！
-                このガイドを参考に、効率的で品質の高いテストデータを作成してくださいね。
-              </p>
-              <div className="bg-white border border-purple-300 rounded-lg p-4">
-                <p className="text-sm text-purple-800">
-                  <strong>🚀 次のステップ:</strong>
-                  <br />
-                  実際にツールを使って、様々なパターンのデータを生成してみましょう！
-                  困ったときは、いつでもTDに相談してくださいね♪
-                </p>
-              </div>
-            </div>
+        {/* フッター */}
+        <div className="text-center mt-8 py-8 border-t border-gray-200">
+          <div className="flex items-center justify-center gap-2 text-gray-600">
+            <span className="text-2xl">🤖</span>
+            <span>
+              TDくんと一緒に、効率的なテストデータ生成をマスターしましょう！
+            </span>
+          </div>
+          <div className="mt-4">
+            <a
+              href="/number-boolean"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              数値・真偽値生成ツールを使う
+            </a>
           </div>
         </div>
       </div>

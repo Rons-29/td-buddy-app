@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Noto_Sans_JP } from 'next/font/google';
 import Link from 'next/link';
 
+import { EnvironmentInfo } from '@/components/EnvironmentInfo';
 import './globals.css';
 
 const inter = Inter({
@@ -15,11 +16,28 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  ),
   title: 'TestData Buddy - AI連携型テストデータ生成ツール',
   description:
     'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
   keywords: ['テストデータ', 'QA', 'AI', 'データ生成', 'パスワード生成'],
   authors: [{ name: 'TD Team' }],
+  openGraph: {
+    title: 'TestData Buddy - AI連携型テストデータ生成ツール',
+    description:
+      'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
+    type: 'website',
+    locale: 'ja_JP',
+    siteName: 'TestData Buddy',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'TestData Buddy - AI連携型テストデータ生成ツール',
+    description:
+      'QAエンジニアのための最高のテストデータ生成相棒、TDくんと一緒に効率的なテスト環境を構築しましょう',
+  },
   icons: {
     icon: '/td-favicon.svg',
     shortcut: '/td-favicon.svg',
@@ -40,12 +58,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className="h-full">
-      <head>
-        <link
-          rel="icon"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>"
-        />
-      </head>
       <body
         className={`
           ${inter.variable} 
@@ -134,6 +146,9 @@ export default function RootLayout({
             </div>
           </footer>
         </div>
+
+        {/* 環境情報デバッグコンポーネント */}
+        <EnvironmentInfo />
       </body>
     </html>
   );

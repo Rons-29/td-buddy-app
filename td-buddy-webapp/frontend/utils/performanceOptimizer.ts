@@ -49,7 +49,7 @@ export class PerformanceOptimizer {
       renderTime: 0,
       generationTime: 0,
       networkLatency: 0,
-      cacheHitRate: 0
+      cacheHitRate: 0,
     };
 
     this.config = {
@@ -59,7 +59,7 @@ export class PerformanceOptimizer {
       maxConcurrentOperations: 3,
       chunkSize: 1000,
       cacheSize: 100,
-      garbageCollectionInterval: 60000 // 1分
+      garbageCollectionInterval: 60000, // 1分
     };
 
     this.startMonitoring();
@@ -79,6 +79,14 @@ export class PerformanceOptimizer {
    * パフォーマンス監視開始
    */
   private startMonitoring(): void {
+    // ブラウザ環境でのみ実行
+    if (typeof window === 'undefined') {
+      console.log(
+        '🚀 TDからのメッセージ: サーバー環境のため、パフォーマンス監視をスキップします'
+      );
+      return;
+    }
+
     // メモリ使用量の定期監視
     this.memoryWatcher = window.setInterval(() => {
       this.updateMemoryMetrics();
@@ -87,7 +95,7 @@ export class PerformanceOptimizer {
 
     // Performance Observer の設定
     if ('PerformanceObserver' in window) {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         this.performanceEntries.push(...list.getEntries());
         this.updatePerformanceMetrics();
       });
@@ -113,10 +121,10 @@ export class PerformanceOptimizer {
    */
   private updatePerformanceMetrics(): void {
     // レンダリング時間の計算
-    const paintEntries = this.performanceEntries.filter(entry => 
-      entry.entryType === 'paint'
+    const paintEntries = this.performanceEntries.filter(
+      entry => entry.entryType === 'paint'
     );
-    
+
     if (paintEntries.length > 0) {
       this.metrics.renderTime = paintEntries[paintEntries.length - 1].startTime;
     }
@@ -138,7 +146,7 @@ export class PerformanceOptimizer {
    */
   private performAutoOptimization(): void {
     const suggestions = this.analyzPerformance();
-    
+
     suggestions.forEach(suggestion => {
       if (suggestion.severity === 'critical') {
         this.applyCriticalOptimization(suggestion);
@@ -158,7 +166,9 @@ export class PerformanceOptimizer {
         this.cleanupCache();
         break;
       default:
-        console.warn(`🤖 TDからの警告: 自動最適化できません - ${suggestion.message}`);
+        console.warn(
+          `🤖 TDからの警告: 自動最適化できません - ${suggestion.message}`
+        );
     }
   }
 
@@ -184,17 +194,19 @@ export class PerformanceOptimizer {
    */
   cleanupCache(): void {
     const cacheSize = this.cacheStorage.size;
-    
+
     if (cacheSize > this.config.cacheSize) {
       // LRU (Least Recently Used) アルゴリズムを簡易実装
       const entries = Array.from(this.cacheStorage.entries());
       const toDelete = entries.slice(0, cacheSize - this.config.cacheSize);
-      
+
       toDelete.forEach(([key]) => {
         this.cacheStorage.delete(key);
       });
 
-      console.log(`🧹 TDからのメッセージ: ${toDelete.length}個のキャッシュエントリを削除しました`);
+      console.log(
+        `🧹 TDからのメッセージ: ${toDelete.length}個のキャッシュエントリを削除しました`
+      );
     }
   }
 
@@ -210,8 +222,9 @@ export class PerformanceOptimizer {
         type: 'memory',
         severity: 'critical',
         message: 'メモリ使用量が80%を超えています',
-        solution: 'メモリクリーンアップを実行し、チャンクサイズを小さくしてください',
-        estimatedImprovement: 'メモリ使用量を20-30%削減'
+        solution:
+          'メモリクリーンアップを実行し、チャンクサイズを小さくしてください',
+        estimatedImprovement: 'メモリ使用量を20-30%削減',
       });
     } else if (this.metrics.memoryUsage > 0.6) {
       suggestions.push({
@@ -219,18 +232,20 @@ export class PerformanceOptimizer {
         severity: 'medium',
         message: 'メモリ使用量が60%を超えています',
         solution: 'データ生成の同時実行数を減らすことを推奨します',
-        estimatedImprovement: 'メモリ使用量を10-15%削減'
+        estimatedImprovement: 'メモリ使用量を10-15%削減',
       });
     }
 
     // レンダリング時間チェック
-    if (this.metrics.renderTime > 16) { // 60fps を下回る
+    if (this.metrics.renderTime > 16) {
+      // 60fps を下回る
       suggestions.push({
         type: 'ui',
         severity: 'high',
         message: 'レンダリング時間が16ms(60fps)を超えています',
-        solution: '仮想スクロールやレイジーローディングの導入を検討してください',
-        estimatedImprovement: 'レンダリング速度を50-70%向上'
+        solution:
+          '仮想スクロールやレイジーローディングの導入を検討してください',
+        estimatedImprovement: 'レンダリング速度を50-70%向上',
       });
     }
 
@@ -240,8 +255,9 @@ export class PerformanceOptimizer {
         type: 'cache',
         severity: 'medium',
         message: 'キャッシュヒット率が70%を下回っています',
-        solution: 'キャッシュサイズの増加やキャッシュ戦略の見直しを検討してください',
-        estimatedImprovement: 'データアクセス速度を20-40%向上'
+        solution:
+          'キャッシュサイズの増加やキャッシュ戦略の見直しを検討してください',
+        estimatedImprovement: 'データアクセス速度を20-40%向上',
       });
     }
 
@@ -253,7 +269,7 @@ export class PerformanceOptimizer {
         severity: 'high',
         message: 'CPU使用率が高すぎます',
         solution: 'バッチ処理の同時実行数を減らし、処理間隔を増やしてください',
-        estimatedImprovement: 'CPU負荷を30-50%削減'
+        estimatedImprovement: 'CPU負荷を30-50%削減',
       });
     }
 
@@ -268,15 +284,21 @@ export class PerformanceOptimizer {
     // 簡易的なCPU使用率推定
     // 実際の実装では、処理時間やフレーム率から推定
     const recentEntries = this.performanceEntries.slice(-10);
-    const totalTime = recentEntries.reduce((sum, entry) => sum + entry.duration, 0);
-    
+    const totalTime = recentEntries.reduce(
+      (sum, entry) => sum + entry.duration,
+      0
+    );
+
     return Math.min(totalTime / 1000, 1); // 最大1.0
   }
 
   /**
    * データ生成の最適化
    */
-  optimizeDataGeneration(rowCount: number, columnCount: number): {
+  optimizeDataGeneration(
+    rowCount: number,
+    columnCount: number
+  ): {
     chunkSize: number;
     maxConcurrent: number;
     useWorker: boolean;
@@ -284,7 +306,7 @@ export class PerformanceOptimizer {
   } {
     const dataSize = rowCount * columnCount;
     const memoryUsage = this.metrics.memoryUsage;
-    
+
     let chunkSize = this.config.chunkSize;
     let maxConcurrent = this.config.maxConcurrentOperations;
     let useWorker = false;
@@ -294,14 +316,16 @@ export class PerformanceOptimizer {
     if (memoryUsage > 0.7) {
       chunkSize = Math.max(100, chunkSize / 2);
       maxConcurrent = Math.max(1, maxConcurrent - 1);
-      recommendation = 'TDからの提案: メモリ不足のため、処理サイズを縮小しました';
+      recommendation =
+        'TDからの提案: メモリ不足のため、処理サイズを縮小しました';
     }
 
     // データサイズに基づく調整
     if (dataSize > 100000) {
       useWorker = true;
       chunkSize = Math.min(chunkSize, 500);
-      recommendation = 'TDからの提案: 大量データのため、Web Workerでの処理を推奨します';
+      recommendation =
+        'TDからの提案: 大量データのため、Web Workerでの処理を推奨します';
     }
 
     // CPU負荷に基づく調整
@@ -315,7 +339,7 @@ export class PerformanceOptimizer {
       chunkSize,
       maxConcurrent,
       useWorker,
-      recommendation
+      recommendation,
     };
   }
 
@@ -326,15 +350,15 @@ export class PerformanceOptimizer {
     this.cacheStorage.set(key, {
       value,
       timestamp: Date.now(),
-      ttl: ttl || 300000 // デフォルト5分
+      ttl: ttl || 300000, // デフォルト5分
     });
   }
 
   getFromCache<T>(key: string): T | null {
     const cached = this.cacheStorage.get(key);
-    
+
     if (!cached) return null;
-    
+
     // TTL チェック
     if (Date.now() - cached.timestamp > cached.ttl) {
       this.cacheStorage.delete(key);
@@ -370,10 +394,7 @@ export class PerformanceOptimizer {
   /**
    * Web Worker での処理支援
    */
-  createWorkerTask<T, R>(
-    workerScript: string,
-    data: T
-  ): Promise<R> {
+  createWorkerTask<T, R>(workerScript: string, data: T): Promise<R> {
     return new Promise((resolve, reject) => {
       if (!window.Worker) {
         reject(new Error('Web Worker がサポートされていません'));
@@ -381,15 +402,15 @@ export class PerformanceOptimizer {
       }
 
       const worker = new Worker(workerScript);
-      
+
       worker.postMessage(data);
-      
-      worker.onmessage = (event) => {
+
+      worker.onmessage = event => {
         resolve(event.data);
         worker.terminate();
       };
-      
-      worker.onerror = (error) => {
+
+      worker.onerror = error => {
         reject(error);
         worker.terminate();
       };
@@ -421,7 +442,11 @@ export class PerformanceOptimizer {
         used,
         total,
         percentage,
-        formatted: `${(used / 1024 / 1024).toFixed(1)}MB / ${(total / 1024 / 1024).toFixed(1)}MB (${percentage.toFixed(1)}%)`
+        formatted: `${(used / 1024 / 1024).toFixed(1)}MB / ${(
+          total /
+          1024 /
+          1024
+        ).toFixed(1)}MB (${percentage.toFixed(1)}%)`,
       };
     }
 
@@ -429,7 +454,7 @@ export class PerformanceOptimizer {
       used: 0,
       total: 0,
       percentage: 0,
-      formatted: 'メモリ情報取得不可'
+      formatted: 'メモリ情報取得不可',
     };
   }
 
@@ -442,7 +467,10 @@ export class PerformanceOptimizer {
     breakdown: Record<string, number>;
   } {
     const memoryScore = Math.max(0, (1 - this.metrics.memoryUsage) * 100);
-    const renderScore = Math.max(0, Math.min(100, (16 / Math.max(this.metrics.renderTime, 1)) * 100));
+    const renderScore = Math.max(
+      0,
+      Math.min(100, (16 / Math.max(this.metrics.renderTime, 1)) * 100)
+    );
     const cacheScore = this.metrics.cacheHitRate * 100;
     const cpuScore = Math.max(0, (1 - this.estimateCpuUsage()) * 100);
 
@@ -450,7 +478,7 @@ export class PerformanceOptimizer {
       memory: memoryScore,
       rendering: renderScore,
       cache: cacheScore,
-      cpu: cpuScore
+      cpu: cpuScore,
     };
 
     const score = (memoryScore + renderScore + cacheScore + cpuScore) / 4;
@@ -502,7 +530,7 @@ export class PerformanceOptimizer {
       score: this.calculatePerformanceScore(),
       suggestions: this.analyzPerformance(),
       memoryInfo: this.getMemoryInfo(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -522,7 +550,7 @@ export class PerformanceOptimizer {
    */
   cleanup(): void {
     this.stopMonitoring();
-    this.cache.clear();
+    this.cacheStorage.clear();
     this.performanceEntries = [];
     this.optimizationHistory = [];
   }
@@ -541,23 +569,28 @@ export class TDPerformanceHelper {
       B: '👍 TDからのメッセージ: 良好なパフォーマンスです。さらなる改善の余地があります',
       C: '⚠️ TDからのメッセージ: パフォーマンスに改善の余地があります',
       D: '🔧 TDからのメッセージ: パフォーマンス改善が必要です',
-      F: '🚨 TDからの警告: 深刻なパフォーマンス問題があります'
+      F: '🚨 TDからの警告: 深刻なパフォーマンス問題があります',
     };
 
-    return explanations[grade as keyof typeof explanations] || 
-           'TDからのメッセージ: パフォーマンスを確認中です';
+    return (
+      explanations[grade as keyof typeof explanations] ||
+      'TDからのメッセージ: パフォーマンスを確認中です'
+    );
   }
 
   /**
    * 最適化提案の優先順位付け
    */
-  static prioritizeSuggestions(suggestions: OptimizationSuggestion[]): OptimizationSuggestion[] {
+  static prioritizeSuggestions(
+    suggestions: OptimizationSuggestion[]
+  ): OptimizationSuggestion[] {
     const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-    
+
     return suggestions.sort((a, b) => {
-      const severityDiff = severityOrder[b.severity] - severityOrder[a.severity];
+      const severityDiff =
+        severityOrder[b.severity] - severityOrder[a.severity];
       if (severityDiff !== 0) return severityDiff;
-      
+
       // 同じ重要度の場合は、推定改善効果で並び替え
       return b.estimatedImprovement.localeCompare(a.estimatedImprovement);
     });
@@ -574,28 +607,30 @@ export class TDPerformanceHelper {
     if (percentage < 50) {
       return {
         status: 'excellent',
-        message: '🟢 TDからのメッセージ: メモリ使用量は最適です'
+        message: '🟢 TDからのメッセージ: メモリ使用量は最適です',
       };
     } else if (percentage < 70) {
       return {
         status: 'good',
-        message: '🟡 TDからのメッセージ: メモリ使用量は正常範囲内です'
+        message: '🟡 TDからのメッセージ: メモリ使用量は正常範囲内です',
       };
     } else if (percentage < 85) {
       return {
         status: 'warning',
         message: '🟠 TDからの注意: メモリ使用量が高めです',
-        recommendation: 'データ生成のチャンクサイズを小さくすることを推奨します'
+        recommendation:
+          'データ生成のチャンクサイズを小さくすることを推奨します',
       };
     } else {
       return {
         status: 'critical',
         message: '🔴 TDからの警告: メモリ使用量が危険レベルです',
-        recommendation: '直ちにメモリクリーンアップを実行し、処理を一時停止してください'
+        recommendation:
+          '直ちにメモリクリーンアップを実行し、処理を一時停止してください',
       };
     }
   }
 }
 
 // グローバルインスタンス（オプション）
-export const performanceOptimizer = PerformanceOptimizer.getInstance(); 
+export const performanceOptimizer = PerformanceOptimizer.getInstance();

@@ -3,6 +3,8 @@
 import { FileText, GripVertical, Trash2 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { useButtonState } from '../hooks/useButtonState';
+import { DEFAULT_SETTINGS } from '../types/csv-detailed-settings';
+import { DataTypeDetailSettings } from './csv/DataTypeDetailSettings';
 import { ActionButton } from './ui/ActionButton';
 import {
   Card,
@@ -20,6 +22,38 @@ interface CSVColumn {
   dataType: DataType;
   required: boolean;
   order: number;
+  settings?: any; // 詳細設定（データタイプ別）
+}
+
+// ユーザープリセット型定義
+interface UserPreset {
+  id: string;
+  name: string;
+  description: string;
+  columns: { dataType: DataType; name: string }[];
+  createdAt: Date;
+  isCustom: true;
+}
+
+// テンプレート型定義
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  settings: {
+    columns: CSVColumn[];
+    rowCount: number;
+    exportSettings: ExportSettings;
+  };
+  createdAt: Date;
+  lastUsed: Date;
+}
+
+// 一括編集型定義
+interface BulkEditOperation {
+  columnIds: string[];
+  operation: 'rename' | 'changeType' | 'toggleRequired' | 'delete';
+  value?: any;
 }
 
 type DataType =
@@ -284,7 +318,7 @@ const CSV_PRESET_CATEGORIES: Record<string, PresetCategory> = {
       },
     ],
   },
-  ecommerce: {
+  'e-commerce': {
     name: '🛒 EC・販売',
     emoji: '🛒',
     description: 'Eコマース・販売システム用',
@@ -550,7 +584,7 @@ const JAPANESE_DATA = {
   ],
 };
 
-export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
+const CSVTestDataGeneratorV2Component: React.FC = () => {
   const [columns, setColumns] = useState<CSVColumn[]>([]);
   const [rows, setRows] = useState<CSVRow[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -575,6 +609,22 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
   // ドラッグ&ドロップ状態
   const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
   const [dragOverColumnId, setDragOverColumnId] = useState<string | null>(null);
+
+  // 新機能の状態管理
+  const [userPresets, setUserPresets] = useState<UserPreset[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [showBulkEdit, setShowBulkEdit] = useState(false);
+  const [bulkEditDataType, setBulkEditDataType] = useState<DataType>('text');
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
+  const [templatePreview, setTemplatePreview] = useState<Template | null>(null);
+  const [showExportPreview, setShowExportPreview] = useState(false);
+  const [showPresetImportExport, setShowPresetImportExport] = useState(false);
+
+  // 詳細設定の展開状態管理
+  const [expandedSettings, setExpandedSettings] = useState<
+    Record<string, boolean>
+  >({});
 
   // ボタン状態管理
   const { buttonStates, setButtonActive } = useButtonState();
@@ -636,24 +686,169 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     [draggedColumnId, columns]
   );
 
-  // プリセット適用
-  const applyPreset = useCallback((presetId: string) => {
-    const preset = CSV_PRESETS.find(p => p.id === presetId);
-    if (!preset) return;
+  // ユーザープリセット保存機能
+  const saveUserPreset = useCallback(
+    (name: string, description: string) => {
+      if (columns.length === 0) {
+        setTdMessage(
+          'カラムが設定されていません。まずはカラムを追加してくださいね！'
+        );
+        return;
+      }
 
-    const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
-      id: `preset_${presetId}_${index}_${Date.now()}`,
-      name: col.name,
-      dataType: col.dataType,
-      required: true,
-      order: index,
-    }));
+      const newPreset: UserPreset = {
+        id: `user_preset_${Date.now()}`,
+        name,
+        description,
+        columns: columns.map(col => ({
+          dataType: col.dataType,
+          name: col.name,
+        })),
+        createdAt: new Date(),
+        isCustom: true,
+      };
 
-    setColumns(newColumns);
-    setShowPresets(false);
+      setUserPresets(prev => [...prev, newPreset]);
+      setTdMood('success');
+      setTdMessage(
+        `🎉 ユーザープリセット「${name}」を保存しました！いつでも再利用できます♪`
+      );
+    },
+    [columns]
+  );
+
+  // プリセット適用（システム・ユーザー両対応）
+  const applyPreset = useCallback(
+    (presetId: string) => {
+      // システムプリセットをチェック
+      let preset = CSV_PRESETS.find(p => p.id === presetId);
+      // ユーザープリセットもチェック
+      if (!preset) {
+        preset = userPresets.find(p => p.id === presetId);
+      }
+
+      if (!preset) return;
+
+      const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
+        id: `preset_${presetId}_${index}_${Date.now()}`,
+        name: col.name,
+        dataType: col.dataType,
+        required: true,
+        order: index,
+      }));
+
+      setColumns(newColumns);
+      setShowPresets(false);
+      setTdMood('success');
+      setTdMessage(
+        `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
+      );
+    },
+    [userPresets]
+  );
+
+  // カラム複製機能
+  const duplicateColumn = useCallback(
+    (columnId: string) => {
+      const originalColumn = columns.find(col => col.id === columnId);
+      if (!originalColumn) return;
+
+      const duplicatedColumn: CSVColumn = {
+        id: `copy_${Date.now()}`,
+        name: `${originalColumn.name}_copy`,
+        dataType: originalColumn.dataType,
+        required: originalColumn.required,
+        order: columns.length, // 最後に追加
+      };
+
+      setColumns(prev => [...prev, duplicatedColumn]);
+      setTdMood('success');
+      setTdMessage(
+        `✨ 「${originalColumn.name}」カラムを複製しました！設定もそのままコピーされています♪`
+      );
+    },
+    [columns]
+  );
+
+  // 一括編集機能
+  const performBulkEdit = useCallback((operation: BulkEditOperation) => {
+    const { columnIds, operation: op, value } = operation;
+
+    setColumns(prev => {
+      let newColumns = [...prev];
+
+      switch (op) {
+        case 'delete':
+          newColumns = newColumns.filter(col => !columnIds.includes(col.id));
+          break;
+        case 'changeType':
+          newColumns = newColumns.map(col =>
+            columnIds.includes(col.id) ? { ...col, dataType: value } : col
+          );
+          break;
+        case 'toggleRequired':
+          // 切り替え前の状態を記録
+          const beforeToggle = newColumns.filter(col =>
+            columnIds.includes(col.id)
+          );
+          const requiredCount = beforeToggle.filter(col => col.required).length;
+          const optionalCount = beforeToggle.filter(
+            col => !col.required
+          ).length;
+
+          newColumns = newColumns.map(col =>
+            columnIds.includes(col.id)
+              ? { ...col, required: !col.required }
+              : col
+          );
+
+          // 切り替え結果のメッセージを設定
+          const totalColumns = columnIds.length;
+          let toggleMessage = '';
+          if (requiredCount > 0 && optionalCount > 0) {
+            toggleMessage = `${totalColumns}個のカラムの必須設定を切り替えました！`;
+          } else if (requiredCount === totalColumns) {
+            toggleMessage = `${totalColumns}個のカラムを任意に変更しました！`;
+          } else {
+            toggleMessage = `${totalColumns}個のカラムを必須に変更しました！`;
+          }
+
+          setTdMessage(
+            `✨ ${toggleMessage} 赤い背景色で必須カラムを確認できます♪`
+          );
+          break;
+        case 'rename':
+          // 複数カラムの一括リネーム（連番付き）
+          let counter = 1;
+          newColumns = newColumns.map(col =>
+            columnIds.includes(col.id)
+              ? { ...col, name: `${value}_${counter++}` }
+              : col
+          );
+          break;
+      }
+
+      return newColumns;
+    });
+
+    setSelectedColumns([]);
+    setShowBulkEdit(false);
     setTdMood('success');
-    setTdMessage(
-      `✨ 「${preset.name}」プリセットを適用しました！すぐにデータ生成できます♪`
+
+    // toggleRequiredの場合は既にメッセージが設定されているので、他の操作のみメッセージを設定
+    if (op !== 'toggleRequired') {
+      setTdMessage(
+        `✨ ${columnIds.length}個のカラムに一括編集を適用しました！効率的ですね♪`
+      );
+    }
+  }, []);
+
+  // カラム選択状態の切り替え
+  const toggleColumnSelection = useCallback((columnId: string) => {
+    setSelectedColumns(prev =>
+      prev.includes(columnId)
+        ? prev.filter(id => id !== columnId)
+        : [...prev, columnId]
     );
   }, []);
 
@@ -671,6 +866,151 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
       '新しいカラムを追加しました！データタイプを選択してくださいね♪'
     );
   }, [columns.length]);
+
+  // テンプレート機能
+  const saveTemplate = useCallback(
+    (name: string, description: string) => {
+      if (columns.length === 0) {
+        setTdMessage(
+          'カラムが設定されていません。まずはカラムを追加してくださいね！'
+        );
+        return;
+      }
+
+      const newTemplate: Template = {
+        id: `template_${Date.now()}`,
+        name,
+        description,
+        settings: {
+          columns: [...columns],
+          rowCount,
+          exportSettings: { ...exportSettings },
+        },
+        createdAt: new Date(),
+        lastUsed: new Date(),
+      };
+
+      setTemplates(prev => [...prev, newTemplate]);
+      setShowTemplateManager(false);
+      setTdMood('success');
+      setTdMessage(
+        `🎉 テンプレート「${name}」を保存しました！設定がすべて保存されています♪`
+      );
+    },
+    [columns, rowCount, exportSettings]
+  );
+
+  const loadTemplate = useCallback(
+    (templateId: string) => {
+      const template = templates.find(t => t.id === templateId);
+      if (!template) return;
+
+      // 設定をすべて復元
+      setColumns(template.settings.columns);
+      setRowCount(template.settings.rowCount);
+      setExportSettings(template.settings.exportSettings);
+
+      // 最終使用日を更新
+      setTemplates(prev =>
+        prev.map(t =>
+          t.id === templateId ? { ...t, lastUsed: new Date() } : t
+        )
+      );
+
+      setShowTemplateManager(false);
+      setTdMood('success');
+      setTdMessage(
+        `✨ テンプレート「${template.name}」を読み込みました！すべての設定が復元されています♪`
+      );
+    },
+    [templates]
+  );
+
+  // プリセットエクスポート機能
+  const exportPresets = useCallback(() => {
+    const presetsToExport = {
+      userPresets,
+      templates,
+      exportedAt: new Date().toISOString(),
+      version: '2.1.0',
+    };
+
+    const dataStr = JSON.stringify(presetsToExport, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `td-buddy-presets-${
+      new Date().toISOString().split('T')[0]
+    }.json`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+    setTdMood('success');
+    setTdMessage(
+      '🎉 プリセット・テンプレートをエクスポートしました！ファイルをダウンロードしています♪'
+    );
+  }, [userPresets, templates]);
+
+  // プリセットインポート機能
+  const importPresets = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const importedData = JSON.parse(e.target?.result as string);
+
+          // データ形式の検証
+          if (!importedData.userPresets || !importedData.templates) {
+            throw new Error('無効なファイル形式です');
+          }
+
+          // インポート実行
+          if (importedData.userPresets.length > 0) {
+            setUserPresets(prev => [
+              ...prev,
+              ...importedData.userPresets.map((preset: UserPreset) => ({
+                ...preset,
+                id: `imported_${Date.now()}_${preset.id}`,
+                createdAt: new Date(preset.createdAt),
+              })),
+            ]);
+          }
+
+          if (importedData.templates.length > 0) {
+            setTemplates(prev => [
+              ...prev,
+              ...importedData.templates.map((template: Template) => ({
+                ...template,
+                id: `imported_${Date.now()}_${template.id}`,
+                createdAt: new Date(template.createdAt),
+                lastUsed: new Date(template.lastUsed),
+              })),
+            ]);
+          }
+
+          setTdMood('success');
+          setTdMessage(
+            `✨ インポート完了！プリセット${importedData.userPresets.length}個、テンプレート${importedData.templates.length}個を追加しました♪`
+          );
+        } catch (error) {
+          setTdMood('error');
+          setTdMessage(
+            '❌ ファイルの読み込みに失敗しました。正しいファイルを選択してください。'
+          );
+        }
+      };
+      reader.readAsText(file);
+
+      // ファイル入力をリセット
+      event.target.value = '';
+    },
+    []
+  );
 
   // カラム削除
   const removeColumn = useCallback((columnId: string) => {
@@ -697,6 +1037,23 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                   `データタイプを「${dataTypeInfo.label}」に変更し、カラム名を「${dataTypeInfo.suggestedName}」に自動設定しました！`
                 );
               }
+              // データタイプが変更された場合、デフォルト設定を適用
+              updatedCol.settings = DEFAULT_SETTINGS[updates.dataType] || null;
+            }
+
+            // 必須設定が変更された場合のメッセージ
+            if (
+              updates.required !== undefined &&
+              updates.required !== col.required
+            ) {
+              const requiredStatus = updates.required ? '必須' : '任意';
+              setTdMessage(
+                `「${col.name}」カラムを${requiredStatus}に設定しました！${
+                  updates.required
+                    ? '📍 必須カラムには赤い背景色がつきます'
+                    : '⚪ 任意カラムになりました'
+                }`
+              );
             }
 
             return updatedCol;
@@ -707,6 +1064,23 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
     },
     []
   );
+
+  // 詳細設定変更処理
+  const handleSettingsChange = useCallback(
+    (columnId: string, settings: any) => {
+      updateColumn(columnId, { settings });
+      setTdMessage('🔧 詳細設定を更新しました！データ生成時に反映されます♪');
+    },
+    [updateColumn]
+  );
+
+  // 詳細設定の展開状態切り替え
+  const toggleSettingsExpanded = useCallback((columnId: string) => {
+    setExpandedSettings(prev => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  }, []);
 
   // データ生成関数
   const generateDataValue = useCallback(
@@ -1041,7 +1415,7 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                 カラム設定
               </CardTitle>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <ActionButton
                 type="generate"
                 onClick={() => setShowPresets(true)}
@@ -1050,6 +1424,26 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
               >
                 ⭐ プリセット
               </ActionButton>
+
+              <ActionButton
+                type="copy"
+                onClick={() => setShowTemplateManager(true)}
+                variant="secondary"
+                size="sm"
+              >
+                📁 テンプレート
+              </ActionButton>
+
+              <ActionButton
+                type="replace"
+                onClick={() => setShowBulkEdit(true)}
+                variant="secondary"
+                size="sm"
+                disabled={columns.length === 0}
+              >
+                ✏️ 一括編集
+              </ActionButton>
+
               <ActionButton
                 type="generate"
                 onClick={addColumn}
@@ -1074,83 +1468,209 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
             columns
               .sort((a, b) => a.order - b.order)
               .map((column, index) => (
-                <div
-                  key={column.id}
-                  draggable
-                  onDragStart={e => handleDragStart(e, column.id)}
-                  onDragEnd={handleDragEnd}
-                  onDragOver={e => handleDragOver(e, column.id)}
-                  onDrop={e => handleDrop(e, column.id)}
-                  className={`flex items-center gap-3 p-4 bg-gray-50 rounded-lg border transition-colors ${
-                    draggedColumnId === column.id
-                      ? 'border-blue-500 bg-blue-50 opacity-50 cursor-move'
-                      : dragOverColumnId === column.id
-                      ? 'border-blue-400 bg-blue-50 cursor-move'
-                      : 'border-gray-200 hover:border-blue-300 cursor-move'
-                  }`}
-                >
-                  {/* ドラッグハンドル */}
-                  <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors">
-                    <GripVertical className="h-5 w-5" />
-                  </div>
+                <div key={column.id} className="space-y-2">
+                  <div
+                    draggable
+                    onDragStart={e => handleDragStart(e, column.id)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={e => handleDragOver(e, column.id)}
+                    onDrop={e => handleDrop(e, column.id)}
+                    className={`p-4 bg-gray-50 rounded-lg border transition-colors ${
+                      draggedColumnId === column.id
+                        ? 'border-blue-500 bg-blue-50 opacity-50 cursor-move'
+                        : dragOverColumnId === column.id
+                        ? 'border-blue-400 bg-blue-50 cursor-move'
+                        : 'border-gray-200 hover:border-blue-300 cursor-move'
+                    }`}
+                  >
+                    {/* 上段: メイン設定 */}
+                    <div className="flex items-center gap-3 mb-3">
+                      {/* ドラッグハンドル */}
+                      <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors">
+                        <GripVertical className="h-5 w-5" />
+                      </div>
 
-                  {/* カラム名入力 */}
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={column.name}
-                      onChange={e =>
-                        updateColumn(column.id, { name: e.target.value })
+                      {/* カラム名入力 */}
+                      <div className="flex-1 relative">
+                        <input
+                          type="text"
+                          value={column.name}
+                          onChange={e =>
+                            updateColumn(column.id, { name: e.target.value })
+                          }
+                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            column.required
+                              ? 'border-red-300 bg-red-50'
+                              : 'border-gray-300'
+                          }`}
+                          placeholder="カラム名を入力"
+                        />
+                        {column.required && (
+                          <span className="absolute -top-2 -right-2 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                            必須
+                          </span>
+                        )}
+                      </div>
+
+                      {/* 必須設定チェックボックス */}
+                      <div className="flex items-center gap-2">
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={column.required}
+                            onChange={e =>
+                              updateColumn(column.id, {
+                                required: e.target.checked,
+                              })
+                            }
+                            className="mr-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                          />
+                          <span
+                            className={`text-sm font-medium ${
+                              column.required ? 'text-red-700' : 'text-gray-600'
+                            }`}
+                          >
+                            必須
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* 複製ボタン */}
+                      <ActionButton
+                        type="copy"
+                        onClick={() => duplicateColumn(column.id)}
+                        variant="secondary"
+                        size="sm"
+                      >
+                        📋
+                      </ActionButton>
+
+                      {/* 削除ボタン */}
+                      <ActionButton
+                        type="clear"
+                        onClick={() => removeColumn(column.id)}
+                        variant="danger"
+                        size="sm"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </ActionButton>
+                    </div>
+
+                    {/* 中段: データタイプ選択（2段階式） */}
+                    <div className="mb-3">
+                      <div className="space-y-2">
+                        {/* Step 1: カテゴリ選択 */}
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-700 min-w-fit">
+                            カテゴリ:
+                          </label>
+                          <select
+                            value={
+                              Object.entries(DATA_TYPE_CATEGORIES).find(
+                                ([_, category]) =>
+                                  category.types.some(
+                                    type => type.value === column.dataType
+                                  )
+                              )?.[0] || 'legacy'
+                            }
+                            onChange={e => {
+                              const categoryValue = e.target.value;
+                              if (categoryValue !== 'legacy') {
+                                const categoryKey =
+                                  categoryValue as keyof typeof DATA_TYPE_CATEGORIES;
+                                const category =
+                                  DATA_TYPE_CATEGORIES[categoryKey];
+                                if (category && category.types.length > 0) {
+                                  // 現在の設定を保持しつつデータタイプのみ変更
+                                  updateColumn(column.id, {
+                                    dataType: category.types[0]
+                                      .value as DataType,
+                                    // 既存の設定は保持
+                                    settings: column.settings || {},
+                                  });
+                                }
+                              }
+                            }}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            aria-label="データカテゴリを選択"
+                          >
+                            {Object.entries(DATA_TYPE_CATEGORIES).map(
+                              ([categoryKey, category]) => (
+                                <option key={categoryKey} value={categoryKey}>
+                                  {category.emoji} {category.label}
+                                </option>
+                              )
+                            )}
+                            <option value="legacy">🔧 Legacy</option>
+                          </select>
+                        </div>
+
+                        {/* Step 2: 具体的なデータタイプ選択 */}
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-gray-700 min-w-fit">
+                            データタイプ:
+                          </label>
+                          <select
+                            value={column.dataType}
+                            onChange={e =>
+                              updateColumn(column.id, {
+                                dataType: e.target.value as DataType,
+                                // 既存の設定は保持
+                                settings: column.settings || {},
+                              })
+                            }
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            aria-label="具体的なデータタイプを選択"
+                          >
+                            {(() => {
+                              const currentCategory = Object.entries(
+                                DATA_TYPE_CATEGORIES
+                              ).find(([_, category]) =>
+                                category.types.some(
+                                  type => type.value === column.dataType
+                                )
+                              );
+
+                              if (currentCategory) {
+                                return currentCategory[1].types.map(type => (
+                                  <option key={type.value} value={type.value}>
+                                    {type.label} - {type.description}
+                                  </option>
+                                ));
+                              } else {
+                                // Legacy options
+                                return [
+                                  <option key="text" value="text">
+                                    テキスト
+                                  </option>,
+                                  <option key="number" value="number">
+                                    数値
+                                  </option>,
+                                  <option key="phone" value="phone">
+                                    電話番号
+                                  </option>,
+                                  <option key="custom" value="custom">
+                                    カスタム
+                                  </option>,
+                                ];
+                              }
+                            })()}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 下段: 詳細設定（データタイプ選択の直下） */}
+                    <DataTypeDetailSettings
+                      dataType={column.dataType}
+                      settings={column.settings}
+                      onSettingsChange={(settings: any) =>
+                        handleSettingsChange(column.id, settings)
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="カラム名を入力"
+                      isExpanded={expandedSettings[column.id] || false}
+                      onToggleExpanded={() => toggleSettingsExpanded(column.id)}
                     />
                   </div>
-
-                  {/* データタイプ選択 */}
-                  <div className="w-48">
-                    <select
-                      value={column.dataType}
-                      onChange={e =>
-                        updateColumn(column.id, {
-                          dataType: e.target.value as DataType,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                    >
-                      {Object.entries(DATA_TYPE_CATEGORIES).map(
-                        ([categoryKey, category]) => (
-                          <optgroup
-                            key={categoryKey}
-                            label={`${category.emoji} ${category.label}`}
-                          >
-                            {category.types.map(type => (
-                              <option key={type.value} value={type.value}>
-                                {type.label} - {type.description}
-                              </option>
-                            ))}
-                          </optgroup>
-                        )
-                      )}
-                      {/* Legacy options */}
-                      <optgroup label="🔧 Legacy">
-                        <option value="text">テキスト</option>
-                        <option value="number">数値</option>
-                        <option value="phone">電話番号</option>
-                        <option value="custom">カスタム</option>
-                      </optgroup>
-                    </select>
-                  </div>
-
-                  {/* 削除ボタン */}
-                  <ActionButton
-                    type="clear"
-                    onClick={() => removeColumn(column.id)}
-                    variant="danger"
-                    size="sm"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </ActionButton>
                 </div>
               ))
           )}
@@ -1166,14 +1686,24 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
                 <h3 className="text-xl font-bold text-blue-800">
                   ⭐ プリセット選択
                 </h3>
-                <ActionButton
-                  type="clear"
-                  onClick={() => setShowPresets(false)}
-                  variant="secondary"
-                  size="sm"
-                >
-                  ✕
-                </ActionButton>
+                <div className="flex items-center gap-2">
+                  <ActionButton
+                    type="copy"
+                    onClick={() => setShowPresetImportExport(true)}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    📥📤 インポート・エクスポート
+                  </ActionButton>
+                  <ActionButton
+                    type="clear"
+                    onClick={() => setShowPresets(false)}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    ✕
+                  </ActionButton>
+                </div>
               </div>
 
               <div className="space-y-6">
@@ -1320,6 +1850,16 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
           {/* アクションボタン */}
           <div className="flex flex-wrap gap-3 pt-4">
             <ActionButton
+              type="copy"
+              onClick={() => setShowExportPreview(true)}
+              disabled={columns.length === 0}
+              variant="secondary"
+              size="lg"
+            >
+              👁️ プレビュー
+            </ActionButton>
+
+            <ActionButton
               type="generate"
               onClick={generateData}
               disabled={isGenerating || columns.length === 0}
@@ -1410,8 +1950,655 @@ export const CSVTestDataGeneratorV2: React.FC = React.memo(() => {
           </CardContent>
         </Card>
       )}
+
+      {/* 一括編集モーダル */}
+      {showBulkEdit && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-blue-800">✏️ 一括編集</h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowBulkEdit(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium text-gray-700 mb-2">
+                    対象カラム選択
+                  </h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {columns.map(column => (
+                      <label key={column.id} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedColumns.includes(column.id)}
+                          onChange={() => toggleColumnSelection(column.id)}
+                          className="mr-2"
+                        />
+                        <span className="text-sm flex items-center gap-2">
+                          {column.name} (
+                          {getDataTypeInfo(column.dataType)?.label})
+                          {column.required && (
+                            <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                              必須
+                            </span>
+                          )}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedColumns.length > 0 && (
+                  <div className="space-y-3 pt-3 border-t">
+                    <p className="text-sm text-blue-600">
+                      {selectedColumns.length}個のカラムが選択されています
+                    </p>
+
+                    {/* 選択されたカラムの現在の必須状態を表示 */}
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <h5 className="text-sm font-medium text-gray-700 mb-2">
+                        現在の必須設定状態
+                      </h5>
+                      <div className="space-y-1">
+                        {selectedColumns.map(columnId => {
+                          const column = columns.find(c => c.id === columnId);
+                          if (!column) return null;
+                          return (
+                            <div
+                              key={columnId}
+                              className="flex items-center justify-between text-sm"
+                            >
+                              <span>{column.name}</span>
+                              <span
+                                className={`px-2 py-1 rounded text-xs ${
+                                  column.required
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}
+                              >
+                                {column.required ? '必須' : '任意'}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* データタイプ変更セクション */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          📝 一括データタイプ変更
+                        </label>
+                        <select
+                          value={bulkEditDataType}
+                          onChange={e =>
+                            setBulkEditDataType(e.target.value as DataType)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        >
+                          {Object.entries(DATA_TYPE_CATEGORIES).map(
+                            ([categoryKey, category]) => (
+                              <optgroup
+                                key={categoryKey}
+                                label={`${category.emoji} ${category.label}`}
+                              >
+                                {category.types.map(type => (
+                                  <option key={type.value} value={type.value}>
+                                    {type.label} - {type.description}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            )
+                          )}
+                        </select>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <ActionButton
+                          type="replace"
+                          onClick={() =>
+                            performBulkEdit({
+                              columnIds: selectedColumns,
+                              operation: 'changeType',
+                              value: bulkEditDataType,
+                            })
+                          }
+                          variant="primary"
+                          size="sm"
+                        >
+                          🔄 データタイプ変更
+                        </ActionButton>
+
+                        <ActionButton
+                          type="replace"
+                          onClick={() =>
+                            performBulkEdit({
+                              columnIds: selectedColumns,
+                              operation: 'toggleRequired',
+                            })
+                          }
+                          variant="secondary"
+                          size="sm"
+                        >
+                          ✅ 必須切替
+                        </ActionButton>
+
+                        <ActionButton
+                          type="clear"
+                          onClick={() =>
+                            performBulkEdit({
+                              columnIds: selectedColumns,
+                              operation: 'delete',
+                            })
+                          }
+                          variant="danger"
+                          size="sm"
+                        >
+                          🗑️ 削除
+                        </ActionButton>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* テンプレート管理モーダル */}
+      {showTemplateManager && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-blue-800">
+                  📁 テンプレート管理
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowTemplateManager(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-6">
+                {/* 新規テンプレート保存 */}
+                <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                  <h4 className="font-semibold text-blue-800 mb-3">
+                    💾 新規テンプレート保存
+                  </h4>
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault();
+                      const formData = new FormData(
+                        e.target as HTMLFormElement
+                      );
+                      const name = formData.get('templateName') as string;
+                      const description = formData.get(
+                        'templateDescription'
+                      ) as string;
+                      if (name.trim()) {
+                        saveTemplate(name.trim(), description.trim());
+                      }
+                    }}
+                  >
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        name="templateName"
+                        placeholder="テンプレート名"
+                        required
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <input
+                        type="text"
+                        name="templateDescription"
+                        placeholder="説明（任意）"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <ActionButton
+                        type="generate"
+                        onClick={() => {}}
+                        variant="primary"
+                        size="sm"
+                        disabled={columns.length === 0}
+                      >
+                        💾 保存
+                      </ActionButton>
+                    </div>
+                  </form>
+                </div>
+
+                {/* 既存テンプレート一覧 */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3">
+                    保存済みテンプレート
+                  </h4>
+                  {templates.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">
+                      まだテンプレートが保存されていません
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {templates
+                        .sort(
+                          (a, b) => b.lastUsed.getTime() - a.lastUsed.getTime()
+                        )
+                        .map(template => (
+                          <div
+                            key={template.id}
+                            className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-gray-800 mb-1">
+                                  {template.name}
+                                </h5>
+                                <p className="text-sm text-gray-600 mb-2">
+                                  {template.description ||
+                                    'テンプレートの説明なし'}
+                                </p>
+                                <div className="text-xs text-gray-500">
+                                  <span>
+                                    カラム数: {template.settings.columns.length}{' '}
+                                    |{' '}
+                                  </span>
+                                  <span>
+                                    行数: {template.settings.rowCount} |{' '}
+                                  </span>
+                                  <span>
+                                    最終使用:{' '}
+                                    {template.lastUsed.toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <ActionButton
+                                  type="copy"
+                                  onClick={() => setTemplatePreview(template)}
+                                  variant="secondary"
+                                  size="sm"
+                                >
+                                  👁️ プレビュー
+                                </ActionButton>
+                                <ActionButton
+                                  type="generate"
+                                  onClick={() => loadTemplate(template.id)}
+                                  variant="primary"
+                                  size="sm"
+                                >
+                                  📂 読込
+                                </ActionButton>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* テンプレートプレビューモーダル */}
+      {templatePreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-blue-800">
+                  👁️ テンプレートプレビュー: {templatePreview.name}
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setTemplatePreview(null)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-6">
+                {/* テンプレート詳細情報 */}
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-blue-800 mb-2">
+                    📋 テンプレート情報
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">説明:</span>{' '}
+                      {templatePreview.description || '説明なし'}
+                    </div>
+                    <div>
+                      <span className="font-medium">作成日:</span>{' '}
+                      {templatePreview.createdAt.toLocaleDateString()}
+                    </div>
+                    <div>
+                      <span className="font-medium">カラム数:</span>{' '}
+                      {templatePreview.settings.columns.length}個
+                    </div>
+                    <div>
+                      <span className="font-medium">行数設定:</span>{' '}
+                      {templatePreview.settings.rowCount}行
+                    </div>
+                    <div>
+                      <span className="font-medium">エンコード:</span>{' '}
+                      {templatePreview.settings.exportSettings.encoding}
+                    </div>
+                    <div>
+                      <span className="font-medium">区切り文字:</span>{' '}
+                      {templatePreview.settings.exportSettings.delimiter === ','
+                        ? 'カンマ'
+                        : templatePreview.settings.exportSettings.delimiter ===
+                          ';'
+                        ? 'セミコロン'
+                        : 'タブ'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* カラム構成プレビュー */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3">
+                    📊 カラム構成
+                  </h4>
+                  <div className="space-y-2">
+                    {templatePreview.settings.columns
+                      .sort((a, b) => a.order - b.order)
+                      .map((column, index) => (
+                        <div
+                          key={column.id}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border"
+                        >
+                          <span className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                            {index + 1}
+                          </span>
+                          <div className="flex-1">
+                            <span className="font-medium">{column.name}</span>
+                            <span className="ml-2 text-sm text-gray-600">
+                              ({getDataTypeInfo(column.dataType)?.label})
+                            </span>
+                          </div>
+                          {column.required && (
+                            <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                              必須
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <ActionButton
+                    type="generate"
+                    onClick={() => {
+                      loadTemplate(templatePreview.id);
+                      setTemplatePreview(null);
+                    }}
+                    variant="primary"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    📂 このテンプレートを読み込む
+                  </ActionButton>
+                  <ActionButton
+                    type="clear"
+                    onClick={() => setTemplatePreview(null)}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    キャンセル
+                  </ActionButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* エクスポートプレビューモーダル */}
+      {showExportPreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-blue-800">
+                  📊 エクスポートプレビュー
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowExportPreview(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-6">
+                {/* エクスポート設定 */}
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-green-800 mb-2">
+                    ⚙️ エクスポート設定
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">ファイル名:</span>{' '}
+                      {exportSettings.filename}
+                    </div>
+                    <div>
+                      <span className="font-medium">エンコード:</span>{' '}
+                      {exportSettings.encoding}
+                    </div>
+                    <div>
+                      <span className="font-medium">区切り文字:</span>{' '}
+                      {exportSettings.delimiter === ','
+                        ? 'カンマ (,)'
+                        : exportSettings.delimiter === ';'
+                        ? 'セミコロン (;)'
+                        : 'タブ'}
+                    </div>
+                    <div>
+                      <span className="font-medium">ヘッダー:</span>{' '}
+                      {exportSettings.includeHeader ? '含む' : '含まない'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* サンプルデータプレビュー */}
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-3">
+                    📋 サンプルデータ (最初の5行)
+                  </h4>
+                  <div className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
+                    <pre className="text-sm font-mono">
+                      {(() => {
+                        const sampleRows = [];
+                        const delimiter = exportSettings.delimiter;
+
+                        // ヘッダー行
+                        if (exportSettings.includeHeader) {
+                          sampleRows.push(
+                            columns.map(col => col.name).join(delimiter)
+                          );
+                        }
+
+                        // サンプルデータ行 (5行)
+                        for (let i = 0; i < Math.min(5, rowCount); i++) {
+                          const row = columns.map(col => {
+                            const dataTypeInfo = getDataTypeInfo(col.dataType);
+                            return `[${dataTypeInfo?.label || 'データ'}${
+                              i + 1
+                            }]`;
+                          });
+                          sampleRows.push(row.join(delimiter));
+                        }
+
+                        return sampleRows.join('\n');
+                      })()}
+                    </pre>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <ActionButton
+                    type="generate"
+                    onClick={() => {
+                      generateData();
+                      setShowExportPreview(false);
+                    }}
+                    variant="primary"
+                    size="sm"
+                    className="flex-1"
+                    disabled={columns.length === 0}
+                  >
+                    🚀 データ生成実行
+                  </ActionButton>
+                  <ActionButton
+                    type="clear"
+                    onClick={() => setShowExportPreview(false)}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    閉じる
+                  </ActionButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* プリセット・テンプレート インポート・エクスポートモーダル */}
+      {showPresetImportExport && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-blue-800">
+                  📥📤 プリセット・テンプレート管理
+                </h3>
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowPresetImportExport(false)}
+                  variant="secondary"
+                  size="sm"
+                >
+                  ✕
+                </ActionButton>
+              </div>
+
+              <div className="space-y-6">
+                {/* エクスポートセクション */}
+                <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                  <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                    📤 エクスポート
+                  </h4>
+                  <p className="text-sm text-green-700 mb-4">
+                    現在のプリセットとテンプレートをJSONファイルとしてダウンロードします。
+                    バックアップや他の環境への移行に使用できます。
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                    <div>
+                      <span className="font-medium">ユーザープリセット:</span>{' '}
+                      {userPresets.length}個
+                    </div>
+                    <div>
+                      <span className="font-medium">テンプレート:</span>{' '}
+                      {templates.length}個
+                    </div>
+                  </div>
+                  <ActionButton
+                    type="download"
+                    onClick={exportPresets}
+                    variant="primary"
+                    size="sm"
+                    disabled={
+                      userPresets.length === 0 && templates.length === 0
+                    }
+                  >
+                    📦 エクスポート実行
+                  </ActionButton>
+                </div>
+
+                {/* インポートセクション */}
+                <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                  <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                    📥 インポート
+                  </h4>
+                  <p className="text-sm text-blue-700 mb-4">
+                    他の環境でエクスポートされたJSONファイルを読み込みます。
+                    既存のプリセット・テンプレートに追加されます。
+                  </p>
+                  <div className="space-y-3">
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={importPresets}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                    />
+                    <div className="text-xs text-blue-600">
+                      ⚠️
+                      インポート時は既存データと重複チェックを行い、安全にマージします
+                    </div>
+                  </div>
+                </div>
+
+                {/* 注意事項 */}
+                <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                  <h4 className="font-semibold text-yellow-800 mb-2 flex items-center gap-2">
+                    ⚠️ 注意事項
+                  </h4>
+                  <ul className="text-xs text-yellow-700 space-y-1">
+                    <li>• エクスポートデータには機密情報は含まれません</li>
+                    <li>• インポート時は既存データは上書きされません</li>
+                    <li>
+                      • 同名のプリセット・テンプレートは自動的にリネームされます
+                    </li>
+                    <li>
+                      • 定期的なエクスポートによるバックアップを推奨します
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <ActionButton
+                  type="clear"
+                  onClick={() => setShowPresetImportExport(false)}
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
+                >
+                  閉じる
+                </ActionButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-});
+};
 
+export const CSVTestDataGeneratorV2 = React.memo(
+  CSVTestDataGeneratorV2Component
+);
 export default CSVTestDataGeneratorV2;

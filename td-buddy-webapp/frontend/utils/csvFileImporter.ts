@@ -3,7 +3,11 @@
  * TestData Buddy (TD) - CSV Import & Configuration Detection
  */
 
-import { ColumnConfig, CsvConfig, DataTypeCategory } from '../types/csvDataTypes';
+import {
+  ColumnConfig,
+  CsvConfig,
+  DataTypeCategory,
+} from '../types/csvDataTypes';
 
 export interface ImportResult {
   success: boolean;
@@ -32,29 +36,32 @@ export class CSVImporter {
   static async importCSV(file: File): Promise<ImportResult> {
     try {
       // ファイルサイズチェック
-      if (file.size > 100 * 1024 * 1024) { // 100MB制限
+      if (file.size > 100 * 1024 * 1024) {
+        // 100MB制限
         return {
           success: false,
-          error: 'ファイルサイズが大きすぎます（100MB以下にしてください）'
+          error: 'ファイルサイズが大きすぎます（100MB以下にしてください）',
         };
       }
 
       // ファイル内容読み込み
       const content = await this.readFileContent(file);
-      
+
       // CSV解析
       const { rows, warnings } = this.parseCSV(content);
-      
+
       if (rows.length === 0) {
         return {
           success: false,
-          error: 'CSVファイルにデータが含まれていません'
+          error: 'CSVファイルにデータが含まれていません',
         };
       }
 
       // ヘッダー行の検出
       const hasHeader = this.detectHeader(rows);
-      const headers = hasHeader ? rows[0] : this.generateDefaultHeaders(rows[0].length);
+      const headers = hasHeader
+        ? rows[0]
+        : this.generateDefaultHeaders(rows[0].length);
       const dataRows = hasHeader ? rows.slice(1) : rows;
 
       // 列設定の自動推測
@@ -63,25 +70,29 @@ export class CSVImporter {
       // プレビューデータの準備
       const previewData = [
         headers,
-        ...dataRows.slice(0, this.MAX_PREVIEW_ROWS)
+        ...dataRows.slice(0, this.MAX_PREVIEW_ROWS),
       ];
 
       const config: CsvConfig = {
         columns,
-        rowCount: Math.min(1000, dataRows.length) // デフォルト生成件数
+        rowCount: Math.min(1000, dataRows.length), // デフォルト生成件数
+        outputFormat: 'csv', // デフォルト出力形式
+        includeHeader: true, // ヘッダー含める
+        encoding: 'utf-8', // デフォルトエンコーディング
       };
 
       return {
         success: true,
         config,
         warnings,
-        previewData
+        previewData,
       };
-
     } catch (error) {
       return {
         success: false,
-        error: `ファイル読み込みエラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+        error: `ファイル読み込みエラー: ${
+          error instanceof Error ? error.message : '不明なエラー'
+        }`,
       };
     }
   }
@@ -92,8 +103,8 @@ export class CSVImporter {
   private static readFileContent(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      
-      reader.onload = (event) => {
+
+      reader.onload = event => {
         const result = event.target?.result;
         if (typeof result === 'string') {
           resolve(result);
@@ -101,11 +112,11 @@ export class CSVImporter {
           reject(new Error('ファイル読み込みに失敗しました'));
         }
       };
-      
+
       reader.onerror = () => {
         reject(new Error('ファイル読み込み中にエラーが発生しました'));
       };
-      
+
       // UTF-8で読み込み（日本語対応）
       reader.readAsText(file, 'UTF-8');
     });
@@ -114,17 +125,22 @@ export class CSVImporter {
   /**
    * CSV文字列を行配列に解析
    */
-  private static parseCSV(content: string): { rows: string[][], warnings: string[] } {
+  private static parseCSV(content: string): {
+    rows: string[][];
+    warnings: string[];
+  } {
     const warnings: string[] = [];
     const rows: string[][] = [];
-    
+
     // 改行コードの統一
-    const normalizedContent = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const normalizedContent = content
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n');
     const lines = normalizedContent.split('\n');
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-      
+
       // 空行スキップ
       if (!line) continue;
 
@@ -134,19 +150,25 @@ export class CSVImporter {
           rows.push(row);
         }
       } catch (error) {
-        warnings.push(`行 ${i + 1}: CSV解析エラー - ${error instanceof Error ? error.message : '不明なエラー'}`);
+        warnings.push(
+          `行 ${i + 1}: CSV解析エラー - ${
+            error instanceof Error ? error.message : '不明なエラー'
+          }`
+        );
       }
     }
 
     // 列数の一貫性チェック
     if (rows.length > 1) {
       const expectedColumns = rows[0].length;
-      const inconsistentRows = rows.filter((row, index) => 
-        row.length !== expectedColumns
+      const inconsistentRows = rows.filter(
+        (row, index) => row.length !== expectedColumns
       ).length;
 
       if (inconsistentRows > 0) {
-        warnings.push(`${inconsistentRows}行で列数が一致しません。期待値: ${expectedColumns}列`);
+        warnings.push(
+          `${inconsistentRows}行で列数が一致しません。期待値: ${expectedColumns}列`
+        );
       }
     }
 
@@ -189,7 +211,7 @@ export class CSVImporter {
 
     // 最後の列を追加
     result.push(current.trim());
-    
+
     return result;
   }
 
@@ -203,13 +225,13 @@ export class CSVImporter {
     const secondRow = rows[1];
 
     // 第1行が数値のみの場合、ヘッダーでない可能性が高い
-    const firstRowAllNumbers = firstRow.every(cell => 
-      !isNaN(Number(cell)) && cell.trim() !== ''
+    const firstRowAllNumbers = firstRow.every(
+      cell => !isNaN(Number(cell)) && cell.trim() !== ''
     );
 
     // 第2行も考慮
-    const secondRowAllNumbers = secondRow.every(cell => 
-      !isNaN(Number(cell)) && cell.trim() !== ''
+    const secondRowAllNumbers = secondRow.every(
+      cell => !isNaN(Number(cell)) && cell.trim() !== ''
     );
 
     // 第1行が数値で第2行も数値なら、ヘッダーなしと判断
@@ -218,7 +240,7 @@ export class CSVImporter {
     }
 
     // 第1行に日本語が含まれていればヘッダーの可能性が高い
-    const hasJapanese = firstRow.some(cell => 
+    const hasJapanese = firstRow.some(cell =>
       /[ひらがなカタカナ漢字]/.test(cell)
     );
 
@@ -235,7 +257,10 @@ export class CSVImporter {
   /**
    * 列のデータ型を自動推測
    */
-  private static detectColumnTypes(headers: string[], dataRows: string[][]): ColumnConfig[] {
+  private static detectColumnTypes(
+    headers: string[],
+    dataRows: string[][]
+  ): ColumnConfig[] {
     const columns: ColumnConfig[] = [];
 
     for (let colIndex = 0; colIndex < headers.length; colIndex++) {
@@ -249,9 +274,13 @@ export class CSVImporter {
       const settings = this.generateTypeSettings(detectedType, sampleData);
 
       columns.push({
+        id: `col_${colIndex + 1}`,
         name: columnName,
         dataType: detectedType,
-        settings
+        settings,
+        nullable: true,
+        nullRatio: 10,
+        unique: false,
       });
     }
 
@@ -261,7 +290,10 @@ export class CSVImporter {
   /**
    * 単一列のデータ型推測
    */
-  private static detectDataType(columnName: string, sampleData: string[]): DataTypeCategory {
+  private static detectDataType(
+    columnName: string,
+    sampleData: string[]
+  ): DataTypeCategory {
     if (sampleData.length === 0) return 'text';
 
     // 列名による推測
@@ -281,27 +313,49 @@ export class CSVImporter {
     // 日本語列名パターン
     const patterns: Record<string, DataTypeCategory> = {
       // 名前系
-      '名前': 'name', '氏名': 'name', '社員名': 'name', '顧客名': 'name',
-      'name': 'name', 'fullname': 'name', 'username': 'name',
-      
+      名前: 'name',
+      氏名: 'name',
+      社員名: 'name',
+      顧客名: 'name',
+      name: 'name',
+      fullname: 'name',
+      username: 'name',
+
       // メール系
-      'メール': 'email', 'メールアドレス': 'email', 'email': 'email',
-      'mail': 'email', 'emailaddress': 'email',
-      
+      メール: 'email',
+      メールアドレス: 'email',
+      email: 'email',
+      mail: 'email',
+      emailaddress: 'email',
+
       // 電話系
-      '電話': 'phone', '電話番号': 'phone', 'tel': 'phone',
-      'phone': 'phone', 'telephone': 'phone',
-      
+      電話: 'phone',
+      電話番号: 'phone',
+      tel: 'phone',
+      phone: 'phone',
+      telephone: 'phone',
+
       // 年齢系
-      '年齢': 'age', 'age': 'age', '歳': 'age',
-      
+      年齢: 'age',
+      age: 'age',
+      歳: 'age',
+
       // 日付系
-      '日付': 'date', '年月日': 'date', '登録日': 'date', '作成日': 'date',
-      'date': 'date', 'created': 'date', 'updated': 'date',
-      
+      日付: 'date',
+      年月日: 'date',
+      登録日: 'date',
+      作成日: 'date',
+      date: 'date',
+      created: 'date',
+      updated: 'date',
+
       // 数値系（価格・金額）
-      '価格': 'number', '金額': 'number', '料金': 'number',
-      'price': 'number', 'amount': 'number', 'cost': 'number'
+      価格: 'number',
+      金額: 'number',
+      料金: 'number',
+      price: 'number',
+      amount: 'number',
+      cost: 'number',
     };
 
     for (const [pattern, type] of Object.entries(patterns)) {
@@ -326,27 +380,27 @@ export class CSVImporter {
 
     for (const cell of sampleData) {
       const trimmed = cell.trim();
-      
+
       // 数値チェック
       if (/^\d+(\.\d+)?$/.test(trimmed)) {
         numberCount++;
       }
-      
+
       // 日付チェック
       if (this.isDateLike(trimmed)) {
         dateCount++;
       }
-      
+
       // メールチェック
       if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
         emailCount++;
       }
-      
+
       // 電話番号チェック
       if (/^(\d{2,4}-\d{2,4}-\d{4}|\d{10,11})$/.test(trimmed)) {
         phoneCount++;
       }
-      
+
       // 日本語名前チェック
       if (this.isJapaneseName(trimmed)) {
         japaneseNameCount++;
@@ -370,13 +424,16 @@ export class CSVImporter {
    */
   private static isDateLike(value: string): boolean {
     const datePatterns = [
-      /^\d{4}-\d{1,2}-\d{1,2}$/,        // YYYY-MM-DD
-      /^\d{4}\/\d{1,2}\/\d{1,2}$/,      // YYYY/MM/DD
-      /^\d{1,2}\/\d{1,2}\/\d{4}$/,      // MM/DD/YYYY
-      /^\d{4}年\d{1,2}月\d{1,2}日$/,   // YYYY年MM月DD日
+      /^\d{4}-\d{1,2}-\d{1,2}$/, // YYYY-MM-DD
+      /^\d{4}\/\d{1,2}\/\d{1,2}$/, // YYYY/MM/DD
+      /^\d{1,2}\/\d{1,2}\/\d{4}$/, // MM/DD/YYYY
+      /^\d{4}年\d{1,2}月\d{1,2}日$/, // YYYY年MM月DD日
     ];
 
-    return datePatterns.some(pattern => pattern.test(value)) && !isNaN(Date.parse(value));
+    return (
+      datePatterns.some(pattern => pattern.test(value)) &&
+      !isNaN(Date.parse(value))
+    );
   }
 
   /**
@@ -384,16 +441,21 @@ export class CSVImporter {
    */
   private static isJapaneseName(value: string): boolean {
     // 日本語文字を含み、スペースで区切られている
-    return /^[ぁ-んァ-ン一-龯\s]+$/.test(value) && 
-           value.includes(' ') && 
-           value.length >= 3 && 
-           value.length <= 20;
+    return (
+      /^[ぁ-んァ-ン一-龯\s]+$/.test(value) &&
+      value.includes(' ') &&
+      value.length >= 3 &&
+      value.length <= 20
+    );
   }
 
   /**
    * 検出された型に基づいて設定を生成
    */
-  private static generateTypeSettings(type: DataTypeCategory, sampleData: string[]): any {
+  private static generateTypeSettings(
+    type: DataTypeCategory,
+    sampleData: string[]
+  ): any {
     switch (type) {
       case 'number':
         return this.generateNumberSettings(sampleData);
@@ -425,7 +487,7 @@ export class CSVImporter {
     return {
       min: Math.floor(min),
       max: Math.ceil(max),
-      decimals: hasDecimals ? 2 : 0
+      decimals: hasDecimals ? 2 : 0,
     };
   }
 
@@ -434,12 +496,14 @@ export class CSVImporter {
    */
   private static generateTextSettings(sampleData: string[]): any {
     const lengths = sampleData.map(cell => cell.length);
-    const hasJapanese = sampleData.some(cell => /[ひらがなカタカナ漢字]/.test(cell));
+    const hasJapanese = sampleData.some(cell =>
+      /[ひらがなカタカナ漢字]/.test(cell)
+    );
 
     return {
       language: hasJapanese ? 'ja' : 'en',
       minLength: Math.min(...lengths, 5),
-      maxLength: Math.max(...lengths, 50)
+      maxLength: Math.max(...lengths, 50),
     };
   }
 
@@ -454,7 +518,7 @@ export class CSVImporter {
     if (dates.length === 0) {
       return {
         startDate: '2020-01-01',
-        endDate: '2025-12-31'
+        endDate: '2025-12-31',
       };
     }
 
@@ -463,7 +527,7 @@ export class CSVImporter {
 
     return {
       startDate: minDate.toISOString().split('T')[0],
-      endDate: maxDate.toISOString().split('T')[0]
+      endDate: maxDate.toISOString().split('T')[0],
     };
   }
 }
@@ -490,7 +554,7 @@ export class TDImportHelper {
     let message = `✅ TDからのメッセージ: CSVインポート完了！\n\n`;
     message += `📊 検出結果:\n`;
     message += `- 列数: ${columnCount}列\n`;
-    
+
     Object.entries(detectedTypes).forEach(([type, count]) => {
       const typeName = this.getTypeName(type as DataTypeCategory);
       message += `- ${typeName}: ${count}列\n`;
@@ -518,7 +582,14 @@ export class TDImportHelper {
       email: 'メールアドレス',
       phone: '電話番号',
       date: '日付',
-      age: '年齢'
+      age: '年齢',
+      boolean: 'ブール値',
+      uuid: 'UUID',
+      url: 'URL',
+      address: '住所',
+      company: '会社名',
+      color: 'カラー',
+      custom: 'カスタム',
     };
 
     return typeNames[type] || type;
@@ -546,8 +617,8 @@ export class TDImportHelper {
     });
 
     // テキスト列の長さチェック
-    const longTextColumns = config.columns.filter(col => 
-      col.dataType === 'text' && col.settings?.maxLength > 100
+    const longTextColumns = config.columns.filter(
+      col => col.dataType === 'text' && col.settings?.maxLength > 100
     );
 
     if (longTextColumns.length > 0) {
@@ -560,4 +631,4 @@ export class TDImportHelper {
 
     return suggestions;
   }
-} 
+}

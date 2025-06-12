@@ -19,11 +19,11 @@ export interface CsvTemplate {
   usage: number;
 }
 
-export type TemplateCategory = 
-  | 'business' 
-  | 'personal' 
-  | 'testing' 
-  | 'sample' 
+export type TemplateCategory =
+  | 'business'
+  | 'personal'
+  | 'testing'
+  | 'sample'
   | 'custom';
 
 export interface TemplateSearchOptions {
@@ -55,11 +55,51 @@ export class CSVTemplateManager {
       name: '社員名簿（基本）',
       description: '基本的な社員情報のテンプレート',
       columns: [
-        { name: '社員番号', dataType: 'number', settings: { min: 1000, max: 9999 } },
-        { name: '氏名', dataType: 'name', settings: {} },
-        { name: 'メールアドレス', dataType: 'email', settings: {} },
-        { name: '電話番号', dataType: 'phone', settings: {} },
-        { name: '年齢', dataType: 'age', settings: {} }
+        {
+          id: 'emp_01',
+          name: '社員番号',
+          dataType: 'number',
+          settings: { min: 1000, max: 9999 },
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'emp_02',
+          name: '氏名',
+          dataType: 'name',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'emp_03',
+          name: 'メールアドレス',
+          dataType: 'email',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'emp_04',
+          name: '電話番号',
+          dataType: 'phone',
+          settings: {},
+          nullable: true,
+          nullRatio: 5,
+          unique: false,
+        },
+        {
+          id: 'emp_05',
+          name: '年齢',
+          dataType: 'age',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
       ],
       defaultRowCount: 100,
       createdAt: '2024-01-01T00:00:00Z',
@@ -67,23 +107,103 @@ export class CSVTemplateManager {
       category: 'business',
       tags: ['社員', '人事', 'HR'],
       isBuiltIn: true,
-      usage: 0
+      usage: 0,
     },
     {
       id: 'employee_detailed',
       name: '社員名簿（詳細）',
       description: '詳細な社員情報を含むテンプレート',
       columns: [
-        { name: '社員番号', dataType: 'number', settings: { min: 1000, max: 9999 } },
-        { name: '氏名', dataType: 'name', settings: {} },
-        { name: 'フリガナ', dataType: 'text', settings: { language: 'ja' } },
-        { name: 'メールアドレス', dataType: 'email', settings: {} },
-        { name: '電話番号', dataType: 'phone', settings: {} },
-        { name: '年齢', dataType: 'age', settings: {} },
-        { name: '部署', dataType: 'text', settings: { language: 'ja' } },
-        { name: '役職', dataType: 'text', settings: { language: 'ja' } },
-        { name: '入社日', dataType: 'date', settings: { startDate: '2020-01-01', endDate: '2024-12-31' } },
-        { name: '給与', dataType: 'number', settings: { min: 200000, max: 1000000 } }
+        {
+          id: 'empd_01',
+          name: '社員番号',
+          dataType: 'number',
+          settings: { min: 1000, max: 9999 },
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'empd_02',
+          name: '氏名',
+          dataType: 'name',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'empd_03',
+          name: 'フリガナ',
+          dataType: 'text',
+          settings: { language: 'ja' },
+          nullable: true,
+          nullRatio: 5,
+          unique: false,
+        },
+        {
+          id: 'empd_04',
+          name: 'メールアドレス',
+          dataType: 'email',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'empd_05',
+          name: '電話番号',
+          dataType: 'phone',
+          settings: {},
+          nullable: true,
+          nullRatio: 5,
+          unique: false,
+        },
+        {
+          id: 'empd_06',
+          name: '年齢',
+          dataType: 'age',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'empd_07',
+          name: '部署',
+          dataType: 'text',
+          settings: { language: 'ja' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'empd_08',
+          name: '役職',
+          dataType: 'text',
+          settings: { language: 'ja' },
+          nullable: true,
+          nullRatio: 10,
+          unique: false,
+        },
+        {
+          id: 'empd_09',
+          name: '入社日',
+          dataType: 'date',
+          settings: { startDate: '2020-01-01', endDate: '2024-12-31' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'empd_10',
+          name: '給与',
+          dataType: 'number',
+          settings: { min: 200000, max: 1000000 },
+          nullable: true,
+          nullRatio: 15,
+          unique: false,
+        },
       ],
       defaultRowCount: 100,
       createdAt: '2024-01-01T00:00:00Z',
@@ -91,19 +211,67 @@ export class CSVTemplateManager {
       category: 'business',
       tags: ['社員', '人事', 'HR', '詳細'],
       isBuiltIn: true,
-      usage: 0
+      usage: 0,
     },
     {
       id: 'customer_basic',
       name: '顧客情報（基本）',
       description: '基本的な顧客情報のテンプレート',
       columns: [
-        { name: '顧客ID', dataType: 'number', settings: { min: 10000, max: 99999 } },
-        { name: '顧客名', dataType: 'name', settings: {} },
-        { name: 'メールアドレス', dataType: 'email', settings: {} },
-        { name: '電話番号', dataType: 'phone', settings: {} },
-        { name: '年齢', dataType: 'age', settings: {} },
-        { name: '登録日', dataType: 'date', settings: { startDate: '2023-01-01', endDate: '2024-12-31' } }
+        {
+          id: 'cust_01',
+          name: '顧客ID',
+          dataType: 'number',
+          settings: { min: 10000, max: 99999 },
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'cust_02',
+          name: '顧客名',
+          dataType: 'name',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'cust_03',
+          name: 'メールアドレス',
+          dataType: 'email',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'cust_04',
+          name: '電話番号',
+          dataType: 'phone',
+          settings: {},
+          nullable: true,
+          nullRatio: 10,
+          unique: false,
+        },
+        {
+          id: 'cust_05',
+          name: '年齢',
+          dataType: 'age',
+          settings: {},
+          nullable: true,
+          nullRatio: 5,
+          unique: false,
+        },
+        {
+          id: 'cust_06',
+          name: '登録日',
+          dataType: 'date',
+          settings: { startDate: '2023-01-01', endDate: '2024-12-31' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
       ],
       defaultRowCount: 500,
       createdAt: '2024-01-01T00:00:00Z',
@@ -111,20 +279,76 @@ export class CSVTemplateManager {
       category: 'business',
       tags: ['顧客', 'CRM', '営業'],
       isBuiltIn: true,
-      usage: 0
+      usage: 0,
     },
     {
       id: 'product_catalog',
       name: '商品カタログ',
       description: '商品情報のテンプレート',
       columns: [
-        { name: '商品ID', dataType: 'number', settings: { min: 1, max: 10000 } },
-        { name: '商品名', dataType: 'text', settings: { language: 'ja' } },
-        { name: 'カテゴリ', dataType: 'text', settings: { language: 'ja' } },
-        { name: '価格', dataType: 'number', settings: { min: 100, max: 100000 } },
-        { name: '在庫数', dataType: 'number', settings: { min: 0, max: 1000 } },
-        { name: '説明', dataType: 'text', settings: { language: 'ja' } },
-        { name: '登録日', dataType: 'date', settings: { startDate: '2024-01-01', endDate: '2024-12-31' } }
+        {
+          id: 'prod_01',
+          name: '商品ID',
+          dataType: 'number',
+          settings: { min: 1, max: 10000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'prod_02',
+          name: '商品名',
+          dataType: 'text',
+          settings: { language: 'ja' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'prod_03',
+          name: 'カテゴリ',
+          dataType: 'text',
+          settings: { language: 'ja' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'prod_04',
+          name: '価格',
+          dataType: 'number',
+          settings: { min: 100, max: 100000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'prod_05',
+          name: '在庫数',
+          dataType: 'number',
+          settings: { min: 0, max: 1000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'prod_06',
+          name: '説明',
+          dataType: 'text',
+          settings: { language: 'ja' },
+          nullable: true,
+          nullRatio: 20,
+          unique: false,
+        },
+        {
+          id: 'prod_07',
+          name: '登録日',
+          dataType: 'date',
+          settings: { startDate: '2024-01-01', endDate: '2024-12-31' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
       ],
       defaultRowCount: 200,
       createdAt: '2024-01-01T00:00:00Z',
@@ -132,20 +356,76 @@ export class CSVTemplateManager {
       category: 'business',
       tags: ['商品', 'ECサイト', '在庫'],
       isBuiltIn: true,
-      usage: 0
+      usage: 0,
     },
     {
       id: 'sales_data',
       name: '売上データ',
       description: '売上情報のテンプレート',
       columns: [
-        { name: '売上ID', dataType: 'number', settings: { min: 100000, max: 999999 } },
-        { name: '顧客ID', dataType: 'number', settings: { min: 10000, max: 99999 } },
-        { name: '商品ID', dataType: 'number', settings: { min: 1, max: 10000 } },
-        { name: '数量', dataType: 'number', settings: { min: 1, max: 10 } },
-        { name: '単価', dataType: 'number', settings: { min: 100, max: 100000 } },
-        { name: '合計金額', dataType: 'number', settings: { min: 100, max: 1000000 } },
-        { name: '売上日', dataType: 'date', settings: { startDate: '2024-01-01', endDate: '2024-12-31' } }
+        {
+          id: 'sale_01',
+          name: '売上ID',
+          dataType: 'number',
+          settings: { min: 100000, max: 999999 },
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'sale_02',
+          name: '顧客ID',
+          dataType: 'number',
+          settings: { min: 10000, max: 99999 },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'sale_03',
+          name: '商品ID',
+          dataType: 'number',
+          settings: { min: 1, max: 10000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'sale_04',
+          name: '数量',
+          dataType: 'number',
+          settings: { min: 1, max: 10 },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'sale_05',
+          name: '単価',
+          dataType: 'number',
+          settings: { min: 100, max: 100000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'sale_06',
+          name: '合計金額',
+          dataType: 'number',
+          settings: { min: 100, max: 1000000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'sale_07',
+          name: '売上日',
+          dataType: 'date',
+          settings: { startDate: '2024-01-01', endDate: '2024-12-31' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
       ],
       defaultRowCount: 1000,
       createdAt: '2024-01-01T00:00:00Z',
@@ -153,19 +433,67 @@ export class CSVTemplateManager {
       category: 'business',
       tags: ['売上', '営業', '分析'],
       isBuiltIn: true,
-      usage: 0
+      usage: 0,
     },
     {
       id: 'test_users',
       name: 'テストユーザー',
       description: 'アプリケーションテスト用のユーザーデータ',
       columns: [
-        { name: 'ユーザーID', dataType: 'number', settings: { min: 1, max: 10000 } },
-        { name: 'ユーザー名', dataType: 'name', settings: {} },
-        { name: 'メールアドレス', dataType: 'email', settings: {} },
-        { name: 'パスワード', dataType: 'text', settings: { language: 'en' } },
-        { name: '登録日', dataType: 'date', settings: { startDate: '2023-01-01', endDate: '2024-12-31' } },
-        { name: 'ステータス', dataType: 'text', settings: { language: 'en' } }
+        {
+          id: 'user_01',
+          name: 'ユーザーID',
+          dataType: 'number',
+          settings: { min: 1, max: 10000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'user_02',
+          name: 'ユーザー名',
+          dataType: 'name',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'user_03',
+          name: 'メールアドレス',
+          dataType: 'email',
+          settings: {},
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: 'user_04',
+          name: 'パスワード',
+          dataType: 'text',
+          settings: { language: 'en' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'user_05',
+          name: '登録日',
+          dataType: 'date',
+          settings: { startDate: '2023-01-01', endDate: '2024-12-31' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: 'user_06',
+          name: 'ステータス',
+          dataType: 'text',
+          settings: { language: 'en' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
       ],
       defaultRowCount: 50,
       createdAt: '2024-01-01T00:00:00Z',
@@ -173,8 +501,8 @@ export class CSVTemplateManager {
       category: 'testing',
       tags: ['テスト', 'ユーザー', 'QA'],
       isBuiltIn: true,
-      usage: 0
-    }
+      usage: 0,
+    },
   ];
 
   /**
@@ -182,9 +510,9 @@ export class CSVTemplateManager {
    */
   static getAllTemplates(options?: TemplateSearchOptions): CsvTemplate[] {
     const customTemplates = this.getCustomTemplates();
-    const builtInTemplates = options?.includeBuiltIn !== false ? 
-      this.BUILT_IN_TEMPLATES : [];
-    
+    const builtInTemplates =
+      options?.includeBuiltIn !== false ? this.BUILT_IN_TEMPLATES : [];
+
     let allTemplates = [...builtInTemplates, ...customTemplates];
 
     // フィルタリング
@@ -193,17 +521,18 @@ export class CSVTemplateManager {
     }
 
     if (options?.tags && options.tags.length > 0) {
-      allTemplates = allTemplates.filter(t => 
+      allTemplates = allTemplates.filter(t =>
         options.tags!.some(tag => t.tags.includes(tag))
       );
     }
 
     if (options?.keyword) {
       const keyword = options.keyword.toLowerCase();
-      allTemplates = allTemplates.filter(t => 
-        t.name.toLowerCase().includes(keyword) ||
-        t.description.toLowerCase().includes(keyword) ||
-        t.tags.some(tag => tag.toLowerCase().includes(keyword))
+      allTemplates = allTemplates.filter(
+        t =>
+          t.name.toLowerCase().includes(keyword) ||
+          t.description.toLowerCase().includes(keyword) ||
+          t.tags.some(tag => tag.toLowerCase().includes(keyword))
       );
     }
 
@@ -240,8 +569,8 @@ export class CSVTemplateManager {
    * 新しいテンプレートを保存
    */
   static saveTemplate(
-    name: string, 
-    description: string, 
+    name: string,
+    description: string,
     config: CsvConfig,
     category: TemplateCategory = 'custom',
     tags: string[] = []
@@ -253,7 +582,7 @@ export class CSVTemplateManager {
       if (customTemplates.length >= this.MAX_CUSTOM_TEMPLATES) {
         return {
           success: false,
-          message: `カスタムテンプレートは${this.MAX_CUSTOM_TEMPLATES}個まで保存できます`
+          message: `カスタムテンプレートは${this.MAX_CUSTOM_TEMPLATES}個まで保存できます`,
         };
       }
 
@@ -262,7 +591,7 @@ export class CSVTemplateManager {
       if (existingTemplate) {
         return {
           success: false,
-          message: 'この名前のテンプレートは既に存在します'
+          message: 'この名前のテンプレートは既に存在します',
         };
       }
 
@@ -278,7 +607,7 @@ export class CSVTemplateManager {
         category,
         tags,
         isBuiltIn: false,
-        usage: 0
+        usage: 0,
       };
 
       // 保存
@@ -288,13 +617,14 @@ export class CSVTemplateManager {
       return {
         success: true,
         message: 'テンプレートを保存しました',
-        template: newTemplate
+        template: newTemplate,
       };
-
     } catch (error) {
       return {
         success: false,
-        message: `保存エラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+        message: `保存エラー: ${
+          error instanceof Error ? error.message : '不明なエラー'
+        }`,
       };
     }
   }
@@ -302,7 +632,10 @@ export class CSVTemplateManager {
   /**
    * テンプレートを更新
    */
-  static updateTemplate(id: string, updates: Partial<CsvTemplate>): TemplateOperationResult {
+  static updateTemplate(
+    id: string,
+    updates: Partial<CsvTemplate>
+  ): TemplateOperationResult {
     try {
       const customTemplates = this.getCustomTemplates();
       const templateIndex = customTemplates.findIndex(t => t.id === id);
@@ -310,7 +643,7 @@ export class CSVTemplateManager {
       if (templateIndex === -1) {
         return {
           success: false,
-          message: 'テンプレートが見つかりません'
+          message: 'テンプレートが見つかりません',
         };
       }
 
@@ -318,7 +651,7 @@ export class CSVTemplateManager {
       if (customTemplates[templateIndex].isBuiltIn) {
         return {
           success: false,
-          message: '内蔵テンプレートは編集できません'
+          message: '内蔵テンプレートは編集できません',
         };
       }
 
@@ -326,7 +659,7 @@ export class CSVTemplateManager {
       customTemplates[templateIndex] = {
         ...customTemplates[templateIndex],
         ...updates,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       this.saveCustomTemplates(customTemplates);
@@ -334,13 +667,14 @@ export class CSVTemplateManager {
       return {
         success: true,
         message: 'テンプレートを更新しました',
-        template: customTemplates[templateIndex]
+        template: customTemplates[templateIndex],
       };
-
     } catch (error) {
       return {
         success: false,
-        message: `更新エラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+        message: `更新エラー: ${
+          error instanceof Error ? error.message : '不明なエラー'
+        }`,
       };
     }
   }
@@ -356,7 +690,7 @@ export class CSVTemplateManager {
       if (templateIndex === -1) {
         return {
           success: false,
-          message: 'テンプレートが見つかりません'
+          message: 'テンプレートが見つかりません',
         };
       }
 
@@ -364,7 +698,7 @@ export class CSVTemplateManager {
       if (customTemplates[templateIndex].isBuiltIn) {
         return {
           success: false,
-          message: '内蔵テンプレートは削除できません'
+          message: '内蔵テンプレートは削除できません',
         };
       }
 
@@ -375,13 +709,14 @@ export class CSVTemplateManager {
       return {
         success: true,
         message: 'テンプレートを削除しました',
-        template: deletedTemplate
+        template: deletedTemplate,
       };
-
     } catch (error) {
       return {
         success: false,
-        message: `削除エラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+        message: `削除エラー: ${
+          error instanceof Error ? error.message : '不明なエラー'
+        }`,
       };
     }
   }
@@ -415,7 +750,7 @@ export class CSVTemplateManager {
     // カスタムテンプレートの場合
     const customTemplates = this.getCustomTemplates();
     const template = customTemplates.find(t => t.id === id);
-    
+
     if (template) {
       template.usage++;
       this.saveCustomTemplates(customTemplates);
@@ -431,17 +766,19 @@ export class CSVTemplateManager {
       rowCount: template.defaultRowCount,
       outputFormat: 'csv',
       includeHeader: true,
-      encoding: 'utf-8-bom'
+      encoding: 'utf-8-bom',
     };
   }
 
   /**
    * CSV設定からテンプレート用データを抽出
    */
-  static configToTemplateData(config: CsvConfig): Pick<CsvTemplate, 'columns' | 'defaultRowCount'> {
+  static configToTemplateData(
+    config: CsvConfig
+  ): Pick<CsvTemplate, 'columns' | 'defaultRowCount'> {
     return {
       columns: config.columns,
-      defaultRowCount: config.rowCount || 100
+      defaultRowCount: config.rowCount || 100,
     };
   }
 
@@ -461,12 +798,12 @@ export class CSVTemplateManager {
   static importTemplate(jsonString: string): TemplateOperationResult {
     try {
       const templateData = JSON.parse(jsonString);
-      
+
       // 基本的なバリデーション
       if (!templateData.name || !templateData.columns) {
         return {
           success: false,
-          message: 'テンプレートの形式が正しくありません'
+          message: 'テンプレートの形式が正しくありません',
         };
       }
 
@@ -477,7 +814,7 @@ export class CSVTemplateManager {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         isBuiltIn: false,
-        usage: 0
+        usage: 0,
       };
 
       const customTemplates = this.getCustomTemplates();
@@ -487,13 +824,14 @@ export class CSVTemplateManager {
       return {
         success: true,
         message: 'テンプレートをインポートしました',
-        template: newTemplate
+        template: newTemplate,
       };
-
     } catch (error) {
       return {
         success: false,
-        message: `インポートエラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+        message: `インポートエラー: ${
+          error instanceof Error ? error.message : '不明なエラー'
+        }`,
       };
     }
   }
@@ -506,12 +844,14 @@ export class CSVTemplateManager {
       localStorage.removeItem(this.STORAGE_KEY);
       return {
         success: true,
-        message: 'すべてのカスタムテンプレートを削除しました'
+        message: 'すべてのカスタムテンプレートを削除しました',
       };
     } catch (error) {
       return {
         success: false,
-        message: `削除エラー: ${error instanceof Error ? error.message : '不明なエラー'}`
+        message: `削除エラー: ${
+          error instanceof Error ? error.message : '不明なエラー'
+        }`,
       };
     }
   }
@@ -538,12 +878,13 @@ export class CSVTemplateManager {
     return {
       totalBuiltIn: this.BUILT_IN_TEMPLATES.length,
       totalCustom: customTemplates.length,
-      mostUsed: allTemplates
-        .sort((a, b) => b.usage - a.usage)
-        .slice(0, 5),
+      mostUsed: allTemplates.sort((a, b) => b.usage - a.usage).slice(0, 5),
       recentlyCreated: customTemplates
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 5)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .slice(0, 5),
     };
   }
 }
@@ -565,7 +906,9 @@ export class TDTemplateHelper {
    */
   static suggestTemplates(keyword: string): CsvTemplate[] {
     const suggestions: { template: CsvTemplate; score: number }[] = [];
-    const allTemplates = CSVTemplateManager.getAllTemplates({ includeBuiltIn: true });
+    const allTemplates = CSVTemplateManager.getAllTemplates({
+      includeBuiltIn: true,
+    });
 
     allTemplates.forEach(template => {
       let score = 0;
@@ -611,7 +954,7 @@ export class TDTemplateHelper {
     explanation += `- 列数: ${template.columns.length}列\n`;
     explanation += `- デフォルト生成件数: ${template.defaultRowCount.toLocaleString()}件\n`;
     explanation += `- カテゴリ: ${this.getCategoryName(template.category)}\n`;
-    
+
     if (template.tags.length > 0) {
       explanation += `- タグ: ${template.tags.join(', ')}\n`;
     }
@@ -620,7 +963,9 @@ export class TDTemplateHelper {
 
     explanation += `📝 含まれる列:\n`;
     template.columns.forEach((col, index) => {
-      explanation += `${index + 1}. ${col.name} (${this.getDataTypeName(col.dataType)})\n`;
+      explanation += `${index + 1}. ${col.name} (${this.getDataTypeName(
+        col.dataType
+      )})\n`;
     });
 
     explanation += `\n💡 TDからのアドバイス: このテンプレートは${template.category}カテゴリでよく使われています♪`;
@@ -637,7 +982,7 @@ export class TDTemplateHelper {
       personal: '個人',
       testing: 'テスト',
       sample: 'サンプル',
-      custom: 'カスタム'
+      custom: 'カスタム',
     };
 
     return categoryNames[category] || category;
@@ -654,9 +999,9 @@ export class TDTemplateHelper {
       email: 'メールアドレス',
       phone: '電話番号',
       date: '日付',
-      age: '年齢'
+      age: '年齢',
     };
 
     return typeNames[dataType] || dataType;
   }
-} 
+}

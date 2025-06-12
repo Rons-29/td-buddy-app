@@ -97,3 +97,5 @@ coverage/
 # Temporary files
 tmp/
 temp/ 
+# TD Buddy 商用キー
+.env.commercial.keys
