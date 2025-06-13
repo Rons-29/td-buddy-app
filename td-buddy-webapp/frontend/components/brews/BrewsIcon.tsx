@@ -135,10 +135,25 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
 
         {/* 感情オーバーレイ */}
         {OverlayIcon && (
-          <div className="absolute -top-1 -right-1">
+          <div
+            className={`absolute ${
+              size === 'small'
+                ? '-top-1 -right-1'
+                : size === 'large'
+                ? '-top-3 -right-3'
+                : '-top-2 -right-2'
+            }`}
+          >
             <div
               className={`
-                w-4 h-4 rounded-full flex items-center justify-center
+                ${
+                  size === 'small'
+                    ? 'w-5 h-5'
+                    : size === 'large'
+                    ? 'w-8 h-8'
+                    : 'w-6 h-6'
+                }
+                rounded-full flex items-center justify-center shadow-lg border-2 border-white
                 ${
                   emotion === 'success'
                     ? 'bg-green-500 text-white'
@@ -154,7 +169,16 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
                 }
               `}
             >
-              <OverlayIcon className="w-2.5 h-2.5" aria-hidden="true" />
+              <OverlayIcon
+                className={`${
+                  size === 'small'
+                    ? 'w-3 h-3'
+                    : size === 'large'
+                    ? 'w-5 h-5'
+                    : 'w-3.5 h-3.5'
+                }`}
+                aria-hidden="true"
+              />
             </div>
           </div>
         )}
