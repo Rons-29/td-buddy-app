@@ -83,7 +83,9 @@ export function NumberBooleanGenerator({
     setBrewMessage(`${count}件の数値データを測定生成中...`);
 
     try {
-      const response = await fetch('/api/numberboolean/generate', {
+      const apiBaseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiBaseUrl}/api/numberboolean/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
