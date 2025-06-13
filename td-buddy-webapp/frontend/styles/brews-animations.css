@@ -1,0 +1,116 @@
+/* Brews Icon Animations */
+
+@keyframes brewsBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes brewsPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes brewsWiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes brewsHeartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes brewsFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Animation Classes */
+.brews-bounce {
+  animation: brewsBounce 0.6s ease-in-out;
+}
+
+.brews-pulse {
+  animation: brewsPulse 0.8s ease-in-out;
+}
+
+.brews-wiggle {
+  animation: brewsWiggle 0.5s ease-in-out;
+}
+
+.brews-heartbeat {
+  animation: brewsHeartbeat 1.2s ease-in-out;
+}
+
+.brews-float {
+  animation: brewsFloat 2s ease-in-out infinite;
+}
+
+/* Hover Effects */
+.brews-icon:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.brews-icon:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Focus Styles for Accessibility */
+.brews-icon:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Loading Animation */
+@keyframes brewsLoading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.brews-loading {
+  animation: brewsLoading 1s linear infinite;
+}
