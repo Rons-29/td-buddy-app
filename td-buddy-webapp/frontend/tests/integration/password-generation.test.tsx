@@ -350,9 +350,17 @@ describe('Password Generation Frontend Integration Tests', () => {
       render(
         <CustomCharsetsEditor
           charsets={[
-            { id: '1', name: '数字', chars: '0123456789', enabled: true },
+            {
+              id: '1',
+              name: '数字',
+              charset: '0123456789',
+              min: 1,
+              enabled: true,
+              color: '#ef4444',
+            },
           ]}
           onChange={mockOnChange}
+          visible={true}
         />
       );
 

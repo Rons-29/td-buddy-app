@@ -1,0 +1,491 @@
+/* 🛠️ Quality Workbench Design System */
+/* ワークベンチ特化型デザインシステム - 2025年6月13日 */
+
+:root {
+  /* === ワークベンチ基本カラー === */
+
+  /* 作業台ウッド系（メインカラー） */
+  --workbench-wood-light: #d7ccc8; /* 明るい木材 */
+  --workbench-wood-main: #8d6e63; /* メイン木材 */
+  --workbench-wood-dark: #5d4037; /* 濃い木材 */
+  --workbench-wood-accent: #6d4c41; /* アクセント木材 */
+
+  /* 金属工具系（セカンダリ） */
+  --workbench-metal-light: #cfd8dc; /* 明るい金属 */
+  --workbench-metal-main: #607d8b; /* メイン金属 */
+  --workbench-metal-dark: #455a64; /* 濃い金属 */
+  --workbench-metal-accent: #546e7a; /* アクセント金属 */
+
+  /* 機能別ツールカラー */
+  --tool-measure: #ff9800; /* 測定ツール（オレンジ） */
+  --tool-cut: #f44336; /* 切断ツール（レッド） */
+  --tool-join: #4caf50; /* 接合ツール（グリーン） */
+  --tool-inspect: #2196f3; /* 検査ツール（ブルー） */
+  --tool-polish: #9c27b0; /* 仕上げツール（パープル） */
+
+  /* ワークベンチ状態カラー */
+  --wb-success: #4caf50; /* 作業完了 */
+  --wb-warning: #ff9800; /* 注意・調整中 */
+  --wb-error: #f44336; /* エラー・修正必要 */
+  --wb-info: #2196f3; /* 情報・ガイド */
+  --wb-neutral: #9e9e9e; /* 待機・中立 */
+
+  /* 作業環境カラー */
+  --workshop-bg: #fafafa; /* 工房背景 */
+  --workshop-surface: #ffffff; /* 作業面 */
+  --workshop-shadow: rgba(0, 0, 0, 0.1); /* 工房影 */
+  --workshop-border: #e0e0e0; /* 境界線 */
+
+  /* === ワークベンチタイポグラフィ === */
+  --wb-font-family: 'Inter', 'Noto Sans JP', sans-serif;
+  --wb-font-mono: 'JetBrains Mono', 'Consolas', monospace;
+
+  /* フォントサイズ（実用性重視） */
+  --wb-text-xs: 0.75rem; /* 12px - 補助情報 */
+  --wb-text-sm: 0.875rem; /* 14px - 詳細情報 */
+  --wb-text-base: 1rem; /* 16px - 基本テキスト */
+  --wb-text-lg: 1.125rem; /* 18px - 重要情報 */
+  --wb-text-xl: 1.25rem; /* 20px - 見出し */
+  --wb-text-2xl: 1.5rem; /* 24px - 大見出し */
+  --wb-text-3xl: 1.875rem; /* 30px - タイトル */
+
+  /* === ワークベンチスペーシング === */
+  /* 8pxグリッド + 工具サイズ基準 */
+  --wb-space-1: 0.25rem; /* 4px */
+  --wb-space-2: 0.5rem; /* 8px */
+  --wb-space-3: 0.75rem; /* 12px */
+  --wb-space-4: 1rem; /* 16px */
+  --wb-space-5: 1.25rem; /* 20px */
+  --wb-space-6: 1.5rem; /* 24px */
+  --wb-space-8: 2rem; /* 32px */
+  --wb-space-10: 2.5rem; /* 40px */
+  --wb-space-12: 3rem; /* 48px */
+  --wb-space-16: 4rem; /* 64px */
+
+  /* 工具サイズ基準 */
+  --wb-tool-sm: 2rem; /* 32px - 小工具 */
+  --wb-tool-md: 2.5rem; /* 40px - 標準工具 */
+  --wb-tool-lg: 3rem; /* 48px - 大工具 */
+  --wb-tool-xl: 4rem; /* 64px - 特大工具 */
+
+  /* === ワークベンチアニメーション === */
+  --wb-duration-instant: 0ms;
+  --wb-duration-fast: 150ms;
+  --wb-duration-normal: 250ms;
+  --wb-duration-slow: 400ms;
+
+  --wb-ease-linear: linear;
+  --wb-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --wb-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --wb-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* === ワークベンチベースコンポーネント === */
+
+/* 作業台ベース */
+.workbench-surface {
+  background: var(--workshop-surface);
+  border: 1px solid var(--workshop-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--workshop-shadow);
+  transition: all var(--wb-duration-normal) var(--wb-ease-out);
+}
+
+.workbench-surface:hover {
+  box-shadow: 0 4px 8px var(--workshop-shadow);
+  transform: translateY(-1px);
+}
+
+/* === ワークベンチボタンシステム === */
+
+.wb-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--wb-space-2);
+
+  padding: var(--wb-space-3) var(--wb-space-4);
+  border-radius: 6px;
+  border: 1px solid transparent;
+
+  font-family: var(--wb-font-family);
+  font-size: var(--wb-text-base);
+  font-weight: 500;
+  line-height: 1.5;
+
+  cursor: pointer;
+  transition: all var(--wb-duration-normal) var(--wb-ease-out);
+
+  /* 工具的な質感 */
+  position: relative;
+  overflow: hidden;
+}
+
+.wb-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left var(--wb-duration-slow) var(--wb-ease-out);
+}
+
+.wb-button:hover::before {
+  left: 100%;
+}
+
+/* ボタンバリエーション */
+.wb-button-primary {
+  background: var(--workbench-wood-main);
+  color: white;
+  border-color: var(--workbench-wood-dark);
+}
+
+.wb-button-primary:hover {
+  background: var(--workbench-wood-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(141, 110, 99, 0.3);
+}
+
+.wb-button-secondary {
+  background: var(--workbench-metal-main);
+  color: white;
+  border-color: var(--workbench-metal-dark);
+}
+
+.wb-button-secondary:hover {
+  background: var(--workbench-metal-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(96, 125, 139, 0.3);
+}
+
+.wb-button-tool {
+  background: var(--workshop-surface);
+  color: var(--workbench-wood-dark);
+  border-color: var(--workshop-border);
+}
+
+.wb-button-tool:hover {
+  background: var(--workbench-wood-light);
+  border-color: var(--workbench-wood-main);
+  transform: translateY(-1px);
+}
+
+/* 工具別ボタン */
+.wb-button-measure {
+  background: var(--tool-measure);
+  color: white;
+}
+
+.wb-button-cut {
+  background: var(--tool-cut);
+  color: white;
+}
+
+.wb-button-join {
+  background: var(--tool-join);
+  color: white;
+}
+
+.wb-button-inspect {
+  background: var(--tool-inspect);
+  color: white;
+}
+
+.wb-button-polish {
+  background: var(--tool-polish);
+  color: white;
+}
+
+/* ボタンサイズ */
+.wb-button-sm {
+  padding: var(--wb-space-2) var(--wb-space-3);
+  font-size: var(--wb-text-sm);
+  min-height: var(--wb-tool-sm);
+}
+
+.wb-button-md {
+  padding: var(--wb-space-3) var(--wb-space-4);
+  font-size: var(--wb-text-base);
+  min-height: var(--wb-tool-md);
+}
+
+.wb-button-lg {
+  padding: var(--wb-space-4) var(--wb-space-6);
+  font-size: var(--wb-text-lg);
+  min-height: var(--wb-tool-lg);
+}
+
+/* === ワークベンチカードシステム === */
+
+.wb-card {
+  background: var(--workshop-surface);
+  border: 1px solid var(--workshop-border);
+  border-radius: 12px;
+  padding: var(--wb-space-6);
+  transition: all var(--wb-duration-normal) var(--wb-ease-out);
+
+  /* 作業台の質感 */
+  position: relative;
+  overflow: hidden;
+}
+
+.wb-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--workbench-wood-main),
+    var(--workbench-metal-main),
+    var(--workbench-wood-main)
+  );
+}
+
+.wb-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px var(--workshop-shadow);
+  border-color: var(--workbench-wood-main);
+}
+
+/* カード種別 */
+.wb-card-tool {
+  border-left: 4px solid var(--workbench-metal-main);
+}
+
+.wb-card-project {
+  border-left: 4px solid var(--workbench-wood-main);
+}
+
+.wb-card-result {
+  border-left: 4px solid var(--wb-success);
+}
+
+/* === ワークベンチ入力システム === */
+
+.wb-input {
+  width: 100%;
+  padding: var(--wb-space-3) var(--wb-space-4);
+  border: 2px solid var(--workshop-border);
+  border-radius: 6px;
+
+  font-family: var(--wb-font-family);
+  font-size: var(--wb-text-base);
+  line-height: 1.5;
+
+  background: var(--workshop-surface);
+  color: var(--workbench-wood-dark);
+
+  transition: all var(--wb-duration-normal) var(--wb-ease-out);
+}
+
+.wb-input:focus {
+  outline: none;
+  border-color: var(--workbench-wood-main);
+  box-shadow: 0 0 0 3px rgba(141, 110, 99, 0.1);
+}
+
+.wb-input::placeholder {
+  color: var(--wb-neutral);
+}
+
+/* 入力状態 */
+.wb-input-success {
+  border-color: var(--wb-success);
+}
+
+.wb-input-warning {
+  border-color: var(--wb-warning);
+}
+
+.wb-input-error {
+  border-color: var(--wb-error);
+}
+
+/* === ワークベンチレイアウト === */
+
+.wb-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--wb-space-4);
+}
+
+.wb-grid {
+  display: grid;
+  gap: var(--wb-space-6);
+}
+
+.wb-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.wb-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.wb-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* === ワークベンチユーティリティ === */
+
+.wb-text-wood {
+  color: var(--workbench-wood-main);
+}
+.wb-text-metal {
+  color: var(--workbench-metal-main);
+}
+.wb-text-success {
+  color: var(--wb-success);
+}
+.wb-text-warning {
+  color: var(--wb-warning);
+}
+.wb-text-error {
+  color: var(--wb-error);
+}
+.wb-text-info {
+  color: var(--wb-info);
+}
+
+.wb-bg-wood {
+  background-color: var(--workbench-wood-main);
+}
+.wb-bg-metal {
+  background-color: var(--workbench-metal-main);
+}
+.wb-bg-workshop {
+  background-color: var(--workshop-bg);
+}
+
+/* === ワークベンチアニメーション === */
+
+@keyframes wb-tool-work {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-2deg);
+  }
+  75% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes wb-craft-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(141, 110, 99, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(141, 110, 99, 0.6);
+  }
+}
+
+@keyframes wb-progress-fill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.wb-working {
+  animation: wb-tool-work 2s ease-in-out infinite;
+}
+
+.wb-crafting {
+  animation: wb-craft-glow 3s ease-in-out infinite;
+}
+
+/* === レスポンシブ対応 === */
+
+@media (max-width: 768px) {
+  .wb-container {
+    padding: var(--wb-space-3);
+  }
+
+  .wb-grid {
+    gap: var(--wb-space-4);
+  }
+
+  .wb-button {
+    padding: var(--wb-space-3) var(--wb-space-4);
+    font-size: var(--wb-text-sm);
+  }
+
+  .wb-card {
+    padding: var(--wb-space-4);
+  }
+}
+
+/* === ダークモード対応 === */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --workshop-bg: #1a1a1a;
+    --workshop-surface: #2d2d2d;
+    --workshop-border: #404040;
+    --workshop-shadow: rgba(0, 0, 0, 0.3);
+
+    --workbench-wood-light: #8d6e63;
+    --workbench-wood-main: #6d4c41;
+    --workbench-wood-dark: #5d4037;
+
+    --workbench-metal-light: #607d8b;
+    --workbench-metal-main: #546e7a;
+    --workbench-metal-dark: #455a64;
+  }
+
+  .wb-input {
+    background: var(--workshop-surface);
+    color: #ffffff;
+  }
+
+  .wb-button-tool {
+    background: var(--workshop-surface);
+    color: #ffffff;
+  }
+}
+
+/* === アクセシビリティ === */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.wb-focus-visible:focus-visible {
+  outline: 2px solid var(--workbench-wood-main);
+  outline-offset: 2px;
+}
+
+/* === 印刷対応 === */
+
+@media print {
+  .wb-button,
+  .wb-card {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .wb-card::before {
+    display: none;
+  }
+}
