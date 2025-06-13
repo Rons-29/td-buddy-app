@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Info, RefreshCw, Check, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Check, Info, RefreshCw } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface CustomSymbolsInputProps {
   value: string;
@@ -16,23 +16,23 @@ const SYMBOL_PRESETS = {
   safe: {
     symbols: '$@_#&?',
     name: '安全',
-    description: '入力しやすく、多くのシステムで使用可能'
+    description: '入力しやすく、多くのシステムで使用可能',
   },
   standard: {
     symbols: '!@#$%^&*',
     name: '標準',
-    description: '一般的なパスワード要件に対応'
+    description: '一般的なパスワード要件に対応',
   },
   extended: {
     symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?',
     name: '拡張',
-    description: '最大限の記号を使用（非互換性の可能性あり）'
+    description: '最大限の記号を使用（非互換性の可能性あり）',
   },
   minimal: {
     symbols: '@#$&',
     name: 'ミニマル',
-    description: '最小限の安全な記号セット'
-  }
+    description: '最小限の安全な記号セット',
+  },
 };
 
 // 危険な記号（システム依存の問題がある可能性）
@@ -43,7 +43,7 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
   onChange,
   className = '',
   placeholder = '例: $@_#&?',
-  showSuggestions = true
+  showSuggestions = true,
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -52,7 +52,7 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
   // 入力値の検証
   useEffect(() => {
     const newWarnings: string[] = [];
-    
+
     // 空文字チェック
     if (!value.trim()) {
       setIsValid(false);
@@ -60,7 +60,7 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
     }
 
     // 危険な文字チェック
-    const problematicFound = PROBLEMATIC_SYMBOLS.filter(symbol => 
+    const problematicFound = PROBLEMATIC_SYMBOLS.filter(symbol =>
       value.includes(symbol)
     );
     if (problematicFound.length > 0) {
@@ -117,11 +117,11 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
           <input
             type="text"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             placeholder={placeholder}
             className={`w-full p-3 pr-10 border-2 rounded-lg font-mono text-lg transition-all ${
-              isValid 
-                ? 'border-gray-300 focus:border-blue-500' 
+              isValid
+                ? 'border-gray-300 focus:border-blue-500'
                 : 'border-red-300 focus:border-red-500'
             }`}
           />
@@ -138,10 +138,14 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-4">
             <span className="text-gray-600">
-              記号数: <span className="font-mono font-bold">{[...new Set(value)].length}</span>
+              記号数:{' '}
+              <span className="font-mono font-bold">
+                {[...new Set(value)].length}
+              </span>
             </span>
             <span className="text-gray-600">
-              文字数: <span className="font-mono font-bold">{value.length}</span>
+              文字数:{' '}
+              <span className="font-mono font-bold">{value.length}</span>
             </span>
           </div>
           <div className="flex gap-2">
@@ -156,7 +160,7 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
             {warnings.length > 0 && (
               <button
                 onClick={cleanSymbols}
-                className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
+                className="px-2 py-1 text-xs wb-badge-count rounded hover:bg-blue-200"
               >
                 記号整理
               </button>
@@ -200,12 +204,18 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
                 {Object.entries(SYMBOL_PRESETS).map(([key, preset]) => (
                   <button
                     key={key}
-                    onClick={() => applyPreset(key as keyof typeof SYMBOL_PRESETS)}
+                    onClick={() =>
+                      applyPreset(key as keyof typeof SYMBOL_PRESETS)
+                    }
                     className="p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-gray-800">{preset.name}</span>
-                      <span className="text-xs text-gray-500">{preset.symbols.length}文字</span>
+                      <span className="font-medium text-gray-800">
+                        {preset.name}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {preset.symbols.length}文字
+                      </span>
                     </div>
                     <div className="font-mono text-sm text-blue-600 mb-1">
                       {preset.symbols}
@@ -236,4 +246,4 @@ export const CustomSymbolsInput: React.FC<CustomSymbolsInputProps> = ({
       </div>
     </div>
   );
-}; 
+};

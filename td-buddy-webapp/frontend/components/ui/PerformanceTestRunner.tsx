@@ -72,9 +72,9 @@ export function PerformanceTestRunner({
         if (navigation) {
           metrics.ttfb = navigation.responseStart - navigation.requestStart;
           metrics.domContentLoaded =
-            navigation.domContentLoadedEventEnd - navigation.navigationStart;
+            navigation.domContentLoadedEventEnd - navigation.fetchStart;
           metrics.loadComplete =
-            navigation.loadEventEnd - navigation.navigationStart;
+            navigation.loadEventEnd - navigation.fetchStart;
         }
 
         // First Contentful Paint

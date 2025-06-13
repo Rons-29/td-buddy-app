@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Brews Icon System Animations */
+@import '../styles/brews-animations.css';
+
 /* TDカスタムスタイル + ワークベンチデザインシステム統合 */
 :root {
   /* === 既存 TD システム変数 === */

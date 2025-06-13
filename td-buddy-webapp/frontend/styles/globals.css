@@ -1,3 +1,9 @@
+@import url('./workbench-design-system.css');
+@import url('./ux-optimization.css');
+@import url('./responsive-workbench.css');
+@import url('./workbench-animations-optimized.css');
+@import url('./performance-monitor.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -84,4 +90,219 @@ body {
 .progress-bar-optimized {
   will-change: width;
   transform: translateZ(0);
+}
+
+/* === 既存のスタイル === */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--wb-font-family);
+  line-height: 1.6;
+  color: var(--wb-text-wood);
+  background: var(--workshop-bg);
+}
+
+/* === UX最適化の追加スタイル === */
+
+/* フォーカス管理の強化 */
+*:focus-visible {
+  outline: 3px solid var(--conversion-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* タッチターゲットの最適化 */
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* 読み込み状態の改善 */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* エラー状態の改善 */
+.error-state {
+  border: 2px solid var(--wb-error);
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--wb-error);
+}
+
+/* 成功状態の改善 */
+.success-state {
+  border: 2px solid var(--wb-success);
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--wb-success);
+}
+
+/* プログレッシブエンハンスメント */
+@supports (display: grid) {
+  .enhanced-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--conv-space-component);
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --workshop-bg: #1a1a1a;
+    --workshop-surface: #2d2d2d;
+    --workshop-border: #404040;
+    --wb-text-wood: #e0e0e0;
+  }
+}
+
+/* 印刷最適化 */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-friendly {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
+
+/* === ワークベンチ特有のスタイル === */
+
+/* 工具カードのホバー効果 */
+.wb-tool-card {
+  transition: all var(--wb-duration-normal) var(--wb-ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.wb-tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left var(--wb-duration-slow) var(--wb-ease-out);
+}
+
+.wb-tool-card:hover::before {
+  left: 100%;
+}
+
+.wb-tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px var(--workshop-shadow);
+}
+
+/* ワークベンチ背景 */
+.wb-workbench-bg {
+  background: linear-gradient(
+    135deg,
+    var(--workshop-bg) 0%,
+    var(--workbench-wood-light) 100%
+  );
+  min-height: 100vh;
+}
+
+/* 工房の質感 */
+.wb-workshop-texture {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(141, 110, 99, 0.15) 1px,
+    transparent 0
+  );
+  background-size: 20px 20px;
+}
+
+/* レスポンシブタイポグラフィ */
+.wb-responsive-text {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  line-height: 1.4;
+}
+
+/* アニメーション制御 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* === モバイル最適化 === */
+@media (max-width: 768px) {
+  .wb-mobile-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wb-space-4);
+  }
+
+  .wb-mobile-full {
+    width: 100%;
+    margin: 0;
+  }
+
+  .wb-mobile-padding {
+    padding: var(--wb-space-4);
+  }
+}
+
+/* === パフォーマンス最適化 === */
+.wb-gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.wb-contain-layout {
+  contain: layout style paint;
+}
+
+/* === ユーティリティクラス === */
+.wb-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.wb-focus-trap {
+  position: relative;
+}
+
+.wb-focus-trap:focus-within {
+  outline: 2px solid var(--conversion-primary);
+  outline-offset: 2px;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface MobileTestStep {
   id: string;
@@ -36,15 +36,16 @@ const MOBILE_DATA_GENERATION_SCENARIO: MobileTestStep[] = [
     touchAction: 'タップナビゲーション',
     expectedBehavior: 'レスポンシブデザインでの表示確認',
     mobileOptimization: 'タッチターゲット44px以上、読みやすいフォントサイズ',
-    difficulty: 'easy'
+    difficulty: 'easy',
   },
   {
     id: 'step2',
-    instruction: 'データタイプを選択してください（ドロップダウンまたはセレクト）',
+    instruction:
+      'データタイプを選択してください（ドロップダウンまたはセレクト）',
     touchAction: 'タップ → スクロール → タップ',
     expectedBehavior: 'モバイル最適化されたセレクトUI',
     mobileOptimization: 'ネイティブセレクトまたは大きなタッチエリア',
-    difficulty: 'medium'
+    difficulty: 'medium',
   },
   {
     id: 'step3',
@@ -52,7 +53,7 @@ const MOBILE_DATA_GENERATION_SCENARIO: MobileTestStep[] = [
     touchAction: '数値入力（仮想キーボード）',
     expectedBehavior: '数値キーボードの表示、入力しやすいフィールド',
     mobileOptimization: 'inputmode="numeric"、適切なフィールドサイズ',
-    difficulty: 'easy'
+    difficulty: 'easy',
   },
   {
     id: 'step4',
@@ -60,7 +61,7 @@ const MOBILE_DATA_GENERATION_SCENARIO: MobileTestStep[] = [
     touchAction: 'タップ（生成ボタン）',
     expectedBehavior: '非同期処理開始、進捗表示',
     mobileOptimization: '大きなボタン、明確なフィードバック',
-    difficulty: 'easy'
+    difficulty: 'easy',
   },
   {
     id: 'step5',
@@ -68,7 +69,7 @@ const MOBILE_DATA_GENERATION_SCENARIO: MobileTestStep[] = [
     touchAction: '待機・監視',
     expectedBehavior: 'リアルタイム進捗更新、バックグラウンド処理',
     mobileOptimization: 'プッシュ通知、進捗バー、パーセンテージ表示',
-    difficulty: 'medium'
+    difficulty: 'medium',
   },
   {
     id: 'step6',
@@ -76,7 +77,7 @@ const MOBILE_DATA_GENERATION_SCENARIO: MobileTestStep[] = [
     touchAction: '通知確認',
     expectedBehavior: '完了通知の表示、音声・振動フィードバック',
     mobileOptimization: 'モバイル通知API、視覚的フィードバック',
-    difficulty: 'easy'
+    difficulty: 'easy',
   },
   {
     id: 'step7',
@@ -84,7 +85,7 @@ const MOBILE_DATA_GENERATION_SCENARIO: MobileTestStep[] = [
     touchAction: 'タップ → スクロール',
     expectedBehavior: 'モバイル最適化されたデータ表示',
     mobileOptimization: '横スクロール、カード形式、仮想スクロール',
-    difficulty: 'medium'
+    difficulty: 'medium',
   },
   {
     id: 'step8',
@@ -92,8 +93,8 @@ const MOBILE_DATA_GENERATION_SCENARIO: MobileTestStep[] = [
     touchAction: 'タップ → 共有メニュー',
     expectedBehavior: 'ネイティブ共有機能、ダウンロード',
     mobileOptimization: 'Web Share API、適切なファイル形式',
-    difficulty: 'hard'
-  }
+    difficulty: 'hard',
+  },
 ];
 
 interface MobileScenarioTestProps {
@@ -111,14 +112,16 @@ export function MobileScenarioTest({
   const [stepTimes, setStepTimes] = useState<number[]>([]);
   const [difficulties, setDifficulties] = useState<string[]>([]);
   const [feedback, setFeedback] = useState('');
-  const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
+  const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>(
+    'mobile'
+  );
   const [touchMode, setTouchMode] = useState(true);
   const [performanceMetrics, setPerformanceMetrics] = useState({
     loadTime: 0,
     renderTime: 0,
-    interactionTime: 0
+    interactionTime: 0,
   });
-  
+
   const startTimeRef = useRef<Date | null>(null);
   const stepStartTimeRef = useRef<Date | null>(null);
 
@@ -148,24 +151,30 @@ export function MobileScenarioTest({
     setFeedback('');
     startTimeRef.current = new Date();
     stepStartTimeRef.current = new Date();
-    
+
     // パフォーマンス測定開始
     measurePerformance();
   };
 
   const measurePerformance = () => {
     if ('performance' in window) {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const navigation = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming;
       setPerformanceMetrics({
         loadTime: navigation.loadEventEnd - navigation.loadEventStart,
-        renderTime: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-        interactionTime: Date.now() - navigation.loadEventEnd
+        renderTime:
+          navigation.domContentLoadedEventEnd -
+          navigation.domContentLoadedEventStart,
+        interactionTime: Date.now() - navigation.loadEventEnd,
       });
     }
   };
 
   const completeStep = () => {
-    if (!stepStartTimeRef.current) return;
+    if (!stepStartTimeRef.current) {
+      return;
+    }
 
     const stepTime = Date.now() - stepStartTimeRef.current.getTime();
     setStepTimes(prev => [...prev, stepTime]);
@@ -183,42 +192,48 @@ export function MobileScenarioTest({
   };
 
   const completeTest = () => {
-    if (!startTimeRef.current) return;
+    if (!startTimeRef.current) {
+      return;
+    }
 
     const endTime = new Date();
     const totalTime = endTime.getTime() - startTimeRef.current.getTime();
     const completedSteps = currentStepIndex + 1;
-    const successRate = (completedSteps / MOBILE_DATA_GENERATION_SCENARIO.length) * 100;
-    
+    const successRate =
+      (completedSteps / MOBILE_DATA_GENERATION_SCENARIO.length) * 100;
+
     // モバイルスコア計算
     let score = 100;
-    
+
     // 時間評価（6分以内が目標）
-    if (totalTime > 360000) { // 6分
+    if (totalTime > 360000) {
+      // 6分
       score -= 20;
     }
-    
+
     // 完了率
     score = score * (successRate / 100);
-    
+
     // 困難報告ペナルティ
     score -= difficulties.length * 10;
-    
+
     // デバイス最適化ボーナス
     if (deviceType === 'mobile' && touchMode) {
       score += 15;
     }
-    
+
     // パフォーマンスボーナス
-    const avgPerformance = (performanceMetrics.loadTime + performanceMetrics.renderTime) / 2;
-    if (avgPerformance < 1000) { // 1秒以内
+    const avgPerformance =
+      (performanceMetrics.loadTime + performanceMetrics.renderTime) / 2;
+    if (avgPerformance < 1000) {
+      // 1秒以内
       score += 10;
     }
-    
+
     score = Math.max(0, Math.round(score));
 
     // パフォーマンススコア計算
-    const performanceScore = Math.max(0, 100 - (avgPerformance / 100));
+    const performanceScore = Math.max(0, 100 - avgPerformance / 100);
 
     const result: MobileTestResult = {
       scenarioId: 'mobile-data-generation',
@@ -260,37 +275,53 @@ export function MobileScenarioTest({
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'hard': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'easy':
+        return 'text-green-600';
+      case 'medium':
+        return 'text-yellow-600';
+      case 'hard':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
   const getDifficultyLabel = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return '簡単';
-      case 'medium': return '普通';
-      case 'hard': return '困難';
-      default: return '不明';
+      case 'easy':
+        return '簡単';
+      case 'medium':
+        return '普通';
+      case 'hard':
+        return '困難';
+      default:
+        return '不明';
     }
   };
 
   const getDeviceIcon = (device: string) => {
     switch (device) {
-      case 'mobile': return '📱';
-      case 'tablet': return '📱';
-      case 'desktop': return '💻';
-      default: return '📱';
+      case 'mobile':
+        return '📱';
+      case 'tablet':
+        return '📱';
+      case 'desktop':
+        return '💻';
+      default:
+        return '📱';
     }
   };
 
   const getDeviceLabel = (device: string) => {
     switch (device) {
-      case 'mobile': return 'スマートフォン';
-      case 'tablet': return 'タブレット';
-      case 'desktop': return 'デスクトップ';
-      default: return 'モバイル';
+      case 'mobile':
+        return 'スマートフォン';
+      case 'tablet':
+        return 'タブレット';
+      case 'desktop':
+        return 'デスクトップ';
+      default:
+        return 'モバイル';
     }
   };
 
@@ -315,7 +346,7 @@ export function MobileScenarioTest({
             </p>
           </div>
         </div>
-        
+
         {!isRunning && !testResult && (
           <button
             onClick={resetTest}
@@ -337,7 +368,7 @@ export function MobileScenarioTest({
             </span>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <div className="text-green-700 font-medium">画面幅</div>
@@ -371,7 +402,7 @@ export function MobileScenarioTest({
               <input
                 type="checkbox"
                 checked={touchMode}
-                onChange={(e) => setTouchMode(e.target.checked)}
+                onChange={e => setTouchMode(e.target.checked)}
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-sm text-blue-700">
@@ -379,7 +410,7 @@ export function MobileScenarioTest({
               </span>
             </label>
           </div>
-          
+
           <button
             onClick={startTest}
             className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -397,7 +428,8 @@ export function MobileScenarioTest({
               📱 モバイル大量データ生成シナリオ
             </h4>
             <div className="text-sm text-gray-600">
-              ステップ {currentStepIndex + 1} / {MOBILE_DATA_GENERATION_SCENARIO.length}
+              ステップ {currentStepIndex + 1} /{' '}
+              {MOBILE_DATA_GENERATION_SCENARIO.length}
             </div>
           </div>
 
@@ -405,13 +437,24 @@ export function MobileScenarioTest({
           <div className="mb-6">
             <div className="flex justify-between text-sm text-gray-600 mb-1">
               <span>進捗</span>
-              <span>{Math.round(((currentStepIndex + 1) / MOBILE_DATA_GENERATION_SCENARIO.length) * 100)}%</span>
+              <span>
+                {Math.round(
+                  ((currentStepIndex + 1) /
+                    MOBILE_DATA_GENERATION_SCENARIO.length) *
+                    100
+                )}
+                %
+              </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                 style={{
-                  width: `${((currentStepIndex + 1) / MOBILE_DATA_GENERATION_SCENARIO.length) * 100}%`
+                  width: `${
+                    ((currentStepIndex + 1) /
+                      MOBILE_DATA_GENERATION_SCENARIO.length) *
+                    100
+                  }%`,
                 }}
               ></div>
             </div>
@@ -423,22 +466,33 @@ export function MobileScenarioTest({
               <h5 className="font-medium text-blue-800">
                 📝 ステップ {currentStepIndex + 1}
               </h5>
-              <span className={`text-xs px-2 py-1 rounded ${
-                MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].difficulty === 'easy' ? 'bg-green-100 text-green-700' :
-                MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                'bg-red-100 text-red-700'
-              }`}>
-                {getDifficultyLabel(MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].difficulty || 'easy')}
+              <span
+                className={`text-xs px-2 py-1 rounded ${
+                  MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex]
+                    .difficulty === 'easy'
+                    ? 'bg-green-100 text-green-700'
+                    : MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex]
+                        .difficulty === 'medium'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-red-100 text-red-700'
+                }`}
+              >
+                {getDifficultyLabel(
+                  MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex]
+                    .difficulty || 'easy'
+                )}
               </span>
             </div>
-            
+
             <p className="text-blue-700 mb-3">
               {MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].instruction}
             </p>
-            
+
             {/* タッチ操作ガイド */}
             <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded">
-              <div className="text-sm font-medium text-green-800 mb-1">👆 タッチ操作:</div>
+              <div className="text-sm font-medium text-green-800 mb-1">
+                👆 タッチ操作:
+              </div>
               <code className="text-sm text-green-700 bg-green-100 px-2 py-1 rounded">
                 {MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].touchAction}
               </code>
@@ -446,18 +500,29 @@ export function MobileScenarioTest({
 
             {/* 期待される動作 */}
             <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
-              <div className="text-sm font-medium text-yellow-800 mb-1">🎯 期待される動作:</div>
+              <div className="text-sm font-medium text-yellow-800 mb-1">
+                🎯 期待される動作:
+              </div>
               <p className="text-sm text-yellow-700">
-                {MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].expectedBehavior}
+                {
+                  MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex]
+                    .expectedBehavior
+                }
               </p>
             </div>
 
             {/* モバイル最適化情報 */}
-            {MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].mobileOptimization && (
+            {MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex]
+              .mobileOptimization && (
               <div className="mb-3 p-3 bg-purple-50 border border-purple-200 rounded">
-                <div className="text-sm font-medium text-purple-800 mb-1">📱 モバイル最適化:</div>
+                <div className="text-sm font-medium text-purple-800 mb-1">
+                  📱 モバイル最適化:
+                </div>
                 <p className="text-sm text-purple-700">
-                  {MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex].mobileOptimization}
+                  {
+                    MOBILE_DATA_GENERATION_SCENARIO[currentStepIndex]
+                      .mobileOptimization
+                  }
                 </p>
               </div>
             )}
@@ -470,7 +535,11 @@ export function MobileScenarioTest({
                 ✅ 完了
               </button>
               <button
-                onClick={() => reportDifficulty(`ステップ${currentStepIndex + 1}でモバイル操作困難`)}
+                onClick={() =>
+                  reportDifficulty(
+                    `ステップ${currentStepIndex + 1}でモバイル操作困難`
+                  )
+                }
                 className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
               >
                 ⚠️ 困難
@@ -504,7 +573,9 @@ export function MobileScenarioTest({
               <div className="text-lg font-bold text-blue-600">
                 {getDeviceIcon(deviceType)}
               </div>
-              <div className="text-xs text-gray-600">{getDeviceLabel(deviceType)}</div>
+              <div className="text-xs text-gray-600">
+                {getDeviceLabel(deviceType)}
+              </div>
             </div>
             <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
               <div className="text-lg font-bold text-blue-600">
@@ -520,7 +591,9 @@ export function MobileScenarioTest({
             </div>
             <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
               <div className="text-lg font-bold text-blue-600">
-                {startTimeRef.current ? formatTime(Date.now() - startTimeRef.current.getTime()) : '0:00'}
+                {startTimeRef.current
+                  ? formatTime(Date.now() - startTimeRef.current.getTime())
+                  : '0:00'}
               </div>
               <div className="text-xs text-gray-600">経過時間</div>
             </div>
@@ -538,11 +611,15 @@ export function MobileScenarioTest({
           {/* スコア表示 */}
           <div className="text-center mb-6">
             <div className="text-4xl font-bold mb-2">
-              <span className={`${
-                testResult.score >= 80 ? 'text-green-600' :
-                testResult.score >= 60 ? 'text-yellow-600' :
-                'text-red-600'
-              }`}>
+              <span
+                className={`${
+                  testResult.score >= 80
+                    ? 'text-green-600'
+                    : testResult.score >= 60
+                    ? 'text-yellow-600'
+                    : 'text-red-600'
+                }`}
+              >
                 {testResult.score}点
               </span>
             </div>
@@ -559,7 +636,9 @@ export function MobileScenarioTest({
                 <div className="flex justify-between">
                   <span>完了時間</span>
                   <span className="font-mono">
-                    {testResult.totalTime ? formatTime(testResult.totalTime) : '-'}
+                    {testResult.totalTime
+                      ? formatTime(testResult.totalTime)
+                      : '-'}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -568,11 +647,16 @@ export function MobileScenarioTest({
                 </div>
                 <div className="flex justify-between">
                   <span>完了ステップ</span>
-                  <span>{testResult.completedSteps} / {testResult.totalSteps}</span>
+                  <span>
+                    {testResult.completedSteps} / {testResult.totalSteps}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>デバイスタイプ</span>
-                  <span>{getDeviceIcon(testResult.deviceType)} {getDeviceLabel(testResult.deviceType)}</span>
+                  <span>
+                    {getDeviceIcon(testResult.deviceType)}{' '}
+                    {getDeviceLabel(testResult.deviceType)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>タッチフレンドリー</span>
@@ -584,11 +668,15 @@ export function MobileScenarioTest({
                 </div>
                 <div className="flex justify-between">
                   <span>パフォーマンススコア</span>
-                  <span className={`font-bold ${
-                    testResult.performanceScore >= 80 ? 'text-green-600' :
-                    testResult.performanceScore >= 60 ? 'text-yellow-600' :
-                    'text-red-600'
-                  }`}>
+                  <span
+                    className={`font-bold ${
+                      testResult.performanceScore >= 80
+                        ? 'text-green-600'
+                        : testResult.performanceScore >= 60
+                        ? 'text-yellow-600'
+                        : 'text-red-600'
+                    }`}
+                  >
                     {testResult.performanceScore}点
                   </span>
                 </div>
@@ -600,10 +688,12 @@ export function MobileScenarioTest({
             </div>
 
             <div>
-              <h5 className="font-medium text-wb-wood-700 mb-3">💬 フィードバック</h5>
+              <h5 className="font-medium text-wb-wood-700 mb-3">
+                💬 フィードバック
+              </h5>
               <textarea
                 value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
+                onChange={e => setFeedback(e.target.value)}
                 placeholder="モバイルテスト体験についてのフィードバックをお聞かせください..."
                 className="w-full h-24 p-3 border border-gray-300 rounded-lg text-sm resize-none"
               />
@@ -612,26 +702,40 @@ export function MobileScenarioTest({
 
           {/* パフォーマンス詳細 */}
           <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
-            <h5 className="font-medium text-green-800 mb-2">⚡ パフォーマンス詳細</h5>
+            <h5 className="font-medium text-green-800 mb-2">
+              ⚡ パフォーマンス詳細
+            </h5>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div>
                 <div className="text-green-700 font-medium">読み込み時間</div>
-                <div className="text-green-600">{performanceMetrics.loadTime.toFixed(0)}ms</div>
+                <div className="text-green-600">
+                  {performanceMetrics.loadTime.toFixed(0)}ms
+                </div>
               </div>
               <div>
-                <div className="text-green-700 font-medium">レンダリング時間</div>
-                <div className="text-green-600">{performanceMetrics.renderTime.toFixed(0)}ms</div>
+                <div className="text-green-700 font-medium">
+                  レンダリング時間
+                </div>
+                <div className="text-green-600">
+                  {performanceMetrics.renderTime.toFixed(0)}ms
+                </div>
               </div>
               <div>
-                <div className="text-green-700 font-medium">インタラクション時間</div>
-                <div className="text-green-600">{performanceMetrics.interactionTime.toFixed(0)}ms</div>
+                <div className="text-green-700 font-medium">
+                  インタラクション時間
+                </div>
+                <div className="text-green-600">
+                  {performanceMetrics.interactionTime.toFixed(0)}ms
+                </div>
               </div>
             </div>
           </div>
 
           {/* 改善提案 */}
           <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h5 className="font-medium text-blue-800 mb-2">💡 モバイル最適化改善提案</h5>
+            <h5 className="font-medium text-blue-800 mb-2">
+              💡 モバイル最適化改善提案
+            </h5>
             <ul className="text-sm text-blue-700 space-y-1">
               {!testResult.touchFriendly && (
                 <li>• タッチ操作の最適化が必要です</li>
@@ -640,7 +744,9 @@ export function MobileScenarioTest({
                 <li>• レスポンシブデザインの改善が必要です</li>
               )}
               {testResult.difficulties.length > 0 && (
-                <li>• モバイル操作困難が報告された箇所の見直しを検討してください</li>
+                <li>
+                  • モバイル操作困難が報告された箇所の見直しを検討してください
+                </li>
               )}
               {testResult.performanceScore < 80 && (
                 <li>• モバイルパフォーマンスの向上が必要です</li>
@@ -649,7 +755,9 @@ export function MobileScenarioTest({
                 <li>• モバイル操作効率の改善を検討してください</li>
               )}
               {deviceType === 'mobile' && (
-                <li>• タッチターゲットサイズ（44px以上）の確認をしてください</li>
+                <li>
+                  • タッチターゲットサイズ（44px以上）の確認をしてください
+                </li>
               )}
             </ul>
           </div>
@@ -669,4 +777,3 @@ export function MobileScenarioTest({
 }
 
 export default MobileScenarioTest;
-</rewritten_file>

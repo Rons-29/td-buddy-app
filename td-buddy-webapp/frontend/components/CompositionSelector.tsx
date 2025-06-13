@@ -1,9 +1,12 @@
 'use client';
 
+import { Check, Edit2, Info, Plus } from 'lucide-react';
 import React, { useState } from 'react';
-import { ChevronDown, Info, Check, Plus, Edit2 } from 'lucide-react';
+import {
+  DEFAULT_PASSWORD_PRESETS,
+  PRESET_CATEGORIES,
+} from '../data/passwordPresets';
 import { PasswordPreset } from '../types/password';
-import { DEFAULT_PASSWORD_PRESETS, PRESET_CATEGORIES } from '../data/passwordPresets';
 
 interface CompositionSelectorProps {
   selectedPresetId: string;
@@ -14,12 +17,14 @@ interface CompositionSelectorProps {
 export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
   selectedPresetId,
   onPresetChange,
-  className = ''
+  className = '',
 }) => {
   const [customPresetName, setCustomPresetName] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
-  
-  const selectedPreset = DEFAULT_PASSWORD_PRESETS.find(p => p.id === selectedPresetId);
+
+  const selectedPreset = DEFAULT_PASSWORD_PRESETS.find(
+    p => p.id === selectedPresetId
+  );
 
   const handlePresetClick = (preset: PasswordPreset) => {
     onPresetChange(preset.id, preset);
@@ -36,8 +41,8 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
         isCustom: true,
         criteria: {
           length: 12,
-          count: 1
-        }
+          count: 1,
+        },
       };
       onPresetChange(customPreset.id, customPreset);
       setCustomPresetName('');
@@ -55,7 +60,13 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
   }, {} as Record<string, PasswordPreset[]>);
 
   // カテゴリーの順序を指定
-  const categoryOrder: (keyof typeof PRESET_CATEGORIES)[] = ['security', 'custom', 'web', 'enterprise', 'other'];
+  const categoryOrder: (keyof typeof PRESET_CATEGORIES)[] = [
+    'security',
+    'custom',
+    'web',
+    'enterprise',
+    'other',
+  ];
 
   return (
     <div className={`w-full ${className}`}>
@@ -75,18 +86,20 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
         {categoryOrder.map(categoryKey => {
           const category = PRESET_CATEGORIES[categoryKey];
           const presets = presetsByCategory[categoryKey] || [];
-          
+
           return (
             <div key={categoryKey} className="space-y-3">
               {/* カテゴリヘッダー */}
               <div className="text-center border-b border-gray-200 pb-2">
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <span className="text-xl">{category.icon}</span>
-                  <h4 className="font-medium text-gray-800 text-sm">{category.label}</h4>
+                  <h4 className="font-medium text-gray-800 text-sm">
+                    {category.label}
+                  </h4>
                 </div>
                 <p className="text-xs text-gray-500">{category.description}</p>
               </div>
-              
+
               {/* プリセットカード */}
               <div className="space-y-2">
                 {presets.map(preset => (
@@ -95,9 +108,10 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                     onClick={() => handlePresetClick(preset)}
                     className={`
                       relative p-3 border-2 rounded-lg cursor-pointer transition-all duration-200
-                      ${selectedPresetId === preset.id 
-                        ? 'border-blue-500 bg-blue-50 shadow-md' 
-                        : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                      ${
+                        selectedPresetId === preset.id
+                          ? 'border-blue-500 bg-blue-50 shadow-md'
+                          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
                       }
                     `}
                   >
@@ -109,52 +123,56 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                         </div>
                       </div>
                     )}
-                    
+
                     {/* プリセット内容 */}
                     <div className="space-y-2">
                       {/* アイコンとタイトル */}
                       <div className="text-center">
-                        <span className="text-lg block mb-1">{preset.icon}</span>
+                        <span className="text-lg block mb-1">
+                          {preset.icon}
+                        </span>
                         <h5 className="font-medium text-gray-900 text-xs leading-tight">
                           {preset.name}
                         </h5>
                       </div>
-                      
+
                       {/* プリセット設定の簡潔表示 */}
                       <div className="space-y-1">
                         {/* 基本設定 */}
                         <div className="flex justify-center gap-1 text-xs">
                           {preset.criteria.length && (
-                            <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-xs">
+                            <span className="wb-badge-count px-1.5 py-0.5 rounded-full text-xs">
                               {preset.criteria.length}文字
                             </span>
                           )}
                           {preset.criteria.count && (
-                            <span className="bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full text-xs">
+                            <span className="wb-badge-items px-1.5 py-0.5 rounded-full text-xs">
                               {preset.criteria.count}個
                             </span>
                           )}
                         </div>
-                        
+
                         {/* 必須文字種（アイコンのみ） */}
                         {preset.criteria.mustIncludeCharTypes && (
                           <div className="flex justify-center gap-1">
-                            {preset.criteria.mustIncludeCharTypes.map(charType => (
-                              <span 
-                                key={charType} 
-                                className="text-xs"
-                                title={getCharTypeLabel(charType)}
-                              >
-                                {getCharTypeIcon(charType)}
-                              </span>
-                            ))}
+                            {preset.criteria.mustIncludeCharTypes.map(
+                              charType => (
+                                <span
+                                  key={charType}
+                                  className="text-xs"
+                                  title={getCharTypeLabel(charType)}
+                                >
+                                  {getCharTypeIcon(charType)}
+                                </span>
+                              )
+                            )}
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
                 ))}
-                
+
                 {/* その他カテゴリーの自由入力 */}
                 {categoryKey === 'other' && (
                   <div className="space-y-2">
@@ -175,12 +193,12 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                           <input
                             type="text"
                             value={customPresetName}
-                            onChange={(e) => setCustomPresetName(e.target.value)}
+                            onChange={e => setCustomPresetName(e.target.value)}
                             placeholder="プリセット名を入力..."
                             className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md 
                                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                                      text-sm"
-                            onKeyPress={(e) => {
+                            onKeyPress={e => {
                               if (e.key === 'Enter') {
                                 handleCustomPresetCreate();
                               }
@@ -231,7 +249,7 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
               <p className="text-sm text-blue-700 mb-2">
                 {selectedPreset.description}
               </p>
-              
+
               {/* 設定サマリー（横並び） */}
               <div className="flex flex-wrap gap-2 text-sm">
                 {selectedPreset.criteria.length && (
@@ -244,13 +262,15 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                     {selectedPreset.criteria.count}個
                   </span>
                 )}
-                {selectedPreset.criteria.mustIncludeCharTypes && 
+                {selectedPreset.criteria.mustIncludeCharTypes &&
                   selectedPreset.criteria.mustIncludeCharTypes.map(charType => (
-                    <span key={charType} className="bg-purple-200 text-purple-800 px-2 py-1 rounded font-medium">
+                    <span
+                      key={charType}
+                      className="bg-purple-200 text-purple-800 px-2 py-1 rounded font-medium"
+                    >
                       {getCharTypeIcon(charType)} {getCharTypeLabel(charType)}
                     </span>
-                  ))
-                }
+                  ))}
                 {selectedPreset.criteria.customSymbols && (
                   <span className="bg-gray-200 text-gray-800 px-2 py-1 rounded font-mono text-sm">
                     記号: {selectedPreset.criteria.customSymbols}
@@ -268,30 +288,30 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
 // ヘルパー関数
 function getCharTypeLabel(charType: string): string {
   const labels: Record<string, string> = {
-    'numbers': '数字',
-    'uppercase': '大文字',
-    'lowercase': '小文字',
-    'symbols': '記号'
+    numbers: '数字',
+    uppercase: '大文字',
+    lowercase: '小文字',
+    symbols: '記号',
   };
   return labels[charType] || charType;
 }
 
 function getCharTypeIcon(charType: string): string {
   const icons: Record<string, string> = {
-    'numbers': '🔢',
-    'uppercase': '🅰️', 
-    'lowercase': '🔤',
-    'symbols': '🔣'
+    numbers: '🔢',
+    uppercase: '🅰️',
+    lowercase: '🔤',
+    symbols: '🔣',
   };
   return icons[charType] || '❓';
 }
 
 function getCategoryColor(category: string): string {
   const colors: Record<string, string> = {
-    'security': 'bg-red-100 text-red-800',
-    'web': 'bg-blue-100 text-blue-800',
-    'enterprise': 'bg-purple-100 text-purple-800',
-    'custom': 'bg-green-100 text-green-800'
+    security: 'bg-red-100 text-red-800',
+    web: 'bg-blue-100 text-blue-800',
+    enterprise: 'bg-purple-100 text-purple-800',
+    custom: 'bg-green-100 text-green-800',
   };
   return colors[category] || 'bg-gray-100 text-gray-800';
-} 
+}
