@@ -167,7 +167,7 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
       )}
 
       {/* Brewsアイコン本体 */}
-      <div className="relative">
+      <div className="relative flex items-center justify-center">
         <div
           className={iconClasses}
           role="button"
@@ -181,13 +181,21 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
         >
           {IconComponent && (
             <IconComponent
-              className={`${
-                size === 'small'
-                  ? 'w-4 h-4'
-                  : size === 'medium'
-                  ? 'w-6 h-6'
-                  : 'w-8 h-8'
-              } transition-transform duration-200`}
+              className="w-full h-full max-w-none transition-transform duration-200"
+              style={{
+                width:
+                  size === 'small'
+                    ? '16px'
+                    : size === 'medium'
+                    ? '24px'
+                    : '32px',
+                height:
+                  size === 'small'
+                    ? '16px'
+                    : size === 'medium'
+                    ? '24px'
+                    : '32px',
+              }}
               aria-hidden="true"
             />
           )}

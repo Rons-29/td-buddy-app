@@ -218,43 +218,46 @@ const BrewsTeamManager: React.FC<BrewsTeamManagerProps> = ({
           <div
             key={member.id}
             className={`
-              brews-member-container
+              brews-member-container relative group
               ${animated ? 'brews-team-enter' : ''}
               ${layout === 'circle' ? 'absolute' : ''}
+              flex flex-col items-center justify-center
             `}
             style={
               layout === 'circle' ? getCircleStyles(index, team.length) : {}
             }
           >
-            <BrewsIcon
-              role={member.role}
-              emotion={member.emotion}
-              animation={member.animation}
-              message={member.message}
-              showBubble={showMessages && Boolean(member.message)}
-              size="medium"
-              onClick={() => onMemberClick?.(member)}
-              className="brews-icon-hover"
-            />
+            <div className="relative flex items-center justify-center">
+              <BrewsIcon
+                role={member.role}
+                emotion={member.emotion}
+                animation={member.animation}
+                message={member.message}
+                showBubble={showMessages && Boolean(member.message)}
+                size="medium"
+                onClick={() => onMemberClick?.(member)}
+                className="brews-icon-hover"
+              />
 
-            {/* メンバー管理ボタン */}
-            <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={e => {
-                  e.stopPropagation();
-                  removeMember(member.id);
-                }}
-                className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                title="メンバーを削除"
-              >
-                <LucideIcons.X size={12} />
-              </button>
+              {/* メンバー管理ボタン */}
+              <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    removeMember(member.id);
+                  }}
+                  className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                  title="メンバーを削除"
+                >
+                  <LucideIcons.X size={12} />
+                </button>
+              </div>
+
+              {/* アクティブ状態インジケーター */}
+              {member.isActive && (
+                <div className="brews-status-indicator brews-status-online" />
+              )}
             </div>
-
-            {/* アクティブ状態インジケーター */}
-            {member.isActive && (
-              <div className="brews-status-indicator brews-status-online" />
-            )}
           </div>
         ))}
 

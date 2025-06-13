@@ -356,15 +356,17 @@ const BrewsShowcasePage: React.FC = () => {
               単体アイコンデモ
             </h2>
             <div className="flex justify-center items-center min-h-[200px]">
-              <BrewsIcon
-                role={demoState.selectedRole}
-                emotion={demoState.selectedEmotion}
-                animation={demoState.selectedAnimation}
-                size={demoState.selectedSize}
-                message={demoState.message || undefined}
-                showBubble={demoState.showMessage}
-                onClick={() => console.log('Demo icon clicked!')}
-              />
+              <div className="flex flex-col items-center justify-center">
+                <BrewsIcon
+                  role={demoState.selectedRole}
+                  emotion={demoState.selectedEmotion}
+                  animation={demoState.selectedAnimation}
+                  size={demoState.selectedSize}
+                  message={demoState.message || undefined}
+                  showBubble={demoState.showMessage}
+                  onClick={() => console.log('Demo icon clicked!')}
+                />
+              </div>
             </div>
           </div>
 
@@ -375,7 +377,10 @@ const BrewsShowcasePage: React.FC = () => {
             </h2>
             <div className="flex justify-center items-end gap-8">
               {['small', 'medium', 'large'].map(size => (
-                <div key={size} className="text-center">
+                <div
+                  key={size}
+                  className="text-center flex flex-col items-center"
+                >
                   <BrewsIcon
                     role={demoState.selectedRole}
                     emotion={demoState.selectedEmotion}
@@ -395,7 +400,10 @@ const BrewsShowcasePage: React.FC = () => {
             </h2>
             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {allRoles.map(role => (
-                <div key={role} className="text-center">
+                <div
+                  key={role}
+                  className="text-center flex flex-col items-center"
+                >
                   <BrewsIcon
                     role={role}
                     emotion="happy"
@@ -433,7 +441,10 @@ const BrewsShowcasePage: React.FC = () => {
               {allAnimations
                 .filter(anim => anim !== 'none')
                 .map(animation => (
-                  <div key={animation} className="text-center">
+                  <div
+                    key={animation}
+                    className="text-center flex flex-col items-center"
+                  >
                     <BrewsIcon
                       role="support"
                       emotion="happy"
