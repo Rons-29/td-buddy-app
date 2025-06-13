@@ -267,12 +267,12 @@ export const getColorClasses = (
 
 export const getAnimationClasses = (animation: string): string => {
   const animations: Record<string, string> = {
-    bounce: 'animate-bounce',
-    wiggle: 'animate-pulse', // will be replaced with custom wiggle animation
-    pulse: 'animate-pulse',
+    bounce: 'brews-bounce',
+    wiggle: 'brews-wiggle',
+    pulse: 'brews-pulse',
     spin: 'animate-spin',
-    heartbeat: 'animate-pulse', // will be replaced with custom heartbeat animation
-    float: 'animate-bounce', // will be replaced with custom float animation
+    heartbeat: 'brews-heartbeat',
+    float: 'brews-float',
     none: '',
   };
 
