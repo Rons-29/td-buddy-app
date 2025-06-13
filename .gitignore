@@ -165,3 +165,7 @@ docs/
 # Phase 3 ワークベンチデザインシステム統合作業フォルダ
 # 作業中の一時ファイル・内部検討資料・進捗管理ファイルを含むため除外
 docs/phase-3-workbench-integration/
+
+# SQLite temporary files
+*.db-shm
+*.db-wal
