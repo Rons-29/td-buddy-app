@@ -3,11 +3,11 @@
  * TD Buddy - Data Quality Tests
  *
  * @description 生成データの品質・妥当性を検証
- * @author QA Workbench Team
+ * @author TestData Buddy Team
  * @version 1.0.0
  */
 
- PersonalInfoService } 
+import { PersonalInfoService } from '../services/PersonalInfoService';
 
 describe('🎯 Data Quality Tests', () => {
   let personalInfoService: PersonalInfoService;
@@ -422,6 +422,6 @@ describe('🎯 Data Quality Tests', () => {
 });
 
 // Brew からのメッセージ
-logger.log(
-  '🍺 Brew: データ品質テストを実行中です！生成データの品質を徹底的にチェックしましょう♪'
+console.log(
+  '🍺 Brew: データ品質テストを実行中です！醸造データの品質を徹底的にチェックしましょう♪'
 );

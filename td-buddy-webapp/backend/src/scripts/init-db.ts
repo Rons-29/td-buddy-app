@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 
-import * as path 
-import * as fs 
- database } 
+import * as path from 'path';
+import * as fs from 'fs';
+import { database } from '../database/database';
 
 // コマンドライン引数の処理
 const args = process.argv.slice(2);
@@ -11,8 +11,8 @@ const command = args[0] || 'help';
 // データベース初期化スクリプト
 class DatabaseInitializer {
   async init(): Promise<void> {
-    logger.log(`
-🍺 QA Workbench データベース初期化スクリプト
+    console.log(`
+🤖 TestData Buddy データベース初期化スクリプト
 
 🏗️  データベースの初期化を開始します...
     `);
@@ -20,19 +20,19 @@ class DatabaseInitializer {
     try {
       // データベース接続
       await database.connect();
-      logger.log('✅ データベース接続成功');
+      console.log('✅ データベース接続成功');
 
       // テーブル初期化
       await database.initialize();
-      logger.log('✅ テーブル初期化完了');
+      console.log('✅ テーブル初期化完了');
 
       // データベース統計表示
       await this.showStats();
 
-      logger.log(`
+      console.log(`
 🎉 データベース初期化が完了しました！
 
-🍺 Brewからのメッセージ:
+🤖 TDからのメッセージ:
 「データベースの準備ができました！これでテストデータを安全に保存できますね♪」
 
 次のステップ:
@@ -42,7 +42,7 @@ class DatabaseInitializer {
       `);
 
     } catch (error) {
-      logger.error('❌ データベース初期化エラー:', error);
+      console.error('❌ データベース初期化エラー:', error);
       process.exit(1);
     } finally {
       await database.disconnect();
@@ -50,7 +50,7 @@ class DatabaseInitializer {
   }
 
   async reset(): Promise<void> {
-    logger.log(`
+    console.log(`
 ⚠️  データベースリセット
     
 すべてのデータが削除されます。
@@ -59,15 +59,15 @@ class DatabaseInitializer {
 
     // 開発環境のみ許可
     if (process.env.NODE_ENV === 'production') {
-      logger.error('❌ 本番環境でのデータベースリセットは禁止されています');
+      console.error('❌ 本番環境でのデータベースリセットは禁止されています');
       process.exit(1);
     }
 
     // 確認プロンプト（非対話的環境では強制実行）
     if (process.stdin.isTTY && !args.includes('--force')) {
-      logger.log('本当にリセットしますか？ (yes/no)');
+      console.log('本当にリセットしますか？ (yes/no)');
       // 簡略化のため --force フラグで実行
-      logger.log('--force フラグを使用して強制実行してください');
+      console.log('--force フラグを使用して強制実行してください');
       process.exit(0);
     }
 
@@ -81,20 +81,20 @@ class DatabaseInitializer {
       
       if (fs.existsSync(dbPath)) {
         fs.unlinkSync(dbPath);
-        logger.log(`🗑️  データベースファイルを削除しました: ${dbPath}`);
+        console.log(`🗑️  データベースファイルを削除しました: ${dbPath}`);
       }
 
       // 再初期化
       await this.init();
 
     } catch (error) {
-      logger.error('❌ データベースリセットエラー:', error);
+      console.error('❌ データベースリセットエラー:', error);
       process.exit(1);
     }
   }
 
   async cleanup(): Promise<void> {
-    logger.log(`
+    console.log(`
 🧹 期限切れデータのクリーンアップ
     `);
 
@@ -103,15 +103,15 @@ class DatabaseInitializer {
       await database.cleanupExpiredData();
       await this.showStats();
 
-      logger.log(`
+      console.log(`
 ✅ クリーンアップ完了
 
-🍺 Brewからのメッセージ:
+🤖 TDからのメッセージ:
 「古いデータをお掃除しました！データベースがスッキリしましたね♪」
       `);
 
     } catch (error) {
-      logger.error('❌ クリーンアップエラー:', error);
+      console.error('❌ クリーンアップエラー:', error);
       process.exit(1);
     } finally {
       await database.disconnect();
@@ -122,7 +122,7 @@ class DatabaseInitializer {
     try {
       const stats = await database.getStats();
       
-      logger.log(`
+      console.log(`
 📊 データベース統計:
 ┌─────────────────┬────────┐
 │ テーブル        │ 件数   │
@@ -138,12 +138,12 @@ class DatabaseInitializer {
       `);
 
     } catch (error) {
-      logger.error('❌ 統計取得エラー:', error);
+      console.error('❌ 統計取得エラー:', error);
     }
   }
 
   async backup(): Promise<void> {
-    logger.log(`
+    console.log(`
 💾 データベースバックアップ
     `);
 
@@ -151,7 +151,7 @@ class DatabaseInitializer {
       const dbPath = process.env.DATABASE_URL?.replace('file:', '') || './data/td-buddy.db';
       
       if (!fs.existsSync(dbPath)) {
-        logger.error('❌ データベースファイルが存在しません');
+        console.error('❌ データベースファイルが存在しません');
         process.exit(1);
       }
 
@@ -169,28 +169,28 @@ class DatabaseInitializer {
       fs.copyFileSync(dbPath, backupPath);
 
       const stats = fs.statSync(backupPath);
-      logger.log(`✅ バックアップ完了:
+      console.log(`✅ バックアップ完了:
 📁 パス: ${backupPath}
 💾 サイズ: ${this.formatFileSize(stats.size)}
 ⏰ 作成日時: ${new Date().toLocaleString('ja-JP')}
 
-🍺 Brewからのメッセージ:
+🤖 TDからのメッセージ:
 「データベースのバックアップが完了しました！安心ですね♪」`);
 
     } catch (error) {
-      logger.error('❌ バックアップエラー:', error);
+      console.error('❌ バックアップエラー:', error);
       process.exit(1);
     }
   }
 
   async migrate(): Promise<void> {
-    logger.log(`
+    console.log(`
 🔄 データベースマイグレーション
     `);
 
     // 将来のマイグレーション機能用のプレースホルダー
-    logger.log('📋 マイグレーション機能は Phase 2 で実装予定です');
-    logger.log('🍺 Brew: 現在のところ、必要なマイグレーションはありません！');
+    console.log('📋 マイグレーション機能は Phase 2 で実装予定です');
+    console.log('🤖 TD: 現在のところ、必要なマイグレーションはありません！');
   }
 
   private formatFileSize(bytes: number): string {
@@ -204,8 +204,8 @@ class DatabaseInitializer {
   }
 
   showHelp(): void {
-    logger.log(`
-🍺 QA Workbench データベース管理ツール
+    console.log(`
+🤖 TestData Buddy データベース管理ツール
 
 使用方法:
   npm run db:init          データベースを初期化
@@ -224,7 +224,7 @@ class DatabaseInitializer {
   npm run db:reset -- --force
   npm run db:cleanup
 
-🍺 Brewからのメッセージ:
+🤖 TDからのメッセージ:
 「データベース管理もTDにお任せください！安全で効率的に管理します♪」
     `);
   }
@@ -263,20 +263,20 @@ async function main() {
 
 // エラーハンドリング
 process.on('uncaughtException', (error) => {
-  logger.error('💥 予期せぬエラー:', error);
-  logger.log('🍺 Brew: 申し訳ありません。データベース操作中にエラーが発生しました。');
+  console.error('💥 予期せぬエラー:', error);
+  console.log('🤖 TD: 申し訳ありません。データベース操作中にエラーが発生しました。');
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason) => {
-  logger.error('💥 未処理のPromise拒否:', reason);
-  logger.log('🍺 Brew: Promise関連のエラーが発生しました。');
+  console.error('💥 未処理のPromise拒否:', reason);
+  console.log('🤖 TD: Promise関連のエラーが発生しました。');
   process.exit(1);
 });
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  logger.log('\n🍺 Brew: データベース操作を中断します...');
+  console.log('\n🤖 TD: データベース操作を中断します...');
   await database.disconnect();
   process.exit(0);
 });
@@ -284,7 +284,7 @@ process.on('SIGINT', async () => {
 // スクリプト実行
 if (require.main === module) {
   main().catch((error) => {
-    logger.error('❌ スクリプト実行エラー:', error);
+    console.error('❌ スクリプト実行エラー:', error);
     process.exit(1);
   });
 } 

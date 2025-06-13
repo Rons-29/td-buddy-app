@@ -3,12 +3,12 @@
  * TD Buddy - Error Handling Tests
  * 
  * @description 異常系・エラーケースの検証
- * @author QA Workbench Team
+ * @author TestData Buddy Team
  * @version 1.0.0
  */
 
- PersonalInfoService } 
- PersonalInfoGenerateRequest } 
+import { PersonalInfoService } from '../services/PersonalInfoService';
+import { PersonalInfoGenerateRequest } from '../types/personalInfo';
 
 describe('🚨 Error Handling Tests', () => {
   let personalInfoService: PersonalInfoService;
@@ -321,4 +321,4 @@ describe('🚨 Error Handling Tests', () => {
 });
 
 // TD からのメッセージ
-logger.log('🍺 Brew: エラーハンドリングテストを実行中です！システムの堅牢性をチェックしましょう♪'); 
+console.log('🤖 TD: エラーハンドリングテストを実行中です！システムの堅牢性をチェックしましょう♪'); 

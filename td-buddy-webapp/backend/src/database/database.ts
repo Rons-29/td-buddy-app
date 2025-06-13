@@ -2,9 +2,6 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 
-// ロガー設定
-const logger = console;
-
 export class DatabaseService {
   private db: Database.Database | null = null;
   private dbPath: string;
@@ -22,7 +19,7 @@ export class DatabaseService {
     if (!this.db) {
       this.db = new Database(this.dbPath);
       this.db.pragma('journal_mode = WAL');
-      logger.log('✅ SQLite Database connected:', this.dbPath);
+      console.log('✅ SQLite Database connected:', this.dbPath);
     }
   }
 
@@ -30,7 +27,7 @@ export class DatabaseService {
     if (this.db) {
       this.db.close();
       this.db = null;
-      logger.log('📡 Database disconnected');
+      console.log('📡 Database disconnected');
     }
   }
 
@@ -40,7 +37,7 @@ export class DatabaseService {
       const result = this.db!.prepare(sql).run(...params);
       return result;
     } catch (error) {
-      logger.error('❌ Database run error:', error);
+      console.error('❌ Database run error:', error);
       throw error;
     }
   }
@@ -51,7 +48,7 @@ export class DatabaseService {
       const results = this.db!.prepare(sql).all(...params);
       return results;
     } catch (error) {
-      logger.error('❌ Database query error:', error);
+      console.error('❌ Database query error:', error);
       throw error;
     }
   }
@@ -62,14 +59,14 @@ export class DatabaseService {
       const result = this.db!.prepare(sql).get(...params);
       return result;
     } catch (error) {
-      logger.error('❌ Database get error:', error);
+      console.error('❌ Database get error:', error);
       throw error;
     }
   }
 
   async initialize(): Promise<void> {
     if (!this.db) await this.connect();
-
+    
     const tables = [
       `CREATE TABLE IF NOT EXISTS generated_passwords (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,7 +80,7 @@ export class DatabaseService {
         ip_address TEXT,
         user_agent TEXT
       )`,
-
+      
       `CREATE TABLE IF NOT EXISTS generated_personal_info (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         data_hash TEXT NOT NULL,
@@ -94,7 +91,7 @@ export class DatabaseService {
         ip_address TEXT,
         user_agent TEXT
       )`,
-
+      
       `CREATE TABLE IF NOT EXISTS claude_generations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         prompt_hash TEXT NOT NULL,
@@ -106,7 +103,7 @@ export class DatabaseService {
         user_session_id TEXT,
         ip_address TEXT
       )`,
-
+      
       `CREATE TABLE IF NOT EXISTS api_statistics (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         endpoint TEXT NOT NULL,
@@ -117,7 +114,7 @@ export class DatabaseService {
         user_agent TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
-
+      
       `CREATE TABLE IF NOT EXISTS error_logs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         error_code TEXT,
@@ -128,7 +125,7 @@ export class DatabaseService {
         user_agent TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
-
+      
       `CREATE TABLE IF NOT EXISTS generated_uuids (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         uuid_value TEXT NOT NULL,
@@ -142,7 +139,7 @@ export class DatabaseService {
         ip_address TEXT,
         user_agent TEXT
       )`,
-
+      
       `CREATE TABLE IF NOT EXISTS generated_data (
         id TEXT PRIMARY KEY,
         type TEXT NOT NULL,
@@ -153,14 +150,14 @@ export class DatabaseService {
         user_session_id TEXT,
         ip_address TEXT,
         user_agent TEXT
-      )`,
+      )`
     ];
 
     for (const createTable of tables) {
       await this.run(createTable);
     }
-
-    logger.log('✅ Database tables initialized');
+    
+    console.log('✅ Database tables initialized');
   }
 
   async cleanupExpiredData(): Promise<void> {
@@ -177,28 +174,20 @@ export class DatabaseService {
       'DELETE FROM generated_uuids WHERE expires_at < ?',
       [now]
     );
-    logger.log(
-      `🧹 Cleanup: ${
-        deletedPasswords.changes +
-        deletedPersonalInfo.changes +
-        deletedUuids.changes
-      } expired records deleted`
-    );
+    console.log(`🧹 Cleanup: ${deletedPasswords.changes + deletedPersonalInfo.changes + deletedUuids.changes} expired records deleted`);
   }
 
   async getStats(): Promise<any> {
     const stats = await Promise.all([
       this.get('SELECT COUNT(*) as count FROM generated_passwords'),
-      this.get('SELECT COUNT(*) as count FROM generated_personal_info'),
+      this.get('SELECT COUNT(*) as count FROM generated_personal_info'), 
       this.get('SELECT COUNT(*) as count FROM generated_uuids'),
       this.get('SELECT COUNT(*) as count FROM claude_generations'),
       this.get('SELECT COUNT(*) as count FROM api_statistics'),
       this.get('SELECT COUNT(*) as count FROM error_logs'),
     ]);
 
-    const dbSize = fs.existsSync(this.dbPath)
-      ? fs.statSync(this.dbPath).size
-      : 0;
+    const dbSize = fs.existsSync(this.dbPath) ? fs.statSync(this.dbPath).size : 0;
 
     return {
       passwords: { count: stats[0]?.count || 0 },
@@ -207,9 +196,9 @@ export class DatabaseService {
       claudeData: { count: stats[3]?.count || 0 },
       apiCalls: { count: stats[4]?.count || 0 },
       errors: { count: stats[5]?.count || 0 },
-      dbSize,
+      dbSize
     };
   }
 }
 
-export const database = new DatabaseService();
+export const database = new DatabaseService(); 

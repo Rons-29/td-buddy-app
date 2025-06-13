@@ -1,5 +1,5 @@
 // 完全版 カナマッピングデータ
-// QA Workbench専用 - 重複なし、包括的な日本語名前変換
+// TestData Buddy専用 - 重複なし、包括的な日本語名前変換
 
 export const COMPLETE_KANA_MAPPING: Record<string, string> = {
   // === 男性の名前 ===

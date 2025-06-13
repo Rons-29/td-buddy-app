@@ -5,8 +5,8 @@
  * @description テスト実行前の環境設定
  */
 
- config } 
-import path 
+import { config } from 'dotenv';
+import path from 'path';
 
 // テスト環境用の環境変数読み込み
 config({ path: path.join(__dirname, '../../.env.test') });
@@ -47,5 +47,5 @@ afterAll(() => {
   console.error = originalConsoleError;
 });
 
-// Brewからの応援メッセージ
-logger.log('🍺 Brew: テスト環境のセットアップが完了しました！品質をしっかりチェックしましょう♪'); 
+// TDからの応援メッセージ
+console.log('🤖 TD: テスト環境のセットアップが完了しました！品質をしっかりチェックしましょう♪'); 

@@ -1,11 +1,11 @@
-const logger = console;// Enhanced Export Service - ファイル出力機能強化
+// Enhanced Export Service - ファイル出力機能強化
 // Step 12: JSON/XML/YAML/SQL出力対応
 
-import * as fs 
-import * as path 
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 export interface ExportData {
-  [key: string]: Record<string, unknown>;
+  [key: string]: any;
 }
 
 export interface ExportOptions {
@@ -93,7 +93,7 @@ export class ExportService {
       const stats = await fs.stat(filePath);
       const processingTime = Date.now() - startTime;
 
-      logger.log(`📊 TD: ${options.format.toUpperCase()}エクスポート完了 - ${recordCount}件 (${processingTime}ms)`);
+      console.log(`📊 TD: ${options.format.toUpperCase()}エクスポート完了 - ${recordCount}件 (${processingTime}ms)`);
 
       return {
         success: true,
@@ -107,7 +107,7 @@ export class ExportService {
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown export error';
-      logger.error('❌ エクスポートエラー:', error);
+      console.error('❌ エクスポートエラー:', error);
       return {
         success: false,
         filename: '',
@@ -163,7 +163,7 @@ export class ExportService {
       await fileHandle.close();
       const stats = await fs.stat(filePath);
 
-      logger.log(`📊 TD: ストリーミング${options.format.toUpperCase()}エクスポート完了 - ${data.length}件`);
+      console.log(`📊 TD: ストリーミング${options.format.toUpperCase()}エクスポート完了 - ${data.length}件`);
 
       return {
         success: true,
@@ -217,7 +217,7 @@ export class ExportService {
       metadata: {
         exportedAt: new Date().toISOString(),
         recordCount: data.length,
-        generatedBy: 'QA Workbench',
+        generatedBy: 'TestData Buddy',
         version: '1.0.0'
       },
       data: data
@@ -243,7 +243,7 @@ export class ExportService {
     xml += `${indent}<metadata>${newline}`;
     xml += `${indent}${indent}<exportedAt>${new Date().toISOString()}</exportedAt>${newline}`;
     xml += `${indent}${indent}<recordCount>${data.length}</recordCount>${newline}`;
-    xml += `${indent}${indent}<generatedBy>QA Workbench</generatedBy>${newline}`;
+    xml += `${indent}${indent}<generatedBy>TestData Buddy</generatedBy>${newline}`;
     xml += `${indent}</metadata>${newline}`;
     xml += `${indent}<data>${newline}`;
 
@@ -269,12 +269,12 @@ export class ExportService {
   private generateYAML(data: ExportData[], options: ExportOptions): string {
     const indent = '  ';
     
-    let yaml = `# QA Workbench Export\n`;
+    let yaml = `# TestData Buddy Export\n`;
     yaml += `# Generated at: ${new Date().toISOString()}\n\n`;
     yaml += `metadata:\n`;
     yaml += `${indent}exportedAt: "${new Date().toISOString()}"\n`;
     yaml += `${indent}recordCount: ${data.length}\n`;
-    yaml += `${indent}generatedBy: "QA Workbench"\n`;
+    yaml += `${indent}generatedBy: "TestData Buddy"\n`;
     yaml += `${indent}version: "1.0.0"\n\n`;
     yaml += `data:\n`;
 
@@ -298,7 +298,7 @@ export class ExportService {
     const tableName = options.tableName || 'test_data';
     const headers = Object.keys(data[0]);
     
-    let sql = `-- QA Workbench SQL Export\n`;
+    let sql = `-- TestData Buddy SQL Export\n`;
     sql += `-- Generated at: ${new Date().toISOString()}\n`;
     sql += `-- Records: ${data.length}\n\n`;
 
@@ -360,7 +360,7 @@ export class ExportService {
       case 'xml':
         return `<?xml version="1.0" encoding="${options.encoding || 'UTF-8'}"?>\n<export>\n<data>`;
       case 'yaml':
-        return `# QA Workbench Export\ndata:`;
+        return `# TestData Buddy Export\ndata:`;
       default:
         return null;
     }
@@ -403,7 +403,7 @@ export class ExportService {
     return value;
   }
 
-  private formatCsvValue(value: Record<string, unknown>): string {
+  private formatCsvValue(value: any): string {
     if (value === null || value === undefined) return '';
     if (typeof value === 'object') return JSON.stringify(value);
     return String(value);
@@ -413,7 +413,7 @@ export class ExportService {
     return tag.replace(/[^a-zA-Z0-9_-]/g, '_');
   }
 
-  private escapeXmlValue(value: Record<string, unknown>): string {
+  private escapeXmlValue(value: any): string {
     if (value === null || value === undefined) return '';
     const str = typeof value === 'object' ? JSON.stringify(value) : String(value);
     return str
@@ -424,7 +424,7 @@ export class ExportService {
       .replace(/'/g, '&apos;');
   }
 
-  private formatYamlValue(value: Record<string, unknown>): string {
+  private formatYamlValue(value: any): string {
     if (value === null || value === undefined) return 'null';
     if (typeof value === 'string') {
       // 特殊文字を含む場合はクォート
@@ -437,7 +437,7 @@ export class ExportService {
     return String(value);
   }
 
-  private formatSqlValue(value: Record<string, unknown>): string {
+  private formatSqlValue(value: any): string {
     if (value === null || value === undefined) return 'NULL';
     if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
     if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';

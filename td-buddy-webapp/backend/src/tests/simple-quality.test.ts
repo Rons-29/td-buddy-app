@@ -3,12 +3,12 @@
  * TD Buddy - Simple Quality Tests
  * 
  * @description 基本的なデータ品質検証
- * @author QA Workbench Team
+ * @author TestData Buddy Team
  * @version 1.0.0
  */
 
- PersonalInfoService } 
- PersonalInfoGenerateRequest, PersonalInfoItem } 
+import { PersonalInfoService } from '../services/PersonalInfoService';
+import { PersonalInfoGenerateRequest, PersonalInfoItem } from '../types/personalInfo';
 
 describe('🎯 Simple Data Quality Tests', () => {
   let personalInfoService: PersonalInfoService;
@@ -57,7 +57,7 @@ describe('🎯 Simple Data Quality Tests', () => {
         }
       });
       
-      logger.log('🎉 TD: 小規模データ生成品質テスト完了！');
+      console.log('🎉 TD: 小規模データ生成品質テスト完了！');
     });
 
     test('✅ 中規模データ生成品質', async () => {
@@ -93,7 +93,7 @@ describe('🎯 Simple Data Quality Tests', () => {
         }
       });
       
-      logger.log('🎉 TD: 中規模データ生成品質テスト完了！');
+      console.log('🎉 TD: 中規模データ生成品質テスト完了！');
     });
 
     test('✅ 大規模データ生成パフォーマンス', async () => {
@@ -126,11 +126,11 @@ describe('🎯 Simple Data Quality Tests', () => {
       expect(new Set(genders).size).toBeGreaterThanOrEqual(1); // 性別データ存在
       expect(new Set(prefectures).size).toBeGreaterThan(1); // 複数の都道府県
       
-      logger.log(`🚀 TD: 大規模データ生成完了！`);
-      logger.log(`   件数: ${result.persons.length}/${request.count}`);
-      logger.log(`   時間: ${duration}ms`);
-      logger.log(`   スループット: ${throughput.toFixed(2)} items/sec`);
-      logger.log(`   重複除去: ${result.statistics.duplicatesRemoved}件`);
+      console.log(`🚀 TD: 大規模データ生成完了！`);
+      console.log(`   件数: ${result.persons.length}/${request.count}`);
+      console.log(`   時間: ${duration}ms`);
+      console.log(`   スループット: ${throughput.toFixed(2)} items/sec`);
+      console.log(`   重複除去: ${result.statistics.duplicatesRemoved}件`);
     }, 35000);
 
     test('✅ 全フィールド生成品質', async () => {
@@ -182,7 +182,7 @@ describe('🎯 Simple Data Quality Tests', () => {
         }
       });
       
-      logger.log('🎉 TD: 全フィールド生成品質テスト完了！');
+      console.log('🎉 TD: 全フィールド生成品質テスト完了！');
     });
   });
 
@@ -231,7 +231,7 @@ describe('🎯 Simple Data Quality Tests', () => {
       // 実際のデータ数と統計の一致
       expect(result.persons.length).toBe(result.statistics.uniqueCount);
       
-      logger.log(`📊 統計情報: 生成${result.statistics.totalGenerated}件, ユニーク${result.statistics.uniqueCount}件, 時間${result.statistics.generationTime}ms`);
+      console.log(`📊 統計情報: 生成${result.statistics.totalGenerated}件, ユニーク${result.statistics.uniqueCount}件, 時間${result.statistics.generationTime}ms`);
     });
   });
 
@@ -250,7 +250,7 @@ describe('🎯 Simple Data Quality Tests', () => {
       const uniqueEmails = new Set(emails);
       
       expect(emails.length).toBe(uniqueEmails.size);
-      logger.log(`📧 メール重複チェック: ${emails.length}件中${uniqueEmails.size}件がユニーク`);
+      console.log(`📧 メール重複チェック: ${emails.length}件中${uniqueEmails.size}件がユニーク`);
     });
 
     test('✅ 電話番号重複除去確認', async () => {
@@ -267,7 +267,7 @@ describe('🎯 Simple Data Quality Tests', () => {
       const uniquePhones = new Set(phones);
       
       expect(phones.length).toBe(uniquePhones.size);
-      logger.log(`📞 電話番号重複チェック: ${phones.length}件中${uniquePhones.size}件がユニーク`);
+      console.log(`📞 電話番号重複チェック: ${phones.length}件中${uniquePhones.size}件がユニーク`);
     });
 
     test('✅ メール形式の正確性確認', async () => {
@@ -289,10 +289,10 @@ describe('🎯 Simple Data Quality Tests', () => {
         expect(email.includes('..')).toBe(false); // 連続ドットがあってはいけない
       }
       
-      logger.log(`📧 メール形式チェック: ${emails.length}件すべて正常な形式`);
+      console.log(`📧 メール形式チェック: ${emails.length}件すべて正常な形式`);
     });
   });
 });
 
 // TD からのメッセージ
-logger.log('🍺 Brew: シンプル品質テストを実行中です！基本的な品質をしっかりチェックしましょう♪'); 
+console.log('🤖 TD: シンプル品質テストを実行中です！基本的な品質をしっかりチェックしましょう♪'); 

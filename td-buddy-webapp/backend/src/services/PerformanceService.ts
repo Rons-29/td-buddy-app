@@ -1,4 +1,4 @@
-const logger = console; performance } 
+import { performance } from 'perf_hooks';
 
 export interface PerformanceMetrics {
   operation: string;
@@ -148,7 +148,7 @@ export class PerformanceService {
    */
   generateReport(): string {
     const operations = [...new Set(this.metrics.map(m => m.operation))];
-    let report = '🚀 QA Workbench パフォーマンスレポート\n\n';
+    let report = '🚀 TestData Buddy パフォーマンスレポート\n\n';
     
     operations.forEach(operation => {
       const stats = this.getStatistics(operation);

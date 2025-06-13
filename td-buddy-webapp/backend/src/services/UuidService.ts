@@ -1,10 +1,5 @@
-import { Request, Response, Router } from 'express';
+import crypto from 'crypto';
 import { database } from '../database/database';
-
-// Logger setup
-const logger = console;
-
-const logger = console;import crypto 
 import {
     UuidGenerateRequest,
     UuidGenerateResponse,
@@ -12,6 +7,7 @@ import {
     UuidValidateRequest,
     UuidValidateResponse
 } from '../types/api';
+import { InsertGeneratedUuid } from '../types/database';
 
 export class UuidService {
   private readonly RETENTION_HOURS = 24; // 24時間でデータを削除
@@ -62,13 +58,13 @@ export class UuidService {
       await this.saveToDatabase(uuids, criteria, userSession, ipAddress, userAgent);
 
       const processingTime = Date.now() - startTime;
-      logger.log(`✅ UUID生成完了: ${uuids.length}件 (${processingTime}ms)`);
-      logger.log(`🍺 Brew: ${criteria.version}バージョンのUUIDを${criteria.format}形式で生成しました！`);
+      console.log(`✅ UUID生成完了: ${uuids.length}件 (${processingTime}ms)`);
+      console.log(`🤖 TD: ${criteria.version}バージョンのUUIDを${criteria.format}形式で生成しました！`);
 
       return response;
 
     } catch (error) {
-      logger.error('❌ UUID生成エラー:', error);
+      console.error('❌ UUID生成エラー:', error);
       throw new Error('UUID生成に失敗しました');
     }
   }
@@ -340,7 +336,7 @@ export class UuidService {
       }
 
     } catch (error) {
-      logger.error('❌ UUID データベース保存エラー:', error);
+      console.error('❌ UUID データベース保存エラー:', error);
       // データベース保存に失敗してもUUID生成は継続
     }
   }
@@ -385,7 +381,7 @@ export class UuidService {
       };
 
     } catch (error) {
-      logger.error('❌ UUID履歴取得エラー:', error);
+      console.error('❌ UUID履歴取得エラー:', error);
       throw new Error('UUID生成履歴の取得に失敗しました');
     }
   }
@@ -440,7 +436,7 @@ export class UuidService {
       };
 
     } catch (error) {
-      logger.error('❌ UUID統計取得エラー:', error);
+      console.error('❌ UUID統計取得エラー:', error);
       throw new Error('UUID統計情報の取得に失敗しました');
     }
   }

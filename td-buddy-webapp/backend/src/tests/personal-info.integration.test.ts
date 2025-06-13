@@ -3,14 +3,14 @@
  * TD Buddy - Personal Info Generation Integration Tests
  * 
  * @description 個人情報生成APIの包括的テスト
- * @author QA Workbench Team
+ * @author TestData Buddy Team
  * @version 1.0.0
  */
 
-import request 
- Express } 
- PersonalInfoService } 
- PerformanceService } 
+import request from 'supertest';
+import { Express } from 'express';
+import { PersonalInfoService } from '../services/PersonalInfoService';
+import { PerformanceService } from '../services/PerformanceService';
 
 describe('🧑‍💼 Personal Info Generation Integration Tests', () => {
   let app: Express;
@@ -426,4 +426,4 @@ describe('🧑‍💼 Personal Info Generation Integration Tests', () => {
 });
 
 // TD からのメッセージ
-logger.log('🍺 Brew: 個人情報生成機能の統合テストを実行中です！品質を徹底的にチェックしましょう♪'); 
+console.log('🤖 TD: 個人情報生成機能の統合テストを実行中です！品質を徹底的にチェックしましょう♪'); 

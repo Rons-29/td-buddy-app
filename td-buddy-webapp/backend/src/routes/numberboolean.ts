@@ -1,10 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { database } from '../database/database';
-import { NumberBooleanService, NumberOptions, BooleanOptions } from '../services/NumberBooleanService';
-
-// Logger setup
-const logger = console;
-
+import { NumberBooleanOptions, NumberBooleanService } from '../services/NumberBooleanService';
 
 const router = Router();
 const numberBooleanService = new NumberBooleanService();
@@ -39,7 +35,7 @@ router.post('/generate', async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: '生成件数は10,000件以下で指定してください',
-        brewMessage: 'Brewからのお知らせ: 大量データ生成は別途ご相談ください♪'
+        tdMessage: 'TDからのお知らせ: 大量データ生成は別途ご相談ください♪'
       });
     }
 
@@ -48,7 +44,7 @@ router.post('/generate', async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: '無効な生成タイプです',
-        brewMessage: 'Brewがサポートしているタイプを確認してくださいね♪'
+        tdMessage: 'TDがサポートしているタイプを確認してくださいね♪'
       });
     }
 
@@ -97,11 +93,11 @@ router.post('/generate', async (req: Request, res: Response) => {
     return res.json(result);
 
   } catch (error: any) {
-    logger.error('数値・真偽値生成エラー:', error);
+    console.error('数値・真偽値生成エラー:', error);
     return res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      brewMessage: 'エラーが発生しましたが、Brewが一緒に解決します！',
+      tdMessage: 'エラーが発生しましたが、TDが一緒に解決します！',
       error: error.message
     });
   }
@@ -116,7 +112,7 @@ router.post('/validate', async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: '検証する値を指定してください',
-        brewMessage: 'Brewが検証しますので、値を教えてください♪'
+        tdMessage: 'TDが検証しますので、値を教えてください♪'
       });
     }
 
@@ -128,18 +124,18 @@ router.post('/validate', async (req: Request, res: Response) => {
       value,
       type,
       message: isValid ? '有効な数値・真偽値です' : '無効な数値・真偽値です',
-      brewMessage: isValid 
+      tdMessage: isValid 
         ? 'TDの検証結果: 有効な値です！✨' 
         : 'TDの検証結果: 形式に問題があるようです。ご確認ください',
       validatedAt: new Date().toISOString()
     });
 
   } catch (error: any) {
-    logger.error('数値・真偽値検証エラー:', error);
+    console.error('数値・真偽値検証エラー:', error);
     return res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      brewMessage: 'Brewの検証機能にエラーが発生しました',
+      tdMessage: 'TDの検証機能にエラーが発生しました',
       error: error.message
     });
   }
@@ -177,15 +173,15 @@ router.get('/history', async (req: Request, res: Response) => {
       limit: Number(limit),
       offset: Number(offset),
       message: `${historyItems.length}件の履歴を取得しました`,
-      brewMessage: 'Brewが生成履歴をお持ちしました！数値・真偽値の記録もバッチリです♪'
+      tdMessage: 'TDが生成履歴をお持ちしました！数値・真偽値の記録もバッチリです♪'
     });
 
   } catch (error: any) {
-    logger.error('履歴取得エラー:', error);
+    console.error('履歴取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      brewMessage: 'Brewの履歴管理機能にエラーが発生しました',
+      tdMessage: 'TDの履歴管理機能にエラーが発生しました',
       error: error.message
     });
   }
@@ -242,16 +238,16 @@ router.get('/statistics', async (req: Request, res: Response) => {
         recentActivity: recentActivity || []
       },
       message: '数値・真偽値生成統計を取得しました',
-      brewMessage: 'Brewの統計機能で、数値データの傾向をお見せします！📊',
+      tdMessage: 'TDの統計機能で、数値データの傾向をお見せします！📊',
       generatedAt: new Date().toISOString()
     });
 
   } catch (error: any) {
-    logger.error('統計取得エラー:', error);
+    console.error('統計取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      brewMessage: 'Brewの統計機能にエラーが発生しました',
+      tdMessage: 'TDの統計機能にエラーが発生しました',
       error: error.message
     });
   }
@@ -322,15 +318,15 @@ router.get('/presets', async (req: Request, res: Response) => {
       data: presets,
       count: presets.length,
       message: `${presets.length}件のプリセットを取得しました`,
-      brewMessage: 'Brewおすすめのプリセットをご用意しました！用途に合わせてお選びください♪'
+      tdMessage: 'TDおすすめのプリセットをご用意しました！用途に合わせてお選びください♪'
     });
 
   } catch (error: any) {
-    logger.error('プリセット取得エラー:', error);
+    console.error('プリセット取得エラー:', error);
     res.status(500).json({
       success: false,
       message: 'サーバーエラーが発生しました',
-      brewMessage: 'Brewのプリセット機能にエラーが発生しました',
+      tdMessage: 'TDのプリセット機能にエラーが発生しました',
       error: error.message
     });
   }

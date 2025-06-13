@@ -1,0 +1,205 @@
+/* ========================================
+   Quality Workbench - Warm Craft Color Palette
+   ========================================
+   
+   C (Craft Laboratory) + A (Premium Workshop)
+   温かい職人工房をコンセプトとしたカラーシステム
+   ======================================== */
+
+:root {
+  /* ===== PRIMARY COLORS (木製作業台) ===== */
+
+  /* Walnut Wood Tones */
+  --qw-walnut-50: #fdfcfc; /* 薄い木目ベース */
+  --qw-walnut-100: #f7f3f0; /* ライトオーク */
+  --qw-walnut-200: #e8ddd6; /* ソフトウッド */
+  --qw-walnut-300: #d4c4b8; /* ミディアムウッド */
+  --qw-walnut-400: #a08a7a; /* エイジドウッド */
+  --qw-walnut-500: #795548; /* ミディアムウォルナット (メイン) */
+  --qw-walnut-600: #8b4513; /* リッチウォルナット (アクセント) */
+  --qw-walnut-700: #654321; /* ダークウォルナット */
+  --qw-walnut-800: #4e342e; /* エスプレッソ */
+  --qw-walnut-900: #3e2723; /* エボニー */
+
+  /* ===== SECONDARY COLORS (クリーンホワイト) ===== */
+
+  /* Clean White System */
+  --qw-white-pure: #ffffff; /* ピュアホワイト */
+  --qw-white-clean: #fefefe; /* クリーンホワイト */
+  --qw-white-lab: #fafafa; /* ラボホワイト */
+  --qw-white-paper: #f8f9fa; /* ペーパーホワイト */
+  --qw-white-soft: #f5f5f5; /* ソフトホワイト */
+
+  /* ===== TERTIARY COLORS (メタルブルー) ===== */
+
+  /* Metal Blue System */
+  --qw-metal-50: #f8fafc; /* ライトメタル */
+  --qw-metal-100: #f1f5f9; /* シルバーホワイト */
+  --qw-metal-200: #e2e8f0; /* ライトスチール */
+  --qw-metal-300: #cbd5e1; /* ソフトメタル */
+  --qw-metal-400: #94a3b8; /* ミディアムメタル */
+  --qw-metal-500: #607d8b; /* メタルブルー (メイン) */
+  --qw-metal-600: #546e7a; /* ダークメタル */
+  --qw-metal-700: #455a64; /* ガンメタル */
+  --qw-metal-800: #37474f; /* スチールグレー */
+  --qw-metal-900: #263238; /* ダークスレート */
+
+  /* ===== ACCENT COLORS (機能色) ===== */
+
+  /* Insight Purple */
+  --qw-insight-50: #f3e5f5; /* ライトパープル */
+  --qw-insight-100: #e1bee7; /* ソフトパープル */
+  --qw-insight-500: #673ab7; /* 洞察パープル (メイン) */
+  --qw-insight-700: #512da8; /* ディープパープル */
+  --qw-insight-900: #311b92; /* ダークパープル */
+
+  /* Verification Green */
+  --qw-verify-50: #e8f5e8; /* ライトグリーン */
+  --qw-verify-100: #c8e6c9; /* ソフトグリーン */
+  --qw-verify-500: #4caf50; /* 検証グリーン (メイン) */
+  --qw-verify-700: #388e3c; /* ディープグリーン */
+  --qw-verify-900: #1b5e20; /* ダークグリーン */
+
+  /* Warm Orange */
+  --qw-warm-50: #fff3e0; /* ライトオレンジ */
+  --qw-warm-100: #ffe0b2; /* ソフトオレンジ */
+  --qw-warm-500: #d84315; /* 温かみオレンジ (メイン) */
+  --qw-warm-700: #bf360c; /* ディープオレンジ */
+  --qw-warm-900: #e65100; /* ダークオレンジ */
+
+  /* ===== SEMANTIC COLORS (意味色) ===== */
+
+  /* Success */
+  --qw-success: var(--qw-verify-500);
+  --qw-success-light: var(--qw-verify-100);
+  --qw-success-dark: var(--qw-verify-700);
+
+  /* Warning */
+  --qw-warning: #ff9800;
+  --qw-warning-light: #ffe0b2;
+  --qw-warning-dark: #f57c00;
+
+  /* Error */
+  --qw-error: #f44336;
+  --qw-error-light: #ffcdd2;
+  --qw-error-dark: #d32f2f;
+
+  /* Info */
+  --qw-info: var(--qw-metal-500);
+  --qw-info-light: var(--qw-metal-100);
+  --qw-info-dark: var(--qw-metal-700);
+
+  /* ===== UI SYSTEM COLORS ===== */
+
+  /* Backgrounds */
+  --qw-bg-primary: var(--qw-white-pure);
+  --qw-bg-secondary: var(--qw-white-lab);
+  --qw-bg-tertiary: var(--qw-white-soft);
+  --qw-bg-dark: var(--qw-metal-900);
+
+  /* Text Colors */
+  --qw-text-primary: var(--qw-metal-900);
+  --qw-text-secondary: var(--qw-metal-700);
+  --qw-text-muted: var(--qw-metal-500);
+  --qw-text-inverse: var(--qw-white-pure);
+
+  /* Borders */
+  --qw-border-light: var(--qw-metal-200);
+  --qw-border-medium: var(--qw-metal-300);
+  --qw-border-dark: var(--qw-metal-500);
+
+  /* Shadows */
+  --qw-shadow-sm: 0 1px 2px 0 rgba(38, 50, 56, 0.05);
+  --qw-shadow-md: 0 4px 6px -1px rgba(38, 50, 56, 0.1);
+  --qw-shadow-lg: 0 10px 15px -3px rgba(38, 50, 56, 0.1);
+  --qw-shadow-xl: 0 20px 25px -5px rgba(38, 50, 56, 0.1);
+
+  /* ===== BRAND COLORS (ブランド) ===== */
+
+  /* Primary Brand */
+  --qw-brand-primary: var(--qw-walnut-500);
+  --qw-brand-primary-hover: var(--qw-walnut-600);
+  --qw-brand-primary-active: var(--qw-walnut-700);
+
+  /* Secondary Brand */
+  --qw-brand-secondary: var(--qw-insight-500);
+  --qw-brand-secondary-hover: var(--qw-insight-700);
+  --qw-brand-secondary-active: var(--qw-insight-900);
+
+  /* Accent Brand */
+  --qw-brand-accent: var(--qw-warm-500);
+  --qw-brand-accent-hover: var(--qw-warm-700);
+  --qw-brand-accent-active: var(--qw-warm-900);
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode overrides */
+    --qw-bg-primary: var(--qw-metal-900);
+    --qw-bg-secondary: var(--qw-metal-800);
+    --qw-bg-tertiary: var(--qw-metal-700);
+    --qw-bg-dark: var(--qw-walnut-900);
+
+    --qw-text-primary: var(--qw-white-pure);
+    --qw-text-secondary: var(--qw-white-lab);
+    --qw-text-muted: var(--qw-metal-300);
+    --qw-text-inverse: var(--qw-metal-900);
+
+    --qw-border-light: var(--qw-metal-700);
+    --qw-border-medium: var(--qw-metal-600);
+    --qw-border-dark: var(--qw-metal-400);
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+.qw-bg-primary {
+  background-color: var(--qw-bg-primary);
+}
+.qw-bg-secondary {
+  background-color: var(--qw-bg-secondary);
+}
+.qw-bg-walnut {
+  background-color: var(--qw-walnut-500);
+}
+.qw-bg-metal {
+  background-color: var(--qw-metal-500);
+}
+.qw-bg-insight {
+  background-color: var(--qw-insight-500);
+}
+
+.qw-text-primary {
+  color: var(--qw-text-primary);
+}
+.qw-text-secondary {
+  color: var(--qw-text-secondary);
+}
+.qw-text-muted {
+  color: var(--qw-text-muted);
+}
+.qw-text-inverse {
+  color: var(--qw-text-inverse);
+}
+
+.qw-border {
+  border-color: var(--qw-border-medium);
+}
+.qw-border-light {
+  border-color: var(--qw-border-light);
+}
+.qw-border-dark {
+  border-color: var(--qw-border-dark);
+}
+
+.qw-shadow-sm {
+  box-shadow: var(--qw-shadow-sm);
+}
+.qw-shadow-md {
+  box-shadow: var(--qw-shadow-md);
+}
+.qw-shadow-lg {
+  box-shadow: var(--qw-shadow-lg);
+}

@@ -29,12 +29,12 @@ export class PerformanceTestRunner {
   async initialize(): Promise<void> {
     await this.db.connect();
     await this.db.initialize();
-    logger.log('🚀 パフォーマンステスト環境初期化完了');
+    console.log('🚀 パフォーマンステスト環境初期化完了');
   }
 
   async cleanup(): Promise<void> {
     await this.db.disconnect();
-    logger.log('🧹 パフォーマンステスト環境クリーンアップ完了');
+    console.log('🧹 パフォーマンステスト環境クリーンアップ完了');
   }
 
   async runPasswordGenerationTest(
@@ -43,7 +43,7 @@ export class PerformanceTestRunner {
     passwordLength: number,
     count: number
   ): Promise<PerformanceResults> {
-    logger.log(`📊 ${testName} 開始 (${iterations}回の反復)`);
+    console.log(`📊 ${testName} 開始 (${iterations}回の反復)`);
     
     const times: number[] = [];
     const memoryBefore = process.memoryUsage();
@@ -68,7 +68,7 @@ export class PerformanceTestRunner {
       
       // 進捗表示
       if ((i + 1) % Math.max(1, Math.floor(iterations / 10)) === 0) {
-        logger.log(`  ⚡ 進捗: ${i + 1}/${iterations} (${Math.round((i + 1) / iterations * 100)}%)`);
+        console.log(`  ⚡ 進捗: ${i + 1}/${iterations} (${Math.round((i + 1) / iterations * 100)}%)`);
       }
     }
     
@@ -101,21 +101,21 @@ export class PerformanceTestRunner {
   }
 
   private printResults(results: PerformanceResults): void {
-    logger.log(`\n📈 ${results.testName} - 結果`);
-    logger.log(`   反復回数: ${results.iterations}`);
-    logger.log(`   総実行時間: ${results.totalTime.toFixed(2)}ms`);
-    logger.log(`   平均時間: ${results.averageTime.toFixed(2)}ms`);
-    logger.log(`   最小時間: ${results.minTime.toFixed(2)}ms`);
-    logger.log(`   最大時間: ${results.maxTime.toFixed(2)}ms`);
-    logger.log(`   RPS: ${results.requestsPerSecond.toFixed(2)} req/sec`);
-    logger.log(`   メモリ使用量変化: ${(results.memoryUsage.delta / 1024 / 1024).toFixed(2)}MB`);
-    logger.log('');
+    console.log(`\n📈 ${results.testName} - 結果`);
+    console.log(`   反復回数: ${results.iterations}`);
+    console.log(`   総実行時間: ${results.totalTime.toFixed(2)}ms`);
+    console.log(`   平均時間: ${results.averageTime.toFixed(2)}ms`);
+    console.log(`   最小時間: ${results.minTime.toFixed(2)}ms`);
+    console.log(`   最大時間: ${results.maxTime.toFixed(2)}ms`);
+    console.log(`   RPS: ${results.requestsPerSecond.toFixed(2)} req/sec`);
+    console.log(`   メモリ使用量変化: ${(results.memoryUsage.delta / 1024 / 1024).toFixed(2)}MB`);
+    console.log('');
   }
 
   async runAllTests(): Promise<PerformanceResults[]> {
     const results: PerformanceResults[] = [];
     
-    logger.log('🎯 パフォーマンステスト開始\n');
+    console.log('🎯 パフォーマンステスト開始\n');
     
     // テスト1: 基本パフォーマンス
     results.push(await this.runPasswordGenerationTest(
@@ -156,25 +156,25 @@ export class PerformanceTestRunner {
   }
 
   private printSummary(results: PerformanceResults[]): void {
-    logger.log('📊 パフォーマンステスト総合結果');
-    logger.log('='.repeat(60));
+    console.log('📊 パフォーマンステスト総合結果');
+    console.log('='.repeat(60));
     
     const totalMemoryUsage = results.reduce((sum, r) => sum + r.memoryUsage.delta, 0);
     const averageRPS = results.reduce((sum, r) => sum + r.requestsPerSecond, 0) / results.length;
     
-    logger.log(`総メモリ使用量変化: ${(totalMemoryUsage / 1024 / 1024).toFixed(2)}MB`);
-    logger.log(`平均RPS: ${averageRPS.toFixed(2)} req/sec`);
+    console.log(`総メモリ使用量変化: ${(totalMemoryUsage / 1024 / 1024).toFixed(2)}MB`);
+    console.log(`平均RPS: ${averageRPS.toFixed(2)} req/sec`);
     
     // パフォーマンス評価
     const evaluation = this.evaluatePerformance(results);
-    logger.log(`\n🎯 パフォーマンス評価: ${evaluation.grade}`);
-    logger.log(`評価コメント: ${evaluation.comment}`);
+    console.log(`\n🎯 パフォーマンス評価: ${evaluation.grade}`);
+    console.log(`評価コメント: ${evaluation.comment}`);
     
     // 改善提案
     if (evaluation.suggestions.length > 0) {
-      logger.log('\n💡 改善提案:');
+      console.log('\n💡 改善提案:');
       evaluation.suggestions.forEach((suggestion, index) => {
-        logger.log(`   ${index + 1}. ${suggestion}`);
+        console.log(`   ${index + 1}. ${suggestion}`);
       });
     }
   }
@@ -230,7 +230,7 @@ export class PerformanceTestRunner {
 
   // 特定の条件でのストレステスト
   async runStressTest(duration: number = 30000): Promise<void> {
-    logger.log(`🔥 ${duration / 1000}秒間のストレステスト開始`);
+    console.log(`🔥 ${duration / 1000}秒間のストレステスト開始`);
     
     const startTime = Date.now();
     let requestCount = 0;
@@ -260,7 +260,7 @@ export class PerformanceTestRunner {
         
       } catch (error) {
         errorCount++;
-        logger.error(`❌ エラー発生: ${error}`);
+        console.error(`❌ エラー発生: ${error}`);
       }
     }
     
@@ -268,14 +268,14 @@ export class PerformanceTestRunner {
     const maxResponseTime = Math.max(...responseTimes);
     const minResponseTime = Math.min(...responseTimes);
     
-    logger.log('\n🔥 ストレステスト結果:');
-    logger.log(`   総リクエスト数: ${requestCount}`);
-    logger.log(`   エラー数: ${errorCount}`);
-    logger.log(`   エラー率: ${(errorCount / (requestCount + errorCount) * 100).toFixed(2)}%`);
-    logger.log(`   平均レスポンス時間: ${avgResponseTime.toFixed(2)}ms`);
-    logger.log(`   最大レスポンス時間: ${maxResponseTime.toFixed(2)}ms`);
-    logger.log(`   最小レスポンス時間: ${minResponseTime.toFixed(2)}ms`);
-    logger.log(`   スループット: ${(requestCount / (duration / 1000)).toFixed(2)} req/sec`);
+    console.log('\n🔥 ストレステスト結果:');
+    console.log(`   総リクエスト数: ${requestCount}`);
+    console.log(`   エラー数: ${errorCount}`);
+    console.log(`   エラー率: ${(errorCount / (requestCount + errorCount) * 100).toFixed(2)}%`);
+    console.log(`   平均レスポンス時間: ${avgResponseTime.toFixed(2)}ms`);
+    console.log(`   最大レスポンス時間: ${maxResponseTime.toFixed(2)}ms`);
+    console.log(`   最小レスポンス時間: ${minResponseTime.toFixed(2)}ms`);
+    console.log(`   スループット: ${(requestCount / (duration / 1000)).toFixed(2)} req/sec`);
   }
 }
 
@@ -292,10 +292,10 @@ export async function runPerformanceTests(): Promise<void> {
     // ストレステスト
     await runner.runStressTest(30000); // 30秒
     
-    logger.log('✅ 全パフォーマンステスト完了');
+    console.log('✅ 全パフォーマンステスト完了');
     
   } catch (error) {
-    logger.error('❌ パフォーマンステストでエラーが発生:', error);
+    console.error('❌ パフォーマンステストでエラーが発生:', error);
   } finally {
     await runner.cleanup();
   }

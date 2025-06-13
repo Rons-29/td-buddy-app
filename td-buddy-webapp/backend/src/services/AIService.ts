@@ -1,14 +1,15 @@
-import { OpenAIAdapter } from '../services/adapters/OpenAIAdapter';
 import {
-  AIAdapterError,
+  IAIAdapter,
+  AIProvider,
+  AIConfig,
   AIParseRequest,
   AIParseResponse,
-  AIProvider,
-  IAIAdapter,
+  AIServiceConfig,
+  AIAdapterError
 } from '../types/aiAdapter';
+import { OpenAIAdapter } from './adapters/OpenAIAdapter';
+import { PromptTemplates } from './prompts/PromptTemplates';
 import { PersonalInfoGenerateRequest } from '../types/personalInfo';
-
-const logger = console;
 
 /**
  * AI Service Manager
@@ -20,15 +21,14 @@ export class AIService {
   private initialized = false;
 
   constructor() {
-    this.defaultProvider =
-      (process.env.DEFAULT_AI_PROVIDER as AIProvider) || 'openai';
+    this.defaultProvider = (process.env.DEFAULT_AI_PROVIDER as AIProvider) || 'openai';
   }
 
   /**
    * AI Service初期化
    */
   async initialize(): Promise<void> {
-    logger.log('🍺 Brew AI Service初期化開始...');
+    console.log('🤖 AI Service初期化開始...');
 
     try {
       // OpenAI Adapter初期化
@@ -39,10 +39,10 @@ export class AIService {
           apiKey: process.env.OPENAI_API_KEY,
           model: process.env.OPENAI_MODEL || 'gpt-4',
           maxTokens: parseInt(process.env.OPENAI_MAX_TOKENS || '2000'),
-          temperature: 0.7,
+          temperature: 0.7
         });
         this.adapters.set('openai', openaiAdapter);
-        logger.log('✅ OpenAI Adapter初期化完了');
+        console.log('✅ OpenAI Adapter初期化完了');
       }
 
       // 将来的にClaude, Geminiも追加予定
@@ -50,9 +50,7 @@ export class AIService {
       // if (process.env.GEMINI_API_KEY) { ... }
 
       if (this.adapters.size === 0) {
-        throw new Error(
-          'No AI adapters initialized. Please check your API keys.'
-        );
+        throw new Error('No AI adapters initialized. Please check your API keys.');
       }
 
       // デフォルトプロバイダーが利用可能かチェック
@@ -60,22 +58,16 @@ export class AIService {
         const firstProvider = this.adapters.keys().next().value;
         if (firstProvider) {
           this.defaultProvider = firstProvider;
-          logger.log(
-            `⚠️  デフォルトプロバイダーを${this.defaultProvider}に変更`
-          );
+          console.log(`⚠️  デフォルトプロバイダーを${this.defaultProvider}に変更`);
         }
       }
 
       this.initialized = true;
-      logger.log(
-        `🎉 AI Service初期化完了 - デフォルト: ${this.defaultProvider}`
-      );
+      console.log(`🎉 AI Service初期化完了 - デフォルト: ${this.defaultProvider}`);
+
     } catch (error: any) {
-      logger.error('❌ AI Service初期化失敗:', error);
-      throw new AIAdapterError(
-        'AI Service initialization failed',
-        this.defaultProvider
-      );
+      console.error('❌ AI Service初期化失敗:', error);
+      throw new AIAdapterError('AI Service initialization failed', this.defaultProvider);
     }
   }
 
@@ -87,23 +79,17 @@ export class AIService {
     provider?: AIProvider
   ): Promise<AIParseResponse> {
     if (!this.initialized) {
-      throw new AIAdapterError(
-        'AI Service not initialized',
-        this.defaultProvider
-      );
+      throw new AIAdapterError('AI Service not initialized', this.defaultProvider);
     }
 
     const targetProvider = provider || this.defaultProvider;
     const adapter = this.adapters.get(targetProvider);
 
     if (!adapter) {
-      throw new AIAdapterError(
-        `Provider ${targetProvider} not available`,
-        targetProvider
-      );
+      throw new AIAdapterError(`Provider ${targetProvider} not available`, targetProvider);
     }
 
-    logger.log(`🔍 自然言語解析開始: "${userInput}" (${targetProvider})`);
+    console.log(`🔍 自然言語解析開始: "${userInput}" (${targetProvider})`);
 
     try {
       const parseRequest: AIParseRequest = {
@@ -111,32 +97,26 @@ export class AIService {
         provider: targetProvider,
         context: {
           availableFields: [
-            'fullName',
-            'kanaName',
-            'email',
-            'phone',
-            'address',
-            'age',
-            'gender',
-            'company',
-            'jobTitle',
-          ],
-        },
+            'fullName', 'kanaName', 'email', 'phone', 
+            'address', 'age', 'gender', 'company', 'jobTitle'
+          ]
+        }
       };
 
       const result = await adapter.parseGenerationRequest(parseRequest);
-
+      
       if (result.success) {
-        logger.log(`✅ 解析成功 - 信頼度: ${result.confidence?.toFixed(2)}`);
-        logger.log(`📊 パラメータ: ${JSON.stringify(result.params, null, 2)}`);
+        console.log(`✅ 解析成功 - 信頼度: ${result.confidence?.toFixed(2)}`);
+        console.log(`📊 パラメータ: ${JSON.stringify(result.params, null, 2)}`);
       } else {
-        logger.log(`⚠️  解析失敗: ${result.error}`);
+        console.log(`⚠️  解析失敗: ${result.error}`);
       }
 
       return result;
-    } catch (error: any) {
-      logger.error(`❌ 自然言語解析エラー (${targetProvider}):`, error);
 
+    } catch (error: any) {
+      console.error(`❌ 自然言語解析エラー (${targetProvider}):`, error);
+      
       return {
         success: false,
         error: error.message,
@@ -144,8 +124,8 @@ export class AIService {
         clarificationQuestions: [
           '生成したいデータの件数を教えてください',
           'どのような情報を含めたいですか？（名前、メール、電話番号など）',
-          '特定の条件はありますか？（年齢、性別、職業など）',
-        ],
+          '特定の条件はありますか？（年齢、性別、職業など）'
+        ]
       };
     }
   }
@@ -157,28 +137,25 @@ export class AIService {
     userInput: string,
     provider?: AIProvider
   ): Promise<PersonalInfoGenerateRequest | null> {
-    const parseResult = await this.parseNaturalLanguageRequest(
-      userInput,
-      provider
-    );
-
+    const parseResult = await this.parseNaturalLanguageRequest(userInput, provider);
+    
     if (!parseResult.success || !parseResult.params) {
       return null;
     }
 
     const params = parseResult.params;
-
+    
     const request: PersonalInfoGenerateRequest = {
       count: params.count,
       locale: params.locale as 'ja' | 'en',
-      includeFields: params.includeFields as any,
+      includeFields: params.includeFields as any
     };
 
     // オプショナルフィールドを条件付きで追加
     if (params.filters?.ageRange) {
       request.ageRange = params.filters.ageRange;
     }
-
+    
     if (params.filters?.gender && params.filters.gender !== 'both') {
       request.gender = params.filters.gender as 'male' | 'female' | 'random';
     } else if (params.filters?.gender === 'both') {
@@ -208,7 +185,7 @@ export class AIService {
   setDefaultProvider(provider: AIProvider): boolean {
     if (this.adapters.has(provider)) {
       this.defaultProvider = provider;
-      logger.log(`🔄 デフォルトプロバイダーを${provider}に変更`);
+      console.log(`🔄 デフォルトプロバイダーを${provider}に変更`);
       return true;
     }
     return false;
@@ -219,7 +196,7 @@ export class AIService {
    */
   async healthCheck(): Promise<Record<AIProvider, boolean>> {
     const results: Record<AIProvider, boolean> = {} as any;
-
+    
     for (const [provider, adapter] of this.adapters) {
       try {
         results[provider] = await adapter.healthCheck();
@@ -227,7 +204,7 @@ export class AIService {
         results[provider] = false;
       }
     }
-
+    
     return results;
   }
 
@@ -237,14 +214,11 @@ export class AIService {
   async getRateLimitInfo(provider?: AIProvider) {
     const targetProvider = provider || this.defaultProvider;
     const adapter = this.adapters.get(targetProvider);
-
+    
     if (!adapter) {
-      throw new AIAdapterError(
-        `Provider ${targetProvider} not available`,
-        targetProvider
-      );
+      throw new AIAdapterError(`Provider ${targetProvider} not available`, targetProvider);
     }
-
+    
     return await adapter.getRateLimitInfo();
   }
 
@@ -256,7 +230,7 @@ export class AIService {
       initialized: this.initialized,
       availableProviders: this.getAvailableProviders(),
       defaultProvider: this.defaultProvider,
-      totalAdapters: this.adapters.size,
+      totalAdapters: this.adapters.size
     };
   }
-}
+} 

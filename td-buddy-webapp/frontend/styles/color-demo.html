@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quality Workbench - Warm Craft カラーパレット</title>
+    <link rel="stylesheet" href="quality-workbench-colors.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+          sans-serif;
+        background-color: var(--qw-bg-secondary);
+        color: var(--qw-text-primary);
+        line-height: 1.6;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: var(--qw-bg-primary);
+        border-radius: 12px;
+        box-shadow: var(--qw-shadow-lg);
+      }
+
+      .header h1 {
+        color: var(--qw-brand-primary);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .header p {
+        color: var(--qw-text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .palette-section {
+        margin-bottom: 3rem;
+        background: var(--qw-bg-primary);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--qw-shadow-md);
+      }
+
+      .palette-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--qw-text-primary);
+        border-bottom: 2px solid var(--qw-border-medium);
+        padding-bottom: 0.5rem;
+      }
+
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .color-card {
+        border: 1px solid var(--qw-border-light);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--qw-shadow-sm);
+        transition: transform 0.2s ease;
+      }
+
+      .color-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--qw-shadow-md);
+      }
+
+      .color-swatch {
+        height: 80px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .color-info {
+        padding: 1rem;
+        background: var(--qw-bg-primary);
+      }
+
+      .color-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--qw-text-primary);
+      }
+
+      .color-value {
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.875rem;
+        color: var(--qw-text-muted);
+        background: var(--qw-bg-tertiary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        display: inline-block;
+      }
+
+      .component-demo {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .demo-card {
+        background: var(--qw-bg-primary);
+        border-radius: 8px;
+        padding: 1.5rem;
+        border: 1px solid var(--qw-border-light);
+        box-shadow: var(--qw-shadow-sm);
+      }
+
+      .demo-button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 0.5rem 0.5rem 0.5rem 0;
+      }
+
+      .btn-primary {
+        background: var(--qw-brand-primary);
+        color: var(--qw-text-inverse);
+      }
+
+      .btn-primary:hover {
+        background: var(--qw-brand-primary-hover);
+      }
+
+      .btn-secondary {
+        background: var(--qw-brand-secondary);
+        color: var(--qw-text-inverse);
+      }
+
+      .btn-secondary:hover {
+        background: var(--qw-brand-secondary-hover);
+      }
+
+      .btn-accent {
+        background: var(--qw-brand-accent);
+        color: var(--qw-text-inverse);
+      }
+
+      .btn-accent:hover {
+        background: var(--qw-brand-accent-hover);
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 6px;
+        margin: 0.5rem 0;
+        border-left: 4px solid;
+      }
+
+      .alert-success {
+        background: var(--qw-success-light);
+        border-left-color: var(--qw-success);
+        color: var(--qw-success-dark);
+      }
+
+      .alert-warning {
+        background: var(--qw-warning-light);
+        border-left-color: var(--qw-warning);
+        color: var(--qw-warning-dark);
+      }
+
+      .alert-error {
+        background: var(--qw-error-light);
+        border-left-color: var(--qw-error);
+        color: var(--qw-error-dark);
+      }
+
+      .alert-info {
+        background: var(--qw-info-light);
+        border-left-color: var(--qw-info);
+        color: var(--qw-info-dark);
+      }
+
+      .dark-mode-toggle {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: var(--qw-brand-primary);
+        color: var(--qw-text-inverse);
+        border: none;
+        padding: 0.75rem;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: var(--qw-shadow-lg);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .color-info {
+          background: var(--qw-metal-800);
+        }
+
+        .demo-card {
+          background: var(--qw-metal-800);
+          border-color: var(--qw-border-dark);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button
+      class="dark-mode-toggle"
+      onclick="toggleTheme()"
+      title="テーマ切り替え"
+    >
+      🌓
+    </button>
+
+    <div class="container">
+      <div class="header">
+        <h1>🛠️ Quality Workbench</h1>
+        <p>Warm Craft カラーパレット - 温かい職人工房のデザインシステム</p>
+      </div>
+
+      <!-- ウォルナット系カラー -->
+      <div class="palette-section">
+        <h2 class="palette-title">🟤 ウォルナット系 (木製作業台)</h2>
+        <div class="color-grid">
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-walnut-50)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">薄い木目ベース</div>
+              <div class="color-value">#FDFCFC</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-walnut-100)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">ライトオーク</div>
+              <div class="color-value">#F7F3F0</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-walnut-300)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">ミディアムウッド</div>
+              <div class="color-value">#D4C4B8</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-walnut-500)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">ミディアムウォルナット ⭐</div>
+              <div class="color-value">#795548</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-walnut-600)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">リッチウォルナット ⭐</div>
+              <div class="color-value">#8B4513</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-walnut-800)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">エスプレッソ</div>
+              <div class="color-value">#4E342E</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- メタルブルー系カラー -->
+      <div class="palette-section">
+        <h2 class="palette-title">🔘 メタルブルー系 (工業用作業台)</h2>
+        <div class="color-grid">
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-metal-100)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">シルバーホワイト</div>
+              <div class="color-value">#F1F5F9</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-metal-300)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">ソフトメタル</div>
+              <div class="color-value">#CBD5E1</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-metal-500)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">メタルブルー ⭐</div>
+              <div class="color-value">#607D8B</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-metal-700)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">ガンメタル</div>
+              <div class="color-value">#455A64</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-metal-900)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">ダークスレート</div>
+              <div class="color-value">#263238</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- アクセントカラー -->
+      <div class="palette-section">
+        <h2 class="palette-title">✨ アクセントカラー</h2>
+        <div class="color-grid">
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-insight-500)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">洞察パープル</div>
+              <div class="color-value">#673AB7</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-verify-500)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">検証グリーン</div>
+              <div class="color-value">#4CAF50</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div
+              class="color-swatch"
+              style="background: var(--qw-warm-500)"
+            ></div>
+            <div class="color-info">
+              <div class="color-name">温かみオレンジ</div>
+              <div class="color-value">#D84315</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UIコンポーネントデモ -->
+      <div class="palette-section">
+        <h2 class="palette-title">🎨 UIコンポーネントデモ</h2>
+        <div class="component-demo">
+          <div class="demo-card">
+            <h3 style="margin-bottom: 1rem; color: var(--qw-text-primary)">
+              ボタン
+            </h3>
+            <button class="demo-button btn-primary">メインアクション</button>
+            <button class="demo-button btn-secondary">サブアクション</button>
+            <button class="demo-button btn-accent">アクセント</button>
+          </div>
+
+          <div class="demo-card">
+            <h3 style="margin-bottom: 1rem; color: var(--qw-text-primary)">
+              アラート
+            </h3>
+            <div class="alert alert-success">✅ 成功メッセージ</div>
+            <div class="alert alert-warning">⚠️ 警告メッセージ</div>
+            <div class="alert alert-error">❌ エラーメッセージ</div>
+            <div class="alert alert-info">ℹ️ 情報メッセージ</div>
+          </div>
+
+          <div class="demo-card">
+            <h3 style="margin-bottom: 1rem; color: var(--qw-text-primary)">
+              テキスト階層
+            </h3>
+            <p style="color: var(--qw-text-primary); margin-bottom: 0.5rem">
+              プライマリテキスト
+            </p>
+            <p style="color: var(--qw-text-secondary); margin-bottom: 0.5rem">
+              セカンダリテキスト
+            </p>
+            <p style="color: var(--qw-text-muted); margin-bottom: 0.5rem">
+              ミュートテキスト
+            </p>
+          </div>
+
+          <div class="demo-card">
+            <h3 style="margin-bottom: 1rem; color: var(--qw-text-primary)">
+              カード例
+            </h3>
+            <div
+              style="
+                background: var(--qw-bg-secondary);
+                padding: 1rem;
+                border-radius: 6px;
+                border: 1px solid var(--qw-border-light);
+              "
+            >
+              <h4 style="color: var(--qw-brand-primary); margin-bottom: 0.5rem">
+                Quality Workbench
+              </h4>
+              <p style="color: var(--qw-text-secondary); font-size: 0.9rem">
+                温かい職人工房のような、信頼できる開発環境
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleTheme() {
+        const isDark = document.documentElement.style.colorScheme === 'dark';
+        document.documentElement.style.colorScheme = isDark ? 'light' : 'dark';
+      }
+
+      // カラー値をクリックでコピー
+      document.querySelectorAll('.color-value').forEach(el => {
+        el.addEventListener('click', () => {
+          navigator.clipboard.writeText(el.textContent);
+          el.style.background = 'var(--qw-success-light)';
+          setTimeout(() => {
+            el.style.background = 'var(--qw-bg-tertiary)';
+          }, 1000);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
-import * as path 
-import * as fs 
+import * as path from 'path';
+import * as fs from 'fs';
 
 // 簡単なデータベース初期化スクリプト
 class SimpleDBInitializer {
@@ -12,8 +12,8 @@ class SimpleDBInitializer {
   }
 
   async init(): Promise<void> {
-    logger.log(`
-🍺 QA Workbench データベース初期化スクリプト
+    console.log(`
+🤖 TestData Buddy データベース初期化スクリプト
 
 🏗️  データベースの初期化を開始します...
     `);
@@ -23,13 +23,13 @@ class SimpleDBInitializer {
       const dbDir = path.dirname(this.dbPath);
       if (!fs.existsSync(dbDir)) {
         fs.mkdirSync(dbDir, { recursive: true });
-        logger.log(`📁 データベースディレクトリを作成しました: ${dbDir}`);
+        console.log(`📁 データベースディレクトリを作成しました: ${dbDir}`);
       }
 
       // 空のデータベースファイルを作成（better-sqlite3インストール後に初期化）
       if (!fs.existsSync(this.dbPath)) {
         fs.writeFileSync(this.dbPath, '');
-        logger.log(`💾 データベースファイルを作成しました: ${this.dbPath}`);
+        console.log(`💾 データベースファイルを作成しました: ${this.dbPath}`);
       }
 
       // 関連ディレクトリの作成
@@ -37,11 +37,11 @@ class SimpleDBInitializer {
       dirs.forEach(dir => {
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
-          logger.log(`📁 ディレクトリを作成しました: ${dir}`);
+          console.log(`📁 ディレクトリを作成しました: ${dir}`);
         }
       });
 
-      logger.log(`
+      console.log(`
 🎉 データベース基盤の初期化が完了しました！
 
 📝 次のステップ:
@@ -49,19 +49,19 @@ class SimpleDBInitializer {
 2. @types/better-sqlite3をインストール: npm install -D @types/better-sqlite3
 3. 完全なデータベース初期化を実行: npm run db:init
 
-🍺 Brewからのメッセージ:
+🤖 TDからのメッセージ:
 「データベースの基盤ができました！依存関係をインストールしてから本格的な初期化を行いましょう♪」
       `);
 
     } catch (error) {
-      logger.error('❌ データベース初期化エラー:', error);
+      console.error('❌ データベース初期化エラー:', error);
       process.exit(1);
     }
   }
 
   showHelp(): void {
-    logger.log(`
-🍺 QA Workbench 簡易データベース初期化ツール
+    console.log(`
+🤖 TestData Buddy 簡易データベース初期化ツール
 
 使用方法:
   npm run db:setup    基本的なディレクトリ構造を作成
@@ -71,7 +71,7 @@ class SimpleDBInitializer {
   このスクリプトは依存関係をインストールする前の
   基本的なセットアップを行います。
 
-🍺 Brewからのメッセージ:
+🤖 TDからのメッセージ:
 「まずは基盤を整えましょう！準備ができたら本格的な初期化をします♪」
     `);
   }
@@ -99,7 +99,7 @@ async function main() {
 // スクリプト実行
 if (require.main === module) {
   main().catch((error) => {
-    logger.error('❌ スクリプト実行エラー:', error);
+    console.error('❌ スクリプト実行エラー:', error);
     process.exit(1);
   });
 } 

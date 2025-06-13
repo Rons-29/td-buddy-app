@@ -3,13 +3,13 @@
  * TD Buddy - Quality Report Tests
  * 
  * @description 生成データの品質レポート作成・検証
- * @author QA Workbench Team
+ * @author TestData Buddy Team
  * @version 1.0.0
  */
 
- PersonalInfoService } 
- PerformanceService } 
- PersonalInfoGenerateRequest } 
+import { PersonalInfoService } from '../services/PersonalInfoService';
+import { PerformanceService } from '../services/PerformanceService';
+import { PersonalInfoGenerateRequest } from '../types/personalInfo';
 
 describe('📊 Quality Report Tests', () => {
   let personalInfoService: PersonalInfoService;
@@ -60,16 +60,16 @@ describe('📊 Quality Report Tests', () => {
       }
 
       // パフォーマンスレポートの出力
-      logger.log('\n🚀 TD Performance Report:');
-      logger.log('=' .repeat(60));
+      console.log('\n🚀 TD Performance Report:');
+      console.log('=' .repeat(60));
       results.forEach(result => {
-        logger.log(`📊 ${result.description}:`);
-        logger.log(`   件数: ${result.actualGenerated}/${result.count}`);
-        logger.log(`   時間: ${result.duration}ms`);
-        logger.log(`   スループット: ${result.throughput.toFixed(2)} items/sec`);
-        logger.log(`   重複除去: ${result.duplicatesRemoved}件`);
-        logger.log(`   メモリ使用量: ${(result.memoryUsage.heapUsed / 1024 / 1024).toFixed(2)}MB`);
-        logger.log('');
+        console.log(`📊 ${result.description}:`);
+        console.log(`   件数: ${result.actualGenerated}/${result.count}`);
+        console.log(`   時間: ${result.duration}ms`);
+        console.log(`   スループット: ${result.throughput.toFixed(2)} items/sec`);
+        console.log(`   重複除去: ${result.duplicatesRemoved}件`);
+        console.log(`   メモリ使用量: ${(result.memoryUsage.heapUsed / 1024 / 1024).toFixed(2)}MB`);
+        console.log('');
       });
     }, 60000);
 
@@ -88,12 +88,12 @@ describe('📊 Quality Report Tests', () => {
       const memoryIncrease = finalMemory.heapUsed - initialMemory.heapUsed;
       const memoryPerItem = memoryIncrease / result.persons.length;
 
-      logger.log('\n💾 TD Memory Usage Report:');
-      logger.log('=' .repeat(40));
-      logger.log(`初期メモリ: ${(initialMemory.heapUsed / 1024 / 1024).toFixed(2)}MB`);
-      logger.log(`最終メモリ: ${(finalMemory.heapUsed / 1024 / 1024).toFixed(2)}MB`);
-      logger.log(`増加量: ${(memoryIncrease / 1024 / 1024).toFixed(2)}MB`);
-      logger.log(`1件あたり: ${(memoryPerItem / 1024).toFixed(2)}KB`);
+      console.log('\n💾 TD Memory Usage Report:');
+      console.log('=' .repeat(40));
+      console.log(`初期メモリ: ${(initialMemory.heapUsed / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`最終メモリ: ${(finalMemory.heapUsed / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`増加量: ${(memoryIncrease / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`1件あたり: ${(memoryPerItem / 1024).toFixed(2)}KB`);
 
       // メモリ使用量の妥当性確認
       expect(memoryPerItem).toBeLessThan(10 * 1024); // 1件あたり10KB未満
@@ -123,14 +123,14 @@ describe('📊 Quality Report Tests', () => {
       // 総合品質スコア（0-100）
       const overallScore = Object.values(qualityMetrics).reduce((sum, score) => sum + score, 0) / Object.keys(qualityMetrics).length;
 
-      logger.log('\n🏆 TD Quality Report:');
-      logger.log('=' .repeat(50));
-      logger.log(`📊 総合品質スコア: ${overallScore.toFixed(1)}/100`);
-      logger.log(`✅ 完全性: ${qualityMetrics.completeness.toFixed(1)}/100`);
-      logger.log(`🔄 一意性: ${qualityMetrics.uniqueness.toFixed(1)}/100`);
-      logger.log(`✔️  妥当性: ${qualityMetrics.validity.toFixed(1)}/100`);
-      logger.log(`🔗 一貫性: ${qualityMetrics.consistency.toFixed(1)}/100`);
-      logger.log(`🌟 リアリティ: ${qualityMetrics.realism.toFixed(1)}/100`);
+      console.log('\n🏆 TD Quality Report:');
+      console.log('=' .repeat(50));
+      console.log(`📊 総合品質スコア: ${overallScore.toFixed(1)}/100`);
+      console.log(`✅ 完全性: ${qualityMetrics.completeness.toFixed(1)}/100`);
+      console.log(`🔄 一意性: ${qualityMetrics.uniqueness.toFixed(1)}/100`);
+      console.log(`✔️  妥当性: ${qualityMetrics.validity.toFixed(1)}/100`);
+      console.log(`🔗 一貫性: ${qualityMetrics.consistency.toFixed(1)}/100`);
+      console.log(`🌟 リアリティ: ${qualityMetrics.realism.toFixed(1)}/100`);
 
       // 品質基準の確認
       expect(overallScore).toBeGreaterThan(80); // 総合80点以上
@@ -155,10 +155,10 @@ describe('📊 Quality Report Tests', () => {
         address: this.analyzeAddressQuality(result.persons)
       };
 
-      logger.log('\n📋 TD Field Quality Analysis:');
-      logger.log('=' .repeat(45));
+      console.log('\n📋 TD Field Quality Analysis:');
+      console.log('=' .repeat(45));
       Object.entries(fieldQuality).forEach(([field, quality]) => {
-        logger.log(`${field}: ${JSON.stringify(quality, null, 2)}`);
+        console.log(`${field}: ${JSON.stringify(quality, null, 2)}`);
       });
 
       // 各フィールドの品質確認
@@ -188,11 +188,11 @@ describe('📊 Quality Report Tests', () => {
       // 地域分布
       const regionDistribution = this.calculateRegionDistribution(result.persons);
 
-      logger.log('\n📊 TD Distribution Analysis:');
-      logger.log('=' .repeat(40));
-      logger.log('年齢分布:', ageDistribution);
-      logger.log('性別分布:', genderDistribution);
-      logger.log('地域分布:', regionDistribution);
+      console.log('\n📊 TD Distribution Analysis:');
+      console.log('=' .repeat(40));
+      console.log('年齢分布:', ageDistribution);
+      console.log('性別分布:', genderDistribution);
+      console.log('地域分布:', regionDistribution);
 
       // 分布の妥当性確認
       expect(Object.keys(ageDistribution).length).toBeGreaterThan(5); // 複数の年齢層
@@ -361,4 +361,4 @@ describe('📊 Quality Report Tests', () => {
 });
 
 // TD からのメッセージ
-logger.log('🍺 Brew: 品質レポートテストを実行中です！データの品質を詳細に分析しましょう♪'); 
+console.log('🤖 TD: 品質レポートテストを実行中です！データの品質を詳細に分析しましょう♪'); 

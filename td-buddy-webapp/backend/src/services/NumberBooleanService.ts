@@ -1,4 +1,4 @@
-const logger = console;export interface NumberBooleanOptions {
+export interface NumberBooleanOptions {
   type: 'integer' | 'float' | 'percentage' | 'currency' | 'scientific' | 'boolean' | 'special';
   
   // 数値範囲設定
@@ -35,7 +35,7 @@ const logger = console;export interface NumberBooleanOptions {
 
 export interface GeneratedNumberBoolean {
   id: string;
-  value: number;
+  value: any;
   rawValue: number | boolean;
   formattedValue: string;
   type: string;
@@ -47,7 +47,7 @@ export interface GeneratedNumberBoolean {
     digits: number;
     category: string;
   };
-  brewMessage: string;
+  tdMessage: string;
   generatedAt: Date;
 }
 
@@ -57,7 +57,7 @@ export interface NumberBooleanGenerationResult {
   count: number;
   options: NumberBooleanOptions;
   message: string;
-  brewMessage: string;
+  tdMessage: string;
   generatedAt: Date;
 }
 
@@ -81,18 +81,18 @@ export class NumberBooleanService {
         count: data.length,
         options,
         message: `${data.length}件の数値・真偽値を生成しました`,
-        brewMessage: this.generateSuccessMessage(data.length, options.type),
+        tdMessage: this.generateSuccessMessage(data.length, options.type),
         generatedAt: new Date(),
       };
       
-    } catch (error: number) {
+    } catch (error: any) {
       return {
         success: false,
         data: [],
         count: 0,
         options,
         message: `数値・真偽値生成エラー: ${error?.message || '不明なエラー'}`,
-        brewMessage: "エラーが発生しましたが、Brewが一緒に解決します！",
+        tdMessage: "エラーが発生しましたが、TDが一緒に解決します！",
         generatedAt: new Date(),
       };
     }
@@ -107,7 +107,7 @@ export class NumberBooleanService {
     
     let rawValue: number | boolean;
     let formattedValue: string;
-    let metadata: number;
+    let metadata: any;
     
     switch (options.type) {
       case 'integer':
@@ -166,7 +166,7 @@ export class NumberBooleanService {
       type: this.getTypeDisplayName(options.type),
       options,
       metadata,
-      brewMessage: this.generateBrewMessage(options.type, rawValue),
+      tdMessage: this.generateTDMessage(options.type, rawValue),
       generatedAt,
     };
   }
@@ -379,7 +379,7 @@ export class NumberBooleanService {
     if (isNaN(value)) return 'NaN';
     if (value === Infinity) return 'Infinity';
     if (value === -Infinity) return '-Infinity';
-    if (Object.is(-0)) return '-0';
+    if (Object.is(value, -0)) return '-0';
     return String(value);
   }
   
@@ -429,7 +429,7 @@ export class NumberBooleanService {
      /**
     * TDメッセージ生成
     */
-   private generateBrewMessage(type: string: number | boolean): string {
+   private generateTDMessage(type: string, value: number | boolean): string {
      const messages: Record<string, string[]> = {
        integer: [
          "整数生成、バッチリです！計算やカウンターに最適♪",
@@ -505,7 +505,7 @@ export class NumberBooleanService {
   /**
    * 数値・真偽値検証
    */
-  validateNumberBoolean(value: number, type: string): boolean {
+  validateNumberBoolean(value: any, type: string): boolean {
     try {
       switch (type) {
         case 'integer':

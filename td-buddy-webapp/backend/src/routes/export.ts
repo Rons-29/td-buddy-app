@@ -1,13 +1,8 @@
-import { Request, Response, Router } from 'express';
-import { database } from '../database/database';
-import { ExportService } from '../services/ExportService';
-
-// Logger setup
-const logger = console;
-
 // Enhanced Export Routes - Step 12
 // JSON/XML/YAML/SQL出力対応ルート
 
+import { Router, Request, Response } from 'express';
+import { ExportService, ExportOptions } from '../services/exportService';
 
 // ValidationError クラス定義
 class ValidationError extends Error {
@@ -99,7 +94,7 @@ router.get('/passwords', async (req: Request, res: Response) => {
       });
     }
 
-    logger.log(`📊 TD: パスワードエクスポート完了 - ${format?.toString().toUpperCase()} ${result.recordCount}件`);
+    console.log(`📊 TD: パスワードエクスポート完了 - ${format?.toString().toUpperCase()} ${result.recordCount}件`);
 
     // フォーマット別のContent-Type設定
     const contentTypes: { [key: string]: string } = {
@@ -130,7 +125,7 @@ router.get('/passwords', async (req: Request, res: Response) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('❌ パスワードエクスポートエラー:', error);
+    console.error('❌ パスワードエクスポートエラー:', error);
     
     if (error instanceof ValidationError) {
       return res.status(400).json({
@@ -197,7 +192,7 @@ router.post('/enhanced', async (req: Request, res: Response) => {
       });
     }
 
-    logger.log(`📊 TD: 拡張エクスポート完了 - ${format.toUpperCase()} ${result.recordCount}件`);
+    console.log(`📊 TD: 拡張エクスポート完了 - ${format.toUpperCase()} ${result.recordCount}件`);
 
     // 大量データの場合はダウンロードURLのみ返す
     if (result.size > 1024 * 1024) { // 1MB以上
@@ -225,7 +220,7 @@ router.post('/enhanced', async (req: Request, res: Response) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('❌ 拡張エクスポートエラー:', error);
+    console.error('❌ 拡張エクスポートエラー:', error);
     
     if (error instanceof ValidationError) {
       return res.status(400).json({
@@ -302,7 +297,7 @@ router.post('/personal', async (req: Request, res: Response) => {
       });
     }
 
-    logger.log(`📊 TD: 個人情報エクスポート完了 - ${format.toUpperCase()} ${result.recordCount}件`);
+    console.log(`📊 TD: 個人情報エクスポート完了 - ${format.toUpperCase()} ${result.recordCount}件`);
 
     // フォーマット別のContent-Type設定
     const contentTypes: { [key: string]: string } = {
@@ -333,7 +328,7 @@ router.post('/personal', async (req: Request, res: Response) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('❌ 個人情報エクスポートエラー:', error);
+    console.error('❌ 個人情報エクスポートエラー:', error);
     
     if (error instanceof ValidationError) {
       return res.status(400).json({
@@ -437,7 +432,7 @@ router.get('/personal', async (req: Request, res: Response) => {
       });
     }
 
-    logger.log(`📊 TD: 個人情報エクスポート完了 - ${format?.toString().toUpperCase()} ${result.recordCount}件`);
+    console.log(`📊 TD: 個人情報エクスポート完了 - ${format?.toString().toUpperCase()} ${result.recordCount}件`);
 
     // JSON応答
     return res.json({
@@ -452,7 +447,7 @@ router.get('/personal', async (req: Request, res: Response) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('❌ 個人情報エクスポートエラー:', error);
+    console.error('❌ 個人情報エクスポートエラー:', error);
     
     if (error instanceof ValidationError) {
       return res.status(400).json({
@@ -543,7 +538,7 @@ router.get('/enhanced', async (req: Request, res: Response) => {
       });
     }
 
-    logger.log(`📊 TD: 拡張エクスポート完了 - ${format?.toString().toUpperCase()} ${result.recordCount}件`);
+    console.log(`📊 TD: 拡張エクスポート完了 - ${format?.toString().toUpperCase()} ${result.recordCount}件`);
 
     // JSON応答
     return res.json({
@@ -558,7 +553,7 @@ router.get('/enhanced', async (req: Request, res: Response) => {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('❌ 拡張エクスポートエラー:', error);
+    console.error('❌ 拡張エクスポートエラー:', error);
     
     if (error instanceof ValidationError) {
       return res.status(400).json({
@@ -595,7 +590,7 @@ router.get('/history', async (req: Request, res: Response) => {
       message: 'エクスポート履歴機能は開発中です'
     });
   } catch (error) {
-    logger.error('❌ エクスポート履歴取得エラー:', error);
+    console.error('❌ エクスポート履歴取得エラー:', error);
     return res.status(500).json({
       success: false,
       error: {

@@ -1,364 +1,314 @@
-# 🛠️ QA Workbench
+# 🍺 QA Workbench + Brew
 
-**QA エンジニアの専用作業台 - データ生成から品質管理まで、助手のブリューがサポート**
+QA エンジニアの専用作業台 - データ生成から品質管理まで、助手のブリューがサポート
 
-<div align="center">
+## 🎯 プロジェクト概要
+
+QA Workbench + Brew は、作業効率を向上させるための作業場です。テストデータの生成、品質管理、自動化ツールなど、業務に必要な機能を一つのプラットフォームで提供します。
+
+### 🍺 Brew について
+
+Brew は、QA Workbench の頼れる助手です。データ生成から品質チェックまで、あらゆる場面で QA エンジニアをサポートします。
+
+## 🏗️ アーキテクチャ
 
 ```
-    /\_/\
-   ( ^.^ )
-    > ◇ <  Brew
-  ┌─────────────┐
-  │ データ生成中 │
-  │  お任せを♪  │
-  └─────────────┘
+QA Workbench + Brew
+├── 🎨 フロントエンド (Next.js + TypeScript + TailwindCSS)
+├── 🔧 バックエンド (Express + TypeScript + SQLite)
+├── 🔌 リアルタイム通信 (WebSocket)
+└── 🍺 Brew Assistant (AI連携)
 ```
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.9+-blue)](https://www.typescriptlang.org/)
-[![AI Powered](https://img.shields.io/badge/AI-Claude%20Powered-purple)](https://www.anthropic.com/claude)
-
-</div>
-
-## 🎯 QA Workbench とは？
-
-**QA Workbench** は、QA エンジニアの専用作業台です。助手の**ブリュー**が、テストデータの生成から品質管理まで、あらゆる QA 作業をサポートします。まるで熟練の職人が工房で道具を使うように、QA エンジニアが効率的に品質業務を行える環境を提供します。
-
-### 🍺 ブリューの特徴
-
-**ブリュー（Assistant Brew）** は、QA Workbench で働く頼れる助手です：
-
-- **生成マスター**: 良質なテストデータを丁寧に生成します
-- **作業補助**: QA エンジニアの作業を効率的にサポート
-- **学習型助手**: 使うほどにあなたの好みを覚えて最適化
-- **安全第一**: セキュリティと品質を最優先に考慮
-
-### ✨ ブリューの現在の生成能力
-
-| 機能                  | 説明                                          | ブリューからのメッセージ                                            |
-| --------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
-| 🔐 **パスワード生成** | 強力で安全なパスワードを瞬時に生成            | _「セキュアなパスワード、丁寧に生成しました〜！」_                  |
-| 👤 **個人情報生成**   | 日本語対応の擬似個人情報を大量生成            | _「山田太郎さんから始まる 1000 人分、フレッシュに生成完了です！」_  |
-| 📄 **ファイル生成**   | CSV、JSON、XML など様々な形式のテストファイル | _「100 万行の CSV ファイル、メモリ効率よく生成いたしました ♪」_     |
-| 🎨 **テキスト生成**   | ひらがな、漢字、旧字体など多様な文字種に対応  | _「旧字体の『學校』も得意です！」_                                  |
-| 🤖 **AI 連携生成**    | 自然言語でデータ生成を指示                    | _「『記号入りパスワード 5 個生成して』って言うだけで、はい完成！」_ |
-| 🔧 **Cursor 統合**    | IDE 内からシームレスなデータ生成              | _「開発中に必要なデータ、すぐに生成してご用意します！」_            |
-
-### 🌟 ブリューの今後の進化予定
-
-| Phase        | 機能領域                | 主要機能                                                        | 提供開始予定 |
-| ------------ | ----------------------- | --------------------------------------------------------------- | ------------ |
-| **Phase 2A** | 🎯 **コア QA 機能**     | テストケース生成・バグ分析・品質メトリクス基盤                  | 3-4 ヶ月後   |
-| **Phase 2B** | 🔄 **自動化支援**       | API テスト支援・テスト自動化・品質ダッシュボード                | 4-6 ヶ月後   |
-| **Phase 3**  | 🚀 **高度品質機能**     | セキュリティテスト・パフォーマンステスト・AI 品質コンサルタント | 6-12 ヶ月後  |
-| **Phase 4**  | 🏢 **エンタープライズ** | チーム機能・ワークフロー統合・高度レポート分析                  | 12-18 ヶ月後 |
-
-**ブリューからのメッセージ**: _「現在のテストデータ生成は私の基本能力です。でも私の真の目標は、QA エンジニアの皆さんの品質保証業務全体をサポートすることなんです！一緒に、もっと効率的で楽しい品質管理を実現していきましょう ♪」_
 
 ## 🚀 クイックスタート
 
 ### 前提条件
 
 - Node.js 18.0.0 以上
-- pnpm 8.0.0 以上
-- Claude API キー（AI 機能を使用する場合）
+- npm 8.0.0 以上
 
-### セットアップ
+### インストール
 
 ```bash
-# 1. プロジェクトクローン
-git clone https://github.com/your-org/qa-workbench.git
+# リポジトリをクローン
+git clone <repository-url>
 cd qa-workbench
 
-# 2. 依存関係インストール
-pnpm install
-
-# 3. 環境設定
-cp .env.example .env
-# .envファイルを編集してClaude APIキーを設定
-
-# 4. データベース初期化
-pnpm run db:migrate
-
-# 5. 開発サーバー起動
-cd td-buddy-webapp
-npm run dev
+# 全依存関係をインストール
+npm run install:all
 ```
 
-### 初回起動
+### 開発サーバー起動
 
 ```bash
-# http://localhost:3000 にアクセス
-# ブリューがお出迎えしてくれます！
+# 🍺 方法1: npmスクリプトで起動（推奨）
+npm run dev
+
+# 🍺 方法2: シェルスクリプトで起動
+./start-dev.sh
+
+# 🍺 方法3: 個別起動
+npm run dev:backend-only   # バックエンドのみ
+npm run dev:frontend-only  # フロントエンドのみ
 ```
 
-## 📖 使い方
+### アクセス
 
-### 基本的な使い方
+- 📱 **フロントエンド**: http://localhost:3000
+- 🔧 **バックエンド**: http://localhost:3001
+- 📊 **ヘルスチェック**: http://localhost:3001/health
 
-1. **Web UI で直接操作**
+### 開発サーバー停止
 
-   ```
-   ブラウザで http://localhost:3000 を開く
-   → 好きな機能を選択
-   → パラメータを設定
-   → 「生成」ボタンをクリック
-   → ブリューがデータを生成！
-   ```
-
-2. **自然言語で AI 指示**
-
-   ```
-   「英数字12文字のパスワードを5個生成して」
-   「日本の住所を含む個人情報を100件生成して」
-   「1万行のテスト用CSVファイルを生成して」
-   ```
-
-3. **Cursor IDE から直接利用**
-   ```typescript
-   // コメントで指示するだけ
-   // Brew: パスワード生成 16文字 記号含む
-   const password = "aB3$dEf7&HiJ9@Kl";
-   ```
-
-### API 利用例
-
-```typescript
-// パスワード生成
-const response = await fetch("/api/generate/password", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    length: 12,
-    includeSymbols: true,
-    count: 5,
-  }),
-});
-
-// 個人情報生成
-const personalData = await fetch("/api/generate/personal-info", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    count: 100,
-    fields: ["fullName", "email", "address"],
-    locale: "ja",
-  }),
-});
+```bash
+# 🍺 方法1: Ctrl+C (start-dev.sh使用時)
+# 🍺 方法2: 停止スクリプト
+./stop-dev.sh
 ```
 
-## 🏗️ アーキテクチャ
+## 📋 利用可能なスクリプト
 
-### 現在のアーキテクチャ（Phase 1: データ生成基盤）
+### 🔧 開発用
 
-```mermaid
-graph TB
-    QA[👨‍💻 QAエンジニア] --> |自然言語で指示| Cursor[📝 Cursor IDE]
-    QA --> |GUI操作| WebUI[🎨 Web UI]
-
-    Cursor --> |MCP Protocol| MCP[🤖 MCP Server]
-    WebUI --> |REST API| API[⚡ API Gateway]
-
-    MCP --> |AI解析| Claude[🧠 Claude AI]
-    Claude --> |構造化指示| MCP
-
-    MCP --> Core[🍺 Data Brewing Core]
-    API --> Core
-
-    Core --> |生成| Files[📁 Files]
-    Core --> |履歴| DB[(🗄️ SQLite)]
-
-    subgraph "ブリューの生成工房 (NestJS Backend)"
-        MCP
-        API
-        Core
-    end
-
-    subgraph "ワークベンチ操作盤 (Next.js Frontend)"
-        WebUI
-    end
+```bash
+npm run dev                 # フロントエンド + バックエンド同時起動
+npm run dev:backend         # バックエンドのみ起動
+npm run dev:frontend        # フロントエンドのみ起動
+npm run dev:backend-only    # バックエンドのみ起動（エイリアス）
+npm run dev:frontend-only   # フロントエンドのみ起動（エイリアス）
 ```
 
-### 目標アーキテクチャ（Phase 2-4: 品質保証統合ワークベンチ）
+### 🏗️ ビルド用
 
-```mermaid
-graph TB
-    QA[👨‍💻 QAエンジニア] --> Dashboard[📊 品質ダッシュボード]
-    QA --> TestGen[🧪 テスト生成]
-    QA --> BugAnalysis[🐛 バグ分析]
-    QA --> DataGen[📄 データ生成]
-
-    Dashboard --> QualityAPI[🎯 品質API]
-    TestGen --> TestAPI[🧪 テストAPI]
-    BugAnalysis --> AnalysisAPI[🔍 分析API]
-    DataGen --> DataAPI[📄 データAPI]
-
-    QualityAPI --> AIEngine[🤖 AI分析エンジン]
-    TestAPI --> AIEngine
-    AnalysisAPI --> AIEngine
-    DataAPI --> AIEngine
-
-    AIEngine --> Claude[🧠 Claude AI]
-    AIEngine --> QualityDB[(🗄️ 品質データベース)]
-
-    subgraph "ブリューの進化した生成工房"
-        QualityAPI
-        TestAPI
-        AnalysisAPI
-        DataAPI
-        AIEngine
-    end
+```bash
+npm run build               # フロントエンド + バックエンドビルド
+npm run build:backend       # バックエンドビルド
+npm run build:frontend      # フロントエンドビルド
 ```
 
-## 📁 プロジェクト構成
+### 🚀 本番用
+
+```bash
+npm run start               # フロントエンド + バックエンド本番起動
+npm run start:backend       # バックエンド本番起動
+npm run start:frontend      # フロントエンド本番起動
+```
+
+### 🧪 テスト・品質管理
+
+```bash
+npm run test                # 全テスト実行
+npm run test:backend        # バックエンドテスト
+npm run test:frontend       # フロントエンドテスト
+npm run lint                # 全コード品質チェック
+npm run lint:backend        # バックエンドlint
+npm run lint:frontend       # フロントエンドlint
+npm run type-check          # 全TypeScript型チェック
+npm run type-check:backend  # バックエンド型チェック
+npm run type-check:frontend # フロントエンド型チェック
+```
+
+### 🗄️ データベース管理
+
+```bash
+npm run db:setup            # データベース初期セットアップ
+npm run db:init             # データベース初期化
+npm run db:reset            # データベースリセット
+```
+
+## 🛠️ 開発環境設定
+
+### 環境変数
+
+バックエンドの環境変数を設定してください：
+
+```bash
+# td-buddy-webapp/backend/.env
+PORT=3001
+NODE_ENV=development
+DATABASE_URL=file:./data/td-buddy.db
+CLAUDE_API_KEY=your_claude_api_key_here
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+FRONTEND_URL=http://localhost:3000
+```
+
+### データベース
+
+SQLite データベースが自動的に初期化されます：
+
+```bash
+# 手動でデータベースを初期化する場合
+npm run db:setup
+```
+
+## 🍺 主要機能
+
+### データ生成機能
+
+- 🔐 **パスワード生成**: 強度別、文字種別設定可能
+- 👤 **個人情報生成**: 日本語対応、GDPR 準拠の仮データ
+- 📄 **ファイル生成**: CSV, JSON, XML, SQL 等
+- 🔤 **テキスト生成**: 多言語・文字種対応
+- 🔢 **数値・真偽値生成**: 統計的分布を考慮
+- 🆔 **UUID 生成**: v1, v4, v6, v7 対応
+- 📅 **日時生成**: 様々な形式とタイムゾーン対応
+
+### 品質管理機能
+
+- 🧪 **テストデータ検証**: 生成データの品質チェック
+- 📊 **パフォーマンス監視**: 生成速度とリソース使用量
+- 🔍 **データ分析**: 統計情報とメトリクス
+- 📈 **レポート生成**: 品質レポートの自動生成
+
+### AI 連携機能
+
+- 🤖 **Brew Assistant**: 自然言語でのデータ生成指示
+- 💬 **チャット機能**: リアルタイムでのサポート
+- 🎯 **最適化提案**: データ生成の改善提案
+- 📚 **学習機能**: 使用パターンの学習と最適化
+
+## 🔧 技術スタック
+
+### フロントエンド
+
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: TailwindCSS
+- **UI Components**: Lucide React, Framer Motion
+- **State Management**: React Hooks
+- **Real-time**: Socket.IO Client
+
+### バックエンド
+
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Database**: SQLite (better-sqlite3)
+- **Real-time**: Socket.IO
+- **Security**: Helmet, CORS, Rate Limiting
+- **Validation**: Zod
+
+### 開発ツール
+
+- **Build Tool**: TypeScript Compiler
+- **Linting**: ESLint
+- **Testing**: Jest
+- **Process Manager**: Nodemon
+- **Package Manager**: npm
+
+## 📁 プロジェクト構造
 
 ```
 qa-workbench/
-├── td-buddy-webapp/         # 🎨 メインWebアプリケーション（移行中）
-│   ├── frontend/            # Next.js フロントエンド
-│   └── backend/             # NestJS バックエンド
-├── docs/                    # 📚 ドキュメント
-├── data/                    # 💾 生成データ・DB
-├── src/                     # 🧠 コアロジック・スクリプト
-└── tests/                   # 🧪 テストファイル
+├── 📱 td-buddy-webapp/
+│   ├── 🎨 frontend/          # Next.js フロントエンド
+│   │   ├── app/              # App Router
+│   │   ├── components/       # Reactコンポーネント
+│   │   ├── hooks/            # カスタムフック
+│   │   ├── lib/              # ユーティリティ
+│   │   └── types/            # 型定義
+│   └── 🔧 backend/           # Express バックエンド
+│       ├── src/
+│       │   ├── routes/       # APIルート
+│       │   ├── services/     # ビジネスロジック
+│       │   ├── database/     # データベース設定
+│       │   ├── middleware/   # ミドルウェア
+│       │   └── types/        # 型定義
+│       └── data/             # SQLiteデータベース
+├── 📜 scripts/               # 開発用スクリプト
+├── 📚 docs/                  # ドキュメント
+└── 🔧 設定ファイル
 ```
 
-## 🔧 開発ガイド
+## 🤝 開発ガイドライン
 
-### 開発の始め方
+### コーディング規約
+
+- **言語**: TypeScript 必須、JavaScript は使用禁止
+- **型安全性**: strict モードで開発、any は原則禁止
+- **関数**: async/await を推奨、Promise チェーンは避ける
+- **エラーハンドリング**: 必ず try-catch または Result 型を使用
+
+### Git ワークフロー
 
 ```bash
-# 開発環境の確認
-cd td-buddy-webapp && npm run diagnose
-
-# テスト実行
-cd td-buddy-webapp && npm run test
-
-# コード品質チェック
-cd td-buddy-webapp && npm run lint
-
-# ブリューと一緒に開発開始！
-cd td-buddy-webapp && npm run dev
+# 新機能開発
+git checkout -b feature/brew-new-feature
+git commit -m "feat: 新機能を追加"
+git push origin feature/brew-new-feature
 ```
 
-### 主要コマンド
+### コミットメッセージ規約
 
-| コマンド                              | 説明                 | ブリューのコメント                  |
-| ------------------------------------- | -------------------- | ----------------------------------- |
-| `cd td-buddy-webapp && npm run dev`   | 開発サーバー起動     | _「ワークベンチの準備完了です！」_  |
-| `cd td-buddy-webapp && npm run build` | プロダクションビルド | _「最適化して本番用に生成します」_  |
-| `cd td-buddy-webapp && npm run test`  | テスト実行           | _「品質チェック、お任せください」_  |
-| `npm run db:migrate`                  | データベース初期化   | _「データベースの準備をします」_    |
-| `cd td-buddy-webapp && npm run lint`  | コード品質チェック   | _「コードの健康状態をチェック中…」_ |
-
-## 📊 パフォーマンス
-
-ブリューの生成速度：
-
-- **パスワード生成**: < 100ms ⚡
-- **個人情報生成**: < 2 秒（1,000 件）💨
-- **ファイル生成**: < 30 秒（100MB）🚀
-- **AI 処理**: < 3 秒 🧠
+```
+feat: 新機能追加
+fix: バグ修正
+docs: ドキュメント更新
+style: コードフォーマット修正
+refactor: リファクタリング
+test: テスト追加・修正
+chore: ビルド処理・補助ツール修正
+```
 
 ## 🛡️ セキュリティ
 
-ブリューは安全第一：
+- **API キー管理**: 環境変数で管理、Git に含めない
+- **レート制限**: API 使用量制限で DDoS 対策
+- **入力検証**: 全入力値の厳格なバリデーション
+- **データ暗号化**: 機密データの暗号化保存
+- **自動削除**: 生成データの 24 時間自動削除
 
-- ✅ 生成データは 24 時間で自動削除
-- ✅ API キーは暗号化保存
-- ✅ 入力値の厳格なバリデーション
-- ✅ レート制限で DDoS 攻撃を防御
-- ✅ ローカル環境での完全動作
+## 📊 パフォーマンス目標
 
-## 📚 ドキュメント
+- **パスワード生成**: < 100ms
+- **個人情報生成**: < 2 秒（1,000 件）
+- **ファイル生成**: < 30 秒（100MB）
+- **AI 処理**: < 3 秒
 
-| ドキュメント                                                                  | 対象者             | ブリューからの一言                     |
-| ----------------------------------------------------------------------------- | ------------------ | -------------------------------------- |
-| [🚀 QA Workbench 拡張計画](docs/quality-buddy-expansion-overview-restored.md) | プロジェクト管理者 | _「将来のビジョンをご確認ください！」_ |
-| [🔧 技術仕様書](docs/技術仕様書.md)                                           | 開発者             | _「技術的な詳細はこちら」_             |
-| [🏗️ プロジェクト構成](docs/プロジェクト構成.md)                               | 開発者             | _「迷子にならないように」_             |
-| [🛡️ セキュリティガイドライン](docs/セキュリティガイドライン.md)               | 全員               | _「安全が最優先です」_                 |
-| [⚡ パフォーマンス最適化](docs/パフォーマンス最適化ガイド.md)                 | 開発者             | _「速さも重要ですね」_                 |
-| [🚨 トラブルシューティング](docs/トラブルシューティングガイド.md)             | 全員               | _「困ったときはこちら」_               |
+## 🚨 トラブルシューティング
 
-## 🗺️ ロードマップ
+### よくある問題
 
-### 🎯 品質保証統合ワークベンチへの進化
+1. **ポートが使用中**
 
-**Phase 1: 基盤強化**（✅ 完了済み）
+   ```bash
+   ./stop-dev.sh  # 全プロセス停止
+   npm run dev    # 再起動
+   ```
 
-- テストデータ生成機能
-- 基本的な AI 連携
-- ワークベンチ UI 基盤
+2. **データベースエラー**
 
-**Phase 2A: コア QA 機能**（🎯 3-4 ヶ月）
+   ```bash
+   npm run db:reset  # データベースリセット
+   ```
 
-- テストケース生成・管理
-- バグ分析・分類支援
-- 品質メトリクス基盤
+3. **依存関係エラー**
+   ```bash
+   npm run install:all  # 全依存関係再インストール
+   ```
 
-**Phase 2B: 自動化支援**（🔄 4-6 ヶ月）
+### ログ確認
 
-- API テスト支援
-- テスト自動化ツール連携
-- リアルタイム品質ダッシュボード
+```bash
+# バックエンドログ
+cd td-buddy-webapp/backend && npm run dev
 
-**Phase 3: 高度品質機能**（🚀 6-12 ヶ月）
+# フロントエンドログ
+cd td-buddy-webapp/frontend && npm run dev
+```
 
-- セキュリティテスト支援
-- パフォーマンステスト分析
-- AI 品質コンサルタント機能
+## 📞 サポート
 
-**Phase 4: エンタープライズ対応**（🏢 12-18 ヶ月）
+🍺 **Brew からのメッセージ**: 「困ったときは、いつでも Brew にお任せください！一緒に素晴らしい QA 環境を作りましょう！」
 
-- チーム・組織機能
-- ワークフロー統合
-- 高度レポート・分析機能
-
-## 🤝 コントリビューション
-
-ブリューと一緒にプロジェクトを改善しませんか？
-
-1. このリポジトリをフォーク
-2. 機能ブランチを作成: `git checkout -b feature/amazing-feature`
-3. 変更をコミット: `git commit -m 'feat: Add amazing feature'`
-4. ブランチをプッシュ: `git push origin feature/amazing-feature`
-5. Pull Request を作成
-
-### 開発ルール
-
-- 🧪 新機能には必ずテストを追加
-- 📝 コードにはコメントを適切に記載
-- 🎨 TypeScript の型安全性を重視
-- 🐛 バグ修正には再現手順を明記
+- **技術的な質問**: GitHub Issues
+- **機能提案**: GitHub Discussions
+- **緊急時**: プロジェクト管理者まで連絡
 
 ## 📄 ライセンス
 
-このプロジェクトは MIT ライセンスの下で公開されています。詳細は [LICENSE](LICENSE) ファイルをご覧ください。
-
-## 👥 クレジット
-
-### チームメンバー
-
-- **ブリュー（Brew）** - QA Workbench 助手 & データ生成マスター
-- **開発チーム** - ブリューの能力を実装する技術者たち
-
-### 使用技術
-
-- **Frontend**: Next.js + TypeScript + TailwindCSS
-- **Backend**: NestJS + TypeScript + SQLite
-- **AI**: Claude API (Anthropic)
-- **Development**: npm + ESLint + Prettier + Jest
+このプロジェクトは [MIT License](LICENSE) の下で公開されています。
 
 ---
 
-<div align="center">
-
-**🛠️ 「QA 作業のことなら、ブリューにお任せください！」**
-
-_QA Workbench は QA エンジニアの専用作業台です_
-
-[📖 ドキュメント](docs/) | [🐛 Issue 報告](https://github.com/your-org/qa-workbench/issues) | [💬 ディスカッション](https://github.com/your-org/qa-workbench/discussions)
-
-</div>
+🍺 **Brew**: 「今日も一緒に素晴らしい QA 作業を進めましょう！何かお手伝いできることがあれば、いつでもお声がけください ♪」

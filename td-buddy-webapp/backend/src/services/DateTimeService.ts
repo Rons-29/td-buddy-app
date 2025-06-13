@@ -1,4 +1,3 @@
-const logger = console;
 export interface DateTimeOptions {
   format: 'iso8601' | 'japanese' | 'unix' | 'relative' | 'custom' | 'business';
   customFormat?: string;
@@ -35,7 +34,7 @@ export interface GeneratedDateTime {
     weekNumber: number;
     era?: string;
   };
-  brewMessage: string;
+  tdMessage: string;
   generatedAt: Date;
 }
 
@@ -45,13 +44,13 @@ export interface DateTimeGenerationResult {
   count: number;
   options: DateTimeOptions;
   message: string;
-  brewMessage: string;
+  tdMessage: string;
   generatedAt: Date;
 }
 
 export class DateTimeService {
   private readonly japaneseHolidays: Map<string, string> = new Map();
-
+  
   constructor() {
     this.initializeJapaneseHolidays();
   }
@@ -59,13 +58,10 @@ export class DateTimeService {
   /**
    * 日付・時刻を生成
    */
-  async generateDateTime(
-    options: DateTimeOptions,
-    count: number = 1
-  ): Promise<DateTimeGenerationResult> {
+  async generateDateTime(options: DateTimeOptions, count: number = 1): Promise<DateTimeGenerationResult> {
     try {
       const generatedDates: GeneratedDateTime[] = [];
-
+      
       for (let i = 0; i < count; i++) {
         const dateTime = this.generateSingleDateTime(options);
         generatedDates.push(dateTime);
@@ -77,7 +73,7 @@ export class DateTimeService {
         count: generatedDates.length,
         options,
         message: `${count}件の日付・時刻を生成しました`,
-        brewMessage: this.getBrewMessage(options.format, count),
+        tdMessage: this.getTDMessage(options.format, count),
         generatedAt: new Date(),
       };
     } catch (error: any) {
@@ -87,7 +83,7 @@ export class DateTimeService {
         count: 0,
         options,
         message: `日付・時刻生成エラー: ${error?.message || '不明なエラー'}`,
-        brewMessage: 'エラーが発生しましたが、Brewが一緒に解決します！',
+        tdMessage: "エラーが発生しましたが、TDが一緒に解決します！",
         generatedAt: new Date(),
       };
     }
@@ -99,7 +95,7 @@ export class DateTimeService {
   private generateSingleDateTime(options: DateTimeOptions): GeneratedDateTime {
     const id = `dt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const originalDate = this.generateRandomDate(options);
-
+    
     let formattedValue: string;
     let formatUsed: string;
 
@@ -143,7 +139,7 @@ export class DateTimeService {
       locale: options.locale || 'ja-JP',
       timezone: options.timezone || 'Asia/Tokyo',
       metadata,
-      brewMessage: this.generateBrewMessage(originalDate, options.format),
+      tdMessage: this.generateTDMessage(originalDate, options.format),
       generatedAt: new Date(),
     };
   }
@@ -162,7 +158,7 @@ export class DateTimeService {
       const baseDate = options.relative.baseDate || new Date();
       const minDays = options.relative.minDays || -365;
       const maxDays = options.relative.maxDays || 365;
-
+      
       startDate = new Date(baseDate.getTime() + minDays * 24 * 60 * 60 * 1000);
       endDate = new Date(baseDate.getTime() + maxDays * 24 * 60 * 60 * 1000);
     } else {
@@ -172,16 +168,11 @@ export class DateTimeService {
       endDate = new Date(now.getFullYear() + 1, 11, 31);
     }
 
-    const randomTime =
-      startDate.getTime() +
-      Math.random() * (endDate.getTime() - startDate.getTime());
+    const randomTime = startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime());
     let randomDate = new Date(randomTime);
 
     // 営業日フィルタリング
-    if (
-      options.businessDays?.excludeWeekends ||
-      options.businessDays?.excludeHolidays
-    ) {
+    if (options.businessDays?.excludeWeekends || options.businessDays?.excludeHolidays) {
       randomDate = this.adjustToBusinessDay(randomDate, options);
     }
 
@@ -194,11 +185,7 @@ export class DateTimeService {
   private formatISO8601(date: Date, options: DateTimeOptions): string {
     if (options.timezone && options.timezone !== 'UTC') {
       // タイムゾーン対応
-      return (
-        date
-          .toLocaleString('sv-SE', { timeZone: options.timezone })
-          .replace(' ', 'T') + 'Z'
-      );
+      return date.toLocaleString('sv-SE', { timeZone: options.timezone }).replace(' ', 'T') + 'Z';
     }
     return date.toISOString();
   }
@@ -220,13 +207,9 @@ export class DateTimeService {
 
     const patterns = [
       `${era}${eraYear}年${month}月${day}日 ${hour}時${minute}分${second}秒`,
-      `${year}年${month}月${day}日 ${hour}:${minute
-        .toString()
-        .padStart(2, '0')}`,
+      `${year}年${month}月${day}日 ${hour}:${minute.toString().padStart(2, '0')}`,
       `${era}${eraYear}年${month}月${day}日`,
-      `${year}/${month.toString().padStart(2, '0')}/${day
-        .toString()
-        .padStart(2, '0')}`,
+      `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`,
     ];
 
     const randomIndex = Math.floor(Math.random() * patterns.length);
@@ -254,13 +237,9 @@ export class DateTimeService {
     if (Math.abs(diffDays) >= 1) {
       return diffDays > 0 ? `${diffDays}日後` : `${Math.abs(diffDays)}日前`;
     } else if (Math.abs(diffHours) >= 1) {
-      return diffHours > 0
-        ? `${diffHours}時間後`
-        : `${Math.abs(diffHours)}時間前`;
+      return diffHours > 0 ? `${diffHours}時間後` : `${Math.abs(diffHours)}時間前`;
     } else {
-      return diffMinutes > 0
-        ? `${diffMinutes}分後`
-        : `${Math.abs(diffMinutes)}分前`;
+      return diffMinutes > 0 ? `${diffMinutes}分後` : `${Math.abs(diffMinutes)}分前`;
     }
   }
 
@@ -271,7 +250,7 @@ export class DateTimeService {
     const dayOfWeek = date.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
     const isHoliday = this.isJapaneseHoliday(date);
-
+    
     let suffix = '';
     if (isWeekend) suffix += ' (週末)';
     if (isHoliday) suffix += ' (祝日)';
@@ -290,13 +269,13 @@ export class DateTimeService {
 
     let formatted = options.customFormat;
     const replacements = {
-      YYYY: date.getFullYear().toString(),
-      MM: (date.getMonth() + 1).toString().padStart(2, '0'),
-      DD: date.getDate().toString().padStart(2, '0'),
-      HH: date.getHours().toString().padStart(2, '0'),
-      mm: date.getMinutes().toString().padStart(2, '0'),
-      ss: date.getSeconds().toString().padStart(2, '0'),
-      SSS: date.getMilliseconds().toString().padStart(3, '0'),
+      'YYYY': date.getFullYear().toString(),
+      'MM': (date.getMonth() + 1).toString().padStart(2, '0'),
+      'DD': date.getDate().toString().padStart(2, '0'),
+      'HH': date.getHours().toString().padStart(2, '0'),
+      'mm': date.getMinutes().toString().padStart(2, '0'),
+      'ss': date.getSeconds().toString().padStart(2, '0'),
+      'SSS': date.getMilliseconds().toString().padStart(3, '0'),
     };
 
     Object.entries(replacements).forEach(([key, value]) => {
@@ -310,8 +289,7 @@ export class DateTimeService {
    * メタデータ生成
    */
   private generateMetadata(date: Date, options: DateTimeOptions) {
-    const dayOfWeek =
-      ['日', '月', '火', '水', '木', '金', '土'][date.getDay()] || '不明';
+    const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()] || '不明';
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
     const isHoliday = this.isJapaneseHoliday(date);
     const weekNumber = this.getWeekNumber(date);
@@ -330,13 +308,12 @@ export class DateTimeService {
    * 営業日に調整
    */
   private adjustToBusinessDay(date: Date, options: DateTimeOptions): Date {
-    const adjustedDate = new Date(date);
+    let adjustedDate = new Date(date);
     let attempts = 0;
     const maxAttempts = 100;
 
     while (attempts < maxAttempts) {
-      const isWeekend =
-        adjustedDate.getDay() === 0 || adjustedDate.getDay() === 6;
+      const isWeekend = adjustedDate.getDay() === 0 || adjustedDate.getDay() === 6;
       const isHoliday = this.isJapaneseHoliday(adjustedDate);
 
       if (options.businessDays?.excludeWeekends && isWeekend) {
@@ -361,9 +338,7 @@ export class DateTimeService {
    * 日本の祝日判定
    */
   private isJapaneseHoliday(date: Date): boolean {
-    const key = `${date.getFullYear()}-${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    const key = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
     return this.japaneseHolidays.has(key);
   }
 
@@ -394,62 +369,60 @@ export class DateTimeService {
    */
   private getWeekNumber(date: Date): number {
     const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-    const daysSinceFirstDay = Math.floor(
-      (date.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000)
-    );
+    const daysSinceFirstDay = Math.floor((date.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000));
     return Math.ceil((daysSinceFirstDay + firstDayOfYear.getDay() + 1) / 7);
   }
 
   /**
    * TDメッセージ生成
    */
-  private generateBrewMessage(date: Date, format: string): string {
+  private generateTDMessage(date: Date, format: string): string {
     const messages: Record<string, string[]> = {
       iso8601: [
-        '国際標準の日時形式です！システム間連携に最適ですね♪',
-        'ISO 8601形式で世界中どこでも通用します！',
-        'プログラマーにとって最も扱いやすい形式です✨',
+        "国際標準の日時形式です！システム間連携に最適ですね♪",
+        "ISO 8601形式で世界中どこでも通用します！",
+        "プログラマーにとって最も扱いやすい形式です✨",
       ],
       japanese: [
-        '和暦対応の日本語形式です！日本のシステムにぴったり♪',
-        '令和の時代も対応済みです！',
-        '日本人にとって最も読みやすい形式ですね',
+        "和暦対応の日本語形式です！日本のシステムにぴったり♪",
+        "令和の時代も対応済みです！",
+        "日本人にとって最も読みやすい形式ですね",
       ],
       unix: [
-        'Unix時代から愛され続けるタイムスタンプです♪',
-        '数値形式でデータベースにも最適！',
-        'プログラマーの定番形式ですね✨',
+        "Unix時代から愛され続けるタイムスタンプです♪",
+        "数値形式でデータベースにも最適！",
+        "プログラマーの定番形式ですね✨",
       ],
       relative: [
-        '人間にとって分かりやすい相対時間です！',
-        '「3日前」「1週間後」など直感的ですね♪',
-        'チャットやSNSアプリに最適な形式です',
+        "人間にとって分かりやすい相対時間です！",
+        "「3日前」「1週間後」など直感的ですね♪",
+        "チャットやSNSアプリに最適な形式です",
       ],
       business: [
-        '営業日を考慮した実用的な日付です！',
-        '祝日・週末をしっかり識別しています♪',
-        'ビジネスアプリケーションに最適ですね✨',
+        "営業日を考慮した実用的な日付です！",
+        "祝日・週末をしっかり識別しています♪",
+        "ビジネスアプリケーションに最適ですね✨",
       ],
       custom: [
-        'カスタム形式でピッタリの日付を作成しました！',
-        'お好みの形式で柔軟に対応します♪',
-        '特殊な要件にもTDがお応えします！',
+        "カスタム形式でピッタリの日付を作成しました！",
+        "お好みの形式で柔軟に対応します♪",
+        "特殊な要件にもTDがお応えします！",
       ],
     };
 
     const formatMessages = messages[format] || messages['iso8601'];
     if (!formatMessages || formatMessages.length === 0) {
-      return 'TDが日付・時刻を生成しました♪';
+      return "TDが日付・時刻を生成しました♪";
     }
     const randomIndex = Math.floor(Math.random() * formatMessages.length);
     const selectedMessage = formatMessages[randomIndex];
-    return selectedMessage || 'TDが日付・時刻を生成しました♪';
+    return selectedMessage || "TDが日付・時刻を生成しました♪";
   }
 
   /**
    * 全体のTDメッセージ取得
    */
-  private getBrewMessage(format: string, count: number): string {
+  private getTDMessage(format: string, count: number): string {
     const baseMessages = [
       `${count}件の${format}形式の日付・時刻を生成しました！`,
       `日付・時刻生成、完了です！${count}件すべて品質チェック済み♪`,
@@ -467,22 +440,10 @@ export class DateTimeService {
   private initializeJapaneseHolidays(): void {
     // 2025年の主要祝日（簡易版）
     const holidays2025 = [
-      '2025-01-01',
-      '2025-01-13',
-      '2025-02-11',
-      '2025-02-23',
-      '2025-03-20',
-      '2025-04-29',
-      '2025-05-03',
-      '2025-05-04',
-      '2025-05-05',
-      '2025-07-21',
-      '2025-08-11',
-      '2025-09-15',
-      '2025-09-23',
-      '2025-10-13',
-      '2025-11-03',
-      '2025-11-23',
+      '2025-01-01', '2025-01-13', '2025-02-11', '2025-02-23',
+      '2025-03-20', '2025-04-29', '2025-05-03', '2025-05-04',
+      '2025-05-05', '2025-07-21', '2025-08-11', '2025-09-15',
+      '2025-09-23', '2025-10-13', '2025-11-03', '2025-11-23',
     ];
 
     holidays2025.forEach(date => {
@@ -508,4 +469,4 @@ export class DateTimeService {
       return false;
     }
   }
-}
+} 
