@@ -66,6 +66,3 @@ databases:
   - name: qa-workbench-db
     databaseName: qa_workbench
     plan: free # 無料PostgreSQL（100MB）
-
-# 🔄 デプロイ設定
-previewsEnabled: true # プレビュー環境を有効化
