@@ -82,7 +82,7 @@ export const OptimizedHomepage: React.FC<OptimizedHomepageProps> = ({
           }`}
         >
           <div className="mb-6">
-            <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <div className="inline-flex items-center wb-badge-items px-4 py-2 rounded-full text-sm font-medium mb-4">
               <CheckCircle className="w-4 h-4 mr-2" />
               3,000+ QAエンジニアが利用中
             </div>

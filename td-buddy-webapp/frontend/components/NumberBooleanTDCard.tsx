@@ -83,7 +83,9 @@ export function NumberBooleanTDCard({
 
   // 統計情報の計算
   const calculateStats = () => {
-    if (generatedData.length === 0) return null;
+    if (generatedData.length === 0) {
+      return null;
+    }
 
     // 数値のみをフィルタリング
     const numericValues = generatedData
@@ -135,7 +137,7 @@ export function NumberBooleanTDCard({
             <div className="animate-spin h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full"></div>
             <span className="text-sm">数値を生成しています...</span>
           </div>
-          <div className="bg-blue-100 p-3 rounded text-blue-800 text-sm">
+          <div className="wb-badge-count p-3 rounded text-sm">
             💡 {currentTip}
           </div>
         </div>
@@ -213,7 +215,7 @@ export function NumberBooleanTDCard({
           <div className="text-blue-700 text-sm">
             どのような数値データを生成しましょうか？
           </div>
-          <div className="bg-blue-100 p-3 rounded text-blue-800 text-sm">
+          <div className="wb-badge-count p-3 rounded text-sm">
             💡 {currentTip}
           </div>
         </div>

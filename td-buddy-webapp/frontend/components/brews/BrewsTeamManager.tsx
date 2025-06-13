@@ -180,7 +180,7 @@ const BrewsTeamManager: React.FC<BrewsTeamManagerProps> = ({
               <button
                 key={emotion}
                 onClick={() => setTeamEmotion(emotion)}
-                className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+                className="px-3 py-1 text-xs rounded-full wb-badge-count hover:bg-blue-200 transition-colors"
               >
                 {emotion}
               </button>
