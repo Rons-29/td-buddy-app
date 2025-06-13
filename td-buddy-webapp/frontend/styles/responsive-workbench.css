@@ -1,0 +1,410 @@
+/* Responsive Workbench Styles */
+
+/* Base responsive breakpoints */
+:root {
+  --wb-mobile-max: 767px;
+  --wb-tablet-min: 768px;
+  --wb-tablet-max: 1023px;
+  --wb-desktop-min: 1024px;
+}
+
+/* Global responsive classes */
+.wb-mobile {
+  --wb-sidebar-width: 100%;
+  --wb-content-padding: 1rem;
+  --wb-header-height: 4rem;
+  --wb-bottom-nav-height: 5rem;
+}
+
+.wb-tablet {
+  --wb-sidebar-width: 20rem;
+  --wb-content-padding: 1.5rem;
+  --wb-header-height: 4.5rem;
+  --wb-bottom-nav-height: 0;
+}
+
+.wb-desktop {
+  --wb-sidebar-width: 24rem;
+  --wb-content-padding: 2rem;
+  --wb-header-height: 5rem;
+  --wb-bottom-nav-height: 0;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+  .wb-workbench-bg {
+    background-size: 20px 20px;
+  }
+
+  .wb-tool-card {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .wb-tool-icon {
+    font-size: 1.25rem;
+  }
+
+  .wb-tool-title {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .wb-tool-description {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  /* Mobile navigation */
+  .wb-mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--wb-bottom-nav-height);
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    z-index: 50;
+  }
+
+  .wb-mobile-fab {
+    position: fixed;
+    bottom: calc(var(--wb-bottom-nav-height) + 1rem);
+    right: 1rem;
+    z-index: 40;
+  }
+
+  /* Mobile overlay */
+  .wb-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+  }
+
+  .wb-mobile-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 80%;
+    max-width: 20rem;
+    height: 100%;
+    background: white;
+    z-index: 50;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .wb-mobile-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Tablet-specific styles */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wb-workbench-bg {
+    background-size: 25px 25px;
+  }
+
+  .wb-tool-card {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .wb-tool-icon {
+    font-size: 1.5rem;
+  }
+
+  .wb-tool-title {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .wb-tool-description {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  /* Tablet sidebar */
+  .wb-tablet-sidebar {
+    width: var(--wb-sidebar-width);
+    transition: width 0.3s ease;
+  }
+
+  .wb-tablet-sidebar.collapsed {
+    width: 4rem;
+  }
+
+  /* Tablet grid layouts */
+  .wb-tablet-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .wb-tablet-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+/* Desktop-specific styles */
+@media (min-width: 1024px) {
+  .wb-workbench-bg {
+    background-size: 30px 30px;
+  }
+
+  .wb-tool-card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .wb-tool-icon {
+    font-size: 2rem;
+  }
+
+  .wb-tool-title {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .wb-tool-description {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  /* Desktop sidebar */
+  .wb-desktop-sidebar {
+    width: var(--wb-sidebar-width);
+    transition: width 0.3s ease;
+  }
+
+  .wb-desktop-sidebar.collapsed {
+    width: 4rem;
+  }
+
+  /* Desktop grid layouts */
+  .wb-desktop-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .wb-desktop-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+
+  /* Desktop hover effects */
+  .wb-desktop .wb-tool-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .wb-desktop .wb-tool-icon:hover {
+    transform: scale(1.1);
+  }
+}
+
+/* Responsive tool type colors */
+.wb-tool-measure {
+  --wb-tool-color: #f97316;
+  --wb-tool-bg: #fff7ed;
+  --wb-tool-border: #fed7aa;
+  --wb-tool-hover: #ffedd5;
+}
+
+.wb-tool-cut {
+  --wb-tool-color: #dc2626;
+  --wb-tool-bg: #fef2f2;
+  --wb-tool-border: #fecaca;
+  --wb-tool-hover: #fee2e2;
+}
+
+.wb-tool-join {
+  --wb-tool-color: #16a34a;
+  --wb-tool-bg: #f0fdf4;
+  --wb-tool-border: #bbf7d0;
+  --wb-tool-hover: #dcfce7;
+}
+
+.wb-tool-inspect {
+  --wb-tool-color: #2563eb;
+  --wb-tool-bg: #eff6ff;
+  --wb-tool-border: #bfdbfe;
+  --wb-tool-hover: #dbeafe;
+}
+
+.wb-tool-polish {
+  --wb-tool-color: #9333ea;
+  --wb-tool-bg: #faf5ff;
+  --wb-tool-border: #d8b4fe;
+  --wb-tool-hover: #e9d5ff;
+}
+
+/* Responsive animations */
+@media (prefers-reduced-motion: no-preference) {
+  .wb-tool-card {
+    transition: all 0.2s ease;
+  }
+
+  .wb-tool-icon {
+    transition: transform 0.2s ease;
+  }
+
+  .wb-sidebar {
+    transition: width 0.3s ease;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .wb-tool-card {
+    border-width: 2px;
+  }
+
+  .wb-tool-measure {
+    --wb-tool-border: #f97316;
+  }
+  .wb-tool-cut {
+    --wb-tool-border: #dc2626;
+  }
+  .wb-tool-join {
+    --wb-tool-border: #16a34a;
+  }
+  .wb-tool-inspect {
+    --wb-tool-border: #2563eb;
+  }
+  .wb-tool-polish {
+    --wb-tool-border: #9333ea;
+  }
+}
+
+/* Print styles */
+@media print {
+  .wb-mobile-nav,
+  .wb-mobile-fab,
+  .wb-sidebar {
+    display: none !important;
+  }
+
+  .wb-workbench-bg {
+    background: white !important;
+  }
+
+  .wb-tool-card {
+    break-inside: avoid;
+    border: 1px solid #000 !important;
+    background: white !important;
+  }
+}
+
+/* Focus management for accessibility */
+.wb-tool-card:focus-visible {
+  outline: 2px solid var(--wb-tool-color);
+  outline-offset: 2px;
+}
+
+.wb-sidebar-toggle:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.wb-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.wb-loading .wb-tool-card {
+  animation: wb-pulse 2s infinite;
+}
+
+@keyframes wb-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Error states */
+.wb-error .wb-tool-card {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.wb-error .wb-tool-icon {
+  filter: grayscale(100%);
+}
+
+/* Success states */
+.wb-success .wb-tool-card {
+  border-color: #16a34a;
+  background-color: #f0fdf4;
+}
+
+/* Responsive utility classes */
+.wb-hide-mobile {
+  display: block;
+}
+
+.wb-hide-tablet {
+  display: block;
+}
+
+.wb-hide-desktop {
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .wb-hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wb-hide-tablet {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-hide-desktop {
+    display: none !important;
+  }
+}
+
+.wb-show-mobile {
+  display: none;
+}
+
+.wb-show-tablet {
+  display: none;
+}
+
+.wb-show-desktop {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .wb-show-mobile {
+    display: block !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wb-show-tablet {
+    display: block !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-show-desktop {
+    display: block !important;
+  }
+}
