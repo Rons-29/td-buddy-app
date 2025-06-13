@@ -147,3 +147,21 @@ docs/
 # Everything else stays local for security
 # Local Netlify folder
 .netlify
+
+# IDE files
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Phase 3 ワークベンチデザインシステム統合作業フォルダ
+# 作業中の一時ファイル・内部検討資料・進捗管理ファイルを含むため除外
+docs/phase-3-workbench-integration/
