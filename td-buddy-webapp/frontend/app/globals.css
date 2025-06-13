@@ -175,6 +175,17 @@
   --wb-file-primary: var(--wb-tool-cut-500);
   --wb-file-hover: var(--wb-tool-cut-700);
   --wb-file-light: var(--wb-tool-cut-100);
+
+  /* === ワークベンチレスポンシブデザインシステム === */
+  /* モバイルファースト設計 - 320px〜から対応 */
+
+  /* ブレークポイント定義 */
+  --wb-breakpoint-xs: 320px; /* 小型スマートフォン */
+  --wb-breakpoint-sm: 480px; /* スマートフォン */
+  --wb-breakpoint-md: 768px; /* タブレット */
+  --wb-breakpoint-lg: 1024px; /* デスクトップ */
+  --wb-breakpoint-xl: 1280px; /* 大型デスクトップ */
+  --wb-breakpoint-2xl: 1536px; /* 超大型ディスプレイ */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1139,5 +1150,1523 @@
   .wb-code,
   .wb-code-block {
     border: 2px solid #000;
+  }
+}
+
+/* === ワークベンチアクセシビリティ強化 === */
+/* 色覚多様性対応・キーボードナビゲーション・スクリーンリーダー対応 */
+
+/* 色覚多様性対応 - 色以外の視覚的手がかり */
+.wb-status-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--wb-space-2);
+}
+
+.wb-status-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.wb-status-success {
+  color: var(--wb-success);
+}
+
+.wb-status-success::before {
+  background: var(--wb-success);
+}
+
+.wb-status-success::after {
+  content: '✓';
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 6px;
+  color: white;
+  font-weight: bold;
+}
+
+.wb-status-warning {
+  color: var(--wb-warning);
+}
+
+.wb-status-warning::before {
+  background: var(--wb-warning);
+}
+
+.wb-status-warning::after {
+  content: '⚠';
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 6px;
+  color: white;
+  font-weight: bold;
+}
+
+.wb-status-error {
+  color: var(--wb-error);
+}
+
+.wb-status-error::before {
+  background: var(--wb-error);
+}
+
+.wb-status-error::after {
+  content: '✗';
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 6px;
+  color: white;
+  font-weight: bold;
+}
+
+.wb-status-info {
+  color: var(--wb-info);
+}
+
+.wb-status-info::before {
+  background: var(--wb-info);
+}
+
+.wb-status-info::after {
+  content: 'i';
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 6px;
+  color: white;
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* 工具タイプ識別パターン（色覚多様性対応） */
+.wb-tool-pattern-inspect {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2px,
+    var(--wb-tool-inspect-200) 2px,
+    var(--wb-tool-inspect-200) 4px
+  );
+}
+
+.wb-tool-pattern-join {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 3px,
+    var(--wb-tool-join-200) 3px,
+    var(--wb-tool-join-200) 6px
+  );
+}
+
+.wb-tool-pattern-measure {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--wb-tool-measure-200) 2px,
+    var(--wb-tool-measure-200) 4px
+  );
+}
+
+.wb-tool-pattern-polish {
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    var(--wb-tool-polish-200) 1px,
+    transparent 1px
+  );
+  background-size: 8px 8px;
+}
+
+.wb-tool-pattern-cut {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 3px,
+    var(--wb-tool-cut-200) 3px,
+    var(--wb-tool-cut-200) 6px
+  );
+}
+
+/* キーボードナビゲーション強化 */
+.wb-focus-visible {
+  outline: none;
+  position: relative;
+}
+
+.wb-focus-visible:focus-visible {
+  outline: 3px solid var(--wb-metal-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.wb-focus-visible:focus-visible::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 2px dashed var(--wb-wood-600);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* 工具ボタンのキーボードナビゲーション */
+.td-button-wb {
+  position: relative;
+}
+
+.td-button-wb:focus-visible {
+  outline: 3px solid var(--wb-metal-500);
+  outline-offset: 3px;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px var(--wb-workshop-shadow);
+}
+
+.td-button-wb:focus-visible::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border: 2px solid var(--wb-wood-600);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* 工具カードのキーボードナビゲーション */
+.td-card-wb:focus-within {
+  outline: 3px solid var(--wb-metal-500);
+  outline-offset: 2px;
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px var(--wb-workshop-shadow);
+}
+
+/* ドロップダウンメニューのキーボードナビゲーション */
+.wb-dropdown-menu {
+  position: relative;
+}
+
+.wb-dropdown-menu:focus-within .wb-dropdown-content {
+  opacity: 1;
+  visibility: visible;
+}
+
+.wb-dropdown-item {
+  position: relative;
+}
+
+.wb-dropdown-item:focus-visible {
+  background: var(--wb-metal-100);
+  outline: 2px solid var(--wb-metal-500);
+  outline-offset: -2px;
+}
+
+.wb-dropdown-item:focus-visible::before {
+  content: '▶';
+  position: absolute;
+  left: 4px;
+  color: var(--wb-metal-700);
+  font-size: 8px;
+}
+
+/* スクリーンリーダー対応 */
+.wb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.wb-sr-description {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.wb-sr-description:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  background: var(--wb-wood-100);
+  color: var(--wb-wood-800);
+  padding: var(--wb-space-2);
+  border: 2px solid var(--wb-metal-500);
+  border-radius: 4px;
+}
+
+/* 工具説明のスクリーンリーダー対応 */
+.wb-tool-description[aria-describedby] {
+  position: relative;
+}
+
+.wb-tool-description[aria-describedby]::after {
+  content: '詳細説明あり';
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 10px;
+  color: var(--wb-metal-500);
+  background: var(--wb-metal-100);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .td-button-wb,
+  .td-card-wb,
+  .wb-dropdown-item {
+    border: 2px solid #000;
+  }
+
+  .wb-tool-label,
+  .wb-tool-title,
+  .wb-tool-description {
+    color: #000;
+    background: #fff;
+  }
+
+  .wb-status-indicator::before {
+    border: 2px solid #000;
+  }
+
+  .wb-focus-visible:focus-visible {
+    outline: 4px solid #000;
+    background: #ff0;
+  }
+}
+
+/* 動きを減らす設定対応 */
+@media (prefers-reduced-motion: reduce) {
+  .td-button-wb,
+  .td-card-wb,
+  .wb-dropdown-menu,
+  .wb-focus-visible {
+    transition: none;
+    animation: none;
+  }
+
+  .td-button-wb:hover,
+  .td-card-wb:hover {
+    transform: none;
+  }
+
+  .td-float,
+  .td-heartbeat,
+  .wb-working {
+    animation: none;
+  }
+}
+
+/* 大きなテキスト設定対応 */
+@media (min-resolution: 2dppx) {
+  .wb-text-xs {
+    font-size: 0.875rem;
+  }
+  .wb-text-sm {
+    font-size: 1rem;
+  }
+  .wb-text-base {
+    font-size: 1.125rem;
+  }
+  .wb-text-lg {
+    font-size: 1.25rem;
+  }
+  .wb-text-xl {
+    font-size: 1.5rem;
+  }
+  .wb-text-2xl {
+    font-size: 1.75rem;
+  }
+  .wb-text-3xl {
+    font-size: 2rem;
+  }
+}
+
+/* タッチデバイス対応 */
+@media (pointer: coarse) {
+  .td-button-wb {
+    min-height: 44px;
+    min-width: 44px;
+    padding: var(--wb-space-4) var(--wb-space-6);
+  }
+
+  .wb-dropdown-item {
+    min-height: 44px;
+    padding: var(--wb-space-3) var(--wb-space-4);
+  }
+
+  .td-card-wb {
+    padding: var(--wb-space-8);
+  }
+}
+
+/* 印刷時のアクセシビリティ */
+@media print {
+  .wb-status-indicator::after {
+    position: static;
+    margin-left: 4px;
+  }
+
+  .wb-tool-pattern-inspect,
+  .wb-tool-pattern-join,
+  .wb-tool-pattern-measure,
+  .wb-tool-pattern-polish,
+  .wb-tool-pattern-cut {
+    background-image: none;
+    border: 1px solid #000;
+  }
+
+  .wb-sr-only,
+  .wb-sr-description {
+    position: static;
+    width: auto;
+    height: auto;
+    clip: auto;
+    overflow: visible;
+  }
+}
+
+/* === ベースレイアウト（モバイル 320px〜） === */
+.wb-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--wb-space-4);
+}
+
+.wb-grid {
+  display: grid;
+  gap: var(--wb-space-4);
+  grid-template-columns: 1fr;
+}
+
+.wb-flex {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wb-space-4);
+}
+
+/* 工具カードのモバイル最適化 */
+.td-card-wb {
+  min-height: 120px;
+  padding: var(--wb-space-4);
+  margin-bottom: var(--wb-space-4);
+}
+
+.wb-tool-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--wb-space-2);
+}
+
+.wb-tool-title {
+  font-size: var(--wb-text-base);
+  line-height: 1.4;
+  margin-bottom: var(--wb-space-2);
+}
+
+.wb-tool-description {
+  font-size: var(--wb-text-sm);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ナビゲーションのモバイル対応 */
+.wb-nav-container {
+  flex-direction: column;
+  padding: var(--wb-space-3);
+}
+
+.wb-nav-brand {
+  margin-bottom: var(--wb-space-3);
+  text-align: center;
+}
+
+.wb-nav-tools {
+  flex-direction: column;
+  gap: var(--wb-space-2);
+}
+
+.wb-nav-category {
+  width: 100%;
+}
+
+.wb-nav-category-btn {
+  width: 100%;
+  justify-content: space-between;
+  padding: var(--wb-space-3);
+  font-size: var(--wb-text-sm);
+}
+
+.wb-nav-dropdown {
+  position: static;
+  width: 100%;
+  box-shadow: none;
+  border: 1px solid var(--wb-metal-200);
+  border-radius: 4px;
+  margin-top: var(--wb-space-2);
+}
+
+.wb-nav-item {
+  padding: var(--wb-space-3);
+  border-bottom: 1px solid var(--wb-metal-100);
+}
+
+.wb-nav-item:last-child {
+  border-bottom: none;
+}
+
+/* フォームのモバイル最適化 */
+.wb-form-group {
+  margin-bottom: var(--wb-space-4);
+}
+
+.wb-input,
+.wb-textarea,
+.wb-select {
+  width: 100%;
+  padding: var(--wb-space-3);
+  font-size: var(--wb-text-base);
+  min-height: 44px; /* タッチターゲット最小サイズ */
+}
+
+.wb-button-group {
+  flex-direction: column;
+  gap: var(--wb-space-3);
+}
+
+.td-button-wb {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--wb-space-3) var(--wb-space-4);
+  font-size: var(--wb-text-base);
+}
+
+/* === スマートフォン（480px〜） === */
+@media (min-width: 480px) {
+  .wb-container {
+    padding: var(--wb-space-6);
+  }
+
+  .wb-grid {
+    grid-template-columns: 1fr;
+    gap: var(--wb-space-6);
+  }
+
+  .td-card-wb {
+    min-height: 140px;
+    padding: var(--wb-space-6);
+  }
+
+  .wb-tool-icon {
+    font-size: 2rem;
+  }
+
+  .wb-tool-title {
+    font-size: var(--wb-text-lg);
+  }
+
+  .wb-nav-container {
+    padding: var(--wb-space-4);
+  }
+
+  .wb-nav-category-btn {
+    padding: var(--wb-space-4);
+    font-size: var(--wb-text-base);
+  }
+
+  /* 2カラムグリッド対応 */
+  .wb-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wb-button-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .td-button-wb {
+    width: auto;
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+/* === タブレット（768px〜） === */
+@media (min-width: 768px) {
+  .wb-container {
+    max-width: 1200px;
+    padding: var(--wb-space-8);
+  }
+
+  .wb-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--wb-space-8);
+  }
+
+  .wb-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .wb-flex {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .td-card-wb {
+    min-height: 160px;
+    padding: var(--wb-space-8);
+  }
+
+  .wb-tool-icon {
+    font-size: 2.5rem;
+  }
+
+  .wb-tool-title {
+    font-size: var(--wb-text-xl);
+  }
+
+  .wb-tool-description {
+    font-size: var(--wb-text-base);
+    -webkit-line-clamp: 4;
+  }
+
+  /* ナビゲーションの横並び */
+  .wb-nav-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--wb-space-4) var(--wb-space-8);
+  }
+
+  .wb-nav-brand {
+    margin-bottom: 0;
+    text-align: left;
+  }
+
+  .wb-nav-tools {
+    flex-direction: row;
+    gap: var(--wb-space-4);
+  }
+
+  .wb-nav-category {
+    width: auto;
+    position: relative;
+  }
+
+  .wb-nav-category-btn {
+    width: auto;
+    padding: var(--wb-space-3) var(--wb-space-4);
+  }
+
+  .wb-nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 200px;
+    box-shadow: 0 4px 12px var(--wb-workshop-shadow);
+    border-radius: 8px;
+    margin-top: var(--wb-space-2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+  }
+
+  .wb-nav-category:hover .wb-nav-dropdown,
+  .wb-nav-category:focus-within .wb-nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .wb-nav-item {
+    padding: var(--wb-space-3) var(--wb-space-4);
+  }
+
+  /* フォームの横並び */
+  .wb-form-row {
+    display: flex;
+    gap: var(--wb-space-4);
+  }
+
+  .wb-form-row .wb-form-group {
+    flex: 1;
+  }
+
+  .wb-button-group {
+    justify-content: flex-start;
+  }
+
+  .td-button-wb {
+    width: auto;
+    flex: none;
+  }
+}
+
+/* === デスクトップ（1024px〜） === */
+@media (min-width: 1024px) {
+  .wb-container {
+    padding: var(--wb-space-12);
+  }
+
+  .wb-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--wb-space-12);
+  }
+
+  .wb-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .td-card-wb {
+    min-height: 180px;
+    padding: var(--wb-space-12);
+    transition: all 0.3s ease;
+  }
+
+  .td-card-wb:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px var(--wb-workshop-shadow);
+  }
+
+  .wb-tool-icon {
+    font-size: 3rem;
+    margin-bottom: var(--wb-space-4);
+  }
+
+  .wb-tool-title {
+    font-size: var(--wb-text-2xl);
+    margin-bottom: var(--wb-space-3);
+  }
+
+  .wb-tool-description {
+    font-size: var(--wb-text-lg);
+    -webkit-line-clamp: 5;
+  }
+
+  /* ナビゲーションの拡張 */
+  .wb-nav-container {
+    padding: var(--wb-space-6) var(--wb-space-12);
+  }
+
+  .wb-nav-tools {
+    gap: var(--wb-space-6);
+  }
+
+  .wb-nav-dropdown {
+    width: 240px;
+  }
+
+  /* サイドバーレイアウト対応 */
+  .wb-layout-sidebar {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--wb-space-12);
+  }
+
+  .wb-sidebar {
+    background: var(--wb-wood-50);
+    border-radius: 12px;
+    padding: var(--wb-space-8);
+    height: fit-content;
+    position: sticky;
+    top: var(--wb-space-8);
+  }
+
+  .wb-main-content {
+    min-height: calc(100vh - 200px);
+  }
+}
+
+/* === 大型デスクトップ（1280px〜） === */
+@media (min-width: 1280px) {
+  .wb-container {
+    max-width: 1400px;
+  }
+
+  .wb-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .wb-grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .td-card-wb {
+    min-height: 200px;
+  }
+
+  .wb-tool-icon {
+    font-size: 3.5rem;
+  }
+
+  .wb-tool-title {
+    font-size: var(--wb-text-3xl);
+  }
+
+  /* ワイドレイアウト */
+  .wb-layout-wide {
+    display: grid;
+    grid-template-columns: 320px 1fr 280px;
+    gap: var(--wb-space-12);
+  }
+
+  .wb-sidebar-left,
+  .wb-sidebar-right {
+    background: var(--wb-wood-50);
+    border-radius: 12px;
+    padding: var(--wb-space-8);
+    height: fit-content;
+    position: sticky;
+    top: var(--wb-space-8);
+  }
+}
+
+/* === 超大型ディスプレイ（1536px〜） === */
+@media (min-width: 1536px) {
+  .wb-container {
+    max-width: 1600px;
+  }
+
+  .wb-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .wb-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .td-card-wb {
+    min-height: 220px;
+  }
+
+  .wb-tool-icon {
+    font-size: 4rem;
+  }
+}
+
+/* === 特殊レイアウト === */
+
+/* 工具詳細ページレイアウト */
+.wb-tool-detail-layout {
+  display: grid;
+  gap: var(--wb-space-8);
+  grid-template-areas:
+    'header'
+    'content'
+    'sidebar';
+}
+
+@media (min-width: 768px) {
+  .wb-tool-detail-layout {
+    grid-template-areas:
+      'header header'
+      'content sidebar';
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-tool-detail-layout {
+    grid-template-areas:
+      'header header header'
+      'content content sidebar';
+    grid-template-columns: 1fr 1fr 300px;
+  }
+}
+
+.wb-tool-header {
+  grid-area: header;
+}
+.wb-tool-content {
+  grid-area: content;
+}
+.wb-tool-sidebar {
+  grid-area: sidebar;
+}
+
+/* ダッシュボードレイアウト */
+.wb-dashboard-layout {
+  display: grid;
+  gap: var(--wb-space-6);
+  grid-template-areas:
+    'stats'
+    'charts'
+    'recent'
+    'tools';
+}
+
+@media (min-width: 768px) {
+  .wb-dashboard-layout {
+    grid-template-areas:
+      'stats stats'
+      'charts recent'
+      'tools tools';
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-dashboard-layout {
+    grid-template-areas:
+      'stats stats stats'
+      'charts charts recent'
+      'tools tools tools';
+    grid-template-columns: 1fr 1fr 300px;
+  }
+}
+
+.wb-dashboard-stats {
+  grid-area: stats;
+}
+.wb-dashboard-charts {
+  grid-area: charts;
+}
+.wb-dashboard-recent {
+  grid-area: recent;
+}
+.wb-dashboard-tools {
+  grid-area: tools;
+}
+
+/* === レスポンシブユーティリティ === */
+
+/* 表示/非表示制御 */
+.wb-hide-xs {
+  display: none;
+}
+.wb-hide-sm {
+  display: none;
+}
+.wb-hide-md {
+  display: block;
+}
+.wb-hide-lg {
+  display: block;
+}
+.wb-hide-xl {
+  display: block;
+}
+
+@media (min-width: 480px) {
+  .wb-show-sm {
+    display: block;
+  }
+  .wb-hide-sm {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .wb-show-md {
+    display: block;
+  }
+  .wb-hide-md {
+    display: none;
+  }
+  .wb-hide-xs {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-show-lg {
+    display: block;
+  }
+  .wb-hide-lg {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .wb-show-xl {
+    display: block;
+  }
+  .wb-hide-xl {
+    display: none;
+  }
+}
+
+/* テキストサイズ調整 */
+.wb-text-responsive {
+  font-size: var(--wb-text-sm);
+}
+
+@media (min-width: 480px) {
+  .wb-text-responsive {
+    font-size: var(--wb-text-base);
+  }
+}
+
+@media (min-width: 768px) {
+  .wb-text-responsive {
+    font-size: var(--wb-text-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-text-responsive {
+    font-size: var(--wb-text-xl);
+  }
+}
+
+/* スペーシング調整 */
+.wb-spacing-responsive {
+  padding: var(--wb-space-4);
+}
+
+@media (min-width: 480px) {
+  .wb-spacing-responsive {
+    padding: var(--wb-space-6);
+  }
+}
+
+@media (min-width: 768px) {
+  .wb-spacing-responsive {
+    padding: var(--wb-space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-spacing-responsive {
+    padding: var(--wb-space-12);
+  }
+}
+
+/* === パフォーマンス最適化 === */
+
+/* 画像の最適化 */
+.wb-image-responsive {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* アニメーションの最適化 */
+@media (prefers-reduced-motion: no-preference) {
+  .wb-smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .wb-hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .wb-hover-scale:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* 印刷時の最適化 */
+@media print {
+  .wb-nav-container,
+  .wb-nav-tools,
+  .wb-nav-utils {
+    display: none;
+  }
+
+  .wb-container {
+    max-width: none;
+    padding: 0;
+  }
+
+  .wb-grid {
+    grid-template-columns: 1fr;
+    gap: var(--wb-space-4);
+  }
+
+  .td-card-wb {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+/* ========================================
+   🍺 MOBILE-FIRST OPTIMIZATION
+   ======================================== */
+
+/* モバイル基本最適化 */
+.wb-mobile-optimized {
+  /* iOS Safari でのタッチ遅延を無効化 */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+
+  /* スクロール最適化 */
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+
+  /* フォント最適化 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* モバイルコンテンツエリア */
+.wb-mobile-content {
+  /* モバイルでのスクロール最適化 */
+  overscroll-behavior: contain;
+
+  /* モバイルでの余白調整 */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* タッチターゲット最適化 */
+.wb-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+
+  /* タッチフィードバック */
+  transition: transform 0.1s ease-out, background-color 0.2s ease;
+}
+
+.wb-touch-target:active {
+  transform: scale(0.98);
+}
+
+/* モバイル専用ナビゲーション */
+.wb-mobile-nav {
+  /* ハードウェアアクセラレーション */
+  transform: translateZ(0);
+  will-change: transform;
+
+  /* スムーズなアニメーション */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* モバイル専用グリッド調整 */
+@media (max-width: 767px) {
+  .wb-grid {
+    gap: 0.75rem; /* 12px */
+  }
+
+  .wb-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* モバイルでの工具カード最適化 */
+  .td-card-wb {
+    padding: 1rem; /* 16px */
+    border-radius: 0.5rem; /* 8px */
+  }
+
+  .wb-tool-icon {
+    font-size: 1.5rem; /* 24px */
+    margin-bottom: 0.5rem; /* 8px */
+  }
+
+  .wb-tool-title {
+    font-size: 1rem; /* 16px */
+    line-height: 1.25;
+    margin-bottom: 0.5rem; /* 8px */
+  }
+
+  .wb-tool-description {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.4;
+  }
+
+  .wb-tool-label {
+    font-size: 0.75rem; /* 12px */
+  }
+}
+
+/* タブレット最適化 */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wb-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wb-grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* モバイル専用ユーティリティ */
+.wb-mobile-only {
+  display: block;
+}
+
+.wb-desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .wb-mobile-only {
+    display: none;
+  }
+
+  .wb-desktop-only {
+    display: block;
+  }
+}
+
+/* モバイル専用スペーシング */
+.wb-spacing-mobile {
+  padding: 1rem; /* 16px */
+}
+
+.wb-spacing-mobile-sm {
+  padding: 0.75rem; /* 12px */
+}
+
+.wb-spacing-mobile-lg {
+  padding: 1.5rem; /* 24px */
+}
+
+/* モバイル専用テキストサイズ */
+.wb-text-mobile-xs {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.4;
+}
+
+.wb-text-mobile-sm {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.4;
+}
+
+.wb-text-mobile-base {
+  font-size: 1rem; /* 16px */
+  line-height: 1.5;
+}
+
+.wb-text-mobile-lg {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.4;
+}
+
+/* モバイル専用ボタン */
+.wb-button-mobile {
+  padding: 0.75rem 1rem; /* 12px 16px */
+  font-size: 1rem; /* 16px */
+  min-height: 44px;
+  border-radius: 0.5rem; /* 8px */
+  font-weight: 500;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.wb-button-mobile:active {
+  transform: scale(0.98);
+}
+
+/* モバイル専用カード */
+.wb-card-mobile {
+  padding: 1rem; /* 16px */
+  border-radius: 0.5rem; /* 8px */
+  background: var(--wb-workshop-surface);
+  border: 2px solid var(--wb-metal-200);
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.wb-card-mobile:active {
+  transform: scale(0.99);
+  border-color: var(--wb-metal-300);
+}
+
+/* モバイル専用フォーム */
+.wb-input-mobile {
+  padding: 0.75rem; /* 12px */
+  font-size: 1rem; /* 16px */
+  min-height: 44px;
+  border-radius: 0.5rem; /* 8px */
+  border: 2px solid var(--wb-metal-300);
+  background: var(--wb-workshop-surface);
+  transition: border-color 0.2s ease;
+}
+
+.wb-input-mobile:focus {
+  outline: none;
+  border-color: var(--wb-wood-500);
+  box-shadow: 0 0 0 3px rgba(139, 110, 99, 0.1);
+}
+
+/* モバイル専用アニメーション */
+@media (prefers-reduced-motion: no-preference) {
+  .wb-mobile-fade-in {
+    animation: wb-mobile-fade-in 0.3s ease-out;
+  }
+
+  .wb-mobile-slide-up {
+    animation: wb-mobile-slide-up 0.3s ease-out;
+  }
+
+  .wb-mobile-scale-in {
+    animation: wb-mobile-scale-in 0.2s ease-out;
+  }
+}
+
+@keyframes wb-mobile-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wb-mobile-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wb-mobile-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* モバイル専用レイアウト */
+.wb-mobile-container {
+  max-width: 100%;
+  padding-left: 1rem; /* 16px */
+  padding-right: 1rem; /* 16px */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wb-mobile-section {
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.wb-mobile-section:last-child {
+  margin-bottom: 0;
+}
+
+/* モバイル専用ヘッダー */
+.wb-mobile-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--wb-workshop-surface);
+  border-bottom: 2px solid var(--wb-metal-300);
+  padding: 0.75rem 1rem; /* 12px 16px */
+  min-height: 56px; /* 14 * 4 */
+}
+
+/* モバイル専用フッター */
+.wb-mobile-footer {
+  padding: 1.5rem 1rem; /* 24px 16px */
+  background: var(--wb-wood-100);
+  border-top: 1px solid var(--wb-metal-200);
+  margin-top: auto;
+}
+
+/* モバイル専用ナビゲーションメニュー */
+.wb-mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--wb-workshop-surface);
+  z-index: 50;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.wb-mobile-menu.wb-mobile-menu-open {
+  transform: translateX(0);
+}
+
+.wb-mobile-menu-item {
+  padding: 1rem; /* 16px */
+  border-bottom: 1px solid var(--wb-metal-200);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.wb-mobile-menu-item:hover,
+.wb-mobile-menu-item:focus {
+  background: var(--wb-wood-50);
+}
+
+.wb-mobile-menu-item:active {
+  background: var(--wb-wood-100);
+}
+
+/* モバイル専用オーバーレイ */
+.wb-mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.wb-mobile-overlay.wb-mobile-overlay-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* モバイル専用ツールチップ */
+.wb-mobile-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--wb-wood-800);
+  color: var(--wb-wood-100);
+  padding: 0.5rem 0.75rem; /* 8px 12px */
+  border-radius: 0.25rem; /* 4px */
+  font-size: 0.875rem; /* 14px */
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 60;
+  margin-bottom: 0.5rem; /* 8px */
+}
+
+.wb-mobile-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--wb-wood-800);
+}
+
+.wb-touch-target:hover .wb-mobile-tooltip,
+.wb-touch-target:focus .wb-mobile-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* モバイル専用パフォーマンス最適化 */
+.wb-mobile-optimized * {
+  /* GPU アクセラレーション */
+  transform: translateZ(0);
+
+  /* レイアウトシフト防止 */
+  contain: layout style paint;
+}
+
+.wb-mobile-optimized img {
+  /* 画像最適化 */
+  height: auto;
+  max-width: 100%;
+  object-fit: cover;
+
+  /* 遅延読み込み */
+  loading: lazy;
+  decoding: async;
+}
+
+/* モバイル専用アクセシビリティ */
+@media (prefers-reduced-motion: reduce) {
+  .wb-mobile-optimized * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .wb-mobile-optimized {
+    --wb-wood-100: #ffffff;
+    --wb-wood-800: #000000;
+    --wb-metal-300: #666666;
+  }
+
+  .wb-card-mobile,
+  .wb-input-mobile {
+    border-width: 3px;
+  }
+}
+
+/* モバイル専用プリント最適化 */
+@media print {
+  .wb-mobile-nav,
+  .wb-mobile-menu,
+  .wb-mobile-overlay,
+  .wb-mobile-tooltip {
+    display: none !important;
+  }
+
+  .wb-mobile-optimized {
+    background: white !important;
+    color: black !important;
+  }
+
+  .wb-mobile-container {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+/* モバイル専用ダークモード */
+@media (prefers-color-scheme: dark) {
+  .wb-mobile-optimized {
+    --wb-workshop-surface: #2d2d2d;
+    --wb-wood-50: #3a3a3a;
+    --wb-wood-100: #404040;
+    --wb-wood-600: #cccccc;
+    --wb-wood-700: #e0e0e0;
+    --wb-wood-800: #f0f0f0;
+    --wb-metal-200: #555555;
+    --wb-metal-300: #666666;
+  }
+
+  .wb-mobile-menu {
+    background: #2d2d2d;
+  }
+
+  .wb-mobile-tooltip {
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .wb-mobile-tooltip::after {
+    border-top-color: #1a1a1a;
   }
 }

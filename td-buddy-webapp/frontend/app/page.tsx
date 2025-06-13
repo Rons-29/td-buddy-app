@@ -1,248 +1,445 @@
 import Link from 'next/link';
+import {
+  MobileQuickAccess,
+  MobileToolCard,
+} from '../components/ui/mobile-navigation';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* ヒーローセクション */}
-        <div className="text-center mb-12">
-          <div className="text-6xl mb-4 brew-heartbeat">🍺</div>
-          <h1 className="text-4xl font-bold text-amber-800 mb-4">
-            QA Workbench
-          </h1>
-          <p className="text-xl text-amber-600 mb-6">
-            QAエンジニアの専用作業台、助手のブリューと一緒に
-            <br />
-            品質の高いデータを生成しましょう！
-          </p>
-          <div className="inline-block bg-amber-100 border border-amber-300 rounded-lg p-4">
-            <p className="text-amber-800 font-medium">
-              🍺 「こんにちは！ブリューです。生成のお手伝いをします♪」
-            </p>
-          </div>
-        </div>
+    <div className="wb-container wb-spacing-responsive">
+      {/* ワークベンチヘッダー */}
+      <div className="text-center mb-6 md:mb-8 lg:mb-12">
+        <h1 className="wb-text-responsive font-bold text-wb-wood-800 mb-3 md:mb-4">
+          🍺 Brewのワークベンチへようこそ
+        </h1>
+        <p className="wb-text-responsive text-wb-wood-600 max-w-2xl mx-auto px-4">
+          高品質なテストデータを生成する5つの専門工具で、最高のQA体験を提供します。
+          Brewと一緒に、完璧な品質を作り上げましょう！
+        </p>
+      </div>
 
-        {/* 機能カード */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {/* パスワード生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-            <div className="text-3xl mb-3">🔐</div>
-            <h3 className="text-lg font-semibold text-blue-800 mb-2">
-              パスワード生成
-            </h3>
-            <p className="text-blue-600 mb-4">
-              セキュアで強力なパスワードを丁寧に生成します
-            </p>
-            <Link href="/password">
-              <button className="td-button bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors">
-                生成開始
-              </button>
-            </Link>
-          </div>
+      {/* モバイル専用クイックアクセス */}
+      <MobileQuickAccess />
 
-          {/* 個人情報生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
-            <div className="text-3xl mb-3">👤</div>
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
-              個人情報生成
-            </h3>
-            <p className="text-green-600 mb-4">
-              テスト用の架空の個人データを安全に生成します
-            </p>
-            <Link href="/personal">
-              <button className="td-button bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors">
-                生成開始
-              </button>
-            </Link>
-          </div>
-
-          {/* 文字・テキスト系ツール */}
-          <div className="td-card p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
-            <div className="text-3xl mb-3">📝</div>
-            <h3 className="text-lg font-semibold text-purple-800 mb-2">
-              文字・テキスト系ツール
-            </h3>
-            <p className="text-purple-600 mb-4">
-              文字数カウント・旧字体変換・テキスト生成など
-            </p>
-            <Link href="/text-tools">
-              <button className="td-button bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                ツール開始
-              </button>
-            </Link>
-          </div>
-
-          {/* ファイル出力機能強化 */}
-          <div className="td-card p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200">
-            <div className="text-3xl mb-3">📤</div>
-            <h3 className="text-lg font-semibold text-blue-800 mb-2">
-              データ生成出力
-            </h3>
-            <p className="text-blue-600 mb-4">
-              JSON/XML/YAML/SQL形式での高度なデータ生成エクスポート
-            </p>
-            <Link href="/export">
-              <button className="td-button bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成エクスポート開始
-              </button>
-            </Link>
-          </div>
-
-          {/* 数値・真偽値生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
-            <div className="text-3xl mb-3">🔢</div>
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
-              数値・真偽値生成
-            </h3>
-            <p className="text-green-600 mb-4">
-              整数、小数点、通貨、科学記法、真偽値など多様な数値データ生成
-            </p>
-            <Link href="/number-boolean">
-              <button className="td-button bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成開始
-              </button>
-            </Link>
-          </div>
-
-          {/* AI連携 */}
-          <div className="td-card p-6">
-            <div className="text-3xl mb-3">🧠</div>
-            <h3 className="text-lg font-semibold text-orange-800 mb-2">
-              AI チャット
-            </h3>
-            <p className="text-orange-600 mb-4">
-              自然言語でデータ生成条件を指定できます
-            </p>
-            <Link href="/ai-chat">
-              <button className="td-button bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transition-colors">
-                チャット開始
-              </button>
-            </Link>
-          </div>
-
-          {/* CSV詳細設定 */}
-          <div className="td-card p-6 bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200">
-            <div className="text-3xl mb-3">📊</div>
-            <h3 className="text-lg font-semibold text-orange-800 mb-2">
-              CSV詳細設定
-            </h3>
-            <p className="text-orange-600 mb-4">
-              高度なCSVデータ生成・カスタマイズ機能
-            </p>
-            <Link href="/csv-detailed">
-              <button className="td-button bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                詳細設定
-              </button>
-            </Link>
-          </div>
-
-          {/* 日時生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200">
-            <div className="text-3xl mb-3">📅</div>
-            <h3 className="text-lg font-semibold text-indigo-800 mb-2">
-              日時生成
-            </h3>
-            <p className="text-indigo-600 mb-4">
-              様々な形式の日付・時刻データを生成
-            </p>
-            <Link href="/datetime">
-              <button className="td-button bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成開始
-              </button>
-            </Link>
-          </div>
-
-          {/* UUID生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200">
-            <div className="text-3xl mb-3">🆔</div>
-            <h3 className="text-lg font-semibold text-teal-800 mb-2">
-              UUID生成
-            </h3>
-            <p className="text-teal-600 mb-4">ユニークなID・識別子を大量生成</p>
-            <Link href="/uuid">
-              <button className="td-button bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成開始
-              </button>
-            </Link>
-          </div>
-
-          {/* カラー生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200">
-            <div className="text-3xl mb-3">🎨</div>
-            <h3 className="text-lg font-semibold text-pink-800 mb-2">
-              カラー生成
-            </h3>
-            <p className="text-pink-600 mb-4">
-              HEX・RGB・HSL形式のカラーコードを生成
-            </p>
-            <Link href="/colors">
-              <button className="td-button bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成開始
-              </button>
-            </Link>
-          </div>
-
-          {/* ファイルサイズテスト */}
-          <div className="td-card p-6 bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-200">
-            <div className="text-3xl mb-3">📁</div>
-            <h3 className="text-lg font-semibold text-yellow-800 mb-2">
-              ファイルサイズテスト
-            </h3>
-            <p className="text-yellow-600 mb-4">
-              指定サイズのテストファイルを生成（1GB対応・青空文庫データ対応）
-            </p>
-            <Link href="/file-size-test">
-              <button className="td-button bg-gradient-to-r from-yellow-500 to-amber-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成開始
-              </button>
-            </Link>
-          </div>
-
-          {/* 実用データ生成 */}
-          <div className="td-card p-6 bg-gradient-to-br from-gray-50 to-slate-50 border-2 border-gray-200">
-            <div className="text-3xl mb-3">🏢</div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              実用データ生成
-            </h3>
-            <p className="text-gray-600 mb-4">
-              企業・住所・電話番号など実用的なテストデータ
-            </p>
-            <Link href="/practical-data">
-              <button className="td-button bg-gradient-to-r from-gray-500 to-slate-500 text-white px-4 py-2 rounded-md hover:shadow-lg transition-all">
-                生成開始
-              </button>
-            </Link>
-          </div>
-        </div>
-
-        {/* ステータス表示 */}
-        <div className="bg-white rounded-lg shadow-sm border border-amber-100 p-6">
-          <h2 className="text-lg font-semibold text-amber-800 mb-4">
-            ブリューの状態
-          </h2>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
-              <span className="text-amber-600">生成設備良好</span>
+      {/* 工具カテゴリ紹介 */}
+      <div className="mb-6 md:mb-8 lg:mb-12">
+        <h2 className="wb-text-responsive font-semibold text-wb-wood-700 mb-4 md:mb-6 text-center">
+          🛠️ 5つの専門工具カテゴリ
+        </h2>
+        <div className="wb-grid wb-grid-2 md:wb-grid-3 lg:wb-grid-5 gap-3 md:gap-4 lg:gap-6">
+          <div className="text-center p-3 md:p-4 bg-wb-tool-inspect-50 rounded-lg">
+            <div className="text-xl md:text-2xl lg:text-3xl mb-1 md:mb-2">
+              🔍
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-amber-600">AI生成システム準備完了</span>
+            <div className="font-medium text-wb-tool-inspect-700 text-sm md:text-base">
+              検査工具
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-amber-600">データ生成エンジン稼働中</span>
+            <div className="text-xs md:text-sm text-wb-tool-inspect-600 wb-hide-xs">
+              セキュリティ
+            </div>
+          </div>
+          <div className="text-center p-3 md:p-4 bg-wb-tool-join-50 rounded-lg">
+            <div className="text-xl md:text-2xl lg:text-3xl mb-1 md:mb-2">
+              🔧
+            </div>
+            <div className="font-medium text-wb-tool-join-700 text-sm md:text-base">
+              結合工具
+            </div>
+            <div className="text-xs md:text-sm text-wb-tool-join-600 wb-hide-xs">
+              データ統合
+            </div>
+          </div>
+          <div className="text-center p-3 md:p-4 bg-wb-tool-measure-50 rounded-lg">
+            <div className="text-xl md:text-2xl lg:text-3xl mb-1 md:mb-2">
+              📏
+            </div>
+            <div className="font-medium text-wb-tool-measure-700 text-sm md:text-base">
+              測定工具
+            </div>
+            <div className="text-xs md:text-sm text-wb-tool-measure-600 wb-hide-xs">
+              数値・構造
+            </div>
+          </div>
+          <div className="text-center p-3 md:p-4 bg-wb-tool-polish-50 rounded-lg">
+            <div className="text-xl md:text-2xl lg:text-3xl mb-1 md:mb-2">
+              ✨
+            </div>
+            <div className="font-medium text-wb-tool-polish-700 text-sm md:text-base">
+              研磨工具
+            </div>
+            <div className="text-xs md:text-sm text-wb-tool-polish-600 wb-hide-xs">
+              AI・テキスト
+            </div>
+          </div>
+          <div className="text-center p-3 md:p-4 bg-wb-tool-cut-50 rounded-lg">
+            <div className="text-xl md:text-2xl lg:text-3xl mb-1 md:mb-2">
+              ✂️
+            </div>
+            <div className="font-medium text-wb-tool-cut-700 text-sm md:text-base">
+              切断工具
+            </div>
+            <div className="text-xs md:text-sm text-wb-tool-cut-600 wb-hide-xs">
+              出力・加工
             </div>
           </div>
         </div>
+      </div>
 
-        {/* フッター */}
-        <div className="text-center mt-12 text-amber-500">
-          <p>🍺 QA Workbench - ブリューがあなたの品質作業をサポート</p>
-          <p className="text-sm mt-2">
-            「一緒に素晴らしいデータを生成しましょう！」
-          </p>
+      {/* メイン工具カード */}
+      <div className="mb-6 md:mb-8 lg:mb-12">
+        <h2 className="wb-text-responsive font-semibold text-wb-wood-700 mb-4 md:mb-6 text-center">
+          🔧 利用可能な工具
+        </h2>
+
+        {/* デスクトップ・タブレット用グリッド */}
+        <div className="hidden md:block">
+          <div className="wb-grid wb-grid-2 lg:wb-grid-3 xl:wb-grid-4">
+            {/* 検査工具 */}
+            <Link
+              href="/password"
+              className="td-card-wb wb-tool-inspect wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-inspect-600">🔐</div>
+              <h3 className="wb-tool-title text-wb-tool-inspect-700">
+                パスワード生成
+              </h3>
+              <p className="wb-tool-description text-wb-tool-inspect-600">
+                セキュアで強力なパスワードを生成。文字種・長さ・複雑さを自由に設定できます。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-inspect-500">
+                <span className="wb-tool-label">🔍 検査工具</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/uuid"
+              className="td-card-wb wb-tool-inspect wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-inspect-600">🆔</div>
+              <h3 className="wb-tool-title text-wb-tool-inspect-700">
+                UUID生成
+              </h3>
+              <p className="wb-tool-description text-wb-tool-inspect-600">
+                一意識別子（UUID）を各バージョン形式で生成。システム間連携に最適です。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-inspect-500">
+                <span className="wb-tool-label">🔍 検査工具</span>
+              </div>
+            </Link>
+
+            {/* 結合工具 */}
+            <Link
+              href="/personal"
+              className="td-card-wb wb-tool-join wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-join-600">👤</div>
+              <h3 className="wb-tool-title text-wb-tool-join-700">
+                個人情報生成
+              </h3>
+              <p className="wb-tool-description text-wb-tool-join-600">
+                テスト用の個人情報データを生成。GDPR準拠で安全なダミーデータを提供します。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-join-500">
+                <span className="wb-tool-label">🔧 結合工具</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/practical-data"
+              className="td-card-wb wb-tool-join wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-join-600">📊</div>
+              <h3 className="wb-tool-title text-wb-tool-join-700">
+                実用データ生成
+              </h3>
+              <p className="wb-tool-description text-wb-tool-join-600">
+                実際のテストで使える実用的なデータセットを生成。業務シナリオに対応します。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-join-500">
+                <span className="wb-tool-label">🔧 結合工具</span>
+              </div>
+            </Link>
+
+            {/* 測定工具 */}
+            <Link
+              href="/number-boolean"
+              className="td-card-wb wb-tool-measure wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-measure-600">🔢</div>
+              <h3 className="wb-tool-title text-wb-tool-measure-700">
+                数値・真偽値
+              </h3>
+              <p className="wb-tool-description text-wb-tool-measure-600">
+                数値データと真偽値を生成。統計的分布や範囲指定に対応しています。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-measure-500">
+                <span className="wb-tool-label">📏 測定工具</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/csv-detailed"
+              className="td-card-wb wb-tool-measure wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-measure-600">📋</div>
+              <h3 className="wb-tool-title text-wb-tool-measure-700">
+                CSV生成
+              </h3>
+              <p className="wb-tool-description text-wb-tool-measure-600">
+                構造化されたCSVデータを生成。カスタムスキーマとデータ型に対応します。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-measure-500">
+                <span className="wb-tool-label">📏 測定工具</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/datetime"
+              className="td-card-wb wb-tool-measure wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-measure-600">📅</div>
+              <h3 className="wb-tool-title text-wb-tool-measure-700">
+                日時生成
+              </h3>
+              <p className="wb-tool-description text-wb-tool-measure-600">
+                日付と時刻データを生成。タイムゾーン・フォーマット・期間指定が可能です。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-measure-500">
+                <span className="wb-tool-label">📏 測定工具</span>
+              </div>
+            </Link>
+
+            {/* 研磨工具 */}
+            <Link
+              href="/ai-chat"
+              className="td-card-wb wb-tool-polish wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-polish-600">🤖</div>
+              <h3 className="wb-tool-title text-wb-tool-polish-700">AI連携</h3>
+              <p className="wb-tool-description text-wb-tool-polish-600">
+                AIを活用したインテリジェントなデータ生成。自然言語での指示に対応します。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-polish-500">
+                <span className="wb-tool-label">✨ 研磨工具</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/text-tools"
+              className="td-card-wb wb-tool-polish wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-polish-600">📝</div>
+              <h3 className="wb-tool-title text-wb-tool-polish-700">
+                テキスト工具
+              </h3>
+              <p className="wb-tool-description text-wb-tool-polish-600">
+                テキストデータの生成と加工。多言語・文字種・形式変換に対応しています。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-polish-500">
+                <span className="wb-tool-label">✨ 研磨工具</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/colors"
+              className="td-card-wb wb-tool-polish wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-polish-600">🎨</div>
+              <h3 className="wb-tool-title text-wb-tool-polish-700">
+                カラー生成
+              </h3>
+              <p className="wb-tool-description text-wb-tool-polish-600">
+                カラーパレットとカラーコードを生成。デザインとテストに最適です。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-polish-500">
+                <span className="wb-tool-label">✨ 研磨工具</span>
+              </div>
+            </Link>
+
+            {/* 切断工具 */}
+            <Link
+              href="/export"
+              className="td-card-wb wb-tool-cut wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-cut-600">📤</div>
+              <h3 className="wb-tool-title text-wb-tool-cut-700">データ出力</h3>
+              <p className="wb-tool-description text-wb-tool-cut-600">
+                生成したデータを様々な形式で出力・エクスポート。ファイル変換にも対応します。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-cut-500">
+                <span className="wb-tool-label">✂️ 切断工具</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/file-size-test"
+              className="td-card-wb wb-tool-cut wb-smooth-transition wb-hover-lift wb-touch-target"
+            >
+              <div className="wb-tool-icon text-wb-tool-cut-600">📏</div>
+              <h3 className="wb-tool-title text-wb-tool-cut-700">
+                ファイルサイズテスト
+              </h3>
+              <p className="wb-tool-description text-wb-tool-cut-600">
+                指定サイズのテストファイルを生成。パフォーマンステストに最適です。
+              </p>
+              <div className="mt-4 text-sm text-wb-tool-cut-500">
+                <span className="wb-tool-label">✂️ 切断工具</span>
+              </div>
+            </Link>
+          </div>
         </div>
+
+        {/* モバイル専用リスト */}
+        <div className="md:hidden space-y-3">
+          <MobileToolCard
+            href="/password"
+            icon="🔐"
+            title="パスワード生成"
+            description="セキュアで強力なパスワードを生成"
+            category="🔍 検査工具"
+            categoryColor="wb-tool-inspect"
+          />
+          <MobileToolCard
+            href="/uuid"
+            icon="🆔"
+            title="UUID生成"
+            description="一意識別子を各バージョン形式で生成"
+            category="🔍 検査工具"
+            categoryColor="wb-tool-inspect"
+          />
+          <MobileToolCard
+            href="/personal"
+            icon="👤"
+            title="個人情報生成"
+            description="テスト用の個人情報データを生成"
+            category="🔧 結合工具"
+            categoryColor="wb-tool-join"
+          />
+          <MobileToolCard
+            href="/practical-data"
+            icon="📊"
+            title="実用データ生成"
+            description="実際のテストで使える実用的なデータセット"
+            category="🔧 結合工具"
+            categoryColor="wb-tool-join"
+          />
+          <MobileToolCard
+            href="/number-boolean"
+            icon="🔢"
+            title="数値・真偽値"
+            description="数値データと真偽値を生成"
+            category="📏 測定工具"
+            categoryColor="wb-tool-measure"
+          />
+          <MobileToolCard
+            href="/csv-detailed"
+            icon="📋"
+            title="CSV生成"
+            description="構造化されたCSVデータを生成"
+            category="📏 測定工具"
+            categoryColor="wb-tool-measure"
+          />
+          <MobileToolCard
+            href="/datetime"
+            icon="📅"
+            title="日時生成"
+            description="日付と時刻データを生成"
+            category="📏 測定工具"
+            categoryColor="wb-tool-measure"
+          />
+          <MobileToolCard
+            href="/ai-chat"
+            icon="🤖"
+            title="AI連携"
+            description="AIを活用したインテリジェントなデータ生成"
+            category="✨ 研磨工具"
+            categoryColor="wb-tool-polish"
+          />
+          <MobileToolCard
+            href="/text-tools"
+            icon="📝"
+            title="テキスト工具"
+            description="テキストデータの生成と加工"
+            category="✨ 研磨工具"
+            categoryColor="wb-tool-polish"
+          />
+          <MobileToolCard
+            href="/colors"
+            icon="🎨"
+            title="カラー生成"
+            description="カラーパレットとカラーコードを生成"
+            category="✨ 研磨工具"
+            categoryColor="wb-tool-polish"
+          />
+          <MobileToolCard
+            href="/export"
+            icon="📤"
+            title="データ出力"
+            description="生成したデータを様々な形式で出力"
+            category="✂️ 切断工具"
+            categoryColor="wb-tool-cut"
+          />
+          <MobileToolCard
+            href="/file-size-test"
+            icon="📏"
+            title="ファイルサイズテスト"
+            description="指定サイズのテストファイルを生成"
+            category="✂️ 切断工具"
+            categoryColor="wb-tool-cut"
+          />
+        </div>
+      </div>
+
+      {/* 開発者向けツール */}
+      <div className="mb-6 md:mb-8">
+        <h2 className="wb-text-responsive font-semibold text-wb-wood-700 mb-4 md:mb-6 text-center">
+          🛠️ 開発者向けツール
+        </h2>
+        <div className="wb-grid wb-grid-2 md:wb-grid-3 lg:wb-grid-4">
+          <Link
+            href="/td-demo"
+            className="td-card-wb wb-tool-polish wb-smooth-transition wb-hover-lift wb-touch-target"
+          >
+            <div className="wb-tool-icon text-wb-tool-polish-600">🤖</div>
+            <h3 className="wb-tool-title text-wb-tool-polish-700">TDデモ</h3>
+            <p className="wb-tool-description text-wb-tool-polish-600">
+              旧TestData
+              Buddyシステムのデモンストレーション。移行前の機能を確認できます。
+            </p>
+            <div className="mt-4 text-sm text-wb-tool-polish-500">
+              <span className="wb-tool-label">✨ 研磨工具</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/browser-test"
+            className="td-card-wb wb-tool-inspect wb-smooth-transition wb-hover-lift wb-touch-target"
+          >
+            <div className="wb-tool-icon text-wb-tool-inspect-600">🧪</div>
+            <h3 className="wb-tool-title text-wb-tool-inspect-700">
+              ブラウザテスト
+            </h3>
+            <p className="wb-tool-description text-wb-tool-inspect-600">
+              お使いのブラウザの互換性を確認。Quality
+              Workbenchの動作環境をテストします。
+            </p>
+            <div className="mt-4 text-sm text-wb-tool-inspect-500">
+              <span className="wb-tool-label">🔍 検査工具</span>
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      {/* Brewからのメッセージ */}
+      <div className="text-center bg-wb-wood-50 rounded-lg p-4 md:p-6 border-2 border-wb-wood-200">
+        <div className="text-2xl md:text-3xl mb-3">🍺</div>
+        <h3 className="font-semibold text-wb-wood-800 mb-2 text-base md:text-lg">
+          Brewからのメッセージ
+        </h3>
+        <p className="text-sm md:text-base text-wb-wood-600 max-w-xl mx-auto">
+          「工房にようこそ！どの工具も丁寧に作り上げました。
+          品質の高いテストデータで、素晴らしいソフトウェアを一緒に作り上げましょう！」
+        </p>
       </div>
     </div>
   );
