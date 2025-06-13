@@ -7,8 +7,8 @@ import { useWebSocket } from '../../components/hooks/useWebSocket';
 import { DataGenerationSteps } from '../../components/ui/DataGenerationSteps';
 import { ProgressIndicator } from '../../components/ui/ProgressIndicator';
 
-// TDCharacterを動的インポートしてSSRエラーを回避
-const TDCharacter = dynamic(() => import('../../components/BrewCharacter'), {
+// BrewCharacterを動的インポートしてSSRエラーを回避
+const BrewCharacter = dynamic(() => import('../../components/BrewCharacter'), {
   ssr: false,
   loading: () => (
     <div className="w-10 h-10 bg-wb-tool-polish-200 rounded-full animate-pulse"></div>
@@ -331,7 +331,9 @@ export default function AIChatPage() {
   };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+    if (!inputValue.trim() || isLoading) {
+      return;
+    }
 
     const userMessage = inputValue.trim();
     setInputValue('');
@@ -548,7 +550,9 @@ export default function AIChatPage() {
   };
 
   const handleDownloadCSV = async () => {
-    if (!lastGeneratedData) return;
+    if (!lastGeneratedData) {
+      return;
+    }
 
     try {
       const headers = Object.keys(lastGeneratedData.data[0] || {});
@@ -583,7 +587,9 @@ export default function AIChatPage() {
   };
 
   const regenerateData = async () => {
-    if (!lastParsedParams) return;
+    if (!lastParsedParams) {
+      return;
+    }
 
     addMessage('user', '前回と同じ条件でデータを再生成してください');
     setIsLoading(true);
@@ -669,7 +675,9 @@ export default function AIChatPage() {
 
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = e => {
@@ -939,7 +947,7 @@ export default function AIChatPage() {
             <div className="space-y-6">
               {/* Brewキャラクター */}
               <div className="wb-character-section">
-                <TDCharacter
+                <BrewCharacter
                   emotion={isLoading ? 'working' : 'happy'}
                   size="large"
                   animation={isLoading ? 'spin' : 'float'}
