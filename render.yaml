@@ -1,0 +1,71 @@
+# QA Workbench (TestData Buddy) - Render デプロイ設定
+# 🍺 Brewsアシスタント搭載 QAエンジニア専用作業台
+
+services:
+  # 🌐 フロントエンド（Next.js）
+  - type: web
+    name: qa-workbench-frontend
+    runtime: node
+    plan: free # 無料プランから開始（後で変更可能）
+    buildCommand: |
+      cd td-buddy-webapp/frontend
+      npm ci
+      npm run build
+    startCommand: |
+      cd td-buddy-webapp/frontend
+      npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: qa-workbench-backend
+          property: host
+      - key: NEXT_PUBLIC_APP_ENV
+        value: production
+
+  # 🔧 バックエンド（Node.js/Express）
+  - type: web
+    name: qa-workbench-backend
+    runtime: node
+    plan: free # 無料プランから開始
+    buildCommand: |
+      cd td-buddy-webapp/backend
+      npm ci
+      npm run build
+    startCommand: |
+      cd td-buddy-webapp/backend
+      npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000 # Renderのデフォルトポート
+      - key: DATABASE_URL
+        fromDatabase:
+          name: qa-workbench-db
+          property: connectionString
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: qa-workbench-frontend
+          property: host
+      # 🔑 セキュリティ設定（Render管理画面で設定）
+      - key: SECRET_KEY
+        sync: false # 管理画面で手動設定
+      - key: JWT_SECRET
+        sync: false # 管理画面で手動設定
+      - key: CLAUDE_API_KEY
+        sync: false # 管理画面で手動設定
+
+# 🗄️ データベース（PostgreSQL）
+databases:
+  - name: qa-workbench-db
+    databaseName: qa_workbench
+    plan: free # 無料PostgreSQL（100MB）
+
+# 🔄 デプロイ設定
+previewsEnabled: true # プレビュー環境を有効化
