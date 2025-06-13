@@ -117,6 +117,19 @@
 
 /* Brews Icon Custom Animations */
 
+/* 強力な中央配置のためのクラス */
+.brews-icon-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.brews-icon-center svg {
+  display: block !important;
+  margin: 0 auto !important;
+}
+
 @keyframes wiggle {
   0%,
   100% {

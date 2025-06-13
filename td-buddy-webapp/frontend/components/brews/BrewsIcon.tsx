@@ -132,6 +132,7 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
     getSizeClasses(size),
     getColorClasses(config.color, emotion),
     'transition-all duration-200',
+    'brews-icon-center',
     getAnimationClasses(),
     isAnimating && 'animate-bounce',
   ]
@@ -180,24 +181,28 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
           }}
         >
           {IconComponent && (
-            <IconComponent
-              className="w-full h-full max-w-none transition-transform duration-200"
-              style={{
-                width:
-                  size === 'small'
-                    ? '16px'
-                    : size === 'medium'
-                    ? '24px'
-                    : '32px',
-                height:
-                  size === 'small'
-                    ? '16px'
-                    : size === 'medium'
-                    ? '24px'
-                    : '32px',
-              }}
-              aria-hidden="true"
-            />
+            <div className="flex items-center justify-center w-full h-full absolute inset-0">
+              <IconComponent
+                className="transition-transform duration-200"
+                style={{
+                  width:
+                    size === 'small'
+                      ? '16px'
+                      : size === 'medium'
+                      ? '24px'
+                      : '32px',
+                  height:
+                    size === 'small'
+                      ? '16px'
+                      : size === 'medium'
+                      ? '24px'
+                      : '32px',
+                  display: 'block',
+                  margin: '0 auto',
+                }}
+                aria-hidden="true"
+              />
+            </div>
           )}
         </div>
 

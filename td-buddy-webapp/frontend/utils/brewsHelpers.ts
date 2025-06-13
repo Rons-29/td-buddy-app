@@ -281,9 +281,12 @@ export const getAnimationClasses = (animation: string): string => {
 
 export const getSizeClasses = (size: string): string => {
   const sizes: Record<string, string> = {
-    small: 'w-8 h-8 text-lg flex items-center justify-center rounded-full',
-    medium: 'w-12 h-12 text-xl flex items-center justify-center rounded-full',
-    large: 'w-16 h-16 text-2xl flex items-center justify-center rounded-full',
+    small:
+      'w-8 h-8 text-lg flex items-center justify-center rounded-full relative overflow-hidden',
+    medium:
+      'w-12 h-12 text-xl flex items-center justify-center rounded-full relative overflow-hidden',
+    large:
+      'w-16 h-16 text-2xl flex items-center justify-center rounded-full relative overflow-hidden',
   };
 
   return sizes[size] || sizes.medium;
