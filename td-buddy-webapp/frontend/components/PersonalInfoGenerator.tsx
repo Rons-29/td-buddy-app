@@ -15,7 +15,7 @@ import {
   Users,
 } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
-import BrewCharacter from './BrewCharacter';
+import BrewCharacter, { BrewEmotion } from './BrewCharacter';
 import { ActionButton } from './ui/ActionButton';
 import {
   Card,
@@ -114,7 +114,7 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<PersonalInfo[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [brewMood, setBrewMood] = useState<string>('happy');
+  const [brewMood, setBrewMood] = useState<BrewEmotion>('happy');
   const [brewMessage, setBrewMessage] =
     useState('個人情報生成の準備ができました！');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
@@ -806,11 +806,10 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
               <Card variant="glass" className="backdrop-blur-xl sticky top-8">
                 <CardContent className="p-6">
                   <BrewCharacter
-                    mood={brewMood}
+                    emotion={brewMood}
                     message={brewMessage}
                     animation={isGenerating ? 'spin' : 'float'}
-                    size="lg"
-                    interactive={!isGenerating}
+                    size="large"
                     showSpeechBubble={true}
                   />
                 </CardContent>

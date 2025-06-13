@@ -16,7 +16,11 @@ export type BrewEmotion =
   | 'determined'
   | 'neutral'
   | 'brewing'
-  | 'completed';
+  | 'completed'
+  | 'friendly'
+  | 'sad'
+  | 'curious'
+  | 'worried';
 
 // Brewのアニメーション
 export type BrewAnimation =
@@ -35,6 +39,7 @@ interface BrewCharacterProps {
   animation?: BrewAnimation;
   size?: 'small' | 'medium' | 'large';
   showBubble?: boolean;
+  showSpeechBubble?: boolean;
   className?: string;
 }
 
@@ -44,6 +49,7 @@ const BrewCharacter: React.FC<BrewCharacterProps> = ({
   animation = 'none',
   size = 'medium',
   showBubble = true,
+  showSpeechBubble = true,
   className = '',
 }) => {
   const [currentMessage, setCurrentMessage] = useState<string>(message || '');
@@ -88,6 +94,10 @@ const BrewCharacter: React.FC<BrewCharacterProps> = ({
       neutral: 'お疲れさまです。何かお手伝いできることはありますか？',
       brewing: '🍺 データを生成中...美味しいデータができそうです♪',
       completed: '生成完了！お役に立てて嬉しいです',
+      friendly: 'こんにちは！Brewです。よろしくお願いします♪',
+      sad: '申し訳ありません...もう一度試してみましょう',
+      curious: '興味深いですね！詳しく調べてみましょう🔍',
+      worried: '少し心配です...大丈夫でしょうか？',
     };
     return messages[emotion] || 'こんにちは！Brewです。よろしくお願いします♪';
   };
@@ -108,6 +118,10 @@ const BrewCharacter: React.FC<BrewCharacterProps> = ({
       neutral: '🍺',
       brewing: '🍺',
       completed: '🎉',
+      friendly: '😄',
+      sad: '😢',
+      curious: '🤨',
+      worried: '😰',
     };
     return emojis[emotion] || '🍺';
   };
@@ -117,7 +131,7 @@ const BrewCharacter: React.FC<BrewCharacterProps> = ({
   return (
     <div className={`brew-character-container ${className}`}>
       {/* メッセージバブル */}
-      {showBubble && displayMessage && (
+      {(showBubble || showSpeechBubble) && displayMessage && (
         <div className="relative mb-3">
           <div className="bg-white border-2 border-orange-200 rounded-lg p-3 shadow-lg relative">
             <p className="text-gray-800 text-sm font-medium">

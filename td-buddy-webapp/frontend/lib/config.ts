@@ -47,6 +47,18 @@ export const APP_CONFIG = {
     REAL_TIME_PREVIEW: true,
     ADVANCED_FILTERING: true,
   },
+
+  // オフラインモード設定
+  isOfflineMode:
+    process.env.NODE_ENV === 'development' &&
+    !process.env.NEXT_PUBLIC_API_BASE_URL,
+
+  // API URL生成メソッド
+  getApiUrl: (endpoint: string): string => {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+    return `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  },
 } as const;
 
 // ブリューからのメッセージ

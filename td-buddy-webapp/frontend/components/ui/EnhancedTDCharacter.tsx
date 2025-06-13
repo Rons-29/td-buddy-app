@@ -1,8 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from '../utils/cn';
 
-export type BrewMood = 'happy' | 'excited' | 'working' | 'thinking' | 'success' | 'error' | 'sleeping';
-export type TDAnimation = 'bounce' | 'pulse' | 'wiggle' | 'float' | 'spin' | 'none';
+export type BrewMood =
+  | 'happy'
+  | 'excited'
+  | 'working'
+  | 'thinking'
+  | 'success'
+  | 'error'
+  | 'sleeping';
+export type TDAnimation =
+  | 'bounce'
+  | 'pulse'
+  | 'wiggle'
+  | 'float'
+  | 'spin'
+  | 'none';
 
 interface EnhancedTDCharacterProps {
   mood?: BrewMood;
@@ -21,9 +34,9 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
   size = 'md',
   interactive = true,
   showSpeechBubble = true,
-  className
+  className,
 }) => {
-  const [currentMood, setCurrentMood] = useState<string>(mood);
+  const [currentMood, setCurrentMood] = useState<BrewMood>(mood);
   const [isClicked, setIsClicked] = useState(false);
 
   useEffect(() => {
@@ -31,11 +44,13 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
   }, [mood]);
 
   const handleClick = () => {
-    if (!interactive) return;
-    
+    if (!interactive) {
+      return;
+    }
+
     setIsClicked(true);
     setCurrentMood('excited');
-    
+
     setTimeout(() => {
       setIsClicked(false);
       setCurrentMood(mood);
@@ -49,14 +64,14 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
     thinking: '🤔',
     success: '🎉',
     error: '😅',
-    sleeping: '😴'
+    sleeping: '😴',
   };
 
   const sizes = {
     sm: 'w-16 h-16 text-3xl',
     md: 'w-24 h-24 text-4xl',
     lg: 'w-32 h-32 text-5xl',
-    xl: 'w-40 h-40 text-6xl'
+    xl: 'w-40 h-40 text-6xl',
   };
 
   const animations = {
@@ -65,45 +80,41 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
     wiggle: 'animate-wiggle',
     float: 'animate-float',
     spin: 'animate-spin',
-    none: ''
+    none: '',
   };
 
   const moodMessages: Record<BrewMood, string[]> = {
     happy: [
       'データ生成の準備ができました！',
       '今日も一緒に頑張りましょう♪',
-      'TDがサポートします！'
+      'TDがサポートします！',
     ],
     excited: [
       'やったー！素晴らしいですね！',
       'ワクワクします！',
-      '最高のデータを作りましょう！'
+      '最高のデータを作りましょう！',
     ],
     working: [
       'データ生成中です...',
       'もう少しお待ちください',
-      '品質の高いデータを作成中'
+      '品質の高いデータを作成中',
     ],
     thinking: [
       'うーん、考え中です...',
       '最適な方法を検討しています',
-      'どうしましょうか？'
+      'どうしましょうか？',
     ],
     success: [
       '完璧です！成功しました！',
       'お疲れさまでした！',
-      '素晴らしい結果ですね！'
+      '素晴らしい結果ですね！',
     ],
     error: [
       '申し訳ありません...',
       '一緒に解決しましょう',
-      'もう一度試してみましょう'
+      'もう一度試してみましょう',
     ],
-    sleeping: [
-      'zzz... お休み中',
-      '準備中です...',
-      'しばらくお待ちください'
-    ]
+    sleeping: ['zzz... お休み中', '準備中です...', 'しばらくお待ちください'],
   };
 
   const currentMessage = message || moodMessages[currentMood][0];
@@ -148,13 +159,19 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
 
         {/* Glow effect */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400/20 to-td-accent-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
+
         {/* Sparkles for success mood */}
         {currentMood === 'success' && (
           <>
-            <div className="absolute -top-2 -right-2 text-yellow-400 animate-ping">✨</div>
-            <div className="absolute -bottom-2 -left-2 text-yellow-400 animate-ping delay-100">⭐</div>
-            <div className="absolute -top-2 -left-2 text-yellow-400 animate-ping delay-200">💫</div>
+            <div className="absolute -top-2 -right-2 text-yellow-400 animate-ping">
+              ✨
+            </div>
+            <div className="absolute -bottom-2 -left-2 text-yellow-400 animate-ping delay-100">
+              ⭐
+            </div>
+            <div className="absolute -top-2 -left-2 text-yellow-400 animate-ping delay-200">
+              💫
+            </div>
           </>
         )}
 
@@ -167,10 +184,12 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
       </div>
 
       {/* Mood indicator */}
-      <div className={cn(
-        'mt-2 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200',
-        'bg-orange-100 text-orange-800 border border-orange-200'
-      )}>
+      <div
+        className={cn(
+          'mt-2 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200',
+          'bg-orange-100 text-orange-800 border border-orange-200'
+        )}
+      >
         {currentMood === 'happy' && '😊 ハッピー'}
         {currentMood === 'excited' && '🤩 エキサイト'}
         {currentMood === 'working' && '🔧 作業中'}
@@ -183,4 +202,4 @@ const EnhancedTDCharacter: React.FC<EnhancedTDCharacterProps> = ({
   );
 };
 
-export { EnhancedTDCharacter }; 
+export { EnhancedTDCharacter };
