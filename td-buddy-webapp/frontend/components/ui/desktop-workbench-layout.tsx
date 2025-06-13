@@ -65,6 +65,15 @@ const defaultTools: Tool[] = [
     category: 'AI支援',
   },
   {
+    id: 'ai-settings',
+    name: 'AI設定',
+    icon: '⚙️',
+    type: 'polish',
+    description: 'OpenAI APIキーの設定',
+    href: '/ai-settings',
+    category: 'AI支援',
+  },
+  {
     id: 'uuid',
     name: 'UUID生成',
     icon: '🆔',

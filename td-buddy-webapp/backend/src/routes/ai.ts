@@ -1,11 +1,9 @@
 import express from 'express';
 import { AIService } from '../services/AIService';
 import { RequestValidator } from '../services/validation/RequestValidator';
-import { PersonalInfoService } from '../services/PersonalInfoService';
 
 const router = express.Router();
 let aiService: AIService | null = null;
-const personalInfoService = new PersonalInfoService();
 
 // AI Service初期化関数
 async function initializeAI() {
@@ -38,7 +36,7 @@ router.post('/parse', async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'messageパラメータが必要です',
-        code: 'VALIDATION_ERROR'
+        code: 'VALIDATION_ERROR',
       });
     }
 
@@ -49,25 +47,25 @@ router.post('/parse', async (req, res) => {
         success: false,
         error: '入力が無効です',
         code: 'VALIDATION_ERROR',
-        details: validation.errors
+        details: validation.errors,
       });
     }
 
     // AIサービスが利用できない場合のフォールバック
     if (!aiService) {
       console.log('🔄 AIサービス未初期化 - フォールバック処理実行');
-      
+
       // シンプルなパターンマッチングによる解析
       const fallbackResult = parseFallback(message);
-      
+
       return res.json({
         success: true,
         result: {
           params: fallbackResult.params,
           clarificationNeeded: fallbackResult.clarificationNeeded,
-          clarificationQuestions: fallbackResult.clarificationQuestions
+          clarificationQuestions: fallbackResult.clarificationQuestions,
         },
-        source: 'fallback'
+        source: 'fallback',
       });
     }
 
@@ -79,25 +77,24 @@ router.post('/parse', async (req, res) => {
     return res.json({
       success: true,
       result,
-      source: 'ai'
+      source: 'ai',
     });
-
   } catch (error) {
     console.error('❌ AI解析エラー:', error);
-    
+
     // エラー時のフォールバック
     const fallbackMessage = req.body?.message || 'デフォルト要求';
     const fallbackResult = parseFallback(fallbackMessage);
-    
+
     return res.json({
       success: true,
       result: {
         params: fallbackResult.params,
         clarificationNeeded: fallbackResult.clarificationNeeded,
-        clarificationQuestions: fallbackResult.clarificationQuestions
+        clarificationQuestions: fallbackResult.clarificationQuestions,
       },
       source: 'fallback_error',
-      warning: 'AI解析でエラーが発生したため、パターンマッチングで処理しました'
+      warning: 'AI解析でエラーが発生したため、パターンマッチングで処理しました',
     });
   }
 });
@@ -111,10 +108,10 @@ function parseFallback(message: string) {
       count: 5,
       locale: 'ja',
       includeFields: ['fullName', 'email', 'phone'] as string[],
-      filters: {}
+      filters: {},
     },
     clarificationNeeded: false,
-    clarificationQuestions: [] as string[]
+    clarificationQuestions: [] as string[],
   };
 
   try {
@@ -130,7 +127,7 @@ function parseFallback(message: string) {
       const ageBase = parseInt(ageMatch[1]);
       result.params.filters = {
         ...result.params.filters,
-        ageRange: { min: ageBase, max: ageBase + 9 }
+        ageRange: { min: ageBase, max: ageBase + 9 },
       };
     }
 
@@ -143,13 +140,21 @@ function parseFallback(message: string) {
 
     // フィールドの抽出
     const fields = new Set(['fullName']);
-    
-    if (message.includes('連絡先') || message.includes('メール') || message.includes('電話')) {
+
+    if (
+      message.includes('連絡先') ||
+      message.includes('メール') ||
+      message.includes('電話')
+    ) {
       fields.add('email');
       fields.add('phone');
     }
-    
-    if (message.includes('詳細') || message.includes('住所') || message.includes('会社')) {
+
+    if (
+      message.includes('詳細') ||
+      message.includes('住所') ||
+      message.includes('会社')
+    ) {
       fields.add('kanaName');
       fields.add('address');
       fields.add('age');
@@ -158,7 +163,11 @@ function parseFallback(message: string) {
       fields.add('jobTitle');
     }
 
-    if (message.includes('エンジニア') || message.includes('営業') || message.includes('職業')) {
+    if (
+      message.includes('エンジニア') ||
+      message.includes('営業') ||
+      message.includes('職業')
+    ) {
       fields.add('company');
       fields.add('jobTitle');
     }
@@ -167,7 +176,6 @@ function parseFallback(message: string) {
 
     console.log('🔄 フォールバック解析結果:', result);
     return result;
-
   } catch (error) {
     console.error('❌ フォールバック解析エラー:', error);
     return result; // デフォルト値を返す
@@ -182,7 +190,7 @@ router.get('/status', async (req, res) => {
   try {
     const stats = aiService?.getStats() || {};
     let healthCheck = {};
-    
+
     if (aiService) {
       healthCheck = await aiService.healthCheck();
     }
@@ -192,18 +200,139 @@ router.get('/status', async (req, res) => {
       initialized: aiService !== null,
       stats,
       healthCheck,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error: any) {
     console.error('❌ AI状態確認エラー:', error);
-    
+
     return res.status(500).json({
       success: false,
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
 
-export default router; 
+// AI設定テスト接続エンドポイント
+router.post('/test-connection', async (req, res) => {
+  try {
+    const { provider, apiKey, model, maxTokens, temperature } = req.body;
+
+    if (!provider || !apiKey) {
+      return res.status(400).json({
+        success: false,
+        error: 'Provider and API key are required',
+      });
+    }
+
+    // 一時的にOpenAI Adapterを作成してテスト
+    if (provider === 'openai') {
+      const { OpenAIAdapter } = await import(
+        '../services/adapters/OpenAIAdapter'
+      );
+      const testAdapter = new OpenAIAdapter();
+
+      await testAdapter.initialize({
+        provider: 'openai',
+        apiKey,
+        model: model || 'gpt-4',
+        maxTokens: maxTokens || 2000,
+        temperature: temperature || 0.7,
+      });
+
+      // 簡単なテストリクエスト
+      const testResponse = await testAdapter.generateResponse({
+        prompt:
+          'Hello, this is a connection test. Please respond with "Connection successful".',
+        maxTokens: 50,
+        temperature: 0.1,
+      });
+
+      if (testResponse.content && testResponse.content.length > 0) {
+        res.json({
+          success: true,
+          message: 'OpenAI API connection successful',
+          model: model || 'gpt-4',
+          testResponse: testResponse.content,
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: 'Connection test failed - no response content',
+        });
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        error: 'Unsupported provider',
+      });
+    }
+  } catch (error: any) {
+    console.error('AI connection test error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Connection test failed',
+    });
+  }
+});
+
+// AI設定保存エンドポイント（一時的なセッション保存）
+router.post('/configure', async (req, res) => {
+  try {
+    const { openaiApiKey, model, maxTokens, temperature } = req.body;
+
+    if (!openaiApiKey) {
+      return res.status(400).json({
+        success: false,
+        error: 'OpenAI API key is required',
+      });
+    }
+
+    // 既存のAIServiceを再初期化
+    const { OpenAIAdapter } = await import(
+      '../services/adapters/OpenAIAdapter'
+    );
+    const openaiAdapter = new OpenAIAdapter();
+
+    await openaiAdapter.initialize({
+      provider: 'openai',
+      apiKey: openaiApiKey,
+      model: model || 'gpt-4',
+      maxTokens: maxTokens || 2000,
+      temperature: temperature || 0.7,
+    });
+
+    // AIServiceに動的にAdapterを追加
+    if (!aiService) {
+      return res.status(500).json({
+        success: false,
+        error: 'AI Service not available',
+      });
+    }
+
+    await aiService.addAdapter('openai', {
+      provider: 'openai',
+      apiKey: openaiApiKey,
+      model: model || 'gpt-4',
+      maxTokens: maxTokens || 2000,
+      temperature: temperature || 0.7,
+    });
+
+    console.log('✅ AI設定が更新されました - OpenAI API有効');
+
+    res.json({
+      success: true,
+      message: 'AI configuration updated successfully',
+      provider: 'openai',
+      model: model || 'gpt-4',
+    });
+  } catch (error: any) {
+    console.error('AI configuration error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Configuration failed',
+    });
+  }
+});
+
+export default router;
