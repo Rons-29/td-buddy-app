@@ -10,6 +10,9 @@ import {
 import { MobileLayoutWrapper } from '../components/ui/mobile-layout-wrapper';
 import './globals.css';
 
+// パフォーマンス監視（開発環境のみ）
+import PerformanceDashboardWrapper from '../components/performance/PerformanceDashboardWrapper';
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -288,6 +291,9 @@ export default function RootLayout({
 
         {/* 環境情報（開発時のみ） */}
         <EnvironmentInfo />
+
+        {/* パフォーマンス監視（開発環境のみ） */}
+        <PerformanceDashboardWrapper />
 
         {/* キーボードショートカット情報 */}
         <KeyboardShortcuts />

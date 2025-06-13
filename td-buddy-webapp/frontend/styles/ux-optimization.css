@@ -1,0 +1,274 @@
+/* 🎯 UX最適化 - コンバージョン重視デザインシステム */
+/* Quality Workbench - 2025年6月13日 */
+
+:root {
+  /* === コンバージョン最適化カラー === */
+  --conversion-primary: #2563eb; /* 強いCTA */
+  --conversion-secondary: #10b981; /* 成功・完了 */
+  --conversion-accent: #f59e0b; /* 注意・重要 */
+  --conversion-neutral: #6b7280; /* 補助情報 */
+
+  /* === 視覚的階層システム === */
+  --hierarchy-hero: 2.5rem; /* 40px - 最重要 */
+  --hierarchy-primary: 1.875rem; /* 30px - 主要 */
+  --hierarchy-secondary: 1.5rem; /* 24px - 重要 */
+  --hierarchy-tertiary: 1.25rem; /* 20px - 補助 */
+  --hierarchy-body: 1rem; /* 16px - 本文 */
+  --hierarchy-caption: 0.875rem; /* 14px - キャプション */
+
+  /* === コンバージョン最適化スペーシング === */
+  --conv-space-hero: 4rem; /* 64px - ヒーロー周り */
+  --conv-space-section: 3rem; /* 48px - セクション間 */
+  --conv-space-component: 2rem; /* 32px - コンポーネント間 */
+  --conv-space-element: 1rem; /* 16px - 要素間 */
+  --conv-space-tight: 0.5rem; /* 8px - 密接な要素 */
+}
+
+/* === F字型レイアウト最適化 === */
+.conv-f-layout {
+  display: grid;
+  grid-template-areas:
+    'hero hero hero'
+    'primary secondary tertiary'
+    'content content sidebar';
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--conv-space-section);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.conv-hero {
+  grid-area: hero;
+}
+.conv-primary {
+  grid-area: primary;
+}
+.conv-secondary {
+  grid-area: secondary;
+}
+.conv-tertiary {
+  grid-area: tertiary;
+}
+.conv-content {
+  grid-area: content;
+}
+.conv-sidebar {
+  grid-area: sidebar;
+}
+
+/* === 視覚的階層システム === */
+.conv-hierarchy-1 {
+  font-size: var(--hierarchy-hero);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--conversion-primary);
+  margin-bottom: var(--conv-space-component);
+}
+
+.conv-hierarchy-2 {
+  font-size: var(--hierarchy-primary);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--conversion-primary);
+  margin-bottom: var(--conv-space-element);
+}
+
+.conv-hierarchy-3 {
+  font-size: var(--hierarchy-secondary);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--conversion-neutral);
+  margin-bottom: var(--conv-space-element);
+}
+
+/* === プログレッシブディスクロージャー === */
+.conv-progressive-disclosure {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.conv-disclosure-header {
+  padding: var(--conv-space-element);
+  background: #f9fafb;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.conv-disclosure-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.conv-disclosure-content.expanded {
+  max-height: 500px;
+  padding: var(--conv-space-element);
+}
+
+/* === CTA最適化 === */
+.conv-cta-primary {
+  background: var(--conversion-primary);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.conv-cta-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px -1px rgba(37, 99, 235, 0.4);
+}
+
+.conv-cta-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.conv-cta-primary:hover::before {
+  left: 100%;
+}
+
+.conv-cta-secondary {
+  background: transparent;
+  color: var(--conversion-primary);
+  padding: 1rem 2rem;
+  border: 2px solid var(--conversion-primary);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.conv-cta-secondary:hover {
+  background: var(--conversion-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* === 3-2-1ルール（重要度による配置） === */
+.conv-importance-3 {
+  /* 最重要: 左上、大きく、強い色 */
+  grid-column: span 2;
+  font-size: var(--hierarchy-primary);
+  background: var(--conversion-primary);
+  color: white;
+  padding: var(--conv-space-component);
+}
+
+.conv-importance-2 {
+  /* 重要: 中央、中サイズ、アクセント色 */
+  grid-column: span 1;
+  font-size: var(--hierarchy-secondary);
+  background: var(--conversion-accent);
+  color: white;
+  padding: var(--conv-space-element);
+}
+
+.conv-importance-1 {
+  /* 補助: 右下、小さく、ニュートラル */
+  font-size: var(--hierarchy-body);
+  background: #f9fafb;
+  color: var(--conversion-neutral);
+  padding: var(--conv-space-tight);
+}
+
+/* === モバイルファースト最適化 === */
+@media (max-width: 768px) {
+  .conv-f-layout {
+    grid-template-areas:
+      'hero'
+      'primary'
+      'secondary'
+      'tertiary'
+      'content'
+      'sidebar';
+    grid-template-columns: 1fr;
+    gap: var(--conv-space-element);
+    padding: var(--conv-space-element);
+  }
+
+  .conv-hierarchy-1 {
+    font-size: var(--hierarchy-primary);
+  }
+
+  .conv-hierarchy-2 {
+    font-size: var(--hierarchy-secondary);
+  }
+
+  .conv-cta-primary,
+  .conv-cta-secondary {
+    width: 100%;
+    text-align: center;
+    margin-bottom: var(--conv-space-element);
+  }
+
+  .conv-importance-3,
+  .conv-importance-2 {
+    grid-column: span 1;
+  }
+}
+
+/* === アクセシビリティ強化 === */
+.conv-focus-visible:focus-visible {
+  outline: 3px solid var(--conversion-accent);
+  outline-offset: 2px;
+}
+
+.conv-high-contrast {
+  border: 2px solid var(--conversion-primary);
+  background: white;
+  color: var(--conversion-primary);
+}
+
+/* === パフォーマンス最適化 === */
+.conv-lazy-load {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.conv-lazy-load.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === A/Bテスト用バリエーション === */
+.conv-variant-a .conv-cta-primary {
+  background: var(--conversion-primary);
+}
+
+.conv-variant-b .conv-cta-primary {
+  background: var(--conversion-secondary);
+}
+
+.conv-variant-c .conv-cta-primary {
+  background: linear-gradient(
+    135deg,
+    var(--conversion-primary),
+    var(--conversion-secondary)
+  );
+}

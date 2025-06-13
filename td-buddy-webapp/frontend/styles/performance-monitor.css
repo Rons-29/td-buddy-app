@@ -1,0 +1,138 @@
+/* パフォーマンス監視コンポーネント専用スタイル */
+/* 名前空間: perf-monitor- */
+
+.perf-monitor-container {
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: normal;
+  letter-spacing: normal;
+  box-sizing: border-box;
+}
+
+.perf-monitor-container * {
+  box-sizing: border-box;
+}
+
+/* 既存のワークベンチスタイルをリセット */
+.perf-monitor-container button {
+  min-height: auto;
+  min-width: auto;
+  font-family: inherit;
+}
+
+.perf-monitor-container input {
+  min-height: auto;
+  min-width: auto;
+  font-family: inherit;
+}
+
+/* ダッシュボード位置調整 */
+.perf-dashboard-position {
+  top: 80px; /* ヘッダーの下に配置 */
+  left: 16px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* モニター位置調整 */
+.perf-monitor-position {
+  bottom: 16px;
+  right: 16px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* アナライザー位置調整 */
+.perf-analyzer-position {
+  top: 80px; /* ヘッダーの下に配置 */
+  right: 16px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* オプティマイザー位置調整 */
+.perf-optimizer-position {
+  bottom: 16px;
+  right: 400px; /* BundleAnalyzerと重複しないように */
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .perf-dashboard-position,
+  .perf-analyzer-position {
+    top: 60px;
+    left: 8px;
+    right: 8px;
+    width: calc(100vw - 16px);
+    max-width: none;
+  }
+
+  .perf-monitor-position,
+  .perf-optimizer-position {
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    width: calc(100vw - 16px);
+    max-width: none;
+  }
+
+  .perf-optimizer-position {
+    right: 8px; /* モバイルでは右端に配置 */
+  }
+}
+
+/* 小さなデバイスでは非表示 */
+@media (max-width: 480px) {
+  .perf-monitor-container {
+    display: none;
+  }
+}
+
+/* 印刷時は非表示 */
+@media print {
+  .perf-monitor-container {
+    display: none !important;
+  }
+}
+
+/* フォーカスの管理 */
+.perf-monitor-container:focus-within {
+  z-index: 10000;
+}
+
+/* アニメーション設定 */
+.perf-monitor-fade-in {
+  animation: perf-fade-in 0.3s ease-out;
+}
+
+@keyframes perf-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .perf-monitor-container .bg-white {
+    background-color: #1f2937 !important;
+    color: #f9fafb !important;
+  }
+
+  .perf-monitor-container .border-gray-200 {
+    border-color: #374151 !important;
+  }
+
+  .perf-monitor-container .text-gray-800 {
+    color: #f9fafb !important;
+  }
+
+  .perf-monitor-container .text-gray-600 {
+    color: #d1d5db !important;
+  }
+}

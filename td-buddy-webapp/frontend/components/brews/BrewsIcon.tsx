@@ -63,6 +63,31 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
 
   const OverlayIcon = getEmotionOverlay(emotion);
 
+  // オーバーレイサイズの計算
+  const getOverlaySize = () => {
+    if (size === 'small') {
+      return {
+        wrapper: 'w-3 h-3',
+        iconSize: 8,
+        position: 'top-0 right-0',
+      };
+    }
+    if (size === 'large') {
+      return {
+        wrapper: 'w-6 h-6',
+        iconSize: 14,
+        position: '-top-1 -right-1',
+      };
+    }
+    return {
+      wrapper: 'w-4 h-4',
+      iconSize: 10,
+      position: '-top-1 -right-1',
+    };
+  };
+
+  const overlaySize = getOverlaySize();
+
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -135,50 +160,25 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
 
         {/* 感情オーバーレイ */}
         {OverlayIcon && (
-          <div
-            className={`absolute ${
-              size === 'small'
-                ? '-top-1 -right-1'
-                : size === 'large'
-                ? '-top-3 -right-3'
-                : '-top-2 -right-2'
-            }`}
-          >
+          <div className={`absolute ${overlaySize.position}`}>
             <div
-              className={`
-                ${
-                  size === 'small'
-                    ? 'w-5 h-5'
-                    : size === 'large'
-                    ? 'w-8 h-8'
-                    : 'w-6 h-6'
-                }
-                rounded-full flex items-center justify-center shadow-lg border-2 border-white
-                ${
-                  emotion === 'success'
-                    ? 'bg-green-500 text-white'
-                    : emotion === 'error'
-                    ? 'bg-red-500 text-white'
-                    : emotion === 'warning'
-                    ? 'bg-yellow-500 text-white'
-                    : emotion === 'working'
-                    ? 'bg-blue-500 text-white'
-                    : emotion === 'excited'
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-gray-500 text-white'
-                }
-              `}
+              className={`rounded-full flex items-center justify-center shadow-lg border-2 border-white ${
+                overlaySize.wrapper
+              } ${
+                emotion === 'success'
+                  ? 'bg-green-500 text-white'
+                  : emotion === 'error'
+                  ? 'bg-red-500 text-white'
+                  : emotion === 'warning'
+                  ? 'bg-yellow-500 text-white'
+                  : emotion === 'working'
+                  ? 'bg-blue-500 text-white'
+                  : emotion === 'excited'
+                  ? 'bg-purple-500 text-white'
+                  : 'bg-gray-500 text-white'
+              }`}
             >
-              <OverlayIcon
-                className={`${
-                  size === 'small'
-                    ? 'w-3 h-3'
-                    : size === 'large'
-                    ? 'w-5 h-5'
-                    : 'w-3.5 h-3.5'
-                }`}
-                aria-hidden="true"
-              />
+              <OverlayIcon size={overlaySize.iconSize} aria-hidden="true" />
             </div>
           </div>
         )}
