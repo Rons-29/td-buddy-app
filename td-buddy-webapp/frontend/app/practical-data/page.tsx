@@ -3,13 +3,18 @@
 import {
   CheckSquare,
   Copy,
+  Database,
   Download,
-  List,
+  HelpCircle,
+  Link,
   Search,
   Square,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
+import { Card } from '../../components/ui/Card';
+import { Input } from '../../components/ui/Input';
 import { allDataSets, PracticalDataSet } from '../../data/practicalDataSets';
 
 export default function PracticalDataPage() {
@@ -18,8 +23,9 @@ export default function PracticalDataPage() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showGuide, setShowGuide] = useState(false);
   const [brewMessage, setBrewMessage] = useState(
-    '実用的なデータリストへようこそ！ビジネスで実際に使用されるデータから選択できます♪'
+    '🔗 実用データ接合工具の準備完了！ビジネスデータを接合・結合できます♪'
   );
 
   // カテゴリ一覧
@@ -77,7 +83,9 @@ export default function PracticalDataPage() {
   const handleDataSetSelect = (dataSet: PracticalDataSet) => {
     setSelectedDataSet(dataSet);
     setSelectedItems([]);
-    setBrewMessage(dataSet.brewMessage);
+    setBrewMessage(
+      `🔗 「${dataSet.name}」データセットを接合対象に選択しました - ${dataSet.description}`
+    );
   };
 
   // アイテム選択切り替え
@@ -89,15 +97,15 @@ export default function PracticalDataPage() {
 
       if (newSelection.length === 0) {
         setBrewMessage(
-          'アイテムを選択してください。必要なデータにチェックを入れてくださいね♪'
+          'アイテムを選択してください。接合したいデータにチェックを入れてくださいね♪'
         );
       } else if (newSelection.length === 1) {
         setBrewMessage(
-          `「${newSelection[0]}」を選択中です。他にも必要なアイテムがあれば追加してください♪`
+          `「${newSelection[0]}」を接合対象に選択中です。他にも接合したいアイテムがあれば追加してください♪`
         );
       } else {
         setBrewMessage(
-          `${newSelection.length}件のアイテムを選択中です。一括操作で効率的に活用しましょう♪`
+          `${newSelection.length}件のアイテムを接合対象に選択中です。一括接合で効率的に結合しましょう♪`
         );
       }
 
@@ -118,11 +126,11 @@ export default function PracticalDataPage() {
 
     if (newSelection.length === 0) {
       setBrewMessage(
-        '全てのアイテムの選択を解除しました。必要なアイテムを個別に選択してください♪'
+        '全てのアイテムの選択を解除しました。接合したいアイテムを個別に選択してください♪'
       );
     } else {
       setBrewMessage(
-        `${selectedDataSet.name}の全${newSelection.length}件を選択しました！一括操作をお試しください♪`
+        `${selectedDataSet.name}の全${newSelection.length}件を接合対象に選択しました！一括接合をお試しください♪`
       );
     }
   };
@@ -136,7 +144,7 @@ export default function PracticalDataPage() {
     const text = selectedItems.join('\n');
     navigator.clipboard.writeText(text);
     setBrewMessage(
-      `✅ 選択した${selectedItems.length}件のアイテムをクリップボードにコピーしました！`
+      `✅ 選択した${selectedItems.length}件のアイテムを接合してクリップボードにコピーしました！`
     );
   };
 
@@ -158,7 +166,7 @@ export default function PracticalDataPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${selectedDataSet.id}_selected_${
+    a.download = `${selectedDataSet.id}_joined_${
       new Date().toISOString().split('T')[0]
     }.csv`;
     document.body.appendChild(a);
@@ -167,293 +175,364 @@ export default function PracticalDataPage() {
     URL.revokeObjectURL(url);
 
     setBrewMessage(
-      `📥 「${selectedDataSet.name}」の選択アイテム（${selectedItems.length}件）をCSVファイルでダウンロードしました！`
+      `📥 「${selectedDataSet.name}」の接合アイテム（${selectedItems.length}件）をCSVファイルでダウンロードしました！`
     );
   };
 
   return (
     <div className="min-h-screen wb-workbench-bg">
-      {/* ヘッダー */}
-      <div className="wb-surface-primary border-b wb-border sticky top-0 z-40 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <List className="h-8 w-8 text-wb-tool-join-600" />
-              <h1 className="text-2xl font-bold wb-text-primary">
-                実用的データ選択工具
+      {/* ワークベンチヘッダー */}
+      <Card workbench className="mb-6 bg-green-50 border-green-200">
+        <div className="flex items-center justify-between p-6">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <Link className="h-6 w-6 text-green-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-green-800">
+                🔗 実用データ接合工具
               </h1>
-              <span className="wb-badge wb-badge-join">ビジネス向けリスト</span>
+              <p className="text-green-600 mt-1">
+                ビジネス向けデータの選択・接合・結合
+              </p>
+            </div>
+            <Badge
+              variant="outline"
+              className="bg-green-100 text-green-700 border-green-300"
+            >
+              接合工具
+            </Badge>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <Button
+              workbench
+              onClick={() => setShowGuide(!showGuide)}
+              className={`${
+                showGuide
+                  ? 'bg-green-600 text-white'
+                  : 'bg-green-100 text-green-700'
+              }`}
+            >
+              <HelpCircle className="h-4 w-4 mr-2" />
+              {showGuide ? 'ガイドを閉じる' : '接合ガイド'}
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Brewメッセージ */}
+      <Card workbench className="mb-6 bg-green-50 border-green-200">
+        <div className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="text-2xl">🍺</div>
+            <div>
+              <div className="font-medium text-green-800">
+                Brew からのメッセージ
+              </div>
+              <div className="text-green-700 mt-1">{brewMessage}</div>
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* TDメッセージ */}
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <div className="text-2xl">🍺</div>
-            <p className="text-blue-800 font-medium">{brewMessage}</p>
-          </div>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* 左側: データセット一覧 */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
-              <h2 className="text-lg font-semibold text-td-gray-800 mb-4">
-                📂 データセット一覧
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* データセット選択パネル */}
+        <Card workbench className="lg:col-span-1 bg-green-50 border-green-200">
+          <div className="p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <Database className="h-5 w-5 text-green-600" />
+              <h2 className="text-lg font-semibold text-green-800">
+                データセット選択
               </h2>
+            </div>
 
-              {/* 検索・フィルタ */}
-              <div className="mb-4 space-y-3">
+            {/* 検索・フィルタ */}
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-green-700 mb-2">
+                  データセット検索
+                </label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-td-gray-400" />
-                  <input
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+                  <Input
+                    workbench
                     type="text"
-                    placeholder="データセットを検索..."
+                    placeholder="データセット名で検索..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-td-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="pl-10"
                   />
                 </div>
+              </div>
 
+              <div>
+                <label className="block text-sm font-medium text-green-700 mb-2">
+                  カテゴリフィルタ
+                </label>
                 <select
                   value={selectedCategory}
                   onChange={e => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-td-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-green-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>
-                      {getCategoryDisplayName(cat)}
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {getCategoryDisplayName(category)}
                     </option>
                   ))}
                 </select>
               </div>
-
-              {/* データセットリスト */}
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {filteredDataSets.map(dataSet => (
-                  <div
-                    key={dataSet.id}
-                    onClick={() => handleDataSetSelect(dataSet)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedDataSet?.id === dataSet.id
-                        ? 'bg-blue-50 border-blue-200'
-                        : 'bg-white border-td-gray-200 hover:bg-td-gray-50'
-                    }`}
-                  >
-                    <div className="font-medium text-td-gray-800 text-sm">
-                      {dataSet.name}
-                    </div>
-                    <div className="text-xs text-td-gray-500 mt-1">
-                      {dataSet.description}
-                    </div>
-                    <div className="text-xs text-blue-600 mt-1">
-                      {dataSet.items.length}件のアイテム
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {filteredDataSets.length === 0 && (
-                <div className="text-center py-8 text-td-gray-500">
-                  <p>条件に一致するデータセットがありません</p>
-                  <p className="text-sm mt-1">
-                    検索条件を変更してお試しください
-                  </p>
-                </div>
-              )}
             </div>
-          </div>
 
-          {/* 右側: アイテム選択 */}
-          <div className="lg:col-span-2">
-            {selectedDataSet ? (
-              <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-td-gray-800">
-                    {selectedDataSet.name}
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-td-gray-500">
-                      {selectedItems.length}件選択中 /{' '}
-                      {selectedDataSet.items.length}件
-                    </span>
-                  </div>
-                </div>
-
-                <p className="text-td-gray-600 text-sm mb-4">
-                  {selectedDataSet.description}
-                </p>
-
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="text-sm text-green-800">
-                    <strong>活用場面:</strong> {selectedDataSet.useCase}
-                  </div>
-                </div>
-
-                {/* 選択操作 */}
-                <div className="mb-4 flex items-center justify-between">
-                  <Button
-                    onClick={toggleAllSelection}
-                    icon={
-                      selectedItems.length === selectedDataSet.items.length ? (
-                        <CheckSquare className="h-4 w-4" />
-                      ) : (
-                        <Square className="h-4 w-4" />
-                      )
-                    }
-                    variant={
-                      selectedItems.length === selectedDataSet.items.length
-                        ? 'primary'
-                        : 'secondary'
-                    }
-                    size="sm"
-                  >
-                    {selectedItems.length === selectedDataSet.items.length
-                      ? '全解除'
-                      : '全選択'}
-                  </Button>
-
-                  {selectedItems.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        onClick={handleCopySelected}
-                        icon={<Copy className="h-4 w-4" />}
-                        variant="primary"
-                        size="sm"
-                      >
-                        コピー ({selectedItems.length})
-                      </Button>
-                      <Button
-                        onClick={handleDownloadCSV}
-                        icon={<Download className="h-4 w-4" />}
-                        variant="primary"
-                        size="sm"
-                      >
-                        CSV出力
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                {/* アイテム一覧 */}
-                <div className="grid gap-2 max-h-96 overflow-y-auto">
-                  {selectedDataSet.items.map((item, index) => (
-                    <div
-                      key={index}
-                      onClick={() => toggleItemSelection(item)}
-                      className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
-                        selectedItems.includes(item)
-                          ? 'bg-blue-50 border-blue-200'
-                          : 'bg-white border-td-gray-200 hover:bg-td-gray-50'
-                      }`}
+            {/* データセット一覧 */}
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {filteredDataSets.map(dataSet => (
+                <button
+                  key={dataSet.id}
+                  onClick={() => handleDataSetSelect(dataSet)}
+                  className={`w-full p-4 text-left border-2 rounded-lg transition-all hover:shadow-md ${
+                    selectedDataSet?.id === dataSet.id
+                      ? 'border-green-500 bg-green-100'
+                      : 'border-green-200 hover:border-green-300 bg-green-50'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-medium text-green-800">
+                      {dataSet.name}
+                    </h3>
+                    <Badge
+                      variant="outline"
+                      className="bg-green-100 text-green-700 border-green-300 text-xs"
                     >
-                      <div className="flex-shrink-0 mr-3">
-                        {selectedItems.includes(item) ? (
-                          <CheckSquare className="h-5 w-5 text-blue-600" />
-                        ) : (
-                          <Square className="h-5 w-5 text-td-gray-400" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <span className="text-td-gray-800 font-medium">
-                          {item}
-                        </span>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <Button
-                          onClick={e => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(item);
-                            setBrewMessage(
-                              `✅ 「${item}」をクリップボードにコピーしました！`
-                            );
-                          }}
-                          icon={<Copy className="h-3 w-3" />}
-                          variant="secondary"
-                          size="sm"
-                        >
-                          コピー
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
-                <div className="text-center py-12">
-                  <List className="h-12 w-12 text-td-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-td-gray-800 mb-2">
-                    データセットを選択してください
-                  </h3>
-                  <p className="text-td-gray-600">
-                    左側のリストからデータセットを選択すると、アイテムの一覧が表示されます
+                      {dataSet.items.length}件
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-green-600 mb-2">
+                    {dataSet.description}
                   </p>
-                </div>
+                  <div className="text-xs text-green-500">
+                    カテゴリ: {getCategoryDisplayName(dataSet.category)}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {filteredDataSets.length === 0 && (
+              <div className="text-center py-8">
+                <Database className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <p className="text-green-600">
+                  該当するデータセットが見つかりません
+                </p>
               </div>
             )}
           </div>
-        </div>
+        </Card>
 
-        {/* 選択済みアイテムの詳細 */}
-        {selectedItems.length > 0 && selectedDataSet && (
-          <div className="mt-8 bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
-            <h3 className="text-lg font-semibold text-td-gray-800 mb-4">
-              📋 選択済みアイテム ({selectedItems.length}件)
-            </h3>
+        {/* データ接合パネル */}
+        <Card workbench className="lg:col-span-2 bg-green-50 border-green-200">
+          <div className="p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <Link className="h-5 w-5 text-green-600" />
+              <h2 className="text-lg font-semibold text-green-800">
+                データ接合・結合
+              </h2>
+            </div>
 
-            <div className="space-y-2 max-h-40 overflow-y-auto">
-              {selectedItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-td-gray-50 rounded"
-                >
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                      {index + 1}
-                    </span>
-                    <span className="text-sm text-td-gray-800">{item}</span>
+            {selectedDataSet ? (
+              <div className="space-y-6">
+                {/* 選択されたデータセット情報 */}
+                <div className="p-4 bg-green-100 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-green-800">
+                      {selectedDataSet.name}
+                    </h3>
+                    <Badge
+                      variant="outline"
+                      className="bg-green-200 text-green-800 border-green-400"
+                    >
+                      {selectedDataSet.items.length}件のデータ
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-green-700">
+                    {selectedDataSet.description}
+                  </p>
+                </div>
+
+                {/* 接合統計 */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-green-100 rounded-lg">
+                    <div className="text-2xl font-bold text-green-800">
+                      {selectedDataSet.items.length}
+                    </div>
+                    <div className="text-sm text-green-600">総アイテム数</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-100 rounded-lg">
+                    <div className="text-2xl font-bold text-green-800">
+                      {selectedItems.length}
+                    </div>
+                    <div className="text-sm text-green-600">接合対象</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-100 rounded-lg">
+                    <div className="text-2xl font-bold text-green-800">
+                      {selectedItems.length > 0
+                        ? Math.round(
+                            (selectedItems.length /
+                              selectedDataSet.items.length) *
+                              100
+                          )
+                        : 0}
+                      %
+                    </div>
+                    <div className="text-sm text-green-600">接合率</div>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* 一括接合アクション */}
+                <div className="flex items-center justify-between p-4 bg-green-100 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Button
+                      workbench
+                      onClick={toggleAllSelection}
+                      className="bg-green-600 text-white hover:bg-green-700"
+                    >
+                      {selectedItems.length === selectedDataSet.items.length ? (
+                        <>
+                          <Square className="h-4 w-4 mr-2" />
+                          全解除
+                        </>
+                      ) : (
+                        <>
+                          <CheckSquare className="h-4 w-4 mr-2" />
+                          全選択
+                        </>
+                      )}
+                    </Button>
+
+                    {selectedItems.length > 0 && (
+                      <>
+                        <Button
+                          workbench
+                          onClick={handleCopySelected}
+                          className="bg-green-100 text-green-700 hover:bg-green-200"
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          接合してコピー
+                        </Button>
+                        <Button
+                          workbench
+                          onClick={handleDownloadCSV}
+                          className="bg-green-100 text-green-700 hover:bg-green-200"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          接合してダウンロード
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* アイテム一覧 */}
+                <div className="max-h-96 overflow-y-auto border border-green-300 rounded-lg bg-white">
+                  <div className="p-4">
+                    <h3 className="font-medium text-green-800 mb-3">
+                      接合アイテム一覧 ({selectedDataSet.items.length}件)
+                    </h3>
+                    <div className="space-y-2">
+                      {selectedDataSet.items.map((item, index) => (
+                        <label
+                          key={index}
+                          className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+                            selectedItems.includes(item)
+                              ? 'bg-green-100 border border-green-300'
+                              : 'bg-green-50 hover:bg-green-100 border border-green-200'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.includes(item)}
+                            onChange={() => toggleItemSelection(item)}
+                            className="mr-3 h-4 w-4 text-green-600 focus:ring-green-500 border-green-300 rounded"
+                          />
+                          <span className="text-green-800 flex-1">{item}</span>
+                          {selectedItems.includes(item) && (
+                            <Badge
+                              variant="outline"
+                              className="bg-green-200 text-green-800 border-green-400 text-xs"
+                            >
+                              接合対象
+                            </Badge>
+                          )}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Link className="h-16 w-16 text-green-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-green-800 mb-2">
+                  データセットを選択してください
+                </h3>
+                <p className="text-green-600">
+                  左側のパネルからデータセットを選択すると、接合・結合操作が可能になります
+                </p>
+              </div>
+            )}
           </div>
-        )}
-
-        {/* 使い方ガイド */}
-        <div className="mt-8 bg-white rounded-xl p-6 border border-td-gray-200 shadow-sm">
-          <h3 className="text-lg font-semibold text-td-gray-800 mb-4">
-            💡 使い方ガイド
-          </h3>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <h4 className="font-medium text-td-gray-800 mb-2">
-                🎯 効率的な選択方法
-              </h4>
-              <ul className="space-y-1 text-sm text-td-gray-600">
-                <li>• 検索バーでデータセットを絞り込み</li>
-                <li>• カテゴリフィルタで分野を選択</li>
-                <li>• 必要なアイテムにチェック</li>
-                <li>• 全選択で一括選択も可能</li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-medium text-td-gray-800 mb-2">⚡ 活用例</h4>
-              <ul className="space-y-1 text-sm text-td-gray-600">
-                <li>• ゲーム施策の同時リリース計画</li>
-                <li>• ECサイトのカテゴリ設定</li>
-                <li>• Web系メンテナンス時間調整</li>
-                <li>• マーケティング施策の計画</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        </Card>
       </div>
+
+      {/* 接合ガイド */}
+      {showGuide && (
+        <Card workbench className="mt-6 bg-green-50 border-green-200">
+          <div className="p-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <HelpCircle className="h-5 w-5 text-green-600" />
+              <h2 className="text-lg font-semibold text-green-800">
+                実用データ接合工具ガイド
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-medium text-green-800 mb-3">
+                  🔗 データ接合機能
+                </h3>
+                <ul className="space-y-2 text-sm text-green-700">
+                  <li>• ビジネス向け実用データの選択</li>
+                  <li>• カテゴリ別データセット分類</li>
+                  <li>• 複数アイテムの一括接合</li>
+                  <li>• CSV形式での結合出力</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-medium text-green-800 mb-3">
+                  📊 活用シーン
+                </h3>
+                <ul className="space-y-2 text-sm text-green-700">
+                  <li>• ECサイトの商品データ作成</li>
+                  <li>• ゲーム開発のアイテムリスト</li>
+                  <li>• マーケティング資料の準備</li>
+                  <li>• Web開発のテストデータ</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-green-100 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="text-lg">💡</span>
+                <span className="font-medium text-green-800">Brewのヒント</span>
+              </div>
+              <p className="text-sm text-green-700">
+                データセットを選択後、必要なアイテムにチェックを入れて「接合してコピー」または「接合してダウンロード」で効率的にデータを結合できます。
+                全選択機能を使えば、データセット全体を一度に接合することも可能です。
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

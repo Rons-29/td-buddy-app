@@ -167,7 +167,9 @@ const DateTimeGenerator: React.FC = () => {
   // 最適な会議時間を提案
   const suggestMeetingTime = useCallback(() => {
     if (selectedTimezones.length < 2) {
-      setBrewMessage('会議時間の提案には2つ以上のタイムゾーンを選択してください');
+      setBrewMessage(
+        '会議時間の提案には2つ以上のタイムゾーンを選択してください'
+      );
       return;
     }
 
@@ -202,7 +204,9 @@ const DateTimeGenerator: React.FC = () => {
     setCurrentTime(now);
     setIsRealTimeMode(true); // リアルタイムモードを再開
     updateWorldTimeComparison(now);
-    setBrewMessage('🔄 現在時刻にリセットしました！リアルタイム更新を再開します');
+    setBrewMessage(
+      '🔄 現在時刻にリセットしました！リアルタイム更新を再開します'
+    );
   }, [updateWorldTimeComparison]);
 
   // カスタム時間設定
@@ -305,7 +309,9 @@ const DateTimeGenerator: React.FC = () => {
       }
 
       setGeneratedData(results);
-      setBrewMessage(`✅ ${settings.count}件の日付・時刻データを生成しました！`);
+      setBrewMessage(
+        `✅ ${settings.count}件の日付・時刻データを生成しました！`
+      );
       setIsGenerating(false);
       setButtonActive('generate'); // ボタン状態を更新
       setIndividualCopyStates({}); // 個別コピー状態をリセット
