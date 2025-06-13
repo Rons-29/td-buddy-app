@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { PasswordGenerator } from '../../app/password/components/PasswordGenerator';
-import { CustomCharsetsEditor } from '../../app/password/components/CustomCharsetsEditor';
+import { CustomCharsetsEditor } from '../../components/CustomCharsetsEditor';
+import { PasswordGenerator } from '../../components/PasswordGenerator';
 
 // Mock fetch for API calls
 global.fetch = jest.fn();
@@ -16,7 +16,7 @@ describe('Password Generation Frontend Integration Tests', () => {
   describe('PasswordGenerator Component', () => {
     it('🧪 基本的なパスワード生成フローが動作する', async () => {
       const user = userEvent.setup();
-      
+
       // Mock API response
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -24,9 +24,9 @@ describe('Password Generation Frontend Integration Tests', () => {
           success: true,
           data: {
             passwords: ['TestPass123!', 'SecurePass456@', 'StrongPass789#'],
-            stats: { generated: 3, strength: 'strong' }
-          }
-        })
+            stats: { generated: 3, strength: 'strong' },
+          },
+        }),
       } as Response);
 
       render(<PasswordGenerator />);
@@ -64,7 +64,7 @@ describe('Password Generation Frontend Integration Tests', () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: expect.stringContaining('"length":16')
+            body: expect.stringContaining('"length":16'),
           })
         );
       });
@@ -79,16 +79,16 @@ describe('Password Generation Frontend Integration Tests', () => {
 
     it('🧪 構成プリセット選択が正しく動作する', async () => {
       const user = userEvent.setup();
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           success: true,
           data: {
             passwords: ['Hg8@pL2#vK9!'],
-            stats: { generated: 1, strength: 'very-strong' }
-          }
-        })
+            stats: { generated: 1, strength: 'very-strong' },
+          },
+        }),
       } as Response);
 
       render(<PasswordGenerator />);
@@ -107,7 +107,7 @@ describe('Password Generation Frontend Integration Tests', () => {
           '/api/password/generate-with-composition',
           expect.objectContaining({
             method: 'POST',
-            body: expect.stringContaining('"composition":"high-security"')
+            body: expect.stringContaining('"composition":"high-security"'),
           })
         );
       });
@@ -115,21 +115,26 @@ describe('Password Generation Frontend Integration Tests', () => {
 
     it('🧪 除外設定が反映される', async () => {
       const user = userEvent.setup();
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           success: true,
-          data: { passwords: ['Kg8pL2vK9'], stats: { generated: 1, strength: 'strong' } }
-        })
+          data: {
+            passwords: ['Kg8pL2vK9'],
+            stats: { generated: 1, strength: 'strong' },
+          },
+        }),
       } as Response);
 
       render(<PasswordGenerator />);
 
       // 除外設定を有効化
-      const excludeAmbiguousCheckbox = screen.getByLabelText(/紛らわしい文字を除外/);
-      const excludeSimilarCheckbox = screen.getByLabelText(/似ている記号を除外/);
-      
+      const excludeAmbiguousCheckbox =
+        screen.getByLabelText(/紛らわしい文字を除外/);
+      const excludeSimilarCheckbox =
+        screen.getByLabelText(/似ている記号を除外/);
+
       await user.click(excludeAmbiguousCheckbox);
       await user.click(excludeSimilarCheckbox);
 
@@ -142,7 +147,7 @@ describe('Password Generation Frontend Integration Tests', () => {
         expect(mockFetch).toHaveBeenCalledWith(
           expect.any(String),
           expect.objectContaining({
-            body: expect.stringContaining('"excludeAmbiguous":true')
+            body: expect.stringContaining('"excludeAmbiguous":true'),
           })
         );
       });
@@ -150,7 +155,7 @@ describe('Password Generation Frontend Integration Tests', () => {
 
     it('🧪 エラーハンドリングが正しく動作する', async () => {
       const user = userEvent.setup();
-      
+
       // API エラーをモック
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -159,9 +164,9 @@ describe('Password Generation Frontend Integration Tests', () => {
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'パスワード長が無効です'
-          }
-        })
+            message: 'パスワード長が無効です',
+          },
+        }),
       } as Response);
 
       render(<PasswordGenerator />);
@@ -177,21 +182,28 @@ describe('Password Generation Frontend Integration Tests', () => {
 
     it('🧪 大量生成時の進行状況表示', async () => {
       const user = userEvent.setup();
-      
+
       // 遅延を含むAPIレスポンス
-      mockFetch.mockImplementationOnce(() => 
-        new Promise(resolve => 
-          setTimeout(() => resolve({
-            ok: true,
-            json: async () => ({
-              success: true,
-              data: {
-                passwords: Array(500).fill(null).map((_, i) => `Password${i}`),
-                stats: { generated: 500, strength: 'strong' }
-              }
-            })
-          } as Response), 2000)
-        )
+      mockFetch.mockImplementationOnce(
+        () =>
+          new Promise(resolve =>
+            setTimeout(
+              () =>
+                resolve({
+                  ok: true,
+                  json: async () => ({
+                    success: true,
+                    data: {
+                      passwords: Array(500)
+                        .fill(null)
+                        .map((_, i) => `Password${i}`),
+                      stats: { generated: 500, strength: 'strong' },
+                    },
+                  }),
+                } as Response),
+              2000
+            )
+          )
       );
 
       render(<PasswordGenerator />);
@@ -208,10 +220,13 @@ describe('Password Generation Frontend Integration Tests', () => {
       expect(screen.getByText(/生成中/)).toBeInTheDocument();
 
       // 完了後の表示確認
-      await waitFor(() => {
-        expect(screen.queryByText(/生成中/)).not.toBeInTheDocument();
-        expect(screen.getByText(/500件のパスワード/)).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/生成中/)).not.toBeInTheDocument();
+          expect(screen.getByText(/500件のパスワード/)).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -223,10 +238,25 @@ describe('Password Generation Frontend Integration Tests', () => {
       render(
         <CustomCharsetsEditor
           charsets={[
-            { id: '1', name: '数字', chars: '0123456789', enabled: true },
-            { id: '2', name: '大文字', chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', enabled: true }
+            {
+              id: '1',
+              name: '数字',
+              charset: '0123456789',
+              min: 1,
+              enabled: true,
+              color: '#ef4444',
+            },
+            {
+              id: '2',
+              name: '大文字',
+              charset: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+              min: 1,
+              enabled: true,
+              color: '#3b82f6',
+            },
           ]}
           onChange={mockOnChange}
+          visible={true}
         />
       );
 
@@ -235,7 +265,9 @@ describe('Password Generation Frontend Integration Tests', () => {
       expect(screen.getByText('大文字')).toBeInTheDocument();
 
       // ドラッグハンドルの存在確認
-      const dragHandles = screen.getAllByRole('button', { name: /ドラッグハンドル/ });
+      const dragHandles = screen.getAllByRole('button', {
+        name: /ドラッグハンドル/,
+      });
       expect(dragHandles).toHaveLength(2);
     });
 
@@ -246,9 +278,17 @@ describe('Password Generation Frontend Integration Tests', () => {
       render(
         <CustomCharsetsEditor
           charsets={[
-            { id: '1', name: '数字', chars: '0123456789', enabled: true }
+            {
+              id: '1',
+              name: '数字',
+              charset: '0123456789',
+              min: 1,
+              enabled: true,
+              color: '#ef4444',
+            },
           ]}
           onChange={mockOnChange}
+          visible={true}
         />
       );
 
@@ -280,6 +320,7 @@ describe('Password Generation Frontend Integration Tests', () => {
         <CustomCharsetsEditor
           charsets={[]}
           onChange={mockOnChange}
+          visible={true}
         />
       );
 
@@ -296,8 +337,8 @@ describe('Password Generation Frontend Integration Tests', () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: 'ひらがな',
-            chars: expect.stringContaining('あいうえお')
-          })
+            charset: expect.stringContaining('あいうえお'),
+          }),
         ])
       );
     });
@@ -309,7 +350,7 @@ describe('Password Generation Frontend Integration Tests', () => {
       render(
         <CustomCharsetsEditor
           charsets={[
-            { id: '1', name: '数字', chars: '0123456789', enabled: true }
+            { id: '1', name: '数字', chars: '0123456789', enabled: true },
           ]}
           onChange={mockOnChange}
         />
@@ -364,8 +405,8 @@ describe('Password Generation Frontend Integration Tests', () => {
         ok: true,
         json: async () => ({
           success: true,
-          data: { passwords: ['TestPassword'], stats: { generated: 1 } }
-        })
+          data: { passwords: ['TestPassword'], stats: { generated: 1 } },
+        }),
       } as Response);
 
       const generateButton = screen.getByText(/パスワードを生成/);
@@ -375,4 +416,4 @@ describe('Password Generation Frontend Integration Tests', () => {
       expect(mockFetch).toHaveBeenCalled();
     });
   });
-}); 
+});

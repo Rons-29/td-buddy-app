@@ -6,6 +6,7 @@ export interface AozoraBunkoWork {
   title: string;
   author: string;
   content: string;
+  description: string;
 }
 
 export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
@@ -13,6 +14,7 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'kokoro',
     title: 'こゝろ',
     author: '夏目漱石',
+    description: '夏目漱石の代表作。人間の心の奥底にある孤独と愛情を描いた名作',
     content: `私はその人を常に先生と呼んでいた。だからここでもただ先生と書くだけで本名は打ち明けない。これは世間を憚かる遠慮というよりも、その方が私にとって自然だからである。私はその人の記憶を呼び起すごとに、すぐ「先生」といいたくなる。筆を執っても心持は同じ事である。よそよそしい頭文字などはとても使う気にならない。
 
 私が先生と知り合いになったのは鎌倉である。その時私はまだ若い大学生であった。暑中休暇を利用して海水浴に行った友達からぜひ来いという端書を受け取ったので、私は多少の金を工面して、出かけて行った。私は金の工面に二、三日を費やした。ところが私が着いてみると、肝心の友達はあいにく立つ間際になっていた。彼は明日立たなければならないといった。せっかく出て来た私は友達と一緒に帰るのも面白くないと思ったので、暫くの間一人で滞在していようと決心した。
@@ -25,6 +27,8 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'botchan',
     title: '坊っちゃん',
     author: '夏目漱石',
+    description:
+      '夏目漱石の代表作。江戸っ子気質の青年教師の奮闘を描いた痛快小説',
     content: `親譲りの無鉄砲で小供の時から損ばかりしている。小学校に居る時分学校の二階から飛び降りて一週間ほど腰を抜かした事がある。なぜそんな無闇をしたと聞く人があるかも知れぬ。別段深い理由でもない。新築の二階から首を出していたら、同級生の一人が冗談に、いくら威張っても、そこから飛び降りる事は出来まい、弱虫やーい。と囃したからである。小使に負ぶさって帰って来た時、おやじが大きな眼をして二階ぐらいから飛び降りて腰を抜かす奴があるかと云ったから、この次は抜かさずに飛んで見せますと答えた。
 
 親類のものから西洋菓子をもらって食った事がある。もっとも、私が食ったのではない。私の母が私にくれると云って、私の前で食べて見せたのである。私はその時何にもいわなかった。今思うと実に馬鹿げた事をしたものだ。
@@ -37,6 +41,7 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'wagahaiwa_neko',
     title: '吾輩は猫である',
     author: '夏目漱石',
+    description: '夏目漱石の処女長編小説。猫の視点から人間社会を風刺した名作',
     content: `吾輩は猫である。名前はまだ無い。どこで生れたかとんと見当がつかぬ。何でも薄暗いじめじめした所でニャーニャー泣いていた事だけは記憶している。吾輩はここで始めて人間というものを見た。しかもあとで聞くとそれは書生という人間中で一番獰悪な種族であったそうだ。この書生というのは時々我々を捕えて煮て食うという話である。しかしその当時は何という考もなかったから別段恐しいとも思わなかった。ただ彼の掌に載せられてスーと持ち上げられた時何だかフワフワした感じがあったばかりである。
 
 掌の上で少し落ちついて書生の顔を見たのがいわゆる人間というものの見始めであろう。この時妙なものだと思った感じが今でも残っている。第一毛をもって装飾されべきはずの顔がつるつるしてまるで薬缶だ。その後猫にもだいぶ逢ったがこんな片輪には一度も出会わした事がない。のみならず顔の真中があまりに突起している。そうしてその穴の中から時々ぷうぷうと煙を吹く。どうも咽せぽくて実に弱った。これが人間の飲む煙草というものである事はずっと後になって知った。
@@ -47,6 +52,7 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'takekurabe',
     title: 'たけくらべ',
     author: '樋口一葉',
+    description: '樋口一葉の代表作。吉原を舞台にした少年少女の成長物語',
     content: `廻れば大門の見返り柳いと長けれど、お歯ぐろ溝に燈火うつる三階の騒ぎも手に取る如く、明けくれなしの車の往来にはかり知られぬ全盛をうらなひて、大音寺前と名は仏くさけれど、さりとは陽気の町と知られたり。
 
 この界隈に生れ出でたらん娘子の、さばかり諷刺に調子よく世辞の一つも心得がほに、客あしらひの上手なる、当り前のことと申すべし。
@@ -63,6 +69,7 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'ninjin',
     title: 'にんじん',
     author: '有島武郎',
+    description: '有島武郎の代表作。労働者の心の葛藤を描いた社会派小説',
     content: `あのときの感動は、今でも一君の心を支配している。そして一君はその感動を、できるだけ正確に、できるだけ美しく表現したいと思っている。
 
 一君は工場で働いている。毎日毎日、朝から晩まで、単調な労働をくり返している。しかし一君は不平を言わない。一君には夢があるからだ。いつか、必ず、自分の心にある美しいものを表現してみせる。そのときまで、一君は辛抱して働き続ける。
@@ -77,6 +84,7 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'hakai',
     title: '破戒',
     author: '島崎藤村',
+    description: '島崎藤村の代表作。部落差別問題を扱った自然主義文学の傑作',
     content: `蓮華寺では下宿生を置かない。僧侶の修行する場所で、俗人をとめることはできないという住職の考えからであった。しかし、丑松の場合は特別であった。住職は丑松を深く憐れんでいた。
 
 丑松は毎朝、鐘の音と共に目を覚ます。そして本堂で勤行に参加する。般若心経を唱える声に混じって、丑松の声も響く。その声は、他の僧侶たちの声よりも、どこか悲しみを帯びていた。
@@ -91,6 +99,8 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'kappa',
     title: '河童',
     author: '芥川龍之介',
+    description:
+      '芥川龍之介の代表作。河童の国を通して人間社会を風刺した幻想小説',
     content: `河童の国は、私たちの世界とは全く違っていた。そこでは、すべてが逆さまになっていた。美しいものが醜いとされ、醜いものが美しいとされていた。
 
 私が最初に出会った河童は、マッグという名前だった。マッグは哲学者だった。彼は私に河童の国の仕組みを説明してくれた。
@@ -109,6 +119,7 @@ export const AOZORA_BUNKO_SAMPLES: AozoraBunkoWork[] = [
     id: 'rashomon',
     title: '羅生門',
     author: '芥川龍之介',
+    description: '芥川龍之介の代表作。人間のエゴイズムを描いた短編小説の傑作',
     content: `ある日の暮方の事である。一人の下人が、羅生門の下で雨やみを待っていた。広い門の下には、この男のほかに誰もいない。ただ、所々丹塗の剥げた、大きな円柱に、蟋蟀が一匹とまっている。羅生門が、朱雀大路にある以上は、この男のほかにも、雨やみをする人があってもよさそうなものである。それが、この男のほかには誰もいない。
 
 何故かと云うと、この二三年、京都には、地震とか辻風とか火事とか饑饉とかいう災いがつづいて起った。そこで洛中のさびれ方は一通りでない。旧記によると、仏像や仏具を打砕いて、その丹がついたり、金銀の箔がついたりした木を、路ばたに積んで薪の料に売っていたという事である。洛中がその始末であるから、羅生門の修理などは、元より誰も捨てて顧る者がなかった。するとその荒れ果てたのをよい事にして、狐狸が棲む。盗人が棲む。とうとうしまいには、引取り手のない死人を、この門へ持って来て、棄てて行くという習慣さえ出来た。そこで、日の目が見えなくなると、誰でも気味を悪がって、この門の近所へは足ぶみをしない事になってしまった。
@@ -143,4 +154,104 @@ export function getAllSamplesText(): string {
   return AOZORA_BUNKO_SAMPLES.map(
     work => `【${work.title}】（${work.author}著）\n${work.content}`
   ).join('\n\n' + '='.repeat(80) + '\n\n');
+}
+
+/**
+ * 指定サイズのテキストコンテンツを生成
+ */
+export function generateTextContent(
+  targetSize: number,
+  selectedWorks?: string[]
+): string {
+  const works = selectedWorks
+    ? AOZORA_BUNKO_SAMPLES.filter(work => selectedWorks.includes(work.id))
+    : AOZORA_BUNKO_SAMPLES;
+
+  let content = '';
+  let currentSize = 0;
+
+  while (currentSize < targetSize) {
+    const randomWork = works[Math.floor(Math.random() * works.length)];
+    const workText = `【${randomWork.title}】（${randomWork.author}著）\n${randomWork.content}\n\n`;
+
+    if (currentSize + Buffer.byteLength(workText, 'utf8') <= targetSize) {
+      content += workText;
+      currentSize = Buffer.byteLength(content, 'utf8');
+    } else {
+      // 残りサイズに合わせて調整
+      const remainingSize = targetSize - currentSize;
+      const truncatedText = workText.substring(0, remainingSize);
+      content += truncatedText;
+      break;
+    }
+  }
+
+  return content;
+}
+
+/**
+ * ファイル形式別コンテンツ生成
+ */
+export function generateContentByType(
+  targetSize: number,
+  format: 'json' | 'csv' | 'xml' | 'yaml' | 'txt'
+): string {
+  const baseContent = generateTextContent(Math.floor(targetSize * 0.8));
+
+  switch (format) {
+    case 'json':
+      return JSON.stringify(
+        {
+          metadata: {
+            generator: 'QA Workbench',
+            timestamp: new Date().toISOString(),
+            format: 'json',
+            size: targetSize,
+          },
+          content: baseContent,
+        },
+        null,
+        2
+      );
+
+    case 'csv':
+      const lines = baseContent.split('\n').filter(line => line.trim());
+      let csv = 'id,line_number,content,length\n';
+      lines.forEach((line, index) => {
+        csv += `${index + 1},${index + 1},"${line.replace(/"/g, '""')}",${
+          line.length
+        }\n`;
+      });
+      return csv;
+
+    case 'xml':
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<testdata>
+  <metadata>
+    <generator>QA Workbench</generator>
+    <timestamp>${new Date().toISOString()}</timestamp>
+    <format>xml</format>
+    <size>${targetSize}</size>
+  </metadata>
+  <content><![CDATA[${baseContent}]]></content>
+</testdata>`;
+
+    case 'yaml':
+      return `metadata:
+  generator: "QA Workbench"
+  timestamp: "${new Date().toISOString()}"
+  format: "yaml"
+  size: ${targetSize}
+content: |
+${baseContent
+  .split('\n')
+  .map(line => '  ' + line)
+  .join('\n')}`;
+
+    case 'txt':
+      return baseContent;
+
+    default:
+      return baseContent;
+  }
 }

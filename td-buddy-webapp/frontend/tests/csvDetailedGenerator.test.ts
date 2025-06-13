@@ -7,11 +7,11 @@ import { describe, expect, test } from 'vitest';
 import { CsvConfig, DataTypeCategory } from '../types/csvDataTypes';
 import { generateData } from '../utils/csvDataGenerator';
 import {
-    CSVValidator,
-    PerformanceMonitor,
-    TDErrorHandler,
-    ValidationError,
-    ValidationResult
+  CSVValidator,
+  PerformanceMonitor,
+  TDErrorHandler,
+  ValidationError,
+  ValidationResult,
 } from '../utils/csvErrorHandling';
 
 describe('CSV詳細データ生成機能', () => {
@@ -61,14 +61,14 @@ describe('CSV詳細データ生成機能', () => {
       const startDate = '2020-01-01';
       const endDate = '2025-12-31';
       const result = generateData('date', { startDate, endDate });
-      
+
       expect(typeof result).toBe('string');
       expect(/^\d{4}-\d{2}-\d{2}$/.test(result)).toBe(true);
-      
+
       const generatedDate = new Date(result);
       const start = new Date(startDate);
       const end = new Date(endDate);
-      
+
       expect(generatedDate).toBeInstanceOf(Date);
       expect(generatedDate.getTime()).toBeGreaterThanOrEqual(start.getTime());
       expect(generatedDate.getTime()).toBeLessThanOrEqual(end.getTime());
@@ -88,7 +88,7 @@ describe('CSV詳細データ生成機能', () => {
       const columns = [
         { name: '名前', type: 'name' as DataTypeCategory },
         { name: '年齢', type: 'age' as DataTypeCategory },
-        { name: 'メール', type: 'email' as DataTypeCategory }
+        { name: 'メール', type: 'email' as DataTypeCategory },
       ];
 
       const result = CSVValidator.validateColumns(columns);
@@ -99,70 +99,84 @@ describe('CSV詳細データ生成機能', () => {
     test('重複列名のエラー検出', () => {
       const columns = [
         { name: '名前', type: 'name' as DataTypeCategory },
-        { name: '名前', type: 'text' as DataTypeCategory }
+        { name: '名前', type: 'text' as DataTypeCategory },
       ];
 
       const result = CSVValidator.validateColumns(columns);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === 'DUPLICATE_COLUMN_NAMES')).toBe(true);
+      expect(result.errors.some(e => e.code === 'DUPLICATE_COLUMN_NAMES')).toBe(
+        true
+      );
     });
 
     test('空の列名エラー', () => {
-      const columns = [
-        { name: '', type: 'text' as DataTypeCategory }
-      ];
+      const columns = [{ name: '', type: 'text' as DataTypeCategory }];
 
       const result = CSVValidator.validateColumns(columns);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === 'MISSING_COLUMN_NAME')).toBe(true);
+      expect(result.errors.some(e => e.code === 'MISSING_COLUMN_NAME')).toBe(
+        true
+      );
     });
 
     test('データ型未選択エラー', () => {
-      const columns = [
-        { name: '列1', type: undefined }
-      ];
+      const columns = [{ name: '列1', type: undefined }];
 
       const result = CSVValidator.validateColumns(columns);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === 'MISSING_DATA_TYPE')).toBe(true);
+      expect(result.errors.some(e => e.code === 'MISSING_DATA_TYPE')).toBe(
+        true
+      );
     });
 
     test('数値範囲の不正設定エラー', () => {
       const columns = [
-        { 
-          name: '価格', 
+        {
+          name: '価格',
           type: 'number' as DataTypeCategory,
-          settings: { min: 100, max: 50 } 
-        }
+          settings: { min: 100, max: 50 },
+        },
       ];
 
       const result = CSVValidator.validateColumns(columns);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === 'INVALID_NUMBER_RANGE')).toBe(true);
+      expect(result.errors.some(e => e.code === 'INVALID_NUMBER_RANGE')).toBe(
+        true
+      );
     });
 
     test('生成件数のバリデーション', () => {
       const columns = [{ name: '列1', type: 'text' as DataTypeCategory }];
-      
+
       // 正常範囲
-      const validResult = CSVValidator.validateGenerationSettings(1000, columns);
+      const validResult = CSVValidator.validateGenerationSettings(
+        1000,
+        columns
+      );
       expect(validResult.isValid).toBe(true);
-      
+
       // 上限超過
-      const invalidResult = CSVValidator.validateGenerationSettings(200000, columns);
+      const invalidResult = CSVValidator.validateGenerationSettings(
+        200000,
+        columns
+      );
       expect(invalidResult.isValid).toBe(false);
-      expect(invalidResult.errors.some(e => e.code === 'TOO_MANY_ROWS')).toBe(true);
-      
+      expect(invalidResult.errors.some(e => e.code === 'TOO_MANY_ROWS')).toBe(
+        true
+      );
+
       // 0以下
       const zeroResult = CSVValidator.validateGenerationSettings(0, columns);
       expect(zeroResult.isValid).toBe(false);
-      expect(zeroResult.errors.some(e => e.code === 'INVALID_ROW_COUNT')).toBe(true);
+      expect(zeroResult.errors.some(e => e.code === 'INVALID_ROW_COUNT')).toBe(
+        true
+      );
     });
 
     test('列数制限チェック', () => {
       const tooManyColumns = Array.from({ length: 60 }, (_, i) => ({
         name: `列${i + 1}`,
-        type: 'text' as DataTypeCategory
+        type: 'text' as DataTypeCategory,
       }));
 
       const result = CSVValidator.validateColumns(tooManyColumns);
@@ -175,13 +189,15 @@ describe('CSV詳細データ生成機能', () => {
         {
           name: '日付',
           type: 'date' as DataTypeCategory,
-          settings: { startDate: '2025-01-01', endDate: '2020-01-01' }
-        }
+          settings: { startDate: '2025-01-01', endDate: '2020-01-01' },
+        },
       ];
 
       const result = CSVValidator.validateColumns(columns);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === 'INVALID_DATE_RANGE')).toBe(true);
+      expect(result.errors.some(e => e.code === 'INVALID_DATE_RANGE')).toBe(
+        true
+      );
     });
   });
 
@@ -191,7 +207,7 @@ describe('CSV詳細データ生成機能', () => {
         field: 'test',
         message: 'テストエラー',
         code: 'TEST_ERROR',
-        severity: 'error'
+        severity: 'error',
       };
 
       const formattedMessage = TDErrorHandler.formatTDError(error);
@@ -204,7 +220,7 @@ describe('CSV詳細データ生成機能', () => {
         field: 'test',
         message: 'テスト警告',
         code: 'TEST_WARNING',
-        severity: 'warning'
+        severity: 'warning',
       };
 
       const formattedMessage = TDErrorHandler.formatTDError(warning);
@@ -221,11 +237,21 @@ describe('CSV詳細データ生成機能', () => {
       const result: ValidationResult = {
         isValid: false,
         errors: [
-          { field: 'test1', message: 'エラー1', code: 'ERROR1', severity: 'error' }
+          {
+            field: 'test1',
+            message: 'エラー1',
+            code: 'ERROR1',
+            severity: 'error',
+          },
         ],
         warnings: [
-          { field: 'test2', message: '警告1', code: 'WARNING1', severity: 'warning' }
-        ]
+          {
+            field: 'test2',
+            message: '警告1',
+            code: 'WARNING1',
+            severity: 'warning',
+          },
+        ],
       };
 
       const summary = TDErrorHandler.summarizeErrors(result);
@@ -238,7 +264,7 @@ describe('CSV詳細データ生成機能', () => {
         field: 'columns',
         message: '列が設定されていません',
         code: 'NO_COLUMNS',
-        severity: 'error'
+        severity: 'error',
       };
 
       const solution = TDErrorHandler.suggestSolution(error);
@@ -250,15 +276,15 @@ describe('CSV詳細データ生成機能', () => {
   describe('パフォーマンス監視', () => {
     test('生成時間の測定', () => {
       PerformanceMonitor.startGeneration();
-      
+
       // 少し待機をシミュレート
       const start = performance.now();
       while (performance.now() - start < 10) {
         // 10ms待機
       }
-      
+
       const result = PerformanceMonitor.endGeneration(1000, 5);
-      
+
       expect(result.duration).toBeGreaterThan(0);
       expect(result.rowsPerSecond).toBeGreaterThan(0);
       expect(typeof result.recommendation).toBe('string');
@@ -268,7 +294,7 @@ describe('CSV詳細データ生成機能', () => {
     test('高速処理時の推奨メッセージ', () => {
       PerformanceMonitor.startGeneration();
       const result = PerformanceMonitor.endGeneration(100, 3);
-      
+
       expect(result.recommendation).toContain('ブリューからのメッセージ');
       expect(result.recommendation).toContain('高速生成完了');
     });
@@ -278,25 +304,55 @@ describe('CSV詳細データ生成機能', () => {
     test('1000件のデータ生成', () => {
       const config: CsvConfig = {
         columns: [
-          { name: '名前', type: 'name' },
-          { name: '年齢', type: 'age' },
-          { name: 'メール', type: 'email' }
+          {
+            id: '1',
+            name: '名前',
+            type: 'name',
+            dataType: 'text',
+            nullable: false,
+            nullRatio: 0,
+            unique: false,
+          },
+          {
+            id: '2',
+            name: '年齢',
+            type: 'age',
+            dataType: 'number',
+            nullable: false,
+            nullRatio: 0,
+            unique: false,
+          },
+          {
+            id: '3',
+            name: 'メール',
+            type: 'email',
+            dataType: 'text',
+            nullable: false,
+            nullRatio: 0,
+            unique: true,
+          },
         ],
-        rowCount: 1000
+        rowCount: 1000,
+        outputFormat: 'csv',
+        includeHeader: true,
+        encoding: 'utf-8',
       };
 
       PerformanceMonitor.startGeneration();
-      
+
       const rows: string[][] = [];
       for (let i = 0; i < config.rowCount; i++) {
-        const row = config.columns.map(col => 
+        const row = config.columns.map(col =>
           String(generateData(col.type, col.settings || {}))
         );
         rows.push(row);
       }
 
-      const result = PerformanceMonitor.endGeneration(config.rowCount, config.columns.length);
-      
+      const result = PerformanceMonitor.endGeneration(
+        config.rowCount,
+        config.columns.length
+      );
+
       expect(rows).toHaveLength(1000);
       expect(rows[0]).toHaveLength(3);
       expect(result.duration).toBeLessThan(10000); // 10秒以内
@@ -304,21 +360,21 @@ describe('CSV詳細データ生成機能', () => {
 
     test('メモリ効率性の確認', () => {
       const initialMemory = (performance as any).memory?.usedJSHeapSize || 0;
-      
+
       // 中規模データ生成
       const rows: string[][] = [];
       for (let i = 0; i < 5000; i++) {
         const row = [
           generateData('name', {}),
           generateData('email', {}),
-          generateData('phone', {})
+          generateData('phone', {}),
         ].map(String);
         rows.push(row);
       }
-      
+
       const finalMemory = (performance as any).memory?.usedJSHeapSize || 0;
       const memoryIncrease = finalMemory - initialMemory;
-      
+
       // メモリ増加が極端でないことを確認（50MB以下）
       expect(memoryIncrease).toBeLessThan(50 * 1024 * 1024);
       expect(rows).toHaveLength(5000);
@@ -336,7 +392,9 @@ describe('CSV詳細データ生成機能', () => {
     test('不正な設定値の処理', () => {
       // 不正な値が渡されても例外を投げないこと
       expect(() => generateData('number', { min: 'invalid' })).not.toThrow();
-      expect(() => generateData('date', { startDate: 'invalid-date' })).not.toThrow();
+      expect(() =>
+        generateData('date', { startDate: 'invalid-date' })
+      ).not.toThrow();
     });
 
     test('極端な数値範囲', () => {
@@ -347,9 +405,9 @@ describe('CSV詳細データ生成機能', () => {
     });
 
     test('未来の日付範囲', () => {
-      const result = generateData('date', { 
-        startDate: '2030-01-01', 
-        endDate: '2035-12-31' 
+      const result = generateData('date', {
+        startDate: '2030-01-01',
+        endDate: '2035-12-31',
       });
       expect(typeof result).toBe('string');
       expect(/^\d{4}-\d{2}-\d{2}$/.test(result)).toBe(true);
@@ -360,7 +418,7 @@ describe('CSV詳細データ生成機能', () => {
     test('日本語文字の正しい処理', () => {
       const result = generateData('text', { language: 'ja' });
       expect(typeof result).toBe('string');
-      
+
       // UTF-8でエンコードしてもサイズが正常範囲内
       const encoded = new TextEncoder().encode(result);
       expect(encoded.length).toBeGreaterThan(0);
@@ -370,7 +428,7 @@ describe('CSV詳細データ生成機能', () => {
     test('特殊文字を含む名前の生成', () => {
       const result = generateData('name', {});
       expect(typeof result).toBe('string');
-      
+
       // 日本語文字が含まれているか
       expect(/[ひらがなカタカナ漢字]/.test(result)).toBe(true);
     });
@@ -379,7 +437,7 @@ describe('CSV詳細データ生成機能', () => {
       // カンマ、クォート、改行を含む可能性のあるテキスト
       for (let i = 0; i < 100; i++) {
         const result = generateData('text', { language: 'ja' });
-        
+
         // 基本的な文字列として有効であること
         expect(typeof result).toBe('string');
         expect(result.length).toBeGreaterThan(0);
@@ -392,14 +450,67 @@ describe('統合テスト', () => {
   test('完全なCSV生成フロー', () => {
     const config: CsvConfig = {
       columns: [
-        { name: 'ID', type: 'number', settings: { min: 1, max: 1000 } },
-        { name: '社員名', type: 'name' },
-        { name: 'メールアドレス', type: 'email' },
-        { name: '電話番号', type: 'phone' },
-        { name: '年齢', type: 'age' },
-        { name: '入社日', type: 'date', settings: { startDate: '2020-01-01', endDate: '2024-12-31' } }
+        {
+          id: '1',
+          name: 'ID',
+          type: 'number',
+          dataType: 'number',
+          settings: { min: 1, max: 1000 },
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: '2',
+          name: '社員名',
+          type: 'name',
+          dataType: 'text',
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: '3',
+          name: 'メールアドレス',
+          type: 'email',
+          dataType: 'text',
+          nullable: false,
+          nullRatio: 0,
+          unique: true,
+        },
+        {
+          id: '4',
+          name: '電話番号',
+          type: 'phone',
+          dataType: 'text',
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: '5',
+          name: '年齢',
+          type: 'age',
+          dataType: 'number',
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
+        {
+          id: '6',
+          name: '入社日',
+          type: 'date',
+          dataType: 'date',
+          settings: { startDate: '2020-01-01', endDate: '2024-12-31' },
+          nullable: false,
+          nullRatio: 0,
+          unique: false,
+        },
       ],
-      rowCount: 100
+      rowCount: 100,
+      outputFormat: 'csv',
+      includeHeader: true,
+      encoding: 'utf-8',
     };
 
     // バリデーション
@@ -407,25 +518,28 @@ describe('統合テスト', () => {
     expect(validation.isValid).toBe(true);
 
     const generationValidation = CSVValidator.validateGenerationSettings(
-      config.rowCount, 
+      config.rowCount,
       config.columns
     );
     expect(generationValidation.isValid).toBe(true);
 
     // データ生成
     PerformanceMonitor.startGeneration();
-    
+
     const headers = config.columns.map(col => col.name);
     const rows: string[][] = [headers];
 
     for (let i = 0; i < config.rowCount; i++) {
-      const row = config.columns.map(col => 
+      const row = config.columns.map(col =>
         String(generateData(col.type, col.settings || {}))
       );
       rows.push(row);
     }
 
-    const performance = PerformanceMonitor.endGeneration(config.rowCount, config.columns.length);
+    const performance = PerformanceMonitor.endGeneration(
+      config.rowCount,
+      config.columns.length
+    );
 
     // 結果の検証
     expect(rows).toHaveLength(config.rowCount + 1); // ヘッダー + データ行
@@ -437,26 +551,26 @@ describe('統合テスト', () => {
     for (let i = 1; i <= Math.min(10, config.rowCount); i++) {
       const row = rows[i];
       expect(row).toHaveLength(config.columns.length);
-      
+
       // ID (数値)
       expect(Number(row[0])).toBeGreaterThanOrEqual(1);
       expect(Number(row[0])).toBeLessThanOrEqual(1000);
-      
+
       // 社員名 (日本語名)
       expect(row[1].length).toBeGreaterThan(0);
       expect(row[1].includes(' ')).toBe(true);
-      
+
       // メールアドレス
       expect(row[2]).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-      
+
       // 電話番号
       expect(row[3]).toMatch(/^(090|080|070)-\d{4}-\d{4}$/);
-      
+
       // 年齢
       const age = Number(row[4]);
       expect(age).toBeGreaterThanOrEqual(0);
       expect(age).toBeLessThanOrEqual(120);
-      
+
       // 入社日
       expect(row[5]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
@@ -464,23 +578,33 @@ describe('統合テスト', () => {
 
   test('TDスタイルメッセージの統合', () => {
     const errors: ValidationError[] = [
-      { field: 'test', message: 'エラー', code: 'TEST_ERROR', severity: 'error' }
+      {
+        field: 'test',
+        message: 'エラー',
+        code: 'TEST_ERROR',
+        severity: 'error',
+      },
     ];
-    
+
     const warnings: ValidationError[] = [
-      { field: 'test', message: '警告', code: 'TEST_WARNING', severity: 'warning' }
+      {
+        field: 'test',
+        message: '警告',
+        code: 'TEST_WARNING',
+        severity: 'warning',
+      },
     ];
 
     const result: ValidationResult = {
       isValid: false,
       errors,
-      warnings
+      warnings,
     };
 
     const summary = TDErrorHandler.summarizeErrors(result);
     expect(summary).toContain('ブリューからの');
-    
+
     const successMessage = TDErrorHandler.formatSuccessMessage('テスト完了');
     expect(successMessage).toContain('✅ ブリューからのメッセージ');
   });
-}); 
+});

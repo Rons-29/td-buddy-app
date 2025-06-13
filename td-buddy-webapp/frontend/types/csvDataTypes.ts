@@ -1,16 +1,16 @@
 // CSV生成用データタイプの詳細設定定義
 
-export type DataTypeCategory = 
-  | 'text' 
-  | 'number' 
-  | 'email' 
-  | 'phone' 
-  | 'date' 
-  | 'boolean' 
-  | 'uuid' 
-  | 'url' 
-  | 'address' 
-  | 'name' 
+export type DataTypeCategory =
+  | 'text'
+  | 'number'
+  | 'email'
+  | 'phone'
+  | 'date'
+  | 'boolean'
+  | 'uuid'
+  | 'url'
+  | 'address'
+  | 'name'
   | 'company'
   | 'color'
   | 'age'
@@ -27,7 +27,7 @@ export interface TextSettings {
   format?: 'sentence' | 'word' | 'paragraph' | 'title';
 }
 
-// 数値設定  
+// 数値設定
 export interface NumberSettings {
   type: 'integer' | 'decimal' | 'currency' | 'percentage';
   min: number;
@@ -68,7 +68,13 @@ export interface DateSettings {
 
 // ブール値設定
 export interface BooleanSettings {
-  format: 'true/false' | 'yes/no' | '1/0' | 'on/off' | 'enabled/disabled' | 'active/inactive';
+  format:
+    | 'true/false'
+    | 'yes/no'
+    | '1/0'
+    | 'on/off'
+    | 'enabled/disabled'
+    | 'active/inactive';
   trueRatio: number; // 0-100
 }
 
@@ -107,7 +113,13 @@ export interface NameSettings {
 export interface CompanySettings {
   type: 'japanese' | 'western' | 'mixed';
   size: 'startup' | 'sme' | 'enterprise' | 'mixed';
-  industry: 'tech' | 'finance' | 'retail' | 'manufacturing' | 'service' | 'mixed';
+  industry:
+    | 'tech'
+    | 'finance'
+    | 'retail'
+    | 'manufacturing'
+    | 'service'
+    | 'mixed';
   includeSuffix: boolean; // 株式会社、Inc.等
 }
 
@@ -141,6 +153,7 @@ export interface DataTypeSettings {
 export interface ColumnConfig {
   id: string;
   name: string;
+  type?: DataTypeCategory; // テスト用の type プロパティ（オプショナル）
   dataType: DataTypeCategory;
   settings?: any;
   nullable: boolean;
@@ -181,10 +194,10 @@ export const DEFAULT_PRESETS: DataTypePreset[] = [
         type: 'japanese',
         format: 'full',
         includeHonorifics: false,
-        gender: 'mixed'
-      }
+        gender: 'mixed',
+      },
     },
-    examples: ['田中 太郎', '佐藤 花子', '山田 一郎']
+    examples: ['田中 太郎', '佐藤 花子', '山田 一郎'],
   },
   {
     id: 'text-product-name',
@@ -199,12 +212,16 @@ export const DEFAULT_PRESETS: DataTypePreset[] = [
         maxLength: 30,
         includeNumbers: true,
         includeSymbols: false,
-        format: 'title'
-      }
+        format: 'title',
+      },
     },
-    examples: ['iPhone 15 Pro', 'ワイヤレスマウス M705', 'コーヒーメーカー CM-101']
+    examples: [
+      'iPhone 15 Pro',
+      'ワイヤレスマウス M705',
+      'コーヒーメーカー CM-101',
+    ],
   },
-  
+
   // 数値プリセット
   {
     id: 'number-price',
@@ -220,10 +237,10 @@ export const DEFAULT_PRESETS: DataTypePreset[] = [
         decimals: 0,
         allowNegative: false,
         suffix: '円',
-        thousandsSeparator: true
-      }
+        thousandsSeparator: true,
+      },
     },
-    examples: ['1,200円', '15,800円', '99,800円']
+    examples: ['1,200円', '15,800円', '99,800円'],
   },
   {
     id: 'number-age',
@@ -237,10 +254,10 @@ export const DEFAULT_PRESETS: DataTypePreset[] = [
         min: 18,
         max: 100,
         allowNegative: false,
-        thousandsSeparator: false
-      }
+        thousandsSeparator: false,
+      },
     },
-    examples: ['25', '34', '67']
+    examples: ['25', '34', '67'],
   },
 
   // メールアドレスプリセット
@@ -254,10 +271,10 @@ export const DEFAULT_PRESETS: DataTypePreset[] = [
       email: {
         domainType: 'business',
         includeSubdomain: false,
-        nameStyle: 'realistic'
-      }
+        nameStyle: 'realistic',
+      },
     },
-    examples: ['tanaka@company.co.jp', 'sales@business.com', 'info@startup.jp']
+    examples: ['tanaka@company.co.jp', 'sales@business.com', 'info@startup.jp'],
   },
 
   // 電話番号プリセット
@@ -272,10 +289,10 @@ export const DEFAULT_PRESETS: DataTypePreset[] = [
         type: 'mobile',
         country: 'japan',
         format: 'hyphen',
-        includeCountryCode: false
-      }
+        includeCountryCode: false,
+      },
     },
-    examples: ['090-1234-5678', '080-9876-5432', '070-1111-2222']
+    examples: ['090-1234-5678', '080-9876-5432', '070-1111-2222'],
   },
 
   // 日付プリセット
@@ -291,9 +308,9 @@ export const DEFAULT_PRESETS: DataTypePreset[] = [
         includeTime: false,
         era: 'modern',
         startYear: 2020,
-        endYear: 2030
-      }
+        endYear: 2030,
+      },
     },
-    examples: ['2024/01/15', '2025/03/22', '2023/12/08']
-  }
-]; 
+    examples: ['2024/01/15', '2025/03/22', '2023/12/08'],
+  },
+];
