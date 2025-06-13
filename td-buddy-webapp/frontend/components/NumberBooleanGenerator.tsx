@@ -391,7 +391,7 @@ export function NumberBooleanGenerator({
               </div>
 
               {/* 数値範囲設定 */}
-              {(options.type === 'integer' || options.type === 'decimal') && (
+              {(options.type === 'integer' || options.type === 'float') && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-orange-700 mb-2">
@@ -426,16 +426,15 @@ export function NumberBooleanGenerator({
                 </div>
               )}
 
-              {/* 小数点桁数設定 */}
-              {options.type === 'decimal' && (
+              {/* 小数点設定 */}
+              {options.type === 'float' && (
                 <div>
                   <label className="block text-sm font-medium text-orange-700 mb-2">
                     小数点桁数
                   </label>
                   <Input
-                    workbench
                     type="number"
-                    min="1"
+                    min="0"
                     max="10"
                     value={options.decimals || 2}
                     onChange={e =>

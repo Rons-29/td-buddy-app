@@ -1,0 +1,469 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === Quality Workbench 最適化デザインシステム === */
+:root {
+  /* 基本システム変数 */
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-noto-sans-jp: 'Noto Sans JP', system-ui, sans-serif;
+
+  /* === ワークベンチ基本カラー（最適化版） === */
+  /* 木材系（メイン） */
+  --wb-wood-light: #d7ccc8;
+  --wb-wood-main: #8d6e63;
+  --wb-wood-dark: #5d4037;
+  --wb-wood-accent: #6d4c41;
+
+  /* 金属系（セカンダリ） */
+  --wb-metal-light: #cfd8dc;
+  --wb-metal-main: #607d8b;
+  --wb-metal-dark: #455a64;
+
+  /* === 機能別ツールカラー（最適化版） === */
+  --wb-tool-measure: #ff9800; /* 測定ツール（オレンジ） */
+  --wb-tool-cut: #f44336; /* 切断ツール（レッド） */
+  --wb-tool-join: #4caf50; /* 接合ツール（グリーン） */
+  --wb-tool-inspect: #2196f3; /* 検査ツール（ブルー） */
+  --wb-tool-polish: #9c27b0; /* 仕上げツール（パープル） */
+
+  /* 状態カラー */
+  --wb-success: #4caf50;
+  --wb-warning: #ff9800;
+  --wb-error: #f44336;
+  --wb-info: #2196f3;
+  --wb-neutral: #9e9e9e;
+
+  /* 作業環境 */
+  --wb-workshop-bg: #fafafa;
+  --wb-workshop-surface: #ffffff;
+  --wb-workshop-shadow: rgba(0, 0, 0, 0.1);
+  --wb-workshop-border: #e0e0e0;
+
+  /* タイポグラフィ */
+  --wb-font-family: 'Inter', 'Noto Sans JP', sans-serif;
+  --wb-font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  --wb-text-xs: 0.75rem;
+  --wb-text-sm: 0.875rem;
+  --wb-text-base: 1rem;
+  --wb-text-lg: 1.125rem;
+  --wb-text-xl: 1.25rem;
+  --wb-text-2xl: 1.5rem;
+  --wb-text-3xl: 1.875rem;
+
+  /* スペーシング（最適化版） */
+  --wb-space-xs: 0.25rem; /* 4px */
+  --wb-space-sm: 0.5rem; /* 8px */
+  --wb-space-md: 1rem; /* 16px */
+  --wb-space-lg: 1.5rem; /* 24px */
+  --wb-space-xl: 2rem; /* 32px */
+  --wb-space-2xl: 3rem; /* 48px */
+
+  /* アニメーション */
+  --wb-duration-fast: 150ms;
+  --wb-duration-normal: 250ms;
+  --wb-duration-slow: 400ms;
+  --wb-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --wb-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 機能別マッピング（TD互換性） */
+  --wb-password-primary: var(--wb-tool-inspect);
+  --wb-personal-primary: var(--wb-tool-join);
+  --wb-csv-primary: var(--wb-tool-measure);
+  --wb-ai-primary: var(--wb-tool-polish);
+  --wb-file-primary: var(--wb-tool-cut);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+    --wb-workshop-bg: #1a1a1a;
+    --wb-workshop-surface: #2d2d2d;
+    --wb-workshop-shadow: rgba(0, 0, 0, 0.3);
+    --wb-workshop-border: #404040;
+  }
+}
+
+/* === 基本アニメーション（最適化版） === */
+@keyframes wb-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes wb-bounce {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%,
+  43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes wb-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === ワークベンチコンポーネント（最適化版） === */
+.wb-button {
+  @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200;
+  background: var(--wb-workshop-surface);
+  border: 1px solid var(--wb-workshop-border);
+  color: var(--wb-neutral);
+}
+
+.wb-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--wb-workshop-shadow);
+}
+
+.wb-button.measure {
+  background: var(--wb-tool-measure);
+  color: white;
+}
+.wb-button.cut {
+  background: var(--wb-tool-cut);
+  color: white;
+}
+.wb-button.join {
+  background: var(--wb-tool-join);
+  color: white;
+}
+.wb-button.inspect {
+  background: var(--wb-tool-inspect);
+  color: white;
+}
+.wb-button.polish {
+  background: var(--wb-tool-polish);
+  color: white;
+}
+
+.wb-card {
+  @apply rounded-lg p-6 transition-all duration-200;
+  background: var(--wb-workshop-surface);
+  border: 1px solid var(--wb-workshop-border);
+  box-shadow: 0 2px 8px var(--wb-workshop-shadow);
+}
+
+.wb-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--wb-workshop-shadow);
+}
+
+.wb-card.tool {
+  position: relative;
+  overflow: hidden;
+}
+
+.wb-card.tool::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--wb-neutral);
+  transition: background var(--wb-duration-fast);
+}
+
+.wb-card.tool.measure::before {
+  background: var(--wb-tool-measure);
+}
+.wb-card.tool.cut::before {
+  background: var(--wb-tool-cut);
+}
+.wb-card.tool.join::before {
+  background: var(--wb-tool-join);
+}
+.wb-card.tool.inspect::before {
+  background: var(--wb-tool-inspect);
+}
+.wb-card.tool.polish::before {
+  background: var(--wb-tool-polish);
+}
+
+.wb-input {
+  @apply w-full px-3 py-2 text-sm border rounded-md transition-colors duration-200;
+  background: var(--wb-workshop-surface);
+  border-color: var(--wb-workshop-border);
+  font-family: var(--wb-font-family);
+}
+
+.wb-input:focus {
+  outline: none;
+  border-color: var(--wb-tool-inspect);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+/* === レイアウトシステム（最適化版） === */
+.wb-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--wb-space-md);
+}
+
+.wb-grid {
+  display: grid;
+  gap: var(--wb-space-lg);
+  grid-template-columns: 1fr;
+}
+
+.wb-flex {
+  display: flex;
+  gap: var(--wb-space-md);
+}
+
+/* === ナビゲーション（最適化版） === */
+.wb-nav {
+  @apply flex items-center justify-between p-4;
+  background: var(--wb-workshop-surface);
+  border-bottom: 1px solid var(--wb-workshop-border);
+}
+
+.wb-nav-brand {
+  @apply text-xl font-bold;
+  color: var(--wb-wood-dark);
+}
+
+.wb-nav-tools {
+  @apply hidden md:flex items-center space-x-6;
+}
+
+.wb-nav-item {
+  @apply px-3 py-2 text-sm font-medium rounded-md transition-colors;
+  color: var(--wb-neutral);
+}
+
+.wb-nav-item:hover {
+  background: var(--wb-workshop-bg);
+}
+
+/* === ユーティリティクラス（最適化版） === */
+.wb-text-xs {
+  font-size: var(--wb-text-xs);
+}
+.wb-text-sm {
+  font-size: var(--wb-text-sm);
+}
+.wb-text-base {
+  font-size: var(--wb-text-base);
+}
+.wb-text-lg {
+  font-size: var(--wb-text-lg);
+}
+.wb-text-xl {
+  font-size: var(--wb-text-xl);
+}
+.wb-text-2xl {
+  font-size: var(--wb-text-2xl);
+}
+.wb-text-3xl {
+  font-size: var(--wb-text-3xl);
+}
+
+.wb-font-mono {
+  font-family: var(--wb-font-mono);
+}
+
+.wb-animate-pulse {
+  animation: wb-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.wb-animate-bounce {
+  animation: wb-bounce 1s infinite;
+}
+.wb-animate-fade-in {
+  animation: wb-fade-in 0.5s ease-out;
+}
+
+.wb-shadow-sm {
+  box-shadow: 0 1px 2px var(--wb-workshop-shadow);
+}
+.wb-shadow-md {
+  box-shadow: 0 4px 6px var(--wb-workshop-shadow);
+}
+.wb-shadow-lg {
+  box-shadow: 0 10px 15px var(--wb-workshop-shadow);
+}
+
+/* === レスポンシブデザイン（統合版） === */
+@media (min-width: 480px) {
+  .wb-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .wb-container {
+    padding: 0 var(--wb-space-lg);
+  }
+  .wb-text-3xl {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .wb-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .wb-container {
+    padding: 0 var(--wb-space-xl);
+  }
+  .wb-text-3xl {
+    font-size: 2.25rem;
+  }
+
+  .wb-nav-tools {
+    display: flex;
+  }
+  .wb-mobile-only {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .wb-container {
+    max-width: 1200px;
+  }
+
+  .wb-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px var(--wb-workshop-shadow);
+  }
+}
+
+@media (min-width: 1280px) {
+  .wb-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .wb-container {
+    max-width: 1400px;
+  }
+}
+
+/* === モバイル最適化（統合版） === */
+@media (max-width: 767px) {
+  .wb-grid {
+    gap: var(--wb-space-md);
+  }
+  .wb-card {
+    padding: var(--wb-space-md);
+  }
+  .wb-button {
+    padding: var(--wb-space-sm) var(--wb-space-md);
+  }
+  .wb-desktop-only {
+    display: none;
+  }
+
+  .wb-mobile-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white border-t p-2;
+    display: flex;
+    justify-content: space-around;
+    z-index: 50;
+  }
+}
+
+/* === アクセシビリティ（最適化版） === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .wb-button,
+  .wb-card,
+  .wb-input {
+    border-width: 2px;
+    border-color: currentColor;
+  }
+}
+
+/* === プリント最適化 === */
+@media print {
+  .wb-nav,
+  .wb-mobile-nav {
+    display: none;
+  }
+  .wb-card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  .wb-button {
+    background: transparent;
+    border: 1px solid #000;
+  }
+}
+
+/* === TD互換性クラス（最小限） === */
+.td-button-wb {
+  @apply wb-button;
+}
+.td-card-wb {
+  @apply wb-card;
+}
+.td-input-wb {
+  @apply wb-input;
+}
+
+.td-button-wb.password {
+  @apply wb-button inspect;
+}
+.td-button-wb.personal {
+  @apply wb-button join;
+}
+.td-button-wb.csv {
+  @apply wb-button measure;
+}
+.td-button-wb.ai {
+  @apply wb-button polish;
+}
+.td-button-wb.file {
+  @apply wb-button cut;
+}
+
+.td-card-wb.tool.password {
+  @apply wb-card tool inspect;
+}
+.td-card-wb.tool.personal {
+  @apply wb-card tool join;
+}
+.td-card-wb.tool.csv {
+  @apply wb-card tool measure;
+}
+.td-card-wb.tool.ai {
+  @apply wb-card tool polish;
+}
+.td-card-wb.tool.file {
+  @apply wb-card tool cut;
+}

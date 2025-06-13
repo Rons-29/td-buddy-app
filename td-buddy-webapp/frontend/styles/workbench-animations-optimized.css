@@ -1,0 +1,357 @@
+/* === Quality Workbench 最適化アニメーションシステム === */
+
+/* === GPU加速基本設定 === */
+.wb-animate {
+  will-change: transform, opacity;
+  transform: translateZ(0); /* GPU加速強制 */
+  backface-visibility: hidden;
+}
+
+/* === 基本アニメーション（最適化版） === */
+@keyframes wb-fade-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes wb-slide-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes wb-scale-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes wb-bounce-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  70% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* === 工具専用アニメーション === */
+@keyframes wb-tool-activate {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -2px, 0) scale(1.02);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes wb-tool-working {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate3d(0, -1px, 0);
+  }
+}
+
+@keyframes wb-progress-bar {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* === 状態アニメーション === */
+@keyframes wb-success-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+@keyframes wb-error-shake {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translate3d(-2px, 0, 0);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+}
+
+@keyframes wb-loading-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* === アニメーションクラス（最適化版） === */
+.wb-animate-fade-in {
+  animation: wb-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.wb-animate-slide-up {
+  animation: wb-slide-up 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.wb-animate-scale-in {
+  animation: wb-scale-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.wb-animate-bounce-in {
+  animation: wb-bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* === 工具アニメーション === */
+.wb-tool-activate {
+  animation: wb-tool-activate 0.2s ease-out;
+}
+
+.wb-tool-working {
+  animation: wb-tool-working 1.5s ease-in-out infinite;
+}
+
+.wb-progress-animate {
+  animation: wb-progress-bar 0.3s ease-out forwards;
+}
+
+/* === 状態アニメーション === */
+.wb-success-pulse {
+  animation: wb-success-pulse 1s ease-out;
+}
+
+.wb-error-shake {
+  animation: wb-error-shake 0.5s ease-in-out;
+}
+
+.wb-loading-spin {
+  animation: wb-loading-spin 1s linear infinite;
+}
+
+/* === ホバーアニメーション（最適化版） === */
+.wb-hover-lift {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wb-hover-lift:hover {
+  transform: translate3d(0, -2px, 0);
+}
+
+.wb-hover-scale {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wb-hover-scale:hover {
+  transform: translate3d(0, 0, 0) scale(1.02);
+}
+
+.wb-hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.wb-hover-glow:hover {
+  box-shadow: 0 0 20px rgba(33, 150, 243, 0.3);
+}
+
+/* === 遅延アニメーション === */
+.wb-animate-delay-100 {
+  animation-delay: 0.1s;
+}
+.wb-animate-delay-200 {
+  animation-delay: 0.2s;
+}
+.wb-animate-delay-300 {
+  animation-delay: 0.3s;
+}
+.wb-animate-delay-400 {
+  animation-delay: 0.4s;
+}
+.wb-animate-delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* === 継続時間バリエーション === */
+.wb-animate-fast {
+  animation-duration: 0.15s;
+}
+.wb-animate-normal {
+  animation-duration: 0.3s;
+}
+.wb-animate-slow {
+  animation-duration: 0.5s;
+}
+
+/* === 工具別カスタムアニメーション === */
+.wb-tool-measure .wb-animate {
+  animation-timing-function: cubic-bezier(
+    0.25,
+    0.46,
+    0.45,
+    0.94
+  ); /* 測定の精密さ */
+}
+
+.wb-tool-cut .wb-animate {
+  animation-timing-function: cubic-bezier(
+    0.55,
+    0.085,
+    0.68,
+    0.53
+  ); /* 切断の鋭さ */
+}
+
+.wb-tool-join .wb-animate {
+  animation-timing-function: cubic-bezier(
+    0.25,
+    0.46,
+    0.45,
+    0.94
+  ); /* 接合の安定性 */
+}
+
+.wb-tool-inspect .wb-animate {
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* 検査の確実性 */
+}
+
+.wb-tool-polish .wb-animate {
+  animation-timing-function: cubic-bezier(
+    0.68,
+    -0.55,
+    0.265,
+    1.55
+  ); /* 仕上げの美しさ */
+}
+
+/* === パフォーマンス最適化 === */
+.wb-animate-performance {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* === アクセシビリティ対応 === */
+@media (prefers-reduced-motion: reduce) {
+  .wb-animate,
+  .wb-animate-fade-in,
+  .wb-animate-slide-up,
+  .wb-animate-scale-in,
+  .wb-animate-bounce-in,
+  .wb-tool-activate,
+  .wb-tool-working,
+  .wb-progress-animate,
+  .wb-success-pulse,
+  .wb-error-shake,
+  .wb-loading-spin,
+  .wb-hover-lift,
+  .wb-hover-scale,
+  .wb-hover-glow {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .wb-hover-lift:hover,
+  .wb-hover-scale:hover {
+    transform: none !important;
+  }
+}
+
+/* === 高コントラスト対応 === */
+@media (prefers-contrast: high) {
+  .wb-hover-glow:hover {
+    box-shadow: 0 0 0 2px currentColor;
+  }
+}
+
+/* === モバイル最適化 === */
+@media (max-width: 767px) {
+  .wb-animate-fade-in,
+  .wb-animate-slide-up,
+  .wb-animate-scale-in {
+    animation-duration: 0.2s; /* モバイルでは高速化 */
+  }
+
+  .wb-animate-bounce-in {
+    animation-duration: 0.4s;
+  }
+
+  .wb-hover-lift,
+  .wb-hover-scale {
+    transition-duration: 0.1s; /* タッチデバイスでは高速化 */
+  }
+}
+
+/* === バッテリー節約モード === */
+@media (prefers-reduced-motion: reduce) {
+  .wb-animate {
+    will-change: auto;
+  }
+}
+
+/* === 印刷時の最適化 === */
+@media print {
+  .wb-animate,
+  .wb-animate-fade-in,
+  .wb-animate-slide-up,
+  .wb-animate-scale-in,
+  .wb-animate-bounce-in,
+  .wb-tool-activate,
+  .wb-tool-working,
+  .wb-progress-animate,
+  .wb-success-pulse,
+  .wb-error-shake,
+  .wb-loading-spin {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

@@ -105,7 +105,7 @@ export const FileSizeAnalyzer: React.FC = () => {
         </div>
 
         {/* File Upload Tool */}
-        <Card workbench="measure" className="mb-6">
+        <Card workbench className="mb-6">
           <div className="p-6">
             <h2 className="text-xl font-semibold mb-4 text-orange-700">
               🔧 ファイル選択工具
@@ -157,7 +157,7 @@ export const FileSizeAnalyzer: React.FC = () => {
               )}
 
               <Button
-                workbench="measure"
+                workbench
                 onClick={analyzeFiles}
                 disabled={files.length === 0 || isAnalyzing}
                 className="w-full"
@@ -170,7 +170,7 @@ export const FileSizeAnalyzer: React.FC = () => {
 
         {/* Analysis Results */}
         {result && (
-          <Card workbench="measure" className="mb-6">
+          <Card workbench className="mb-6">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-orange-700">
                 📊 測定結果
@@ -213,7 +213,7 @@ export const FileSizeAnalyzer: React.FC = () => {
                       <div className="text-sm truncate">
                         {result.largestFile.name}
                       </div>
-                      <Badge variant="default" className="mt-1">
+                      <Badge variant="measure" className="mt-1">
                         {formatFileSize(result.largestFile.size)}
                       </Badge>
                     </div>
@@ -226,7 +226,7 @@ export const FileSizeAnalyzer: React.FC = () => {
                       <div className="text-sm truncate">
                         {result.smallestFile.name}
                       </div>
-                      <Badge variant="default" className="mt-1">
+                      <Badge variant="measure" className="mt-1">
                         {formatFileSize(result.smallestFile.size)}
                       </Badge>
                     </div>

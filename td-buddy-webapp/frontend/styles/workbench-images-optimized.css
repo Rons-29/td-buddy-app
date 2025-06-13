@@ -1,0 +1,399 @@
+/* === Quality Workbench レスポンシブ画像最適化システム === */
+
+/* === 基本画像最適化 === */
+.wb-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.wb-image[loading='lazy'] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.wb-image[loading='lazy'].loaded {
+  opacity: 1;
+}
+
+/* === レスポンシブ画像コンテナ === */
+.wb-image-container {
+  position: relative;
+  overflow: hidden;
+  background: var(--wb-workshop-bg);
+}
+
+.wb-image-container::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 アスペクト比 */
+}
+
+.wb-image-container .wb-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* === アスペクト比バリエーション === */
+.wb-aspect-square::before {
+  padding-bottom: 100%;
+} /* 1:1 */
+.wb-aspect-video::before {
+  padding-bottom: 56.25%;
+} /* 16:9 */
+.wb-aspect-photo::before {
+  padding-bottom: 66.67%;
+} /* 3:2 */
+.wb-aspect-wide::before {
+  padding-bottom: 42.86%;
+} /* 21:9 */
+.wb-aspect-portrait::before {
+  padding-bottom: 133.33%;
+} /* 3:4 */
+
+/* === 工具アイコン最適化 === */
+.wb-tool-icon {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.wb-tool-icon:hover {
+  transform: scale(1.1);
+}
+
+/* === サイズバリエーション === */
+.wb-image-xs {
+  max-width: 1rem;
+  max-height: 1rem;
+}
+.wb-image-sm {
+  max-width: 1.5rem;
+  max-height: 1.5rem;
+}
+.wb-image-md {
+  max-width: 2rem;
+  max-height: 2rem;
+}
+.wb-image-lg {
+  max-width: 3rem;
+  max-height: 3rem;
+}
+.wb-image-xl {
+  max-width: 4rem;
+  max-height: 4rem;
+}
+.wb-image-2xl {
+  max-width: 6rem;
+  max-height: 6rem;
+}
+
+/* === 遅延読み込みプレースホルダー === */
+.wb-image-placeholder {
+  background: linear-gradient(
+    90deg,
+    var(--wb-workshop-bg) 0%,
+    var(--wb-workshop-border) 50%,
+    var(--wb-workshop-bg) 100%
+  );
+  background-size: 200% 100%;
+  animation: wb-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes wb-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* === WebP対応フォールバック === */
+.wb-image-webp {
+  background-image: url('fallback.jpg');
+}
+
+.webp .wb-image-webp {
+  background-image: url('optimized.webp');
+}
+
+/* === パフォーマンス最適化 === */
+.wb-image-performance {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px 200px;
+}
+
+/* === レスポンシブブレークポイント === */
+@media (max-width: 479px) {
+  .wb-tool-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .wb-image-container::before {
+    padding-bottom: 75%; /* モバイルでは4:3 */
+  }
+
+  .wb-image-xs {
+    max-width: 0.75rem;
+    max-height: 0.75rem;
+  }
+  .wb-image-sm {
+    max-width: 1rem;
+    max-height: 1rem;
+  }
+  .wb-image-md {
+    max-width: 1.5rem;
+    max-height: 1.5rem;
+  }
+  .wb-image-lg {
+    max-width: 2rem;
+    max-height: 2rem;
+  }
+  .wb-image-xl {
+    max-width: 2.5rem;
+    max-height: 2.5rem;
+  }
+  .wb-image-2xl {
+    max-width: 3rem;
+    max-height: 3rem;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .wb-tool-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .wb-image-container::before {
+    padding-bottom: 66.67%; /* タブレットでは3:2 */
+  }
+}
+
+@media (min-width: 768px) {
+  .wb-tool-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .wb-image-container::before {
+    padding-bottom: 56.25%; /* デスクトップでは16:9 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .wb-tool-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .wb-image-lg {
+    max-width: 4rem;
+    max-height: 4rem;
+  }
+  .wb-image-xl {
+    max-width: 5rem;
+    max-height: 5rem;
+  }
+  .wb-image-2xl {
+    max-width: 8rem;
+    max-height: 8rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .wb-tool-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* === 高解像度ディスプレイ対応 === */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .wb-image-hd {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* === ダークモード対応 === */
+@media (prefers-color-scheme: dark) {
+  .wb-image-placeholder {
+    background: linear-gradient(90deg, #2d2d2d 0%, #404040 50%, #2d2d2d 100%);
+  }
+
+  .wb-tool-icon {
+    filter: brightness(0.9);
+  }
+}
+
+/* === 印刷最適化 === */
+@media print {
+  .wb-image {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  .wb-image-placeholder {
+    background: #f0f0f0;
+    animation: none;
+  }
+
+  .wb-tool-icon {
+    filter: grayscale(100%);
+  }
+}
+
+/* === アクセシビリティ対応 === */
+@media (prefers-reduced-motion: reduce) {
+  .wb-image {
+    transition: none;
+  }
+
+  .wb-tool-icon {
+    transition: none;
+  }
+
+  .wb-tool-icon:hover {
+    transform: none;
+  }
+
+  .wb-image-placeholder {
+    animation: none;
+  }
+}
+
+/* === 高コントラスト対応 === */
+@media (prefers-contrast: high) {
+  .wb-image {
+    filter: contrast(1.2);
+  }
+
+  .wb-tool-icon {
+    filter: contrast(1.3);
+  }
+}
+
+/* === 低帯域幅対応 === */
+@media (prefers-reduced-data: reduce) {
+  .wb-image[loading='lazy'] {
+    display: none;
+  }
+
+  .wb-image-placeholder {
+    animation: none;
+    background: var(--wb-workshop-border);
+  }
+}
+
+/* === 工具別画像スタイル === */
+.wb-tool-measure .wb-image {
+  border: 2px solid var(--wb-tool-measure);
+  border-radius: 4px;
+}
+
+.wb-tool-cut .wb-image {
+  border: 2px solid var(--wb-tool-cut);
+  border-radius: 4px;
+}
+
+.wb-tool-join .wb-image {
+  border: 2px solid var(--wb-tool-join);
+  border-radius: 4px;
+}
+
+.wb-tool-inspect .wb-image {
+  border: 2px solid var(--wb-tool-inspect);
+  border-radius: 4px;
+}
+
+.wb-tool-polish .wb-image {
+  border: 2px solid var(--wb-tool-polish);
+  border-radius: 4px;
+}
+
+/* === 画像エフェクト === */
+.wb-image-hover-zoom {
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.wb-image-hover-zoom:hover .wb-image {
+  transform: scale(1.05);
+}
+
+.wb-image-grayscale {
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+.wb-image-grayscale:hover {
+  filter: grayscale(0%);
+}
+
+.wb-image-blur {
+  filter: blur(2px);
+  transition: filter 0.3s ease;
+}
+
+.wb-image-blur:hover {
+  filter: blur(0px);
+}
+
+/* === 画像ギャラリー === */
+.wb-image-gallery {
+  display: grid;
+  gap: var(--wb-space-md);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+@media (max-width: 767px) {
+  .wb-image-gallery {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--wb-space-sm);
+  }
+}
+
+/* === 画像キャプション === */
+.wb-image-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+  padding: var(--wb-space-md);
+  font-size: var(--wb-text-sm);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.wb-image-container:hover .wb-image-caption {
+  opacity: 1;
+}
+
+/* === エラー状態 === */
+.wb-image-error {
+  background: var(--wb-workshop-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wb-neutral);
+  font-size: var(--wb-text-sm);
+}
+
+.wb-image-error::before {
+  content: '🖼️';
+  font-size: 2rem;
+  margin-bottom: var(--wb-space-sm);
+}

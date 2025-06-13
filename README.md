@@ -1,20 +1,62 @@
-# 🍺 QA Workbench + Brew
+# 🛠️ Quality Workbench + Brew
 
 QA エンジニアの専用作業台 - データ生成から品質管理まで、助手のブリューがサポート
 
 ## 🎯 プロジェクト概要
 
-QA Workbench + Brew は、作業効率を向上させるための作業場です。テストデータの生成、品質管理、自動化ツールなど、業務に必要な機能を一つのプラットフォームで提供します。
+Quality Workbench + Brew は、QA エンジニアのための**作業効率特化型プラットフォーム**です。まるで熟練職人の作業台のように、必要な工具が整理整頓され、最適な環境でテストデータの生成、品質管理、自動化ツールを提供します。
+
+### 🛠️ ワークベンチコンセプト
+
+- **🪵 Wood & Metal Design**: 温かみのある木材と信頼性の高い金属を組み合わせたデザイン
+- **⚙️ Tool-Centric UX**: 各機能を専用工具として配置し、直感的な操作を実現
+- **🔧 Craft Quality**: 職人品質の精密さと使いやすさを両立
+- **📐 Precision First**: 測定・検証・改善のサイクルを重視
 
 ### 🍺 Brew について
 
-Brew は、QA Workbench の頼れる助手です。データ生成から品質チェックまで、あらゆる場面で QA エンジニアをサポートします。
+Brew は、Quality Workbench の頼れる助手です。データ生成から品質チェックまで、あらゆる場面で QA エンジニアをサポートします。
+
+## 🎨 デザインシステム
+
+Quality Workbench は独自のワークベンチ特化デザインシステムを採用しています：
+
+### **🪵 木材カラーパレット（メイン）**
+
+- **Light Wood** `#d7ccc8` - 明るい木材色
+- **Main Wood** `#8d6e63` - メイン木材色
+- **Dark Wood** `#5d4037` - 濃い木材色
+- **Accent Wood** `#6d4c41` - アクセント木材色
+
+### **⚙️ 金属カラーパレット（セカンダリ）**
+
+- **Light Metal** `#cfd8dc` - 明るい金属色
+- **Main Metal** `#607d8b` - メイン金属色
+- **Dark Metal** `#455a64` - 濃い金属色
+- **Accent Metal** `#546e7a` - アクセント金属色
+
+### **🔨 ツールカラーパレット（機能別）**
+
+- **Measure** `#ff9800` - 測定ツール（オレンジ）
+- **Cut** `#f44336` - 切断ツール（レッド）
+- **Join** `#4caf50` - 接合ツール（グリーン）
+- **Inspect** `#2196f3` - 検査ツール（ブルー）
+- **Polish** `#9c27b0` - 仕上げツール（パープル）
+
+### **📊 ステータスカラー**
+
+- **Success** `#4caf50` - 作業完了
+- **Warning** `#ff9800` - 注意・調整中
+- **Error** `#f44336` - エラー・修正必要
+- **Info** `#2196f3` - 情報・ガイド
+
+詳細なデザインガイドラインは `td-buddy-webapp/frontend/styles/` を参照してください。
 
 ## 🏗️ アーキテクチャ
 
 ```
-QA Workbench + Brew
-├── 🎨 フロントエンド (Next.js + TypeScript + TailwindCSS)
+Quality Workbench + Brew
+├── 🎨 フロントエンド (Next.js + TypeScript + Workbench Design System)
 ├── 🔧 バックエンド (Express + TypeScript + SQLite)
 ├── 🔌 リアルタイム通信 (WebSocket)
 └── 🍺 Brew Assistant (AI連携)

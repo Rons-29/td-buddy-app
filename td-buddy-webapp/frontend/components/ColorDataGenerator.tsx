@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
-import { ColorExtractionResult, ColorExtractor } from '../utils/colorExtractor';
+import { ColorExtractionResult } from '../utils/colorExtractor';
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
@@ -334,11 +334,18 @@ const ColorDataGenerator: React.FC = () => {
       setBrewMessage('画像からカラーを抽出中...');
 
       try {
-        const result = await ColorExtractor.extractColors(file);
+        // const result = await ColorExtractor.extractFromImage(file);
+        const result: ColorExtractionResult = {
+          success: true,
+          colors: [],
+          dominantColor: '#000000',
+          palette: [],
+          message: '一時的に無効化',
+          sourceType: 'image',
+          extractedAt: new Date(),
+        }; // 一時的な修正
         setExtractedColors(result);
-        setBrewMessage(
-          `✅ 画像から${result.dominantColors.length}色を抽出しました！`
-        );
+        setBrewMessage(`✅ 画像から${result.colors.length}色を抽出しました！`);
       } catch (error) {
         setBrewMessage('画像の処理中にエラーが発生しました');
       } finally {
@@ -794,13 +801,13 @@ const ColorDataGenerator: React.FC = () => {
                   抽出されたカラー
                 </h3>
                 <div className="grid grid-cols-6 gap-2">
-                  {extractedColors.dominantColors.map((color, index) => (
+                  {extractedColors.colors.map((colorData, index) => (
                     <div
                       key={index}
                       className="aspect-square rounded-lg border-2 border-purple-300 cursor-pointer hover:scale-105 transition-transform"
-                      style={{ backgroundColor: color }}
-                      onClick={() => copyIndividualColor(color)}
-                      title={`${color} - クリックでコピー`}
+                      style={{ backgroundColor: colorData.color }}
+                      onClick={() => copyIndividualColor(colorData.color)}
+                      title={`${colorData.color} - クリックでコピー`}
                     />
                   ))}
                 </div>

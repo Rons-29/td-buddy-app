@@ -195,7 +195,7 @@ export const DataSplitter: React.FC = () => {
         </div>
 
         {/* Input Data */}
-        <Card workbench="cut" className="mb-6">
+        <Card workbench className="mb-6">
           <div className="p-6">
             <h2 className="text-xl font-semibold mb-4 text-red-700">
               📝 データ入力工具
@@ -215,7 +215,7 @@ export const DataSplitter: React.FC = () => {
         {/* Tool Tabs */}
         <div className="flex space-x-4 mb-6">
           <Button
-            workbench="cut"
+            workbench
             onClick={() => setActiveTab('split')}
             className={
               activeTab === 'split'
@@ -226,7 +226,7 @@ export const DataSplitter: React.FC = () => {
             ✂️ データ分割
           </Button>
           <Button
-            workbench="cut"
+            workbench
             onClick={() => setActiveTab('filter')}
             className={
               activeTab === 'filter'
@@ -240,7 +240,7 @@ export const DataSplitter: React.FC = () => {
 
         {/* Split Tool */}
         {activeTab === 'split' && (
-          <Card workbench="cut" className="mb-6">
+          <Card workbench className="mb-6">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-red-700">
                 ✂️ データ分割設定
@@ -270,7 +270,7 @@ export const DataSplitter: React.FC = () => {
                         区切り文字
                       </label>
                       <Input
-                        workbench="cut"
+                        workbench
                         value={delimiter}
                         onChange={e => setDelimiter(e.target.value)}
                         placeholder="例: , | ; | \t"
@@ -284,7 +284,7 @@ export const DataSplitter: React.FC = () => {
                         分割文字数
                       </label>
                       <Input
-                        workbench="cut"
+                        workbench
                         type="number"
                         value={splitLength}
                         onChange={e =>
@@ -301,7 +301,7 @@ export const DataSplitter: React.FC = () => {
                         正規表現パターン
                       </label>
                       <Input
-                        workbench="cut"
+                        workbench
                         value={customPattern}
                         onChange={e => setCustomPattern(e.target.value)}
                         placeholder="例: \d+ | [a-zA-Z]+"
@@ -312,7 +312,7 @@ export const DataSplitter: React.FC = () => {
               </div>
 
               <Button
-                workbench="cut"
+                workbench
                 onClick={handleSplit}
                 disabled={!inputData.trim() || isProcessing}
                 className="w-full mt-4"
@@ -325,7 +325,7 @@ export const DataSplitter: React.FC = () => {
 
         {/* Filter Tool */}
         {activeTab === 'filter' && (
-          <Card workbench="cut" className="mb-6">
+          <Card workbench className="mb-6">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-red-700">
                 🔍 データフィルター設定
@@ -356,7 +356,7 @@ export const DataSplitter: React.FC = () => {
                         フィルター値
                       </label>
                       <Input
-                        workbench="cut"
+                        workbench
                         value={filterValue}
                         onChange={e => setFilterValue(e.target.value)}
                         placeholder="フィルター条件を入力"
@@ -369,7 +369,7 @@ export const DataSplitter: React.FC = () => {
                       </label>
                       <div className="flex space-x-2">
                         <Input
-                          workbench="cut"
+                          workbench
                           type="number"
                           value={minLength}
                           onChange={e =>
@@ -378,7 +378,7 @@ export const DataSplitter: React.FC = () => {
                           placeholder="最小"
                         />
                         <Input
-                          workbench="cut"
+                          workbench
                           type="number"
                           value={maxLength}
                           onChange={e =>
@@ -393,7 +393,7 @@ export const DataSplitter: React.FC = () => {
               </div>
 
               <Button
-                workbench="cut"
+                workbench
                 onClick={handleFilter}
                 disabled={!inputData.trim() || isProcessing}
                 className="w-full mt-4"
@@ -408,7 +408,7 @@ export const DataSplitter: React.FC = () => {
 
         {/* Split Results */}
         {splitResult && activeTab === 'split' && (
-          <Card workbench="cut" className="mb-6">
+          <Card workbench className="mb-6">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-red-700">
                 📊 分割結果
@@ -453,7 +453,7 @@ export const DataSplitter: React.FC = () => {
                     <div className="flex items-center space-x-2 ml-2">
                       <Badge variant="cut">{part.length}文字</Badge>
                       <Button
-                        workbench="cut"
+                        workbench
                         onClick={() => copyToClipboard(part)}
                         className="text-xs py-1 px-2"
                       >
@@ -465,7 +465,7 @@ export const DataSplitter: React.FC = () => {
               </div>
 
               <Button
-                workbench="cut"
+                workbench
                 onClick={() =>
                   copyToClipboard(splitResult.splitData.join('\n'))
                 }
@@ -479,7 +479,7 @@ export const DataSplitter: React.FC = () => {
 
         {/* Filter Results */}
         {filterResult && activeTab === 'filter' && (
-          <Card workbench="cut" className="mb-6">
+          <Card workbench className="mb-6">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-red-700">
                 📊 フィルター結果
@@ -528,7 +528,7 @@ export const DataSplitter: React.FC = () => {
                     ))}
                   </div>
                   <Button
-                    workbench="cut"
+                    workbench
                     onClick={() =>
                       copyToClipboard(filterResult.filteredData.join('\n'))
                     }
