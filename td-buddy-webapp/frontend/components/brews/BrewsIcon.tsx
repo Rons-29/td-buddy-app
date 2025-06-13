@@ -2,7 +2,6 @@
 
 import { BrewsEmotion, BrewsIconProps } from '@/types/brews';
 import {
-  getAnimationClasses,
   getBrewsConfig,
   getColorClasses,
   getDefaultMessage,
@@ -17,7 +16,7 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
   size = 'medium',
   animation = 'none',
   message,
-  showBubble = true,
+  showBubble = false,
   className = '',
   onClick,
 }) => {
@@ -42,13 +41,16 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
       setIsAnimating(true);
       const timer = setTimeout(() => {
         setIsAnimating(false);
-      }, 1200); // アニメーション時間
+      }, 1200);
       return () => clearTimeout(timer);
     }
   }, [animation, emotion, role]);
 
   // 感情に応じたオーバーレイアイコン
-  const getEmotionOverlay = (emotion: BrewsEmotion) => {
+  const getEmotionOverlay = (emotion?: BrewsEmotion) => {
+    if (!emotion) {
+      return null;
+    }
     const overlayIcons: Partial<
       Record<BrewsEmotion, React.ComponentType<any>>
     > = {
@@ -57,6 +59,11 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
       warning: LucideIcons.AlertTriangle,
       working: LucideIcons.Clock,
       excited: LucideIcons.Zap,
+      happy: LucideIcons.Heart,
+      thinking: LucideIcons.Brain,
+      sleepy: LucideIcons.Moon,
+      brewing: LucideIcons.Coffee,
+      completed: LucideIcons.Star,
     };
     return overlayIcons[emotion];
   };
@@ -88,6 +95,20 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
 
   const overlaySize = getOverlaySize();
 
+  // アニメーションクラスの取得
+  const getAnimationClasses = () => {
+    const animations = {
+      bounce: 'animate-bounce',
+      wiggle: 'animate-wiggle',
+      pulse: 'animate-pulse',
+      spin: 'animate-spin',
+      heartbeat: 'animate-heartbeat',
+      float: 'animate-float',
+      none: '',
+    };
+    return animations[animation] || '';
+  };
+
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -97,27 +118,42 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
     setTimeout(() => setIsAnimating(false), 600);
   };
 
-  const baseClasses = `
-    brews-icon
-    ${getSizeClasses(size)}
-    ${getColorClasses(config.color, emotion)}
-    mx-auto
-    flex items-center justify-center
-    rounded-full
-    border-2
-    cursor-pointer
-    transition-all duration-300
-    hover:scale-105
-    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-    ${isAnimating ? getAnimationClasses(animation) : ''}
-    ${className}
-  `;
+  const containerClasses = [
+    'relative inline-block',
+    'transition-all duration-300 ease-in-out',
+    'hover:scale-105',
+    onClick && 'cursor-pointer',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const iconClasses = [
+    getSizeClasses(size),
+    getColorClasses(config.color, emotion),
+    'transition-all duration-200',
+    getAnimationClasses(),
+    isAnimating && 'animate-bounce',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const overlayClasses = [
+    'absolute rounded-full flex items-center justify-center',
+    'bg-white border-2 border-gray-300 shadow-lg',
+    overlaySize.wrapper,
+    overlaySize.position,
+    'animate-in fade-in-0 duration-300',
+    'transition-all duration-300 ease-in-out',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className="brews-icon-container">
+    <div className={containerClasses} onClick={handleClick}>
       {/* メッセージバブル */}
-      {showBubble && currentMessage && (
-        <div className="relative mb-3">
+      {currentMessage && showBubble && (
+        <div className="relative mb-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
           <div className="bg-white border-2 border-gray-200 rounded-lg p-3 shadow-lg relative max-w-xs">
             <p className="text-gray-800 text-sm font-medium text-center">
               {currentMessage}
@@ -133,8 +169,7 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
       {/* Brewsアイコン本体 */}
       <div className="relative">
         <div
-          className={baseClasses}
-          onClick={handleClick}
+          className={iconClasses}
           role="button"
           tabIndex={0}
           aria-label={`Brews の${config.name} - 現在の感情: ${emotion}, メッセージ: ${currentMessage}`}
@@ -152,50 +187,31 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
                   : size === 'medium'
                   ? 'w-6 h-6'
                   : 'w-8 h-8'
-              }`}
+              } transition-transform duration-200`}
               aria-hidden="true"
             />
           )}
         </div>
 
         {/* 感情オーバーレイ */}
-        {OverlayIcon && (
-          <div className={`absolute ${overlaySize.position}`}>
-            <div
-              className={`rounded-full flex items-center justify-center shadow-lg border-2 border-white ${
-                overlaySize.wrapper
-              } ${
-                emotion === 'success'
-                  ? 'bg-green-500 text-white'
-                  : emotion === 'error'
-                  ? 'bg-red-500 text-white'
-                  : emotion === 'warning'
-                  ? 'bg-yellow-500 text-white'
-                  : emotion === 'working'
-                  ? 'bg-blue-500 text-white'
-                  : emotion === 'excited'
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-gray-500 text-white'
-              }`}
-            >
-              <OverlayIcon size={overlaySize.iconSize} aria-hidden="true" />
-            </div>
+        {emotion && OverlayIcon && (
+          <div className={overlayClasses}>
+            <OverlayIcon
+              size={overlaySize.iconSize}
+              className="transition-transform duration-200 hover:scale-110"
+            />
           </div>
         )}
       </div>
 
-      {/* 役割ラベル */}
-      <div className="text-center mt-2">
-        <span
-          className={`
-            text-xs px-2 py-1 rounded-full font-medium
-            ${getColorClasses(config.color, emotion)}
-            ${emotion === 'brewing' ? 'animate-pulse' : ''}
-          `}
-        >
-          {config.name}
-        </span>
-      </div>
+      {/* 役割ラベル（小さいサイズでは非表示） */}
+      {size !== 'small' && (
+        <div className="text-center mt-2">
+          <span className="text-xs font-medium text-gray-600">
+            {config.name}
+          </span>
+        </div>
+      )}
     </div>
   );
 };
