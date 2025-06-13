@@ -12,10 +12,10 @@ import {
   PasswordResult,
   TDState,
 } from '../types/password';
+import BrewCharacter from './BrewCharacter';
 import { CompositionSelector } from './CompositionSelector';
 import { CustomCharsetsEditor } from './CustomCharsetsEditor';
 import { CustomSymbolsInput } from './CustomSymbolsInput';
-import BrewCharacter from './BrewCharacter';
 import { ActionButton } from './ui/ActionButton';
 
 export const PasswordGenerator: React.FC = () => {
@@ -852,19 +852,24 @@ export const PasswordGenerator: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto p-4 lg:p-6 space-y-6">
-      {/* ヘッダー */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-amber-900 mb-2">
-          🔐 QA Workbench パスワード生成
-        </h1>
-        <p className="text-amber-600">
-          構成プリセット機能で、より実用的なパスワードを丁寧に生成します
+    <div className="w-full space-y-6">
+      {/* ワークベンチ工具ヘッダー */}
+      <div className="text-center wb-workbench-header">
+        <div className="flex items-center justify-center space-x-3 mb-3">
+          <div className="text-3xl">🔐</div>
+          <h2 className="text-2xl font-bold text-wb-tool-inspect-800">
+            パスワード生成工具
+          </h2>
+        </div>
+        <p className="text-wb-tool-inspect-600 max-w-2xl mx-auto">
+          🔍
+          検査工具として、セキュリティテストに必要な高品質なパスワードを生成します。
+          構成プリセット機能で、様々な要件に対応した実用的なパスワードを丁寧に作成できます。
         </p>
       </div>
 
-      {/* ブリューキャラクター */}
-      <div className="flex justify-center">
+      {/* Brewキャラクター（工房の職人） */}
+      <div className="wb-character-section">
         <BrewCharacter
           emotion={brewState.emotion}
           animation={brewState.animation}
@@ -874,9 +879,14 @@ export const PasswordGenerator: React.FC = () => {
         />
       </div>
 
-      {/* 設定エリア（フル幅） */}
-      <div className="bg-white rounded-lg shadow-md p-4 lg:p-6">
-        <h2 className="text-xl font-semibold mb-4">🎯 生成設定</h2>
+      {/* 工具設定パネル */}
+      <div className="wb-tool-panel wb-tool-inspect">
+        <div className="wb-tool-panel-header">
+          <h3 className="wb-tool-panel-title">🎯 パスワード生成設定</h3>
+          <p className="wb-tool-panel-description">
+            セキュリティ要件に応じて、パスワードの構成と品質を設定してください
+          </p>
+        </div>
 
         {/* 構成プリセット選択（フル幅） */}
         <CompositionSelector
@@ -885,13 +895,11 @@ export const PasswordGenerator: React.FC = () => {
           className="mb-8"
         />
 
-        {/* 基本設定（水平レイアウト） */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-6">
+        {/* 基本設定（ワークベンチグリッド） */}
+        <div className="wb-tool-grid wb-grid-5 gap-4 md:gap-6 mb-6">
           {/* パスワード長 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              パスワード長
-            </label>
+          <div className="wb-tool-control">
+            <label className="wb-tool-label">📏 パスワード長</label>
             <input
               type="range"
               min="4"
@@ -900,21 +908,17 @@ export const PasswordGenerator: React.FC = () => {
               onChange={e =>
                 handleCriteriaChange('length', parseInt(e.target.value))
               }
-              className="w-full"
+              className="wb-range-input"
             />
-            <div className="text-center text-sm text-gray-500 mt-1">
-              {criteria.length}文字
-            </div>
+            <div className="wb-tool-value">{criteria.length}文字</div>
           </div>
 
           {/* 生成個数 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              生成個数
+          <div className="wb-tool-control">
+            <label className="wb-tool-label">
+              🔢 生成個数
               {criteria.count > 100 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded">
-                  大量生成
-                </span>
+                <span className="wb-badge wb-badge-warning">大量生成</span>
               )}
             </label>
             <div className="space-y-2">
@@ -927,7 +931,7 @@ export const PasswordGenerator: React.FC = () => {
                 onChange={e =>
                   handleCriteriaChange('count', parseInt(e.target.value))
                 }
-                className="w-full"
+                className="wb-range-input"
               />
 
               {/* 数値入力とクイック選択 */}
@@ -943,9 +947,9 @@ export const PasswordGenerator: React.FC = () => {
                       Math.min(Math.max(parseInt(e.target.value) || 1, 1), 1000)
                     )
                   }
-                  className="w-16 px-2 py-1 text-sm border border-gray-300 rounded text-center"
+                  className="wb-number-input"
                 />
-                <span className="text-xs text-gray-500">個</span>
+                <span className="wb-unit-label">個</span>
 
                 {/* クイック選択ボタン */}
                 <div className="flex gap-1">
@@ -953,10 +957,10 @@ export const PasswordGenerator: React.FC = () => {
                     <button
                       key={num}
                       onClick={() => handleCriteriaChange('count', num)}
-                      className={`px-2 py-1 text-xs rounded transition-colors ${
+                      className={`wb-quick-button ${
                         criteria.count === num
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'wb-quick-button-active'
+                          : 'wb-quick-button-inactive'
                       }`}
                     >
                       {num}
@@ -966,7 +970,7 @@ export const PasswordGenerator: React.FC = () => {
               </div>
 
               {/* 生成時間の目安表示 */}
-              <div className="text-xs text-gray-500">
+              <div className="wb-tool-hint">
                 {criteria.count <= 10 && '⚡ 高速生成'}
                 {criteria.count > 10 && criteria.count <= 50 && '🚀 標準生成'}
                 {criteria.count > 50 &&
@@ -978,117 +982,111 @@ export const PasswordGenerator: React.FC = () => {
           </div>
 
           {/* 文字種選択 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              使用文字種
-            </label>
-            <div className="space-y-1">
-              <label className="flex items-center text-sm">
+          <div className="wb-tool-control">
+            <label className="wb-tool-label">🔤 使用文字種</label>
+            <div className="wb-checkbox-group">
+              <label className="wb-checkbox-item">
                 <input
                   type="checkbox"
                   checked={criteria.includeUppercase}
                   onChange={e =>
                     handleCriteriaChange('includeUppercase', e.target.checked)
                   }
-                  className="mr-1.5"
+                  className="wb-checkbox"
                 />
-                大文字 (A-Z)
+                <span>大文字 (A-Z)</span>
               </label>
-              <label className="flex items-center text-sm">
+              <label className="wb-checkbox-item">
                 <input
                   type="checkbox"
                   checked={criteria.includeLowercase}
                   onChange={e =>
                     handleCriteriaChange('includeLowercase', e.target.checked)
                   }
-                  className="mr-1.5"
+                  className="wb-checkbox"
                 />
-                小文字 (a-z)
+                <span>小文字 (a-z)</span>
               </label>
-              <label className="flex items-center text-sm">
+              <label className="wb-checkbox-item">
                 <input
                   type="checkbox"
                   checked={criteria.includeNumbers}
                   onChange={e =>
                     handleCriteriaChange('includeNumbers', e.target.checked)
                   }
-                  className="mr-1.5"
+                  className="wb-checkbox"
                 />
-                数字 (0-9)
+                <span>数字 (0-9)</span>
               </label>
-              <label className="flex items-center text-sm">
+              <label className="wb-checkbox-item">
                 <input
                   type="checkbox"
                   checked={criteria.includeSymbols}
                   onChange={e =>
                     handleCriteriaChange('includeSymbols', e.target.checked)
                   }
-                  className="mr-1.5"
+                  className="wb-checkbox"
                 />
-                記号 (!@#$)
+                <span>記号 (!@#$)</span>
               </label>
             </div>
           </div>
 
           {/* 除外オプション */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              除外オプション
-            </label>
-            <div className="space-y-2">
+          <div className="wb-tool-control">
+            <label className="wb-tool-label">🚫 除外オプション</label>
+            <div className="wb-checkbox-group">
               {/* 紛らわしい文字除外 */}
-              <label className="flex items-start">
+              <label className="wb-checkbox-item wb-checkbox-detailed">
                 <input
                   type="checkbox"
                   checked={criteria.excludeAmbiguous}
                   onChange={e =>
                     handleCriteriaChange('excludeAmbiguous', e.target.checked)
                   }
-                  className="mr-2 mt-0.5"
+                  className="wb-checkbox"
                 />
                 <div>
-                  <span className="text-sm font-medium">
+                  <span className="wb-checkbox-title">
                     紛らわしい文字を除外
                   </span>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="wb-checkbox-description">
                     除外: i, l, 1, L, o, 0, O
                   </div>
                 </div>
               </label>
 
               {/* 似ている文字除外 */}
-              <label className="flex items-start">
+              <label className="wb-checkbox-item wb-checkbox-detailed">
                 <input
                   type="checkbox"
                   checked={criteria.excludeSimilar || false}
                   onChange={e =>
                     handleCriteriaChange('excludeSimilar', e.target.checked)
                   }
-                  className="mr-2 mt-0.5"
+                  className="wb-checkbox"
                 />
                 <div>
-                  <span className="text-sm font-medium">
-                    似ている記号を除外
-                  </span>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <span className="wb-checkbox-title">似ている記号を除外</span>
+                  <div className="wb-checkbox-description">
                     除外: {'{}'}, [], (), /\, '"`~
                   </div>
                 </div>
               </label>
 
               {/* 連続文字除外 */}
-              <label className="flex items-start">
+              <label className="wb-checkbox-item wb-checkbox-detailed">
                 <input
                   type="checkbox"
                   checked={criteria.excludeSequential || false}
                   onChange={e =>
                     handleCriteriaChange('excludeSequential', e.target.checked)
                   }
-                  className="mr-2 mt-0.5"
+                  className="wb-checkbox"
                 />
                 <div>
-                  <span className="text-sm font-medium">連続文字を避ける</span>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <span className="wb-checkbox-title">連続文字を避ける</span>
+                  <div className="wb-checkbox-description">
                     abc, 123 などの連続を回避
                   </div>
                 </div>
@@ -1097,7 +1095,7 @@ export const PasswordGenerator: React.FC = () => {
           </div>
 
           {/* 生成ボタン */}
-          <div className="flex items-end">
+          <div className="wb-tool-control wb-tool-action">
             <ActionButton
               type="generate"
               onClick={generatePasswords}
@@ -1106,7 +1104,7 @@ export const PasswordGenerator: React.FC = () => {
               variant="primary"
               size="lg"
               fullWidth={true}
-              className="w-full"
+              className="wb-action-button wb-action-primary"
             />
           </div>
 
@@ -1115,13 +1113,13 @@ export const PasswordGenerator: React.FC = () => {
         </div>
 
         {/* 高度な設定ボタン */}
-        <div className="flex justify-center">
+        <div className="wb-tool-section-divider">
           <ActionButton
             type="generate"
             onClick={() => setShowAdvanced(!showAdvanced)}
             variant="secondary"
             size="md"
-            className="flex items-center gap-2"
+            className="wb-toggle-button"
           >
             <Settings2 className="w-4 h-4" />
             {showAdvanced ? '高度な設定を隠す' : '高度な設定を表示'}
@@ -1130,19 +1128,22 @@ export const PasswordGenerator: React.FC = () => {
 
         {/* 高度な設定パネル */}
         {showAdvanced && (
-          <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg space-y-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">
-              ⚙️ 高度な設定
-            </h3>
+          <div className="wb-advanced-panel">
+            <div className="wb-advanced-panel-header">
+              <h4 className="wb-advanced-panel-title">⚙️ 高度な設定</h4>
+              <p className="wb-advanced-panel-description">
+                より詳細な品質設定と生成オプション
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="wb-advanced-grid">
               {/* 文字品質設定 */}
-              <div className="space-y-4">
-                <h4 className="font-medium text-gray-700">🔍 文字品質</h4>
+              <div className="wb-advanced-section">
+                <h5 className="wb-advanced-section-title">🔍 文字品質</h5>
 
                 {/* 最小エントロピー設定 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="wb-advanced-control">
+                  <label className="wb-advanced-label">
                     最小エントロピー（ビット）
                   </label>
                   <input
@@ -1156,26 +1157,28 @@ export const PasswordGenerator: React.FC = () => {
                         parseInt(e.target.value)
                       )
                     }
-                    className="w-full"
+                    className="wb-range-input"
                   />
-                  <div className="text-center text-sm text-gray-500 mt-1">
+                  <div className="wb-advanced-value">
                     {criteria.minEntropy || 50}ビット
                   </div>
                 </div>
 
                 {/* 辞書攻撃対策 */}
-                <label className="flex items-start">
+                <label className="wb-advanced-checkbox">
                   <input
                     type="checkbox"
                     checked={criteria.avoidDictionary || false}
                     onChange={e =>
                       handleCriteriaChange('avoidDictionary', e.target.checked)
                     }
-                    className="mr-2 mt-0.5"
+                    className="wb-checkbox"
                   />
                   <div>
-                    <span className="text-sm font-medium">辞書攻撃対策</span>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <span className="wb-advanced-checkbox-title">
+                      辞書攻撃対策
+                    </span>
+                    <div className="wb-advanced-checkbox-description">
                       一般的な単語パターンを避ける
                     </div>
                   </div>
@@ -1183,34 +1186,32 @@ export const PasswordGenerator: React.FC = () => {
               </div>
 
               {/* 生成オプション */}
-              <div className="space-y-4">
-                <h4 className="font-medium text-gray-700">⚡ 生成オプション</h4>
+              <div className="wb-advanced-section">
+                <h5 className="wb-advanced-section-title">⚡ 生成オプション</h5>
 
                 {/* 重複チェック */}
-                <label className="flex items-start">
+                <label className="wb-advanced-checkbox">
                   <input
                     type="checkbox"
                     checked={criteria.noDuplicates || false}
                     onChange={e =>
                       handleCriteriaChange('noDuplicates', e.target.checked)
                     }
-                    className="mr-2 mt-0.5"
+                    className="wb-checkbox"
                   />
                   <div>
-                    <span className="text-sm font-medium">
+                    <span className="wb-advanced-checkbox-title">
                       重複パスワード除去
                     </span>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="wb-advanced-checkbox-description">
                       同じパスワードが生成されないよう保証
                     </div>
                   </div>
                 </label>
 
                 {/* 再試行回数 */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    生成再試行回数
-                  </label>
+                <div className="wb-advanced-control">
+                  <label className="wb-advanced-label">生成再試行回数</label>
                   <select
                     value={criteria.maxRetries || 100}
                     onChange={e =>
@@ -1219,7 +1220,7 @@ export const PasswordGenerator: React.FC = () => {
                         parseInt(e.target.value)
                       )
                     }
-                    className="w-full p-2 border border-gray-300 rounded"
+                    className="wb-select-input"
                   >
                     <option value={10}>10回（高速）</option>
                     <option value={50}>50回（標準）</option>
@@ -1232,16 +1233,21 @@ export const PasswordGenerator: React.FC = () => {
           </div>
         )}
 
-        {/* 詳細設定（カスタムプリセット用） */}
+        {/* カスタムプリセット詳細設定 */}
         {(selectedPresetId === 'custom-symbols' ||
           selectedPresetId === 'custom-charsets') && (
-          <div className="border-t border-gray-200 pt-6">
+          <div className="wb-custom-preset-panel">
             {/* カスタム記号設定 */}
             {selectedPresetId === 'custom-symbols' && (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  🎨 カスタム記号を設定
-                </label>
+              <div className="wb-custom-section wb-custom-symbols">
+                <div className="wb-custom-section-header">
+                  <h4 className="wb-custom-section-title">
+                    🎨 カスタム記号設定
+                  </h4>
+                  <p className="wb-custom-section-description">
+                    使用する記号文字を自由に設定できます
+                  </p>
+                </div>
                 <CustomSymbolsInput
                   value={customSymbols}
                   onChange={setCustomSymbols}
@@ -1252,7 +1258,15 @@ export const PasswordGenerator: React.FC = () => {
 
             {/* カスタム文字種エディター */}
             {selectedPresetId === 'custom-charsets' && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="wb-custom-section wb-custom-charsets">
+                <div className="wb-custom-section-header">
+                  <h4 className="wb-custom-section-title">
+                    🔤 カスタム文字種設定
+                  </h4>
+                  <p className="wb-custom-section-description">
+                    独自の文字セットを定義できます
+                  </p>
+                </div>
                 <CustomCharsetsEditor
                   charsets={customCharsets}
                   onChange={setCustomCharsets}
@@ -1266,28 +1280,34 @@ export const PasswordGenerator: React.FC = () => {
 
       {/* エラー表示 */}
       {apiError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center">
-            <div className="text-red-600 mr-2">❌</div>
-            <div>
-              <h3 className="font-medium text-red-800">エラー</h3>
-              <p className="text-red-700 text-sm">{apiError}</p>
+        <div className="wb-error-panel">
+          <div className="wb-error-content">
+            <div className="wb-error-icon">❌</div>
+            <div className="wb-error-text">
+              <h4 className="wb-error-title">エラーが発生しました</h4>
+              <p className="wb-error-message">{apiError}</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* 生成結果（下部にフル幅表示） */}
+      {/* 生成結果パネル */}
       {result && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">🔐 生成結果</h2>
-            <div className="flex items-center gap-2">
+        <div className="wb-result-panel">
+          <div className="wb-result-header">
+            <div className="wb-result-title-section">
+              <h3 className="wb-result-title">🔐 生成結果</h3>
+              <p className="wb-result-subtitle">
+                {result.passwords.length}個のパスワードが生成されました
+              </p>
+            </div>
+            <div className="wb-result-actions">
               <ActionButton
                 type="replace"
                 onClick={() => setShowPasswords(!showPasswords)}
                 variant="secondary"
                 size="sm"
+                className="wb-result-action-button"
               >
                 {showPasswords ? (
                   <EyeOff className="w-4 h-4" />
@@ -1300,23 +1320,26 @@ export const PasswordGenerator: React.FC = () => {
                 onClick={copyAllPasswords}
                 variant="primary"
                 size="sm"
+                className="wb-result-action-button"
               />
             </div>
           </div>
 
           {/* 強度表示 */}
-          <div className="mb-4">
-            <div
-              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                getStrengthInfo(result.strength).bg
-              } ${getStrengthInfo(result.strength).color}`}
-            >
-              <span className="mr-1">
-                {getStrengthInfo(result.strength).icon}
-              </span>
-              強度: {getStrengthInfo(result.strength).label}
+          <div className="wb-strength-section">
+            <div className="wb-strength-badge-container">
+              <div
+                className={`wb-strength-badge wb-strength-${result.strength}`}
+              >
+                <span className="wb-strength-icon">
+                  {getStrengthInfo(result.strength).icon}
+                </span>
+                <span className="wb-strength-label">
+                  強度: {getStrengthInfo(result.strength).label}
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="wb-strength-details">
               推定解読時間: {result.estimatedCrackTime}
             </p>
           </div>
@@ -1326,23 +1349,23 @@ export const PasswordGenerator: React.FC = () => {
 
           {/* 構成プリセット情報表示 */}
           {(result as any).composition && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-              <h4 className="font-medium text-blue-900 mb-2">
-                ✅ 構成要件チェック
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div className="wb-composition-panel">
+              <div className="wb-composition-header">
+                <h4 className="wb-composition-title">✅ 構成要件チェック</h4>
+                <p className="wb-composition-description">
+                  選択したプリセットの要件充足状況
+                </p>
+              </div>
+              <div className="wb-composition-grid">
                 {(result as any).composition.appliedRequirements.map(
                   (req: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between text-sm bg-white p-2 rounded"
-                    >
-                      <span className="text-blue-800">{req.name}</span>
+                    <div key={index} className="wb-composition-item">
+                      <span className="wb-composition-name">{req.name}</span>
                       <span
-                        className={`px-2 py-1 rounded text-xs ${
+                        className={`wb-composition-status ${
                           req.satisfied
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
+                            ? 'wb-composition-satisfied'
+                            : 'wb-composition-unsatisfied'
                         }`}
                       >
                         {req.satisfied ? '✓ 満足' : '✗ 不足'} ({req.actualCount}
@@ -1355,17 +1378,17 @@ export const PasswordGenerator: React.FC = () => {
             </div>
           )}
 
-          <div className="text-xs text-gray-500">
-            生成日時: {new Date(result.generatedAt).toLocaleString()}
+          <div className="wb-result-metadata">
+            <span className="wb-result-timestamp">
+              生成日時: {new Date(result.generatedAt).toLocaleString()}
+            </span>
           </div>
 
-          {/* コピー完了メッセージ（結果エリア下部） */}
+          {/* コピー完了メッセージ */}
           {copyMessage && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center justify-center">
-                <span className="text-green-800 font-medium">
-                  {copyMessage}
-                </span>
+            <div className="wb-success-message">
+              <div className="wb-success-content">
+                <span className="wb-success-text">{copyMessage}</span>
               </div>
             </div>
           )}

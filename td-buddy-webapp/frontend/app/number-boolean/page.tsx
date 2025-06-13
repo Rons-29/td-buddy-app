@@ -29,44 +29,32 @@ export default function NumberBooleanPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
+    <div className="min-h-screen wb-workbench-bg">
       {/* ヘッダー */}
-      <div className="bg-white shadow-sm">
+      <div className="wb-surface-primary shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                🔢 数値・真偽値生成
+              <h1 className="text-xl font-semibold wb-text-primary flex items-center gap-2">
+                🔢 数値・真偽値生成工具
               </h1>
             </div>
             <nav className="flex space-x-4">
-              <a
-                href="/"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
+              <a href="/" className="wb-nav-link">
                 ホーム
               </a>
-              <a
-                href="/password"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
+              <a href="/password" className="wb-nav-link">
                 パスワード
               </a>
-              <a
-                href="/personal"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
+              <a href="/personal" className="wb-nav-link">
                 個人情報
               </a>
-              <a
-                href="/datetime"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
+              <a href="/datetime" className="wb-nav-link">
                 日時
               </a>
               <a
                 href="/number-boolean"
-                className="bg-green-100 text-green-700 px-3 py-2 rounded-md text-sm font-medium"
+                className="wb-nav-link-active wb-bg-measure wb-text-white"
               >
                 数値・真偽値
               </a>
@@ -98,43 +86,40 @@ export default function NumberBooleanPage() {
               />
 
               {/* クイックアクション */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="wb-tool-panel">
+                <h3 className="wb-section-title flex items-center gap-2">
                   ⚡ クイックアクション
                 </h3>
                 <div className="space-y-3">
                   <button
                     onClick={() => window.location.reload()}
-                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    className="wb-action-button wb-button-measure"
                   >
                     🔄 リセット
                   </button>
                   <button
                     onClick={() => window.print()}
-                    className="w-full bg-green-100 hover:bg-green-200 text-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    className="wb-action-button wb-button-inspect"
                   >
                     🖨️ 印刷
                   </button>
-                  <a
-                    href="/export"
-                    className="w-full bg-green-100 hover:bg-green-200 text-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                  >
+                  <a href="/export" className="wb-action-button wb-button-join">
                     📊 エクスポート
                   </a>
                 </div>
               </div>
 
               {/* ヘルプ・サポート */}
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-6">
-                <h3 className="font-semibold text-indigo-900 mb-3 flex items-center gap-2">
+              <div className="wb-info-panel wb-bg-polish">
+                <h3 className="wb-section-title wb-text-polish flex items-center gap-2">
                   💡 ヘルプ・サポート
                 </h3>
-                <div className="space-y-3 text-sm text-indigo-800">
+                <div className="space-y-3 text-sm wb-text-polish">
                   <div className="flex items-start gap-2">
                     <span>📚</span>
                     <div>
                       <div className="font-medium">使い方ガイド</div>
-                      <div className="text-xs text-indigo-600">
+                      <div className="text-xs opacity-75">
                         基本的な操作方法を確認
                       </div>
                     </div>
@@ -143,7 +128,7 @@ export default function NumberBooleanPage() {
                     <span>🎯</span>
                     <div>
                       <div className="font-medium">ユースケース例</div>
-                      <div className="text-xs text-indigo-600">
+                      <div className="text-xs opacity-75">
                         実際の活用方法を学習
                       </div>
                     </div>
@@ -152,7 +137,7 @@ export default function NumberBooleanPage() {
                     <span>🍺</span>
                     <div>
                       <div className="font-medium">TDに質問</div>
-                      <div className="text-xs text-indigo-600">
+                      <div className="text-xs opacity-75">
                         AIアシスタントに相談
                       </div>
                     </div>
@@ -165,22 +150,22 @@ export default function NumberBooleanPage() {
       </div>
 
       {/* フッター */}
-      <footer className="bg-white border-t border-gray-200">
+      <footer className="wb-surface-primary border-t wb-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🍺</span>
+              <span className="text-2xl">🔧</span>
               <div>
-                <div className="font-semibold text-gray-900">
-                  QA Workbench
+                <div className="font-semibold wb-text-primary">
+                  Quality Workbench
                 </div>
-                <div className="text-sm text-gray-600">
-                  AI連携型テストデータ生成ツール
+                <div className="text-sm wb-text-muted">
+                  AI連携型テストデータ生成工具
                 </div>
               </div>
             </div>
-            <div className="text-sm text-gray-500">
-              © 2024 QA Workbench. TDがサポートしています♪
+            <div className="text-sm wb-text-muted">
+              © 2024 Quality Workbench. TDがサポートしています♪
             </div>
           </div>
         </div>

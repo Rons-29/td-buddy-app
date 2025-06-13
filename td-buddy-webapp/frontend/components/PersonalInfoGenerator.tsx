@@ -3,13 +3,11 @@
 import {
   Building,
   Calendar,
-  CheckCircle,
   Grid,
   Mail,
   MapPin,
   Phone,
   Settings2,
-  Sparkles,
   Table,
   User,
   Users,
@@ -17,13 +15,6 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 import BrewCharacter, { BrewEmotion } from './BrewCharacter';
 import { ActionButton } from './ui/ActionButton';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from './ui/Card';
 import { DataTable } from './ui/DataTable';
 import { FieldOption, FieldSelector } from './ui/FieldSelector';
 
@@ -432,454 +423,389 @@ export const PersonalInfoGenerator: React.FC = React.memo(() => {
   }, [fieldOptions]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-emerald-50">
-      {/* 背景装飾 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-r from-blue-300/20 to-purple-300/20 rounded-full blur-xl" />
-        <div className="absolute top-80 right-20 w-60 h-60 bg-gradient-to-r from-emerald-300/20 to-blue-300/20 rounded-full blur-2xl" />
-        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-gradient-to-r from-purple-300/10 to-pink-300/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative w-full px-4 py-8 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* 美しいヘッダー */}
-          <div className="text-center space-y-4">
-            <div className="flex justify-center items-center space-x-4 mb-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-75 animate-pulse" />
-                <div className="relative bg-white p-4 rounded-full shadow-xl">
-                  <Users className="h-12 w-12 text-blue-600" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent">
-                  個人情報生成ツール
-                </h1>
-                <div className="flex items-center justify-center space-x-2 mt-2">
-                  <Sparkles className="h-4 w-4 text-amber-500" />
-                  <span className="text-sm text-gray-600 font-medium">
-                    Powered by Brew Assistant
-                  </span>
-                  <Sparkles className="h-4 w-4 text-amber-500" />
-                </div>
-              </div>
-            </div>
-            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-              QAテスト用のリアルで実用的な個人情報データを丁寧に生成します。
-              <br />
-              <span className="text-amber-600 font-medium">
-                安全・高速・日本語対応
-              </span>
-            </p>
+    <div className="space-y-6">
+      {/* ワークベンチヘッダー */}
+      <div className="wb-workbench-header">
+        <div className="flex items-center justify-center space-x-4">
+          <div className="p-3 bg-wb-tool-join-500 rounded-full shadow-lg">
+            <Users className="h-8 w-8 text-white" />
           </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-            {/* 左カラム: 設定エリア */}
-            <div className="xl:col-span-3 space-y-6">
-              {/* 基本設定カード */}
-              <Card variant="glass" className="backdrop-blur-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-3">
-                    <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
-                      <Settings2 className="h-5 w-5 text-white" />
-                    </div>
-                    <span>基本設定</span>
-                  </CardTitle>
-                  <CardDescription>
-                    生成するデータの件数と種類を設定してください
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* 生成件数設定 */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        生成数
-                      </label>
-                      <div className="flex items-center space-x-4">
-                        <input
-                          type="number"
-                          min="1"
-                          max="1000"
-                          value={count}
-                          onChange={e =>
-                            setCount(
-                              Math.max(
-                                1,
-                                Math.min(1000, parseInt(e.target.value) || 1)
-                              )
-                            )
-                          }
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-td-primary-500 focus:border-transparent"
-                        />
-                        <span className="text-sm text-gray-500">
-                          件 (最大1000件)
-                        </span>
-                        <div className="flex space-x-2">
-                          <ActionButton
-                            type="replace"
-                            onClick={() => setCount(5)}
-                            variant="secondary"
-                            size="sm"
-                            className="text-xs"
-                          >
-                            5件
-                          </ActionButton>
-                          <ActionButton
-                            type="replace"
-                            onClick={() => setCount(50)}
-                            variant="secondary"
-                            size="sm"
-                            className="text-xs"
-                          >
-                            50件
-                          </ActionButton>
-                          <ActionButton
-                            type="replace"
-                            onClick={() => setCount(100)}
-                            variant="secondary"
-                            size="sm"
-                            className="text-xs"
-                          >
-                            100件
-                          </ActionButton>
-                          <ActionButton
-                            type="replace"
-                            onClick={() => setCount(500)}
-                            variant="secondary"
-                            size="sm"
-                            className="text-xs"
-                          >
-                            500件
-                          </ActionButton>
-                        </div>
-                      </div>
-                      {count > 100 && (
-                        <p className="text-sm text-amber-600 mt-2">
-                          ⚠️
-                          大量データ生成により処理時間が長くなる場合があります
-                        </p>
-                      )}
-                    </div>
-
-                    {/* フィールド選択 */}
-                    <div className="flex items-center justify-between">
-                      <label className="block text-sm font-semibold text-gray-700">
-                        生成フィールド選択
-                      </label>
-                      <div className="flex items-center space-x-2 text-sm text-gray-500">
-                        <span>{selectedFieldCount}個選択中</span>
-                        {selectedFieldCount === 0 && (
-                          <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-medium">
-                            要選択
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <FieldSelector
-                      options={fieldOptions}
-                      onToggle={handleFieldToggle}
-                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-                    />
-                  </div>
-
-                  {/* 生成ボタン */}
-                  <div className="pt-4">
-                    <ActionButton
-                      type="generate"
-                      onClick={generatePersonalInfo}
-                      disabled={isGenerating || selectedFieldCount === 0}
-                      loading={isGenerating}
-                      variant="primary"
-                      size="lg"
-                      fullWidth
-                      className="relative overflow-hidden"
-                    >
-                      <span className="relative z-10">
-                        {isGenerating
-                          ? 'データ生成中...'
-                          : `${count}件の個人情報を生成`}
-                      </span>
-
-                      {/* ボタン内のキラキラエフェクト */}
-                      {!isGenerating && (
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000" />
-                      )}
-                    </ActionButton>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* 結果表示エリア */}
-              {result.length > 0 && (
-                <Card variant="glass" className="backdrop-blur-xl">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center space-x-3">
-                        <div className="p-2 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-lg">
-                          <CheckCircle className="h-5 w-5 text-white" />
-                        </div>
-                        <span>生成結果 ({result.length}件)</span>
-                      </CardTitle>
-                      <div className="flex items-center space-x-2">
-                        {/* 表示モード切り替え */}
-                        <div className="flex bg-white/50 rounded-lg p-1">
-                          <ActionButton
-                            type="replace"
-                            onClick={() => setViewMode('cards')}
-                            variant={
-                              viewMode === 'cards' ? 'primary' : 'secondary'
-                            }
-                            size="sm"
-                            className="rounded-md"
-                          >
-                            <Grid className="h-4 w-4 mr-1" />
-                            カード表示
-                          </ActionButton>
-                          <ActionButton
-                            type="replace"
-                            onClick={() => setViewMode('table')}
-                            variant={
-                              viewMode === 'table' ? 'primary' : 'secondary'
-                            }
-                            size="sm"
-                            className="rounded-md"
-                          >
-                            <Table className="h-4 w-4 mr-1" />
-                            テーブル表示
-                          </ActionButton>
-                        </div>
-
-                        {/* アクションボタン */}
-                        <div className="flex items-center space-x-2">
-                          <ActionButton
-                            type="copy"
-                            onClick={copyAllData}
-                            isActive={isCopied}
-                            variant={isCopied ? 'accent' : 'primary'}
-                            size="sm"
-                            disabled={isCopied}
-                            className={`${
-                              isCopied
-                                ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
-                                : 'bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600'
-                            } text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
-                          >
-                            <span className="flex items-center space-x-1">
-                              <span>{isCopied ? '✅' : '📋'}</span>
-                              <span>
-                                {isCopied ? 'コピー済み' : '全体コピー'}
-                              </span>
-                            </span>
-                          </ActionButton>
-
-                          <ActionButton
-                            type="generate"
-                            onClick={exportToCsv}
-                            loading={isExporting}
-                            variant="secondary"
-                            size="sm"
-                            disabled={isExporting}
-                            className={`${
-                              isExporting
-                                ? 'bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600'
-                                : 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600'
-                            } text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
-                          >
-                            <span className="flex items-center space-x-1">
-                              <span>{isExporting ? '⏳' : '💾'}</span>
-                              <span>
-                                {isExporting ? 'エクスポート中...' : 'CSV出力'}
-                              </span>
-                            </span>
-                          </ActionButton>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {/* カード表示 */}
-                    {viewMode === 'cards' && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto custom-scrollbar">
-                        {result.map((person, index) => (
-                          <div
-                            key={person.id}
-                            className="group relative p-4 bg-white/60 backdrop-blur-sm border border-white/40 rounded-xl hover:bg-white/80 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                          >
-                            {/* アイテム番号 */}
-                            <div className="absolute top-2 right-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                              #{index + 1}
-                            </div>
-
-                            <div className="space-y-2 text-sm">
-                              {person.fullName && (
-                                <div className="flex items-center space-x-2">
-                                  <User className="h-4 w-4 text-blue-500" />
-                                  <span className="font-medium">
-                                    {person.fullName.kanji}
-                                  </span>
-                                </div>
-                              )}
-                              {person.kanaName && (
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-blue-600 font-bold text-xs">
-                                    🔤
-                                  </span>
-                                  <span className="font-medium text-blue-900">
-                                    {person.kanaName}
-                                  </span>
-                                </div>
-                              )}
-                              {person.email && (
-                                <div className="flex items-center space-x-2 group/email">
-                                  <Mail className="h-4 w-4 text-emerald-500" />
-                                  <span className="flex-1 truncate">
-                                    {person.email}
-                                  </span>
-                                  <ActionButton
-                                    type="copy"
-                                    onClick={() =>
-                                      person.email &&
-                                      copyToClipboard(person.email)
-                                    }
-                                    variant="secondary"
-                                    size="sm"
-                                    className="opacity-0 group-hover/email:opacity-100 transition-opacity p-1"
-                                  />
-                                </div>
-                              )}
-                              {person.phone && (
-                                <div className="flex items-center space-x-2">
-                                  <Phone className="h-4 w-4 text-orange-500" />
-                                  <span>{person.phone}</span>
-                                </div>
-                              )}
-                              {person.address && (
-                                <div className="flex items-center space-x-2">
-                                  <MapPin className="h-4 w-4 text-red-500" />
-                                  <span className="text-xs">
-                                    {person.address.full}
-                                  </span>
-                                </div>
-                              )}
-                              {person.age && (
-                                <div className="flex items-center space-x-2">
-                                  <Calendar className="h-4 w-4 text-purple-500" />
-                                  <span>
-                                    {person.age}歳 ({person.gender})
-                                  </span>
-                                </div>
-                              )}
-                              {person.company && (
-                                <div className="flex items-center space-x-2">
-                                  <Building className="h-4 w-4 text-indigo-500" />
-                                  <span className="text-xs">
-                                    {person.company} - {person.jobTitle}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* テーブル表示 */}
-                    {viewMode === 'table' && (
-                      <DataTable
-                        columns={tableColumns}
-                        data={result}
-                        showRowNumbers={true}
-                        sortable={true}
-                        exportable={false}
-                        maxHeight="max-h-96"
-                      />
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-
-            {/* 右カラム: Brewキャラクターエリア */}
-            <div className="space-y-6">
-              <Card variant="glass" className="backdrop-blur-xl sticky top-8">
-                <CardContent className="p-6">
-                  <BrewCharacter
-                    emotion={brewMood}
-                    message={brewMessage}
-                    animation={isGenerating ? 'spin' : 'float'}
-                    size="large"
-                    showSpeechBubble={true}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* エラー表示 */}
-              {error && (
-                <Card
-                  variant="bordered"
-                  className="border-red-200 bg-red-50/80 backdrop-blur-sm"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                      <p className="text-red-700 text-sm font-medium">
-                        {error}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* 統計情報 */}
-              {result.length > 0 && (
-                <Card variant="glass" className="backdrop-blur-xl">
-                  <CardHeader>
-                    <CardTitle className="text-lg">生成統計</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">総件数</span>
-                      <span className="font-semibold">{result.length}件</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">フィールド数</span>
-                      <span className="font-semibold">
-                        {selectedFieldCount}種類
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">生成時刻</span>
-                      <span className="font-semibold text-xs">
-                        {new Date().toLocaleTimeString('ja-JP')}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+          <div className="text-center">
+            <h1 className="wb-tool-title text-wb-wood-800">
+              🔧 個人情報生成工具
+            </h1>
+            <p className="wb-tool-description text-wb-wood-600">
+              QAテスト用のリアルで実用的な個人情報データを安全に生成します
+            </p>
           </div>
         </div>
       </div>
 
-      {/* カスタムスクロールバーのスタイル */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #2563eb, #7c3aed);
-        }
-      `}</style>
+      {/* Brewキャラクターセクション */}
+      <div className="wb-character-section">
+        <BrewCharacter
+          emotion={brewMood}
+          message={brewMessage}
+          animation={isGenerating ? 'spin' : 'float'}
+          size="large"
+          showSpeechBubble={true}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        {/* 左カラム: 設定エリア */}
+        <div className="xl:col-span-3 space-y-6">
+          {/* 基本設定パネル */}
+          <div className="wb-tool-panel wb-tool-join">
+            <div className="wb-tool-panel-header">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-wb-tool-join-500 rounded-lg">
+                  <Settings2 className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="wb-tool-panel-title">基本設定</h3>
+                  <p className="wb-tool-panel-description">
+                    生成するデータの件数と種類を設定してください
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* 生成件数設定 */}
+              <div className="wb-tool-control">
+                <label className="wb-tool-label">生成数</label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="number"
+                    min="1"
+                    max="1000"
+                    value={count}
+                    onChange={e =>
+                      setCount(
+                        Math.max(
+                          1,
+                          Math.min(1000, parseInt(e.target.value) || 1)
+                        )
+                      )
+                    }
+                    className="wb-number-input w-24"
+                  />
+                  <span className="wb-unit-label">件 (最大1000件)</span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setCount(5)}
+                      className={`wb-quick-button ${
+                        count === 5
+                          ? 'wb-quick-button-active'
+                          : 'wb-quick-button-inactive'
+                      }`}
+                    >
+                      5件
+                    </button>
+                    <button
+                      onClick={() => setCount(50)}
+                      className={`wb-quick-button ${
+                        count === 50
+                          ? 'wb-quick-button-active'
+                          : 'wb-quick-button-inactive'
+                      }`}
+                    >
+                      50件
+                    </button>
+                    <button
+                      onClick={() => setCount(100)}
+                      className={`wb-quick-button ${
+                        count === 100
+                          ? 'wb-quick-button-active'
+                          : 'wb-quick-button-inactive'
+                      }`}
+                    >
+                      100件
+                    </button>
+                    <button
+                      onClick={() => setCount(500)}
+                      className={`wb-quick-button ${
+                        count === 500
+                          ? 'wb-quick-button-active'
+                          : 'wb-quick-button-inactive'
+                      }`}
+                    >
+                      500件
+                    </button>
+                  </div>
+                </div>
+                {count > 100 && (
+                  <p className="wb-tool-hint text-wb-warning">
+                    ⚠️ 大量データ生成により処理時間が長くなる場合があります
+                  </p>
+                )}
+              </div>
+
+              {/* フィールド選択 */}
+              <div className="wb-tool-control">
+                <div className="flex items-center justify-between mb-4">
+                  <label className="wb-tool-label">生成フィールド選択</label>
+                  <div className="flex items-center space-x-2 text-sm text-wb-wood-500">
+                    <span>{selectedFieldCount}個選択中</span>
+                    {selectedFieldCount === 0 && (
+                      <span className="wb-badge wb-badge-warning">要選択</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="wb-tool-grid wb-grid-5">
+                  <FieldSelector
+                    options={fieldOptions}
+                    onToggle={handleFieldToggle}
+                    className="contents"
+                  />
+                </div>
+              </div>
+
+              {/* 生成ボタン */}
+              <div className="pt-4">
+                <ActionButton
+                  type="generate"
+                  onClick={generatePersonalInfo}
+                  disabled={isGenerating || selectedFieldCount === 0}
+                  loading={isGenerating}
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  className="wb-action-button wb-action-primary"
+                >
+                  {isGenerating
+                    ? '🔧 個人情報を組み立て中...'
+                    : '🔧 個人情報を生成'}
+                </ActionButton>
+              </div>
+            </div>
+          </div>
+
+          {/* 結果表示パネル */}
+          {result.length > 0 && (
+            <div className="wb-result-panel">
+              <div className="wb-result-header">
+                <div className="wb-result-title-section">
+                  <h3 className="wb-result-title">生成結果</h3>
+                  <p className="wb-result-subtitle">
+                    {result.length}件の個人情報データ
+                  </p>
+                </div>
+                <div className="wb-result-actions">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setViewMode('cards')}
+                      className={`p-2 rounded-lg transition-colors ${
+                        viewMode === 'cards'
+                          ? 'bg-wb-tool-join-500 text-white'
+                          : 'bg-wb-wood-100 text-wb-wood-600 hover:bg-wb-wood-200'
+                      }`}
+                    >
+                      <Grid className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setViewMode('table')}
+                      className={`p-2 rounded-lg transition-colors ${
+                        viewMode === 'table'
+                          ? 'bg-wb-tool-join-500 text-white'
+                          : 'bg-wb-wood-100 text-wb-wood-600 hover:bg-wb-wood-200'
+                      }`}
+                    >
+                      <Table className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <ActionButton
+                    type="copy"
+                    onClick={copyAllData}
+                    disabled={isCopied}
+                    variant="secondary"
+                    size="sm"
+                    className="wb-result-action-button"
+                  >
+                    {isCopied ? '✅ コピー済み' : '📋 全データコピー'}
+                  </ActionButton>
+                  <ActionButton
+                    type="generate"
+                    onClick={exportToCsv}
+                    disabled={isExporting}
+                    variant="secondary"
+                    size="sm"
+                    className="wb-result-action-button"
+                  >
+                    {isExporting ? '⏳ エクスポート中...' : '💾 CSV出力'}
+                  </ActionButton>
+                </div>
+              </div>
+
+              {/* カード表示 */}
+              {viewMode === 'cards' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                  {result.map((person, index) => (
+                    <div
+                      key={person.id}
+                      className="group relative p-4 bg-white border border-wb-wood-200 rounded-lg hover:bg-wb-wood-50 transition-all duration-300 hover:shadow-md"
+                    >
+                      {/* アイテム番号 */}
+                      <div className="absolute top-2 right-2 bg-wb-tool-join-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        #{index + 1}
+                      </div>
+
+                      <div className="space-y-2 text-sm">
+                        {person.fullName && (
+                          <div className="flex items-center space-x-2">
+                            <User className="h-4 w-4 text-wb-tool-join-500" />
+                            <span className="font-medium text-wb-wood-900">
+                              {person.fullName.kanji}
+                            </span>
+                          </div>
+                        )}
+                        {person.kanaName && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-wb-tool-join-600 font-bold text-xs">
+                              🔤
+                            </span>
+                            <span className="font-medium text-wb-tool-join-900">
+                              {person.kanaName}
+                            </span>
+                          </div>
+                        )}
+                        {person.email && (
+                          <div className="flex items-center space-x-2 group/email">
+                            <Mail className="h-4 w-4 text-wb-tool-join-500" />
+                            <span className="flex-1 truncate text-wb-wood-700">
+                              {person.email}
+                            </span>
+                            <ActionButton
+                              type="copy"
+                              onClick={() =>
+                                person.email && copyToClipboard(person.email)
+                              }
+                              variant="secondary"
+                              size="sm"
+                              className="opacity-0 group-hover/email:opacity-100 transition-opacity p-1"
+                            />
+                          </div>
+                        )}
+                        {person.phone && (
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-4 w-4 text-wb-tool-measure-500" />
+                            <span className="text-wb-wood-700">
+                              {person.phone}
+                            </span>
+                          </div>
+                        )}
+                        {person.address && (
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="h-4 w-4 text-wb-tool-cut-500" />
+                            <span className="text-xs text-wb-wood-600">
+                              {person.address.full}
+                            </span>
+                          </div>
+                        )}
+                        {person.age && (
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="h-4 w-4 text-wb-tool-polish-500" />
+                            <span className="text-wb-wood-700">
+                              {person.age}歳 ({person.gender})
+                            </span>
+                          </div>
+                        )}
+                        {person.company && (
+                          <div className="flex items-center space-x-2">
+                            <Building className="h-4 w-4 text-wb-tool-inspect-500" />
+                            <span className="text-xs text-wb-wood-600">
+                              {person.company} - {person.jobTitle}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* テーブル表示 */}
+              {viewMode === 'table' && (
+                <DataTable
+                  columns={tableColumns}
+                  data={result}
+                  showRowNumbers={true}
+                  sortable={true}
+                  exportable={false}
+                  maxHeight="max-h-96"
+                />
+              )}
+
+              {/* 結果メタデータ */}
+              <div className="wb-result-metadata">
+                <span className="wb-result-timestamp">
+                  生成時刻: {new Date().toLocaleTimeString('ja-JP')}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 右カラム: サイドバーエリア */}
+        <div className="space-y-6">
+          {/* エラー表示 */}
+          {error && (
+            <div className="wb-error-panel">
+              <div className="wb-error-content">
+                <div className="wb-error-icon">⚠️</div>
+                <div className="wb-error-text">
+                  <div className="wb-error-title">エラー</div>
+                  <div className="wb-error-message">{error}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 統計情報 */}
+          {result.length > 0 && (
+            <div className="wb-tool-panel">
+              <div className="wb-tool-panel-header">
+                <h3 className="wb-tool-panel-title">生成統計</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-wb-wood-600">総件数</span>
+                  <span className="font-semibold text-wb-wood-800">
+                    {result.length}件
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-wb-wood-600">フィールド数</span>
+                  <span className="font-semibold text-wb-wood-800">
+                    {selectedFieldCount}種類
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-wb-wood-600">生成時刻</span>
+                  <span className="font-semibold text-xs text-wb-wood-700">
+                    {new Date().toLocaleTimeString('ja-JP')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 成功メッセージ */}
+          {result.length > 0 && !error && (
+            <div className="wb-success-message">
+              <div className="wb-success-content">
+                <span className="wb-success-text">
+                  ✅ {result.length}件の個人情報データを生成しました
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 });
+
+PersonalInfoGenerator.displayName = 'PersonalInfoGenerator';

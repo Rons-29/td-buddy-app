@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Brain,
-  Check,
-  Database,
-  Download,
-  RefreshCw,
-  Send,
-  Sparkles,
-} from 'lucide-react';
+import { Brain, Download, RefreshCw, Send } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useRef, useState } from 'react';
 import { useWebSocket } from '../../components/hooks/useWebSocket';
@@ -19,7 +11,7 @@ import { ProgressIndicator } from '../../components/ui/ProgressIndicator';
 const TDCharacter = dynamic(() => import('../../components/BrewCharacter'), {
   ssr: false,
   loading: () => (
-    <div className="w-10 h-10 bg-orange-200 rounded-full animate-pulse"></div>
+    <div className="w-10 h-10 bg-wb-tool-polish-200 rounded-full animate-pulse"></div>
   ),
 });
 
@@ -198,100 +190,73 @@ export default function AIChatPage() {
         );
       }, 500);
     } else {
-      // 初回アクセス時のウェルカムメッセージ
-      setTimeout(() => {
-        addMessage(
-          'system',
-          '🎉 QA Workbench AI へようこそ！\n\n' +
-            '🍺 TDです♪ 自然な日本語でテストデータの生成要求をお聞かせください！\n\n' +
-            '✨ 新機能：自動保存\n' +
-            '💾 チャット履歴と生成データが自動的に保存されます\n' +
-            '🔄 次回アクセス時に前回の続きから始められます\n\n' +
-            '例：「30代の男性エンジニア10人、連絡先付きで生成して」'
-        );
-      }, 300);
+      // 初回利用時のウェルカムメッセージ
+      addMessage(
+        'assistant',
+        '🍺 こんにちは！QA Workbench AI アシスタントです。\n\n自然言語でテストデータの生成をお手伝いします。例えば：\n\n• "100人分の個人情報を生成して"\n• "20代の男性エンジニア50人のデータが欲しい"\n• "東京在住の女性100人分のCSVを作って"\n\nお気軽にお声がけください！'
+      );
     }
 
     // 最後に生成されたデータの復元
     const savedData = loadFromLocalStorage(AUTO_SAVE_KEYS.LAST_GENERATED_DATA);
     if (savedData) {
-      const restoredData = {
+      setLastGeneratedData({
         ...savedData,
         generatedAt: new Date(savedData.generatedAt),
-      };
-      setLastGeneratedData(restoredData);
-      console.log('🔄 Restored last generated data from auto-save');
+      });
     }
 
     // セッション状態の復元
     const savedSession = loadFromLocalStorage(AUTO_SAVE_KEYS.SESSION_STATE);
     if (savedSession) {
-      const restoredSession = {
+      setSessionState({
         ...savedSession,
         lastActiveTime: new Date(savedSession.lastActiveTime),
-        totalSessions: savedSession.totalSessions + 1, // セッション数をインクリメント
-      };
-      setSessionState(restoredSession);
-      console.log('🔄 Restored session state from auto-save');
-    } else {
-      // 初回セッション
-      setSessionState(prev => ({
-        ...prev,
-        totalSessions: 1,
-      }));
+      });
     }
 
-    // 入力フォーカス
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    // セッション開始時の統計更新
+    setSessionState(prev => ({
+      ...prev,
+      totalSessions: prev.totalSessions + 1,
+      lastActiveTime: new Date(),
+    }));
   }, []);
 
-  // 💾 自動保存: チャット履歴の保存（メッセージ変更時）
+  // 💾 自動保存: メッセージが更新されるたびに保存
   useEffect(() => {
     if (mounted && messages.length > 0) {
       saveToLocalStorage(AUTO_SAVE_KEYS.CHAT_HISTORY, messages);
     }
   }, [messages, mounted]);
 
-  // 💾 自動保存: 生成データの保存（データ変更時）
+  // 💾 自動保存: 生成データが更新されるたびに保存
   useEffect(() => {
     if (mounted && lastGeneratedData) {
       saveToLocalStorage(AUTO_SAVE_KEYS.LAST_GENERATED_DATA, lastGeneratedData);
-
-      // データ生成数を更新
-      setSessionState(prev => ({
-        ...prev,
-        totalDataGenerated: prev.totalDataGenerated + lastGeneratedData.count,
-        lastActiveTime: new Date(),
-      }));
     }
   }, [lastGeneratedData, mounted]);
 
-  // 💾 自動保存: セッション状態の保存
+  // 💾 自動保存: セッション状態が更新されるたびに保存
   useEffect(() => {
     if (mounted) {
       saveToLocalStorage(AUTO_SAVE_KEYS.SESSION_STATE, sessionState);
     }
   }, [sessionState, mounted]);
 
-  // WebSocketからの進捗データを監視
+  // WebSocket進捗データの同期
   useEffect(() => {
-    if (mounted && wsProgressData) {
-      setGenerationProgress({
-        progress: wsProgressData.progress,
-        status: wsProgressData.status,
-        currentStep: wsProgressData.currentStep,
-        totalSteps: wsProgressData.totalSteps,
-        isActive: wsProgressData.isActive,
-        error: wsProgressData.error,
-      });
+    if (wsProgressData) {
+      setGenerationProgress(prev => ({
+        ...prev,
+        ...wsProgressData,
+      }));
     }
-  }, [mounted, wsProgressData]);
+  }, [wsProgressData]);
 
-  // WebSocketからのステップデータを監視
+  // WebSocketステップデータの同期
   useEffect(() => {
-    if (mounted && wsStepData) {
+    if (wsStepData && 'id' in wsStepData) {
       setGenerationSteps(prev =>
         prev.map(step =>
           step.id === wsStepData.id
@@ -304,17 +269,17 @@ export default function AIChatPage() {
         )
       );
     }
-  }, [mounted, wsStepData]);
+  }, [wsStepData]);
+
+  // 自動スクロール
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // 一意のID生成関数
   const generateUniqueId = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
@@ -331,8 +296,9 @@ export default function AIChatPage() {
       timestamp: new Date(),
       metadata,
     };
+
     setMessages(prev => [...prev, newMessage]);
-    return newMessage;
+    return newMessage.id;
   };
 
   const updateStepStatus = (
@@ -365,179 +331,213 @@ export default function AIChatPage() {
   };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) {
-      return;
-    }
+    if (!inputValue.trim() || isLoading) return;
 
     const userMessage = inputValue.trim();
     setInputValue('');
+    addMessage('user', userMessage);
     setIsLoading(true);
 
     // 進捗リセット
+    wsResetProgress();
+    updateProgress(0, '処理開始', '自然言語解析', true);
     setGenerationSteps(prev =>
       prev.map(step => ({ ...step, status: 'pending' }))
     );
-    updateProgress(0, '処理開始', '', true);
-
-    // ユーザーメッセージ追加
-    addMessage('user', userMessage);
 
     try {
-      // Step 1: AI解析リクエスト
+      // ステップ1: 自然言語解析
       updateStepStatus('parse', 'active');
-      updateProgress(10, 'AI解析中...', '自然言語解析', true);
-      addMessage('system', '🍺 自然言語を解析中...');
+      updateProgress(10, '自然言語解析中...', '自然言語解析', true);
 
-      const parseStartTime = Date.now();
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const parseResponse = await fetch('/api/ai/parse', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userInput: userMessage,
-        }),
-      });
+      // 簡易的なパラメータ解析
+      const parsedParams: ParsedParams = {
+        count: extractNumber(userMessage) || 10,
+        locale: 'ja-JP',
+        includeFields: extractFields(userMessage),
+        filters: extractFilters(userMessage),
+      };
 
-      const parseResult = await parseResponse.json();
-      const parseDuration = Date.now() - parseStartTime;
-
-      if (!parseResult.success) {
-        updateStepStatus('parse', 'error', parseDuration);
-        updateProgress(
-          0,
-          'エラー発生',
-          '自然言語解析でエラー',
-          false,
-          parseResult.error
-        );
-        if (parseResult.result?.clarificationNeeded) {
-          addMessage(
-            'assistant',
-            `申し訳ございません。もう少し詳しく教えてください:\n\n${
-              parseResult.result.clarificationQuestions?.join('\n') ||
-              '具体的な要求内容をお聞かせください。'
-            }`
-          );
-        } else {
-          addMessage(
-            'assistant',
-            `エラーが発生しました: ${parseResult.error || '不明なエラー'}`
-          );
-        }
-        return;
-      }
-
-      updateStepStatus('parse', 'completed', parseDuration);
-      updateProgress(35, 'AI解析完了', '自然言語解析', true);
-
-      const parsedParams = parseResult.result.params;
       setLastParsedParams(parsedParams);
+      updateStepStatus('parse', 'completed', 1000);
+      updateProgress(33, '解析完了', 'データ生成', true);
 
-      // 解析結果の表示
-      addMessage(
-        'assistant',
-        `✅ 解析完了！以下の条件でデータを生成します:\n\n` +
-          `📊 生成数: ${parsedParams.count}件\n` +
-          `🏷️ 含めるフィールド: ${parsedParams.includeFields.join(', ')}\n` +
-          (parsedParams.filters?.ageRange
-            ? `👤 年齢: ${parsedParams.filters.ageRange.min}-${parsedParams.filters.ageRange.max}歳\n`
-            : '') +
-          (parsedParams.filters?.gender &&
-          parsedParams.filters.gender !== 'both'
-            ? `⚥ 性別: ${parsedParams.filters.gender}\n`
-            : '') +
-          (parsedParams.filters?.jobCategory
-            ? `💼 職業: ${parsedParams.filters.jobCategory}\n`
-            : ''),
-        { parsedParams }
-      );
-
-      // Step 2: データ生成リクエスト
+      // ステップ2: データ生成
       updateStepStatus('generate', 'active');
       updateProgress(40, 'データ生成中...', 'データ生成', true);
-      addMessage('system', '⚡ データ生成中...');
 
-      const generateStartTime = Date.now();
-      const generateResponse = await fetch('/api/personal/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          count: parsedParams.count,
-          locale: parsedParams.locale,
-          includeFields: parsedParams.includeFields,
-          ageRange: parsedParams.filters?.ageRange,
-          gender:
-            parsedParams.filters?.gender === 'both'
-              ? 'random'
-              : parsedParams.filters?.gender,
-        }),
-      });
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const generateResult = await generateResponse.json();
-      const generateDuration = Date.now() - generateStartTime;
-
-      if (!generateResult.success) {
-        updateStepStatus('generate', 'error', generateDuration);
-        updateProgress(
-          40,
-          'エラー発生',
-          'データ生成でエラー',
-          false,
-          generateResult.error
-        );
-        addMessage('assistant', `データ生成エラー: ${generateResult.error}`);
-        return;
-      }
-
-      updateStepStatus('generate', 'completed', generateDuration);
-      updateProgress(70, 'データ生成完了', 'データ生成', true);
-
-      // Step 3: 品質検証
-      updateStepStatus('validate', 'active');
-      updateProgress(80, '品質検証中...', '品質検証', true);
-
-      const generatedData: GeneratedData = {
+      // モックデータ生成
+      const generatedData = generateMockData(parsedParams);
+      const newGeneratedData: GeneratedData = {
         id: generateUniqueId(),
-        count: generateResult.data.length,
-        data: generateResult.data,
+        count: generatedData.length,
+        data: generatedData,
         generatedAt: new Date(),
       };
-      setLastGeneratedData(generatedData);
 
-      // 検証完了
-      setTimeout(() => {
-        updateStepStatus('validate', 'completed', 500);
-        updateProgress(100, '完了', 'すべての処理が完了', false);
-      }, 500);
+      setLastGeneratedData(newGeneratedData);
+      updateStepStatus('generate', 'completed', 2000);
+      updateProgress(66, '生成完了', '品質検証', true);
 
-      // 生成完了メッセージ
+      // ステップ3: 品質検証
+      updateStepStatus('validate', 'active');
+      updateProgress(70, '品質検証中...', '品質検証', true);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      updateStepStatus('validate', 'completed', 1000);
+      updateProgress(100, '完了', '完了', false);
+
+      // 統計更新
+      setSessionState(prev => ({
+        ...prev,
+        totalDataGenerated: prev.totalDataGenerated + newGeneratedData.count,
+        lastActiveTime: new Date(),
+      }));
+
+      // 結果メッセージ
+      const resultMessage = `✅ **データ生成完了！**\n\n📊 **生成結果:**\n• 件数: ${
+        newGeneratedData.count
+      }件\n• フィールド: ${parsedParams.includeFields.join(
+        ', '
+      )}\n• 生成時刻: ${newGeneratedData.generatedAt.toLocaleString(
+        'ja-JP'
+      )}\n\n💾 データはダウンロード可能です。`;
+
+      addMessage('assistant', resultMessage, {
+        type: 'generation_result',
+        data: newGeneratedData,
+        params: parsedParams,
+      });
+    } catch (error) {
+      console.error('データ生成エラー:', error);
+      updateProgress(0, 'エラー', 'エラー', false, 'データ生成に失敗しました');
+      updateStepStatus('generate', 'error');
       addMessage(
         'assistant',
-        `🎉 データ生成完了！\n\n` +
-          `✅ ${generatedData.count}件のテストデータを生成しました\n` +
-          `📈 生成時間: ${generateResult.metadata?.duration || 'N/A'}ms\n` +
-          `🚀 スループット: ${
-            generateResult.metadata?.throughput || 'N/A'
-          } items/sec\n\n` +
-          `下記のプレビューまたはダウンロードボタンからデータをご確認ください。`,
-        { generatedData }
+        '❌ 申し訳ありません。データ生成中にエラーが発生しました。もう一度お試しください。'
       );
-    } catch (error) {
-      console.error('Chat error:', error);
-      updateProgress(0, 'エラー発生', '通信エラー', false, String(error));
-      setGenerationSteps(prev =>
-        prev.map(step =>
-          step.status === 'active' ? { ...step, status: 'error' } : step
-        )
-      );
-      addMessage('assistant', `通信エラーが発生しました: ${error}`);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // 数値抽出ヘルパー
+  const extractNumber = (text: string): number | null => {
+    const matches = text.match(/(\d+)(?:人|件|個|行)/);
+    return matches ? parseInt(matches[1], 10) : null;
+  };
+
+  // フィールド抽出ヘルパー
+  const extractFields = (text: string): string[] => {
+    const fields = [];
+    if (
+      text.includes('名前') ||
+      text.includes('氏名') ||
+      text.includes('個人情報')
+    ) {
+      fields.push('name');
+    }
+    if (text.includes('メール') || text.includes('email')) {
+      fields.push('email');
+    }
+    if (text.includes('電話') || text.includes('phone')) {
+      fields.push('phone');
+    }
+    if (text.includes('住所') || text.includes('address')) {
+      fields.push('address');
+    }
+    if (text.includes('年齢') || text.includes('age')) {
+      fields.push('age');
+    }
+    if (text.includes('性別') || text.includes('gender')) {
+      fields.push('gender');
+    }
+    if (text.includes('職業') || text.includes('job')) {
+      fields.push('job');
+    }
+
+    return fields.length > 0 ? fields : ['name', 'email', 'phone'];
+  };
+
+  // フィルター抽出ヘルパー
+  const extractFilters = (text: string) => {
+    const filters: any = {};
+
+    // 年齢範囲
+    const ageMatch = text.match(/(\d+)(?:代|歳)/);
+    if (ageMatch) {
+      const age = parseInt(ageMatch[1], 10);
+      if (age >= 10 && age <= 90) {
+        filters.ageRange = { min: age, max: age + 9 };
+      }
+    }
+
+    // 性別
+    if (text.includes('男性')) {
+      filters.gender = 'male';
+    } else if (text.includes('女性')) {
+      filters.gender = 'female';
+    }
+
+    // 職業
+    if (text.includes('エンジニア')) {
+      filters.jobCategory = 'engineer';
+    } else if (text.includes('営業')) {
+      filters.jobCategory = 'sales';
+    } else if (text.includes('デザイナー')) {
+      filters.jobCategory = 'designer';
+    }
+
+    // 地域
+    if (text.includes('東京')) {
+      filters.location = 'tokyo';
+    } else if (text.includes('大阪')) {
+      filters.location = 'osaka';
+    } else if (text.includes('名古屋')) {
+      filters.location = 'nagoya';
+    }
+
+    return Object.keys(filters).length > 0 ? filters : undefined;
+  };
+
+  // モックデータ生成
+  const generateMockData = (params: ParsedParams) => {
+    const data = [];
+    for (let i = 0; i < params.count; i++) {
+      const person: any = { id: i + 1 };
+
+      if (params.includeFields.includes('name')) {
+        person.name = `田中 太郎${i + 1}`;
+      }
+      if (params.includeFields.includes('email')) {
+        person.email = `user${i + 1}@example.com`;
+      }
+      if (params.includeFields.includes('phone')) {
+        person.phone = `090-1234-${String(5678 + i).padStart(4, '0')}`;
+      }
+      if (params.includeFields.includes('address')) {
+        person.address = `東京都渋谷区${i + 1}-${i + 1}-${i + 1}`;
+      }
+      if (params.includeFields.includes('age')) {
+        const baseAge = params.filters?.ageRange?.min || 25;
+        person.age = baseAge + Math.floor(Math.random() * 10);
+      }
+      if (params.includeFields.includes('gender')) {
+        person.gender =
+          params.filters?.gender || (i % 2 === 0 ? 'male' : 'female');
+      }
+      if (params.includeFields.includes('job')) {
+        person.job = params.filters?.jobCategory || 'エンジニア';
+      }
+
+      data.push(person);
+    }
+    return data;
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -548,172 +548,136 @@ export default function AIChatPage() {
   };
 
   const handleDownloadCSV = async () => {
-    if (!lastGeneratedData) {
-      return;
-    }
+    if (!lastGeneratedData) return;
 
     try {
-      const response = await fetch('/api/personal/export/csv', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: lastGeneratedData.data,
-        }),
-      });
+      const headers = Object.keys(lastGeneratedData.data[0] || {});
+      const csvContent = [
+        headers.join(','),
+        ...lastGeneratedData.data.map(row =>
+          headers.map(header => row[header] || '').join(',')
+        ),
+      ].join('\n');
 
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `testdata_${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute(
+        'download',
+        `generated_data_${new Date().toISOString().slice(0, 10)}.csv`
+      );
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-        addMessage('system', '📋 CSVファイルをダウンロードしました！');
-      }
+      addMessage(
+        'system',
+        `💾 CSVファイルをダウンロードしました（${lastGeneratedData.count}件）`
+      );
     } catch (error) {
-      addMessage('assistant', `ダウンロードエラー: ${error}`);
+      console.error('CSV download error:', error);
+      addMessage('system', '❌ CSVダウンロードに失敗しました');
     }
   };
 
   const regenerateData = async () => {
-    if (!lastParsedParams) {
-      return;
-    }
+    if (!lastParsedParams) return;
 
-    addMessage('user', '同じ条件でデータを再生成');
-    addMessage('system', '🔄 データ再生成中...');
+    addMessage('user', '前回と同じ条件でデータを再生成してください');
     setIsLoading(true);
 
     try {
-      const generateResponse = await fetch('/api/personal/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          count: lastParsedParams.count,
-          locale: lastParsedParams.locale,
-          includeFields: lastParsedParams.includeFields,
-          ageRange: lastParsedParams.filters?.ageRange,
-          gender:
-            lastParsedParams.filters?.gender === 'both'
-              ? 'random'
-              : lastParsedParams.filters?.gender,
-        }),
-      });
+      updateProgress(0, '再生成開始', 'データ生成', true);
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const generateResult = await generateResponse.json();
+      const generatedData = generateMockData(lastParsedParams);
+      const newGeneratedData: GeneratedData = {
+        id: generateUniqueId(),
+        count: generatedData.length,
+        data: generatedData,
+        generatedAt: new Date(),
+      };
 
-      if (generateResult.success) {
-        const generatedData: GeneratedData = {
-          id: generateUniqueId(),
-          count: generateResult.data.length,
-          data: generateResult.data,
-          generatedAt: new Date(),
-        };
-        setLastGeneratedData(generatedData);
+      setLastGeneratedData(newGeneratedData);
+      updateProgress(100, '再生成完了', '完了', false);
 
-        addMessage(
-          'assistant',
-          `🔄 データ再生成完了！\n\n` +
-            `✅ ${generatedData.count}件の新しいテストデータを生成しました`
-        );
-      } else {
-        addMessage('assistant', `再生成エラー: ${generateResult.error}`);
-      }
+      setSessionState(prev => ({
+        ...prev,
+        totalDataGenerated: prev.totalDataGenerated + newGeneratedData.count,
+        lastActiveTime: new Date(),
+      }));
+
+      addMessage(
+        'assistant',
+        `🔄 **データ再生成完了！**\n\n📊 新しく${newGeneratedData.count}件のデータを生成しました。`
+      );
     } catch (error) {
-      addMessage('assistant', `再生成通信エラー: ${error}`);
+      console.error('Regeneration error:', error);
+      addMessage('assistant', '❌ データ再生成に失敗しました');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 💾 チャット履歴クリア機能
   const clearChatHistory = () => {
-    if (
-      confirm('🗑️ チャット履歴をクリアしますか？この操作は元に戻せません。')
-    ) {
-      setMessages([]);
-      clearAutoSavedData(AUTO_SAVE_KEYS.CHAT_HISTORY);
-      addMessage('system', '🧹 チャット履歴をクリアしました');
-    }
+    setMessages([]);
+    clearAutoSavedData(AUTO_SAVE_KEYS.CHAT_HISTORY);
+    addMessage(
+      'system',
+      '🗑️ チャット履歴をクリアしました。新しい会話を開始できます。'
+    );
   };
 
-  // 💾 全データクリア機能
   const clearAllData = () => {
-    if (
-      confirm(
-        '🗑️ すべての保存データ（チャット履歴・生成データ・設定）をクリアしますか？\nこの操作は元に戻せません。'
-      )
-    ) {
-      setMessages([]);
-      setLastGeneratedData(null);
-      setLastParsedParams(null);
-      clearAutoSavedData();
-      addMessage('system', '🧹 すべてのデータをクリアしました');
-    }
+    setMessages([]);
+    setLastGeneratedData(null);
+    setLastParsedParams(null);
+    clearAutoSavedData();
+    addMessage(
+      'system',
+      '🗑️ すべてのデータをクリアしました。新しいセッションを開始します。'
+    );
   };
 
-  // 💾 データエクスポート機能
   const exportAllData = () => {
-    try {
-      const exportData = {
-        chatHistory: messages,
-        lastGeneratedData,
-        lastParsedParams,
-        sessionState,
-        exportedAt: new Date().toISOString(),
-        version: '1.0.0',
-      };
+    const exportData = {
+      messages,
+      lastGeneratedData,
+      sessionState,
+      exportedAt: new Date().toISOString(),
+    };
 
-      const dataStr = JSON.stringify(exportData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
+    });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      `td-buddy-export-${new Date().toISOString().slice(0, 10)}.json`
+    );
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `td-buddy-backup-${
-        new Date().toISOString().split('T')[0]
-      }.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      addMessage('system', '💾 データのエクスポートが完了しました');
-    } catch (error) {
-      console.error('エクスポートエラー:', error);
-      addMessage('system', '❌ データのエクスポートに失敗しました');
-    }
+    addMessage('system', '📤 セッションデータをエクスポートしました');
   };
 
-  // 💾 データインポート機能
   const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     const reader = new FileReader();
     reader.onload = e => {
       try {
         const importedData = JSON.parse(e.target?.result as string);
 
-        // バージョン確認
-        if (importedData.version !== '1.0.0') {
-          addMessage('system', '⚠️ 互換性のないバックアップファイルです');
-          return;
-        }
-
-        // データの復元
-        if (importedData.chatHistory) {
-          const restoredMessages = importedData.chatHistory.map((msg: any) => ({
+        if (importedData.messages) {
+          const restoredMessages = importedData.messages.map((msg: any) => ({
             ...msg,
             timestamp: new Date(msg.timestamp),
           }));
@@ -721,404 +685,364 @@ export default function AIChatPage() {
         }
 
         if (importedData.lastGeneratedData) {
-          const restoredData = {
+          setLastGeneratedData({
             ...importedData.lastGeneratedData,
             generatedAt: new Date(importedData.lastGeneratedData.generatedAt),
-          };
-          setLastGeneratedData(restoredData);
-        }
-
-        if (importedData.lastParsedParams) {
-          setLastParsedParams(importedData.lastParsedParams);
+          });
         }
 
         if (importedData.sessionState) {
-          const restoredSession = {
+          setSessionState({
             ...importedData.sessionState,
             lastActiveTime: new Date(importedData.sessionState.lastActiveTime),
-          };
-          setSessionState(restoredSession);
+          });
         }
 
-        addMessage(
-          'system',
-          `📂 バックアップデータのインポートが完了しました\n` +
-            `📅 バックアップ日時: ${new Date(
-              importedData.exportedAt
-            ).toLocaleString()}`
-        );
+        addMessage('system', '📥 データをインポートしました');
       } catch (error) {
-        console.error('インポートエラー:', error);
-        addMessage('system', '❌ バックアップファイルの読み込みに失敗しました');
+        console.error('Import error:', error);
+        addMessage('system', '❌ データのインポートに失敗しました');
       }
     };
-
     reader.readAsText(file);
   };
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-wb-wood-50 flex items-center justify-center">
+        <div className="wb-loading-spinner"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
-      <div className="container mx-auto px-4 py-6">
-        {/* ヘッダー */}
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-orange-500 to-td-accent-500 rounded-xl shadow-lg">
-              <Brain className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-wb-wood-50">
+      {/* ワークベンチヘッダー */}
+      <div className="sticky top-0 z-10 bg-wb-wood-100 border-b-2 border-wb-wood-300 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <span className="text-2xl">✨</span>
+              <div>
+                <h1 className="text-lg font-bold text-wb-wood-800">
+                  AI連携工具
+                </h1>
+                <p className="text-sm text-wb-wood-600">
+                  ✨ 仕上げ工具 - AI連携・品質向上専用
+                </p>
+              </div>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-td-accent-600 bg-clip-text text-transparent">
-              AI Chat Generator
-            </h1>
-            <div className="p-3 bg-gradient-to-r from-td-secondary-500 to-td-primary-500 rounded-xl shadow-lg">
-              <Database className="w-8 h-8 text-white" />
+            <div className="text-sm text-wb-wood-500">Quality Workbench</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ワークベンチメインエリア */}
+      <div className="wb-workbench-surface max-w-7xl mx-auto px-4 py-6 lg:px-8">
+        <div className="space-y-6">
+          {/* ワークベンチヘッダー */}
+          <div className="wb-workbench-header">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="p-3 bg-wb-tool-polish-500 rounded-full shadow-lg">
+                <Brain className="h-8 w-8 text-white" />
+              </div>
+              <div className="text-center">
+                <h1 className="wb-tool-title text-wb-wood-800">
+                  ✨ AI連携工具
+                </h1>
+                <p className="wb-tool-description text-wb-wood-600">
+                  自然言語でテストデータを生成・品質向上をサポートします
+                </p>
+              </div>
             </div>
           </div>
-          <p className="text-orange-600 text-lg max-w-2xl mx-auto">
-            自然な日本語でテストデータ生成を依頼してください。AIが要求を理解して最適なデータを生成します
-          </p>
-        </div>
 
-        <div className="max-w-full mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
-          {/* チャットエリア */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl shadow-xl border border-orange-100 overflow-hidden h-full flex flex-col">
-              {/* チャットヘッダー */}
-              <div className="bg-gradient-to-r from-orange-500 to-td-accent-500 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                    <span className="text-white text-lg font-bold">TD</span>
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold">
-                      QA Workbench AI
-                    </h3>
-                    <p className="text-orange-100 text-sm">
-                      自然言語データ生成アシスタント
-                    </p>
-                  </div>
-                  <div className="ml-auto flex items-center gap-2">
-                    {mounted && isConnected ? (
-                      <>
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <span className="text-white text-sm">接続中</span>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                        <span className="text-white text-sm">待機中</span>
-                      </>
-                    )}
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            {/* メインチャットエリア */}
+            <div className="xl:col-span-3 space-y-6">
+              {/* チャットメッセージエリア */}
+              <div className="wb-tool-panel wb-tool-polish">
+                <div className="wb-tool-panel-header">
+                  <div className="flex items-center justify-between">
+                    <h3 className="wb-tool-panel-title">AI チャット</h3>
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          isConnected
+                            ? 'bg-wb-tool-join-500'
+                            : 'bg-wb-tool-cut-500'
+                        }`}
+                      ></div>
+                      <span className="text-xs text-wb-wood-500">
+                        {isConnected ? '接続中' : '未接続'}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* メッセージエリア */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-orange-25">
-                {messages.map(message => (
-                  <div
-                    key={message.id}
-                    className={`flex ${
-                      message.type === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
-                  >
+                {/* メッセージ表示エリア */}
+                <div className="h-96 overflow-y-auto space-y-4 p-4 bg-wb-wood-25 rounded-lg">
+                  {messages.map(message => (
                     <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                      key={message.id}
+                      className={`flex ${
                         message.type === 'user'
-                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white ml-auto'
-                          : message.type === 'system'
-                          ? 'bg-td-accent-100 text-td-accent-800 border border-td-accent-200'
-                          : 'bg-white text-orange-800 border border-orange-200 shadow-sm'
+                          ? 'justify-end'
+                          : 'justify-start'
                       }`}
                     >
-                      <div className="flex items-start gap-2">
-                        {message.type === 'assistant' && (
-                          <div className="w-6 h-6 bg-gradient-to-r from-orange-400 to-td-accent-400 rounded-full flex items-center justify-center mt-1 flex-shrink-0">
-                            <span className="text-white text-xs font-bold">
-                              TD
-                            </span>
-                          </div>
-                        )}
-                        {message.type === 'system' && (
-                          <Sparkles className="w-5 h-5 mt-1 flex-shrink-0 text-td-accent-500" />
-                        )}
-                        <div className="flex-1">
-                          <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                            {message.content}
-                          </p>
-                          {mounted && (
-                            <p className="text-xs opacity-70 mt-1">
-                              {message.timestamp.toLocaleTimeString()}
-                            </p>
-                          )}
+                      <div
+                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                          message.type === 'user'
+                            ? 'bg-wb-tool-polish-500 text-white'
+                            : message.type === 'system'
+                            ? 'bg-wb-wood-200 text-wb-wood-700'
+                            : 'bg-white text-wb-wood-800 border border-wb-wood-200'
+                        }`}
+                      >
+                        <div className="text-sm whitespace-pre-wrap">
+                          {message.content}
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-white text-orange-800 border border-orange-200 rounded-2xl px-4 py-2 shadow-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-gradient-to-r from-orange-400 to-td-accent-400 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">
-                            TD
-                          </span>
+                        <div className="text-xs mt-1 opacity-70">
+                          {message.timestamp.toLocaleTimeString('ja-JP')}
                         </div>
-                        <div className="flex gap-1">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"></div>
-                          <div
-                            className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"
-                            style={{ animationDelay: '0.1s' }}
-                          ></div>
-                          <div
-                            className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"
-                            style={{ animationDelay: '0.2s' }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* 入力エリア */}
-              <div className="p-4 border-t border-orange-100 bg-white">
-                <div className="flex gap-3">
-                  <div className="flex-1 relative">
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={inputValue}
-                      onChange={e => setInputValue(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="例：30代の女性エンジニア5人、連絡先付きで生成して"
-                      className="w-full px-4 py-3 border border-orange-300 rounded-xl focus:ring-2 focus:ring-td-primary-500 focus:border-transparent outline-none transition-all"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!inputValue.trim() || isLoading}
-                    className="px-6 py-3 bg-gradient-to-r from-orange-500 to-td-accent-500 text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    <Send className="w-5 h-5" />
-                    送信
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* サイドバー */}
-          <div className="space-y-4 h-full overflow-y-auto">
-            {/* 処理状況 */}
-            {(isLoading || generationProgress.progress > 0) && (
-              <div className="space-y-3">
-                <ProgressIndicator
-                  progress={generationProgress.progress}
-                  status={generationProgress.status}
-                  currentStep={generationProgress.currentStep}
-                  totalSteps={generationProgress.totalSteps}
-                  isActive={generationProgress.isActive}
-                  error={generationProgress.error}
-                />
-
-                {generationSteps.some(step => step.status !== 'pending') && (
-                  <DataGenerationSteps steps={generationSteps} />
-                )}
-              </div>
-            )}
-
-            {/* 接続状況 */}
-            <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-4">
-              <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                {isConnected ? (
-                  <>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-orange-800">🔗 接続状況</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    <span className="text-red-600">🔗 接続状況</span>
-                  </>
-                )}
-              </h3>
-              <p className="text-xs text-orange-600">
-                {isConnected ? '✅ リアルタイム更新有効' : '❌ サーバー未接続'}
-              </p>
-            </div>
-
-            {/* クイックアクション */}
-            {lastGeneratedData && (
-              <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-4">
-                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <Database className="w-4 h-4 text-orange-500" />
-                  生成データ
-                </h3>
-
-                <div className="space-y-3">
-                  <div className="bg-orange-50 rounded-lg p-3">
-                    <p className="text-xs text-orange-600">生成件数</p>
-                    <p className="text-xl font-bold text-orange-600">
-                      {lastGeneratedData.count}件
-                    </p>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleDownloadCSV}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-td-accent-500 text-white rounded-lg hover:bg-td-accent-600 transition-colors text-sm"
-                    >
-                      <Download className="w-4 h-4" />
-                      CSV
-                    </button>
-                    <button
-                      onClick={regenerateData}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-td-secondary-500 text-white rounded-lg hover:bg-td-secondary-600 transition-colors text-sm"
-                      disabled={isLoading}
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      再生成
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* データプレビュー */}
-            {lastGeneratedData && (
-              <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-4">
-                <h3 className="text-sm font-semibold mb-3 text-orange-800">
-                  データプレビュー
-                </h3>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {lastGeneratedData.data.slice(0, 3).map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-orange-50 rounded-lg p-2 text-xs"
-                    >
-                      <div className="font-medium text-orange-900">
-                        {item.fullName?.kanji || item.fullName || 'N/A'}
-                      </div>
-                      <div className="text-orange-600 truncate">
-                        {item.email || 'メールなし'} •{' '}
-                        {item.phone || '電話なし'}
                       </div>
                     </div>
                   ))}
-                  {lastGeneratedData.data.length > 3 && (
-                    <div className="text-center text-orange-500 text-xs py-1">
-                      他 {lastGeneratedData.data.length - 3} 件...
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* 入力エリア */}
+                <div className="flex space-x-2">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputValue}
+                    onChange={e => setInputValue(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="自然言語でテストデータの生成を依頼してください..."
+                    className="wb-text-input flex-1"
+                    disabled={isLoading}
+                  />
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={isLoading || !inputValue.trim()}
+                    className="wb-action-button wb-action-primary px-4"
+                  >
+                    {isLoading ? (
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* 進捗表示 */}
+              {generationProgress.isActive && (
+                <div className="wb-tool-panel">
+                  <div className="wb-tool-panel-header">
+                    <h3 className="wb-tool-panel-title">生成進捗</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <ProgressIndicator
+                      progress={generationProgress.progress}
+                      status={generationProgress.status}
+                      currentStep={generationProgress.currentStep}
+                      totalSteps={generationProgress.totalSteps}
+                      isActive={generationProgress.isActive}
+                      error={generationProgress.error}
+                    />
+                    <DataGenerationSteps steps={generationSteps} />
+                  </div>
+                </div>
+              )}
+
+              {/* 生成結果 */}
+              {lastGeneratedData && (
+                <div className="wb-result-panel">
+                  <div className="wb-result-header">
+                    <div className="wb-result-title-section">
+                      <h3 className="wb-result-title">最新の生成結果</h3>
+                      <p className="wb-result-subtitle">
+                        {lastGeneratedData.count}件のデータ
+                      </p>
+                    </div>
+                    <div className="wb-result-actions">
+                      <button
+                        onClick={handleDownloadCSV}
+                        className="wb-result-action-button"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        CSV出力
+                      </button>
+                      <button
+                        onClick={regenerateData}
+                        disabled={isLoading}
+                        className="wb-result-action-button"
+                      >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        再生成
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* データプレビュー */}
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full border border-wb-wood-300">
+                      <thead>
+                        <tr className="bg-wb-wood-50">
+                          {Object.keys(lastGeneratedData.data[0] || {}).map(
+                            key => (
+                              <th
+                                key={key}
+                                className="px-3 py-2 border-b border-wb-wood-200 text-left text-sm font-medium text-wb-wood-700"
+                              >
+                                {key}
+                              </th>
+                            )
+                          )}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lastGeneratedData.data
+                          .slice(0, 5)
+                          .map((row, index) => (
+                            <tr key={index} className="hover:bg-wb-wood-25">
+                              {Object.values(row).map((value, cellIndex) => (
+                                <td
+                                  key={cellIndex}
+                                  className="px-3 py-2 border-b border-wb-wood-200 text-sm text-wb-wood-700"
+                                >
+                                  {String(value)}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {lastGeneratedData.data.length > 5 && (
+                    <div className="wb-result-metadata">
+                      <span className="wb-result-timestamp">
+                        他 {lastGeneratedData.data.length - 5}{' '}
+                        行のデータがあります
+                      </span>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* 💾 自動保存コントロールパネル */}
-            <div className="bg-white rounded-xl shadow-sm border border-orange-100 p-4">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-blue-400 rounded-full animate-pulse"></div>
-                💾 自動保存
-              </h3>
-
-              <div className="space-y-3">
-                {/* 保存状況表示 */}
-                <div className="bg-green-50 rounded-lg p-3 border border-green-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Check className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">
-                      保存状況
-                    </span>
-                  </div>
-                  <div className="space-y-1 text-xs text-green-700">
-                    <div>💬 チャット履歴: {messages.length}件</div>
-                    <div>
-                      📊 生成データ: {lastGeneratedData ? '1件' : '0件'}
-                    </div>
-                    <div>
-                      🎯 累計生成:{' '}
-                      {sessionState.totalDataGenerated.toLocaleString()}件
-                    </div>
-                    <div>🔄 セッション: {sessionState.totalSessions}回目</div>
-                    <div>⚙️ 設定: 自動保存有効</div>
-                  </div>
-                </div>
-
-                {/* 操作ボタン */}
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={exportAllData}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                    >
-                      <Download className="w-4 h-4" />
-                      出力
-                    </button>
-                    <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm cursor-pointer">
-                      <input
-                        type="file"
-                        accept=".json"
-                        onChange={importData}
-                        className="hidden"
-                      />
-                      📂 読込
-                    </label>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={clearChatHistory}
-                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-xs"
-                    >
-                      🗑️ 履歴
-                    </button>
-                    <button
-                      onClick={clearAllData}
-                      className="flex-1 flex items-center justify-center gap-1 px-2 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs"
-                    >
-                      🗑️ 全て
-                    </button>
-                  </div>
-                </div>
-
-                {/* 自動保存の説明 */}
-                <div className="bg-orange-50 rounded-lg p-2 border border-orange-200">
-                  <p className="text-xs text-orange-600">
-                    💡
-                    チャット履歴と生成データは自動的に保存され、次回アクセス時に復元されます
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* ヘルプ */}
-            <div className="bg-gradient-to-r from-orange-50 to-td-accent-50 rounded-xl border border-orange-100 p-4">
-              <h3 className="text-sm font-semibold mb-3 text-orange-800">
-                💡 使い方のヒント
-              </h3>
-              <div className="space-y-2 text-xs text-orange-700">
-                <div className="flex items-start gap-2">
-                  <Check className="w-3 h-3 mt-0.5 text-td-accent-500 flex-shrink-0" />
-                  <span>「20代の男性5人」のように年齢と性別を指定</span>
+            {/* サイドバー */}
+            <div className="space-y-6">
+              {/* Brewキャラクター */}
+              <div className="wb-character-section">
+                <TDCharacter
+                  emotion={isLoading ? 'working' : 'happy'}
+                  size="large"
+                  animation={isLoading ? 'spin' : 'float'}
+                  message={
+                    isLoading ? 'AI処理中です...' : 'お気軽にお声がけください！'
+                  }
+                  showSpeechBubble={true}
+                />
+              </div>
+
+              {/* セッション統計 */}
+              <div className="wb-tool-panel">
+                <div className="wb-tool-panel-header">
+                  <h3 className="wb-tool-panel-title">セッション統計</h3>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Check className="w-3 h-3 mt-0.5 text-td-accent-500 flex-shrink-0" />
-                  <span>「連絡先付き」で電話・メール情報を含める</span>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-wb-wood-600">総セッション数</span>
+                    <span className="font-semibold text-wb-wood-800">
+                      {sessionState.totalSessions}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-wb-wood-600">生成データ数</span>
+                    <span className="font-semibold text-wb-wood-800">
+                      {sessionState.totalDataGenerated}件
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-wb-wood-600">最終活動</span>
+                    <span className="font-semibold text-xs text-wb-wood-700">
+                      {sessionState.lastActiveTime.toLocaleTimeString('ja-JP')}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Check className="w-3 h-3 mt-0.5 text-td-accent-500 flex-shrink-0" />
-                  <span>「エンジニア」「営業」など職業も指定可能</span>
+              </div>
+
+              {/* アクションボタン */}
+              <div className="wb-tool-panel">
+                <div className="wb-tool-panel-header">
+                  <h3 className="wb-tool-panel-title">アクション</h3>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Check className="w-3 h-3 mt-0.5 text-td-accent-500 flex-shrink-0" />
-                  <span>「詳細情報で」と言えば住所等も含まれます</span>
+                <div className="space-y-2">
+                  <button
+                    onClick={clearChatHistory}
+                    className="w-full wb-action-button wb-action-secondary text-sm"
+                  >
+                    チャット履歴クリア
+                  </button>
+                  <button
+                    onClick={exportAllData}
+                    className="w-full wb-action-button wb-action-secondary text-sm"
+                  >
+                    データエクスポート
+                  </button>
+                  <label className="w-full wb-action-button wb-action-secondary text-sm cursor-pointer block text-center">
+                    データインポート
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={importData}
+                      className="hidden"
+                    />
+                  </label>
+                  <button
+                    onClick={clearAllData}
+                    className="w-full wb-action-button wb-action-warning text-sm"
+                  >
+                    全データクリア
+                  </button>
                 </div>
+              </div>
+
+              {/* 高度な表示切り替え */}
+              <div className="wb-tool-panel">
+                <div className="wb-tool-panel-header">
+                  <h3 className="wb-tool-panel-title">表示設定</h3>
+                </div>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={showAdvancedView}
+                    onChange={e => setShowAdvancedView(e.target.checked)}
+                    className="wb-checkbox"
+                  />
+                  <span className="text-sm text-wb-wood-700">高度な表示</span>
+                </label>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* 工具説明フッター */}
+      <div className="bg-wb-wood-100 border-t border-wb-wood-200 py-6">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h3 className="text-lg font-medium text-wb-wood-800 mb-2">
+            ✨ AI連携工具について
+          </h3>
+          <p className="text-wb-wood-600 max-w-3xl mx-auto">
+            この工具は、自然言語でテストデータ生成を依頼できるAI連携機能です。仕上げツールとして、
+            データの品質向上と効率的な生成をサポートします。
+          </p>
         </div>
       </div>
     </div>

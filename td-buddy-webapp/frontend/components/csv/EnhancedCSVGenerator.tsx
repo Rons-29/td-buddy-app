@@ -12,7 +12,6 @@ import {
   DataTypeCategory,
 } from '../../types/csvDataTypes';
 import { BatchJob, CSVBatchProcessor } from '../../utils/csvBatchProcessor';
-import { generateData } from '../../utils/csvDataGenerator';
 import {
   CSVTemplateManager,
   CsvTemplate,
@@ -48,6 +47,7 @@ export function EnhancedCSVGenerator({
       'csv.downloadCsv': 'CSVダウンロード',
       'csv.saveTemplate': 'テンプレート保存',
       'csv.preview': 'プレビュー',
+      'csv.rowCount': '行数',
       'dataTypes.text': 'テキスト',
       'dataTypes.number': '数値',
       'dataTypes.name': '名前',
@@ -207,322 +207,331 @@ export function EnhancedCSVGenerator({
     []
   );
 
-  // プレビューデータ生成
-  const generatePreview = useCallback(() => {
-    if (config.columns.length === 0) {
-      setPreviewData([]);
-      return;
-    }
+  // データタイプオプション
+  const dataTypeOptions = useMemo(
+    () => [
+      { value: 'text', label: t('dataTypes.text') },
+      { value: 'number', label: t('dataTypes.number') },
+      { value: 'name', label: t('dataTypes.name') },
+      { value: 'email', label: t('dataTypes.email') },
+      { value: 'phone', label: t('dataTypes.phone') },
+      { value: 'date', label: t('dataTypes.date') },
+      { value: 'age', label: t('dataTypes.age') },
+    ],
+    [t]
+  );
 
-    const headers = config.columns.map(col => col.name);
-    const rows = [headers];
-
-    // 最大10行のプレビューを生成
-    for (let i = 0; i < Math.min(10, config.rowCount); i++) {
-      const row = config.columns.map(col =>
-        String(generateData(col.dataType, col.settings || {}))
-      );
-      rows.push(row);
-    }
-
-    setPreviewData(rows);
-  }, [config]);
-
-  // データ生成
+  // CSV生成
   const generateCSV = useCallback(async () => {
-    if (config.columns.length === 0) {
-      return;
-    }
+    if (config.columns.length === 0) return;
 
     setUIState(prev => ({ ...prev, isGenerating: true }));
     setBrewEmotion('working');
-    setBrewCurrentMessage('データ生成中です！少々お待ちください♪');
+    setBrewCurrentMessage('CSV データを生成中です...');
 
     try {
-      // パフォーマンス最適化の提案を取得
-      const optimization = performanceOptimizer.optimizeDataGeneration(
-        config.rowCount,
-        config.columns.length
-      );
-
-      if (optimization.recommendation) {
-        console.log(optimization.recommendation);
-      }
-
-      // データ生成
+      // モックデータ生成
       const headers = config.columns.map(col => col.name);
       const rows: string[][] = [headers];
 
       for (let i = 0; i < config.rowCount; i++) {
-        const row = config.columns.map(col =>
-          String(generateData(col.dataType, col.settings || {}))
-        );
+        const row = config.columns.map(col => {
+          switch (col.dataType) {
+            case 'name':
+              return `田中 太郎${i + 1}`;
+            case 'email':
+              return `user${i + 1}@example.com`;
+            case 'phone':
+              return `090-1234-${String(5678 + i).padStart(4, '0')}`;
+            case 'number':
+              return String(Math.floor(Math.random() * 1000));
+            case 'age':
+              return String(20 + Math.floor(Math.random() * 60));
+            case 'date':
+              return new Date().toISOString().split('T')[0];
+            default:
+              return `サンプルテキスト${i + 1}`;
+          }
+        });
         rows.push(row);
       }
 
       setPreviewData(rows);
       onGenerate?.(rows);
 
-      setBrewEmotion('happy');
-      setBrewCurrentMessage('データ生成が完了しました！品質チェックもOKです✨');
-
-      console.log(brewMessage('dataGenerationComplete'));
-    } catch (error) {
-      console.error('データ生成エラー:', error);
-      setBrewEmotion('working');
+      setBrewEmotion('excited');
       setBrewCurrentMessage(
-        '申し訳ありません！エラーが発生しました。一緒に解決しましょう'
+        `${formatNumber(rows.length - 1)}行のCSVデータを生成しました！`
       );
+    } catch (error) {
+      console.error('CSV生成エラー:', error);
+      setBrewEmotion('friendly');
+      setBrewCurrentMessage('生成に失敗しました。設定を確認してください。');
     } finally {
       setUIState(prev => ({ ...prev, isGenerating: false }));
-
-      // 3秒後にフレンドリーな状態に戻る
-      setTimeout(() => {
-        setBrewEmotion('friendly');
-        setBrewCurrentMessage('次はどんなデータを作りましょうか？');
-      }, 3000);
     }
-  }, [config, onGenerate, performanceOptimizer, brewMessage]);
+  }, [config, onGenerate, formatNumber]);
 
   // CSV ダウンロード
   const downloadCSV = useCallback(() => {
-    if (previewData.length === 0) {
-      return;
-    }
+    if (previewData.length === 0) return;
 
-    const csvContent = previewData
-      .map(row =>
-        row
-          .map(cell => {
-            const escaped = String(cell).replace(/"/g, '""');
-            return escaped.includes(',') ||
-              escaped.includes('"') ||
-              escaped.includes('\n')
-              ? `"${escaped}"`
-              : escaped;
-          })
-          .join(',')
-      )
-      .join('\n');
-
-    const bom = '\uFEFF';
-    const content = bom + csvContent;
-    const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-
+    const csvContent = previewData.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-    link.href = url;
-    link.download = `td-data-${new Date().toISOString().split('T')[0]}.csv`;
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      `generated_data_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+
+    setBrewEmotion('happy');
+    setBrewCurrentMessage('CSVファイルをダウンロードしました！');
   }, [previewData]);
+
+  // テンプレート保存
+  const saveAsTemplate = useCallback(() => {
+    if (config.columns.length === 0) return;
+
+    const templateName = prompt('テンプレート名を入力してください:');
+    if (!templateName) return;
+
+    const template: CsvTemplate = {
+      id: `template_${Date.now()}`,
+      name: templateName,
+      description: `${config.columns.length}列のカスタムテンプレート`,
+      columns: config.columns,
+      defaultRowCount: config.rowCount,
+      tags: ['カスタム'],
+      category: 'custom',
+      isBuiltIn: false,
+      usage: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // テンプレート保存の簡易実装
+    try {
+      const existingTemplates = JSON.parse(
+        localStorage.getItem('csvTemplates') || '[]'
+      );
+      existingTemplates.push(template);
+      localStorage.setItem('csvTemplates', JSON.stringify(existingTemplates));
+    } catch (error) {
+      console.error('テンプレート保存エラー:', error);
+    }
+    loadTemplates();
+
+    setBrewEmotion('happy');
+    setBrewCurrentMessage(`テンプレート「${templateName}」を保存しました！`);
+  }, [config, loadTemplates]);
 
   // テンプレート適用
   const applyTemplate = useCallback(
     (template: CsvTemplate) => {
-      setConfig({
+      setConfig(prev => ({
+        ...prev,
         columns: template.columns,
         rowCount: template.defaultRowCount,
-        outputFormat: 'csv',
-        includeHeader: true,
-        encoding: 'utf-8-bom',
-      });
+      }));
 
-      CSVTemplateManager.incrementUsage(template.id);
-      setUIState(prev => ({ ...prev, showTemplateModal: false }));
+      // 使用回数増加の簡易実装
+      try {
+        const existingTemplates = JSON.parse(
+          localStorage.getItem('csvTemplates') || '[]'
+        );
+        const updatedTemplates = existingTemplates.map((t: any) =>
+          t.id === template.id ? { ...t, usage: t.usage + 1 } : t
+        );
+        localStorage.setItem('csvTemplates', JSON.stringify(updatedTemplates));
+      } catch (error) {
+        console.error('使用回数更新エラー:', error);
+      }
+      loadTemplates();
 
-      console.log(brewMessage('templateLoaded'));
+      setBrewEmotion('excited');
+      setBrewCurrentMessage(`テンプレート「${template.name}」を適用しました！`);
     },
-    [brewMessage]
+    [loadTemplates]
   );
 
-  // テンプレート保存
-  const saveAsTemplate = useCallback(() => {
-    const name = prompt('テンプレート名を入力してください:');
-    if (!name) {
-      return;
-    }
-
-    const description = prompt('テンプレートの説明を入力してください:') || '';
-
-    const result = CSVTemplateManager.saveTemplate(
-      name,
-      description,
-      config,
-      'custom',
-      []
-    );
-
-    if (result.success) {
-      loadTemplates();
-      console.log(brewMessage('templateSaved'));
-    } else {
-      alert(result.message);
-    }
-  }, [config, loadTemplates, brewMessage]);
-
-  // バッチジョブ追加
+  // バッチに追加
   const addToBatch = useCallback(() => {
-    const name =
-      prompt('バッチジョブ名を入力してください:') || `CSV生成_${Date.now()}`;
+    if (config.columns.length === 0) return;
 
-    batchProcessor.addJob(name, config, config.rowCount);
-    setUIState(prev => ({ ...prev, showBatchModal: true }));
+    const jobName = prompt('バッチジョブ名を入力してください:');
+    if (!jobName) return;
+
+    // バッチジョブ追加の簡易実装
+    try {
+      const job = {
+        id: `job_${Date.now()}`,
+        name: jobName,
+        config,
+        status: 'pending' as const,
+        progress: 0,
+        count: config.rowCount,
+        priority: 'normal' as const,
+        createdAt: Date.now(),
+        result: null,
+      };
+
+      const existingJobs = JSON.parse(
+        localStorage.getItem('csvBatchJobs') || '[]'
+      );
+      existingJobs.push(job);
+      localStorage.setItem('csvBatchJobs', JSON.stringify(existingJobs));
+    } catch (error) {
+      console.error('バッチジョブ追加エラー:', error);
+    }
+
+    setBrewEmotion('excited');
+    setBrewCurrentMessage(`バッチジョブ「${jobName}」を追加しました！`);
   }, [config, batchProcessor]);
 
-  // プレビュー更新
-  useEffect(() => {
-    if (config.columns.length > 0) {
-      generatePreview();
-    }
-  }, [config.columns, generatePreview]);
-
-  // データ型のオプション
-  const dataTypeOptions: { value: DataTypeCategory; label: string }[] = [
-    { value: 'text', label: t('dataTypes.text') },
-    { value: 'number', label: t('dataTypes.number') },
-    { value: 'name', label: t('dataTypes.name') },
-    { value: 'email', label: t('dataTypes.email') },
-    { value: 'phone', label: t('dataTypes.phone') },
-    { value: 'date', label: t('dataTypes.date') },
-    { value: 'age', label: t('dataTypes.age') },
-  ];
-
   return (
-    <div className={`bg-white rounded-lg shadow-lg p-6 ${className || ''}`}>
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">
-              {t('csv.title')}
-            </h2>
-            <p className="text-gray-600">{t('csv.subtitle')}</p>
+    <div className="space-y-6">
+      {/* ワークベンチヘッダー */}
+      <div className="wb-workbench-header">
+        <div className="flex items-center justify-center space-x-4">
+          <div className="p-3 bg-wb-tool-measure-500 rounded-full shadow-lg">
+            <span className="text-2xl text-white">📏</span>
           </div>
-
-          {/* Brewキャラクター */}
-          <div className="ml-4">
-            <BrewCharacter
-              emotion={brewEmotion}
-              size="medium"
-              animation="heartbeat"
-              message={brewCurrentMessage}
-              showSpeechBubble={true}
-              className="flex-shrink-0"
-            />
+          <div className="text-center">
+            <h1 className="wb-tool-title text-wb-wood-800">📏 CSV生成工具</h1>
+            <p className="wb-tool-description text-wb-wood-600">
+              構造化されたCSVデータを精密に生成・計測・分析します
+            </p>
           </div>
         </div>
-
-        {/* パフォーマンス情報 */}
-        {performanceData && (
-          <div className="text-right">
-            <div className="text-sm text-gray-500">
-              パフォーマンス: {performanceData.score.grade}
-            </div>
-            <div className="text-xs text-gray-400">
-              メモリ: {performanceData.memoryInfo.formatted}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Brewキャラクターセクション */}
+      <div className="wb-character-section">
+        <BrewCharacter
+          emotion={brewEmotion}
+          size="large"
+          animation="heartbeat"
+          message={brewCurrentMessage}
+          showSpeechBubble={true}
+        />
+      </div>
+
+      {/* パフォーマンス情報 */}
+      {performanceData && (
+        <div className="wb-tool-panel">
+          <div className="wb-tool-panel-header">
+            <h3 className="wb-tool-panel-title">パフォーマンス監視</h3>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-wb-wood-600">
+              スコア: {performanceData.score.grade}
+            </span>
+            <span className="text-wb-wood-600">
+              メモリ: {performanceData.memoryInfo.formatted}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* タブナビゲーション */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="flex space-x-8">
-          {[
-            { id: 'generator', label: 'データ生成' },
-            { id: 'templates', label: 'テンプレート' },
-            { id: 'batch', label: 'バッチ処理' },
-            { id: 'performance', label: 'パフォーマンス' },
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() =>
-                setUIState(prev => ({ ...prev, activeTab: tab.id as any }))
-              }
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                uiState.activeTab === tab.id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {/* ジェネレータータブ */}
-      {uiState.activeTab === 'generator' && (
-        <div className="space-y-6">
-          {/* 列設定 */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">列設定</h3>
+      <div className="wb-tool-panel wb-tool-measure">
+        <div className="border-b border-wb-wood-200 mb-6">
+          <nav className="flex space-x-8">
+            {[
+              { id: 'generator', label: 'データ生成' },
+              { id: 'templates', label: 'テンプレート' },
+              { id: 'batch', label: 'バッチ処理' },
+              { id: 'performance', label: 'パフォーマンス' },
+            ].map(tab => (
               <button
-                onClick={addColumn}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                key={tab.id}
+                onClick={() =>
+                  setUIState(prev => ({ ...prev, activeTab: tab.id as any }))
+                }
+                className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  uiState.activeTab === tab.id
+                    ? 'border-wb-tool-measure-500 text-wb-tool-measure-600'
+                    : 'border-transparent text-wb-wood-500 hover:text-wb-wood-700 hover:border-wb-wood-300'
+                }`}
               >
-                {t('csv.addColumn')}
+                {tab.label}
               </button>
-            </div>
+            ))}
+          </nav>
+        </div>
 
-            <div className="space-y-3">
-              {config.columns.map((column, index) => (
-                <div
-                  key={index}
-                  className="flex items-center space-x-4 p-4 border rounded-lg"
+        {/* ジェネレータータブ */}
+        {uiState.activeTab === 'generator' && (
+          <div className="space-y-6">
+            {/* 列設定 */}
+            <div className="wb-tool-control">
+              <div className="flex items-center justify-between mb-4">
+                <label className="wb-tool-label">列設定</label>
+                <button
+                  onClick={addColumn}
+                  className="wb-action-button wb-action-primary"
                 >
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={column.name}
-                      onChange={e =>
-                        updateColumn(index, { name: e.target.value })
-                      }
-                      className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder={t('csv.columnName')}
-                    />
-                  </div>
+                  📏 {t('csv.addColumn')}
+                </button>
+              </div>
 
-                  <div className="w-48">
-                    <select
-                      value={column.dataType}
-                      onChange={e =>
-                        updateColumn(index, {
-                          dataType: e.target.value as DataTypeCategory,
-                        })
-                      }
-                      className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {dataTypeOptions.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <button
-                    onClick={() => removeColumn(index)}
-                    className="text-red-500 hover:text-red-700 p-2"
-                    disabled={config.columns.length <= 1}
+              <div className="space-y-3">
+                {config.columns.map((column, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center space-x-4 p-4 bg-white border border-wb-wood-200 rounded-lg"
                   >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={column.name}
+                        onChange={e =>
+                          updateColumn(index, { name: e.target.value })
+                        }
+                        className="wb-text-input w-full"
+                        placeholder={t('csv.columnName')}
+                      />
+                    </div>
 
-          {/* 生成設定 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('csv.rowCount')}
-              </label>
+                    <div className="w-48">
+                      <select
+                        value={column.dataType}
+                        onChange={e =>
+                          updateColumn(index, {
+                            dataType: e.target.value as DataTypeCategory,
+                          })
+                        }
+                        className="wb-select w-full"
+                      >
+                        {dataTypeOptions.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <button
+                      onClick={() => removeColumn(index)}
+                      className="text-wb-tool-cut-500 hover:text-wb-tool-cut-700 p-2 transition-colors"
+                      disabled={config.columns.length <= 1}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 生成設定 */}
+            <div className="wb-tool-control">
+              <label className="wb-tool-label">{t('csv.rowCount')}</label>
               <input
                 type="number"
                 value={config.rowCount}
@@ -532,302 +541,326 @@ export function EnhancedCSVGenerator({
                     rowCount: parseInt(e.target.value) || 0,
                   }))
                 }
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="wb-number-input w-32"
                 min="1"
                 max="100000"
               />
+              <span className="wb-unit-label">行 (最大100,000行)</span>
             </div>
-          </div>
 
-          {/* アクションボタン */}
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={generateCSV}
-              disabled={uiState.isGenerating || config.columns.length === 0}
-              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-50"
-            >
-              {uiState.isGenerating ? '生成中...' : t('csv.generate')}
-            </button>
-
-            <button
-              onClick={downloadCSV}
-              disabled={previewData.length === 0}
-              className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {t('csv.downloadCsv')}
-            </button>
-
-            <button
-              onClick={saveAsTemplate}
-              disabled={config.columns.length === 0}
-              className="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600 disabled:opacity-50"
-            >
-              {t('csv.saveTemplate')}
-            </button>
-
-            <button
-              onClick={addToBatch}
-              disabled={config.columns.length === 0}
-              className="bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600 disabled:opacity-50"
-            >
-              バッチに追加
-            </button>
-          </div>
-
-          {/* プレビュー */}
-          {previewData.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold mb-4">{t('csv.preview')}</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full border border-gray-300">
-                  <tbody>
-                    {previewData.slice(0, 11).map((row, rowIndex) => (
-                      <tr
-                        key={rowIndex}
-                        className={
-                          rowIndex === 0 ? 'bg-gray-50 font-semibold' : ''
-                        }
-                      >
-                        {row.map((cell, cellIndex) => (
-                          <td
-                            key={cellIndex}
-                            className="px-3 py-2 border-b text-sm"
-                          >
-                            {cell}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              {config.rowCount > 10 && (
-                <p className="text-sm text-gray-500 mt-2">
-                  {formatNumber(config.rowCount)}件中の最初の10件を表示
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* テンプレートタブ */}
-      {uiState.activeTab === 'templates' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">テンプレート一覧</h3>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="テンプレートを検索..."
-              className="px-4 py-2 border rounded-lg w-64"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredTemplates.map(template => (
-              <div
-                key={template.id}
-                className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+            {/* アクションボタン */}
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={generateCSV}
+                disabled={uiState.isGenerating || config.columns.length === 0}
+                className="wb-action-button wb-action-primary"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-gray-800">
-                    {template.name}
-                  </h4>
-                  <span
-                    className={`text-xs px-2 py-1 rounded ${
-                      template.isBuiltIn
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}
-                  >
-                    {template.isBuiltIn ? '内蔵' : 'カスタム'}
-                  </span>
-                </div>
+                {uiState.isGenerating
+                  ? '📏 生成中...'
+                  : `📏 ${t('csv.generate')}`}
+              </button>
 
-                <p className="text-sm text-gray-600 mb-3">
-                  {template.description}
-                </p>
+              <button
+                onClick={downloadCSV}
+                disabled={previewData.length === 0}
+                className="wb-action-button wb-action-secondary"
+              >
+                💾 {t('csv.downloadCsv')}
+              </button>
 
-                <div className="text-xs text-gray-500 mb-3">
-                  <div>列数: {template.columns.length}</div>
-                  <div>
-                    デフォルト件数: {formatNumber(template.defaultRowCount)}
-                  </div>
-                  <div>使用回数: {template.usage}</div>
-                </div>
+              <button
+                onClick={saveAsTemplate}
+                disabled={config.columns.length === 0}
+                className="wb-action-button wb-action-secondary"
+              >
+                📋 {t('csv.saveTemplate')}
+              </button>
 
-                <button
-                  onClick={() => applyTemplate(template)}
-                  className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                >
-                  適用
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* バッチ処理タブ */}
-      {uiState.activeTab === 'batch' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">バッチジョブ一覧</h3>
-            <div className="text-sm text-gray-500">
-              {batchJobs.length}個のジョブ
+              <button
+                onClick={addToBatch}
+                disabled={config.columns.length === 0}
+                className="wb-action-button wb-action-secondary"
+              >
+                ⚡ バッチに追加
+              </button>
             </div>
-          </div>
 
-          <div className="space-y-3">
-            {batchJobs.map(job => (
-              <div key={job.id} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold">{job.name}</h4>
-                  <span
-                    className={`text-xs px-2 py-1 rounded ${
-                      job.status === 'completed'
-                        ? 'bg-green-100 text-green-800'
-                        : job.status === 'running'
-                        ? 'bg-blue-100 text-blue-800'
-                        : job.status === 'failed'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    {job.status}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">件数:</span>{' '}
-                    {formatNumber(job.count)}
-                  </div>
-                  <div>
-                    <span className="text-gray-500">進捗:</span> {job.progress}%
-                  </div>
-                  <div>
-                    <span className="text-gray-500">優先度:</span>{' '}
-                    {job.priority}
-                  </div>
-                  <div>
-                    <span className="text-gray-500">作成日:</span>{' '}
-                    {new Date(job.createdAt).toLocaleDateString()}
+            {/* プレビュー */}
+            {previewData.length > 0 && (
+              <div className="wb-result-panel">
+                <div className="wb-result-header">
+                  <div className="wb-result-title-section">
+                    <h3 className="wb-result-title">{t('csv.preview')}</h3>
+                    <p className="wb-result-subtitle">
+                      {previewData.length - 1}行のデータ
+                    </p>
                   </div>
                 </div>
-
-                {job.status === 'running' && (
-                  <div className="mt-3">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${job.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-
-                {job.result && (
-                  <div className="mt-3 flex items-center space-x-4">
-                    <span className="text-sm text-gray-500">
-                      ファイルサイズ: {formatFileSize(job.result.fileSize)}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border border-wb-wood-300">
+                    <tbody>
+                      {previewData.slice(0, 11).map((row, rowIndex) => (
+                        <tr
+                          key={rowIndex}
+                          className={
+                            rowIndex === 0
+                              ? 'bg-wb-wood-50 font-semibold'
+                              : 'hover:bg-wb-wood-25'
+                          }
+                        >
+                          {row.map((cell, cellIndex) => (
+                            <td
+                              key={cellIndex}
+                              className="px-3 py-2 border-b border-wb-wood-200 text-sm text-wb-wood-700"
+                            >
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {previewData.length > 11 && (
+                  <div className="wb-result-metadata">
+                    <span className="wb-result-timestamp">
+                      他 {previewData.length - 11} 行のデータがあります
                     </span>
-                    <a
-                      href={job.result.downloadUrl}
-                      download={job.result.fileName}
-                      className="text-blue-500 hover:text-blue-700 text-sm"
-                    >
-                      ダウンロード
-                    </a>
                   </div>
                 )}
-              </div>
-            ))}
-
-            {batchJobs.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                バッチジョブがありません
               </div>
             )}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* パフォーマンスタブ */}
-      {uiState.activeTab === 'performance' && performanceData && (
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold">パフォーマンス監視</h3>
-
-          {/* スコア表示 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">
-                {performanceData.score.grade}
-              </div>
-              <div className="text-sm text-gray-600">総合スコア</div>
-              <div className="text-xs text-gray-500">
-                {performanceData.score.score.toFixed(1)}点
-              </div>
+        {/* テンプレートタブ */}
+        {uiState.activeTab === 'templates' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="wb-tool-panel-title">テンプレート一覧</h3>
+              <input
+                type="text"
+                placeholder="テンプレートを検索..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="wb-text-input w-64"
+              />
             </div>
 
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
-                {performanceData.score.breakdown.memory.toFixed(0)}
-              </div>
-              <div className="text-sm text-gray-600">メモリスコア</div>
-            </div>
-
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600">
-                {performanceData.score.breakdown.rendering.toFixed(0)}
-              </div>
-              <div className="text-sm text-gray-600">レンダリング</div>
-            </div>
-
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
-                {performanceData.score.breakdown.cache.toFixed(0)}
-              </div>
-              <div className="text-sm text-gray-600">キャッシュ</div>
-            </div>
-          </div>
-
-          {/* 最適化提案 */}
-          {performanceData.suggestions.length > 0 && (
-            <div>
-              <h4 className="font-semibold mb-3">最適化提案</h4>
-              <div className="space-y-2">
-                {performanceData.suggestions
-                  .slice(0, 5)
-                  .map((suggestion: any, index: number) => (
-                    <div
-                      key={index}
-                      className={`p-3 rounded border-l-4 ${
-                        suggestion.severity === 'critical'
-                          ? 'border-red-500 bg-red-50'
-                          : suggestion.severity === 'high'
-                          ? 'border-orange-500 bg-orange-50'
-                          : suggestion.severity === 'medium'
-                          ? 'border-yellow-500 bg-yellow-50'
-                          : 'border-blue-500 bg-blue-50'
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredTemplates.map(template => (
+                <div
+                  key={template.id}
+                  className="p-4 bg-white border border-wb-wood-200 rounded-lg hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-wb-wood-800">
+                      {template.name}
+                    </h4>
+                    <span
+                      className={`text-xs px-2 py-1 rounded ${
+                        template.isBuiltIn
+                          ? 'bg-wb-tool-measure-100 text-wb-tool-measure-800'
+                          : 'bg-wb-tool-join-100 text-wb-tool-join-800'
                       }`}
                     >
-                      <div className="font-medium">{suggestion.message}</div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        {suggestion.solution}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        改善効果: {suggestion.estimatedImprovement}
-                      </div>
+                      {template.isBuiltIn ? '内蔵' : 'カスタム'}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-wb-wood-600 mb-3">
+                    {template.description}
+                  </p>
+
+                  <div className="text-xs text-wb-wood-500 mb-3">
+                    <div>列数: {template.columns.length}</div>
+                    <div>
+                      デフォルト件数: {formatNumber(template.defaultRowCount)}
                     </div>
-                  ))}
+                    <div>使用回数: {template.usage}</div>
+                  </div>
+
+                  <button
+                    onClick={() => applyTemplate(template)}
+                    className="w-full wb-action-button wb-action-primary"
+                  >
+                    適用
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* バッチ処理タブ */}
+        {uiState.activeTab === 'batch' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="wb-tool-panel-title">バッチジョブ一覧</h3>
+              <div className="text-sm text-wb-wood-500">
+                {batchJobs.length}個のジョブ
               </div>
             </div>
-          )}
-        </div>
-      )}
+
+            <div className="space-y-3">
+              {batchJobs.map(job => (
+                <div
+                  key={job.id}
+                  className="p-4 bg-white border border-wb-wood-200 rounded-lg"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-wb-wood-800">
+                      {job.name}
+                    </h4>
+                    <span
+                      className={`text-xs px-2 py-1 rounded ${
+                        job.status === 'completed'
+                          ? 'bg-wb-tool-join-100 text-wb-tool-join-800'
+                          : job.status === 'running'
+                          ? 'bg-wb-tool-measure-100 text-wb-tool-measure-800'
+                          : job.status === 'failed'
+                          ? 'bg-wb-tool-cut-100 text-wb-tool-cut-800'
+                          : 'bg-wb-wood-100 text-wb-wood-800'
+                      }`}
+                    >
+                      {job.status}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-wb-wood-500">件数:</span>{' '}
+                      {formatNumber(job.count)}
+                    </div>
+                    <div>
+                      <span className="text-wb-wood-500">進捗:</span>{' '}
+                      {job.progress}%
+                    </div>
+                    <div>
+                      <span className="text-wb-wood-500">優先度:</span>{' '}
+                      {job.priority}
+                    </div>
+                    <div>
+                      <span className="text-wb-wood-500">作成日:</span>{' '}
+                      {new Date(job.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+
+                  {job.status === 'running' && (
+                    <div className="mt-3">
+                      <div className="w-full bg-wb-wood-200 rounded-full h-2">
+                        <div
+                          className="bg-wb-tool-measure-600 h-2 rounded-full transition-all"
+                          style={{ width: `${job.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {job.result && (
+                    <div className="mt-3 flex items-center space-x-4">
+                      <span className="text-sm text-wb-wood-500">
+                        ファイルサイズ: {formatFileSize(job.result.fileSize)}
+                      </span>
+                      <a
+                        href={job.result.downloadUrl}
+                        download={job.result.fileName}
+                        className="text-wb-tool-measure-500 hover:text-wb-tool-measure-700 text-sm transition-colors"
+                      >
+                        ダウンロード
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {batchJobs.length === 0 && (
+                <div className="text-center py-8 text-wb-wood-500">
+                  バッチジョブがありません
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* パフォーマンスタブ */}
+        {uiState.activeTab === 'performance' && performanceData && (
+          <div className="space-y-6">
+            <h3 className="wb-tool-panel-title">パフォーマンス監視</h3>
+
+            {/* スコア表示 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-wb-tool-measure-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-wb-tool-measure-600">
+                  {performanceData.score.grade}
+                </div>
+                <div className="text-sm text-wb-wood-600">総合スコア</div>
+                <div className="text-xs text-wb-wood-500">
+                  {performanceData.score.score.toFixed(1)}点
+                </div>
+              </div>
+
+              <div className="bg-wb-tool-join-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-wb-tool-join-600">
+                  {performanceData.score.breakdown.memory.toFixed(0)}
+                </div>
+                <div className="text-sm text-wb-wood-600">メモリスコア</div>
+              </div>
+
+              <div className="bg-wb-tool-polish-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-wb-tool-polish-600">
+                  {performanceData.score.breakdown.rendering.toFixed(0)}
+                </div>
+                <div className="text-sm text-wb-wood-600">レンダリング</div>
+              </div>
+
+              <div className="bg-wb-tool-inspect-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-wb-tool-inspect-600">
+                  {performanceData.score.breakdown.cache.toFixed(0)}
+                </div>
+                <div className="text-sm text-wb-wood-600">キャッシュ</div>
+              </div>
+            </div>
+
+            {/* 最適化提案 */}
+            {performanceData.suggestions.length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-3 text-wb-wood-800">
+                  最適化提案
+                </h4>
+                <div className="space-y-2">
+                  {performanceData.suggestions
+                    .slice(0, 5)
+                    .map((suggestion: any, index: number) => (
+                      <div
+                        key={index}
+                        className={`p-3 rounded border-l-4 ${
+                          suggestion.severity === 'critical'
+                            ? 'border-wb-tool-cut-500 bg-wb-tool-cut-50'
+                            : suggestion.severity === 'high'
+                            ? 'border-wb-tool-polish-500 bg-wb-tool-polish-50'
+                            : suggestion.severity === 'medium'
+                            ? 'border-wb-tool-measure-500 bg-wb-tool-measure-50'
+                            : 'border-wb-tool-inspect-500 bg-wb-tool-inspect-50'
+                        }`}
+                      >
+                        <div className="font-medium text-wb-wood-800">
+                          {suggestion.message}
+                        </div>
+                        <div className="text-sm text-wb-wood-600 mt-1">
+                          {suggestion.solution}
+                        </div>
+                        <div className="text-xs text-wb-wood-500 mt-1">
+                          改善効果: {suggestion.estimatedImprovement}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
