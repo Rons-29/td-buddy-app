@@ -236,7 +236,7 @@ const BrewsTeamManager: React.FC<BrewsTeamManagerProps> = ({
                 showBubble={showMessages && Boolean(member.message)}
                 size="medium"
                 onClick={() => onMemberClick?.(member)}
-                className="brews-icon-hover"
+                className="brews-icon-interactive"
               />
 
               {/* メンバー管理ボタン */}

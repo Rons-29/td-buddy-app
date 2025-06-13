@@ -121,7 +121,8 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
   const containerClasses = [
     'relative inline-block',
     'transition-all duration-300 ease-in-out',
-    'hover:scale-105',
+    'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+    'hover:scale-105 active:scale-95',
     onClick && 'cursor-pointer',
     className,
   ]
@@ -131,8 +132,8 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
   const iconClasses = [
     getSizeClasses(size),
     getColorClasses(config.color, emotion),
-    'transition-all duration-200',
     'brews-icon-center',
+    'border-2',
     getAnimationClasses(),
     isAnimating && 'animate-bounce',
   ]
@@ -145,7 +146,7 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
     overlaySize.wrapper,
     overlaySize.position,
     'animate-in fade-in-0 duration-300',
-    'transition-all duration-300 ease-in-out',
+    'transition-transform duration-300 ease-in-out',
   ]
     .filter(Boolean)
     .join(' ');
@@ -181,28 +182,24 @@ const BrewsIcon: React.FC<BrewsIconProps> = ({
           }}
         >
           {IconComponent && (
-            <div className="flex items-center justify-center w-full h-full absolute inset-0">
-              <IconComponent
-                className="transition-transform duration-200"
-                style={{
-                  width:
-                    size === 'small'
-                      ? '16px'
-                      : size === 'medium'
-                      ? '24px'
-                      : '32px',
-                  height:
-                    size === 'small'
-                      ? '16px'
-                      : size === 'medium'
-                      ? '24px'
-                      : '32px',
-                  display: 'block',
-                  margin: '0 auto',
-                }}
-                aria-hidden="true"
-              />
-            </div>
+            <IconComponent
+              className="transition-transform duration-200 hover:scale-110"
+              style={{
+                width:
+                  size === 'small'
+                    ? '16px'
+                    : size === 'medium'
+                    ? '24px'
+                    : '32px',
+                height:
+                  size === 'small'
+                    ? '16px'
+                    : size === 'medium'
+                    ? '24px'
+                    : '32px',
+              }}
+              aria-hidden="true"
+            />
           )}
         </div>
 
