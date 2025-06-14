@@ -2673,3 +2673,564 @@
     border-top-color: #1a1a1a;
   }
 }
+
+/* === パスワード生成工具専用デザイン強化 === */
+
+/* 美しいパネルデザイン */
+.wb-tool-panel.wb-tool-inspect {
+  background: linear-gradient(
+    135deg,
+    var(--wb-tool-inspect-50) 0%,
+    rgba(255, 255, 255, 0.9) 50%,
+    var(--wb-tool-inspect-50) 100%
+  );
+  border: 1px solid var(--wb-tool-inspect-200);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(33, 150, 243, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 32px; /* 余白を増加 */
+}
+
+.wb-tool-panel.wb-tool-inspect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--wb-tool-inspect-400),
+    var(--wb-tool-inspect-600),
+    var(--wb-tool-inspect-400)
+  );
+  border-radius: 16px 16px 0 0;
+}
+
+.wb-tool-panel.wb-tool-inspect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(33, 150, 243, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--wb-tool-inspect-300);
+}
+
+/* パネルヘッダーの美化 */
+.wb-tool-panel-header {
+  padding: 32px 32px 20px 32px; /* パディングを増加 */
+  border-bottom: 1px solid var(--wb-tool-inspect-100);
+  background: linear-gradient(
+    135deg,
+    rgba(33, 150, 243, 0.03) 0%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  border-radius: 16px 16px 0 0;
+  margin: -1px -1px 0 -1px;
+}
+
+.wb-tool-panel-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--wb-tool-inspect-800);
+  margin-bottom: 12px; /* マージンを増加 */
+  display: flex;
+  align-items: center;
+  gap: 12px; /* ギャップを増加 */
+}
+
+.wb-tool-panel-title::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(
+    135deg,
+    var(--wb-tool-inspect-500),
+    var(--wb-tool-inspect-600)
+  );
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.wb-tool-panel-description {
+  color: var(--wb-tool-inspect-600);
+  font-size: 0.875rem;
+  line-height: 1.6; /* 行間を改善 */
+  margin: 0;
+}
+
+/* 美しいコントロール要素 */
+.wb-tool-control {
+  padding: 28px 32px; /* パディングを増加 */
+}
+
+.wb-tool-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--wb-tool-inspect-700);
+  margin-bottom: 16px; /* マージンを増加 */
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* 美しいレンジスライダー */
+.wb-range-input {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--wb-tool-inspect-200) 0%,
+    var(--wb-tool-inspect-300) 100%
+  );
+  outline: none;
+  -webkit-appearance: none;
+  margin: 12px 0; /* マージンを増加 */
+  transition: all 0.3s ease;
+}
+
+.wb-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--wb-tool-inspect-500),
+    var(--wb-tool-inspect-600)
+  );
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  transition: all 0.3s ease;
+}
+
+.wb-range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.wb-range-input::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--wb-tool-inspect-500),
+    var(--wb-tool-inspect-600)
+  );
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+/* 美しい数値表示 */
+.wb-tool-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--wb-tool-inspect-100),
+    var(--wb-tool-inspect-50)
+  );
+  color: var(--wb-tool-inspect-700);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 8px 16px; /* パディングを増加 */
+  border-radius: 20px;
+  border: 1px solid var(--wb-tool-inspect-200);
+  margin-top: 12px; /* マージンを増加 */
+  min-width: 80px;
+}
+
+/* 美しい数値入力 */
+.wb-number-input {
+  background: white;
+  border: 2px solid var(--wb-tool-inspect-200);
+  border-radius: 8px;
+  padding: 12px 16px; /* パディングを増加 */
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--wb-tool-inspect-800);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.wb-number-input:focus {
+  outline: none;
+  border-color: var(--wb-tool-inspect-400);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  background: var(--wb-tool-inspect-25);
+}
+
+/* 美しいクイックボタン */
+.wb-quick-button {
+  background: white;
+  border: 2px solid var(--wb-tool-inspect-200);
+  color: var(--wb-tool-inspect-700);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-width: 48px;
+  text-align: center;
+}
+
+.wb-quick-button:hover {
+  border-color: var(--wb-tool-inspect-400);
+  background: var(--wb-tool-inspect-50);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.wb-quick-button-active {
+  background: var(--wb-tool-inspect-500);
+  border-color: var(--wb-tool-inspect-500);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.wb-quick-button-inactive {
+  background: white;
+  border-color: var(--wb-tool-inspect-200);
+  color: var(--wb-tool-inspect-600);
+}
+
+/* 文字種セクションのスタイル */
+.wb-tool-subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--wb-tool-inspect-800);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wb-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wb-checkbox-icon {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+/* 強度表示のスタイル */
+.wb-strength-display {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wb-strength-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.wb-strength-badge.wb-strength-very-strong {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.wb-strength-badge.wb-strength-strong {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.wb-strength-badge.wb-strength-medium {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.wb-strength-badge.wb-strength-weak {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.wb-strength-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--wb-tool-inspect-100);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.wb-strength-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+.wb-strength-fill.wb-strength-very-strong {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.wb-strength-fill.wb-strength-strong {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.wb-strength-fill.wb-strength-medium {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.wb-strength-fill.wb-strength-weak {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+/* 推奨設定カードのスタイル */
+.wb-recommendation-card {
+  background: linear-gradient(135deg, var(--wb-tool-inspect-50), white);
+  border: 2px solid var(--wb-tool-inspect-200);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.wb-recommendation-card:hover {
+  border-color: var(--wb-tool-inspect-300);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.wb-recommendation-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wb-tool-inspect-800);
+  margin-bottom: 8px;
+}
+
+.wb-recommendation-text {
+  font-size: 13px;
+  color: var(--wb-tool-inspect-600);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.wb-recommendation-button {
+  background: var(--wb-tool-inspect-500);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wb-recommendation-button:hover {
+  background: var(--wb-tool-inspect-600);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+}
+
+/* セキュリティレベル表示のスタイル */
+.wb-security-level-display {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wb-security-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--wb-tool-inspect-50), white);
+  border: 2px solid var(--wb-tool-inspect-200);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.wb-security-meter:hover {
+  border-color: var(--wb-tool-inspect-300);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.wb-security-level-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wb-security-icon {
+  font-size: 16px;
+}
+
+.wb-security-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wb-tool-inspect-800);
+  flex: 1;
+}
+
+.wb-security-score {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.wb-score-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--wb-tool-inspect-700);
+}
+
+.wb-score-unit {
+  font-size: 12px;
+  color: var(--wb-tool-inspect-500);
+  font-weight: 500;
+}
+
+.wb-security-features {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wb-feature-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--wb-tool-inspect-600);
+  background: var(--wb-tool-inspect-100);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--wb-tool-inspect-200);
+}
+
+/* チェックボックスグループの強化 */
+.wb-checkbox-group {
+  display: grid;
+  gap: 20px;
+}
+
+.wb-checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border: 1px solid var(--wb-tool-inspect-150);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.wb-checkbox-item:hover {
+  background: var(--wb-tool-inspect-25);
+  border-color: var(--wb-tool-inspect-200);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.wb-checkbox-item:has(.wb-checkbox:checked) {
+  background: linear-gradient(
+    135deg,
+    var(--wb-tool-inspect-50),
+    rgba(255, 255, 255, 0.9)
+  );
+  border-color: var(--wb-tool-inspect-300);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+/* 美しいチェックボックス */
+.wb-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--wb-tool-inspect-300);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.wb-checkbox:checked {
+  background: linear-gradient(
+    135deg,
+    var(--wb-tool-inspect-500),
+    var(--wb-tool-inspect-600)
+  );
+  border-color: var(--wb-tool-inspect-600);
+}
+
+.wb-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* レスポンシブ調整の強化 */
+@media (max-width: 768px) {
+  .wb-tool-panel.wb-tool-inspect {
+    border-radius: 12px;
+    margin: 0 -4px 24px -4px;
+  }
+
+  .wb-tool-panel-header {
+    padding: 24px 20px 16px 20px;
+  }
+
+  .wb-tool-control {
+    padding: 20px;
+  }
+
+  .wb-checkbox-item {
+    padding: 16px;
+  }
+
+  .wb-security-meter {
+    padding: 10px;
+  }
+}
+
+/* 大画面対応の強化 */
+@media (min-width: 1600px) {
+  .wb-tool-panel.wb-tool-inspect {
+    padding: 40px;
+  }
+
+  .wb-tool-panel-header {
+    padding: 32px 40px 24px 40px;
+  }
+
+  .wb-tool-control {
+    padding: 32px;
+  }
+
+  .wb-checkbox-item {
+    padding: 24px;
+  }
+
+  .wb-security-meter {
+    padding: 16px;
+  }
+}

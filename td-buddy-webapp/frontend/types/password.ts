@@ -8,6 +8,18 @@ export interface PasswordCriteria {
   includeSymbols: boolean;
   excludeAmbiguous: boolean;
   customCharacters?: string;
+
+  // 拡張文字種オプション
+  includeExtendedSymbols?: boolean; // 拡張記号 (※◆★)
+  includeBrackets?: boolean; // 括弧類 (()[]{})
+  includeMathSymbols?: boolean; // 数学記号 (+-×÷)
+  includeUnicode?: boolean; // Unicode文字
+
+  // 特殊オプション
+  includeReadable?: boolean; // 読みやすい文字のみ
+  includePronounceable?: boolean; // 発音可能パターン
+  excludeCharacters?: string; // 除外文字
+
   // 新機能用
   mustIncludeCharTypes?: string[]; // 必ず含む文字種
   customSymbols?: string; // カスタム記号
@@ -62,8 +74,28 @@ export interface APIResponse {
 
 // Brewキャラクター状態の型（TDCharacterコンポーネントと整合性を保つ）
 export interface TDState {
-  emotion: 'happy' | 'excited' | 'thinking' | 'confused' | 'sad' | 'working' | 'success' | 'worried' | 'sleepy' | 'warning' | 'error' | 'curious' | 'friendly';
-  animation: 'none' | 'bounce' | 'wiggle' | 'pulse' | 'spin' | 'heartbeat' | 'float';
+  emotion:
+    | 'happy'
+    | 'excited'
+    | 'thinking'
+    | 'confused'
+    | 'sad'
+    | 'working'
+    | 'success'
+    | 'worried'
+    | 'sleepy'
+    | 'warning'
+    | 'error'
+    | 'curious'
+    | 'friendly';
+  animation:
+    | 'none'
+    | 'bounce'
+    | 'wiggle'
+    | 'pulse'
+    | 'spin'
+    | 'heartbeat'
+    | 'float';
   message: string;
   showSpeechBubble: boolean;
 }
@@ -72,4 +104,4 @@ export interface TDState {
 export interface PresetConfig {
   selectedPresetId?: string;
   customPresets: PasswordPreset[];
-} 
+}

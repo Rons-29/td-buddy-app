@@ -82,16 +82,16 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
       </div>
 
       {/* カテゴリー水平レイアウト */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-8 lg:gap-10 xl:gap-12 2xl:gap-14 mb-8">
         {categoryOrder.map(categoryKey => {
           const category = PRESET_CATEGORIES[categoryKey];
           const presets = presetsByCategory[categoryKey] || [];
 
           return (
-            <div key={categoryKey} className="space-y-3">
+            <div key={categoryKey} className="space-y-4">
               {/* カテゴリヘッダー */}
-              <div className="text-center border-b border-gray-200 pb-2">
-                <div className="flex items-center justify-center gap-2 mb-1">
+              <div className="text-center border-b border-gray-200 pb-3">
+                <div className="flex items-center justify-center gap-2 mb-2">
                   <span className="text-xl">{category.icon}</span>
                   <h4 className="font-medium text-gray-800 text-sm">
                     {category.label}
@@ -101,13 +101,13 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
               </div>
 
               {/* プリセットカード */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {presets.map(preset => (
                   <div
                     key={preset.id}
                     onClick={() => handlePresetClick(preset)}
                     className={`
-                      relative p-3 border-2 rounded-lg cursor-pointer transition-all duration-200
+                      relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200
                       ${
                         selectedPresetId === preset.id
                           ? 'border-blue-500 bg-blue-50 shadow-md'
@@ -125,10 +125,10 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                     )}
 
                     {/* プリセット内容 */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {/* アイコンとタイトル */}
                       <div className="text-center">
-                        <span className="text-lg block mb-1">
+                        <span className="text-lg block mb-2">
                           {preset.icon}
                         </span>
                         <h5 className="font-medium text-gray-900 text-xs leading-tight">
@@ -137,9 +137,9 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                       </div>
 
                       {/* プリセット設定の簡潔表示 */}
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {/* 基本設定 */}
-                        <div className="flex justify-center gap-1 text-xs">
+                        <div className="flex justify-center gap-2 text-xs">
                           {preset.criteria.length && (
                             <span className="wb-badge-count px-1.5 py-0.5 rounded-full text-xs">
                               {preset.criteria.length}文字
@@ -154,7 +154,7 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
 
                         {/* 必須文字種（アイコンのみ） */}
                         {preset.criteria.mustIncludeCharTypes && (
-                          <div className="flex justify-center gap-1">
+                          <div className="flex justify-center gap-2">
                             {preset.criteria.mustIncludeCharTypes.map(
                               charType => (
                                 <span
@@ -175,11 +175,11 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
 
                 {/* その他カテゴリーの自由入力 */}
                 {categoryKey === 'other' && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {!showCustomInput ? (
                       <button
                         onClick={() => setShowCustomInput(true)}
-                        className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg 
+                        className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg 
                                  hover:border-gray-400 hover:bg-gray-50 transition-all duration-200
                                  flex items-center justify-center gap-2 text-gray-600"
                       >
