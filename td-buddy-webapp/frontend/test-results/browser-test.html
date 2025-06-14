@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brews Compatibility Test</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .pass { color: green; }
+        .fail { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Brews Browser Compatibility Test</h1>
+    
+    <div class="test-section">
+        <h2>Browser Information</h2>
+        <div id="browser-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Feature Detection</h2>
+        <div id="feature-tests"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Performance Tests</h2>
+        <div id="performance-tests"></div>
+    </div>
+    
+    <script>
+        // ブラウザ情報表示
+        function displayBrowserInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                screenResolution: screen.width + 'x' + screen.height,
+                viewportSize: window.innerWidth + 'x' + window.innerHeight
+            };
+            
+            const container = document.getElementById('browser-info');
+            container.innerHTML = Object.entries(info)
+                .map(([key, value]) => '<div><strong>' + key + ':</strong> ' + value + '</div>')
+                .join('');
+        }
+        
+        // 機能テスト実行
+        function runFeatureTests() {
+            const tests = [
+                {
+                    name: 'ES6 Modules',
+                    test: () => typeof import !== 'undefined'
+                },
+                {
+                    name: 'Fetch API',
+                    test: () => typeof fetch !== 'undefined'
+                },
+                {
+                    name: 'Promises',
+                    test: () => typeof Promise !== 'undefined'
+                },
+                {
+                    name: 'Async/Await',
+                    test: () => {
+                        try {
+                            eval('(async () => {})');
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }
+                },
+                {
+                    name: 'CSS Grid',
+                    test: () => CSS.supports('display', 'grid')
+                },
+                {
+                    name: 'CSS Flexbox',
+                    test: () => CSS.supports('display', 'flex')
+                },
+                {
+                    name: 'CSS Custom Properties',
+                    test: () => CSS.supports('color', 'var(--test)')
+                },
+                {
+                    name: 'Intersection Observer',
+                    test: () => typeof IntersectionObserver !== 'undefined'
+                },
+                {
+                    name: 'RequestAnimationFrame',
+                    test: () => typeof requestAnimationFrame !== 'undefined'
+                }
+            ];
+            
+            const container = document.getElementById('feature-tests');
+            container.innerHTML = tests.map(({name, test}) => {
+                const result = test();
+                const className = result ? 'pass' : 'fail';
+                const symbol = result ? '✅' : '❌';
+                return '<div class="' + className + '">' + symbol + ' ' + name + '</div>';
+            }).join('');
+        }
+        
+        // パフォーマンステスト実行
+        function runPerformanceTests() {
+            const container = document.getElementById('performance-tests');
+            container.innerHTML = '<div class="info">🔄 パフォーマンステストを実行中...</div>';
+            
+            // 簡単なレンダリング性能テスト
+            const startTime = performance.now();
+            
+            // 大量の要素を作成
+            const testContainer = document.createElement('div');
+            for (let i = 0; i < 1000; i++) {
+                const div = document.createElement('div');
+                div.textContent = 'Test ' + i;
+                div.style.cssText = 'padding: 5px; margin: 1px; background: #f0f0f0;';
+                testContainer.appendChild(div);
+            }
+            
+            document.body.appendChild(testContainer);
+            
+            setTimeout(() => {
+                const endTime = performance.now();
+                const renderTime = endTime - startTime;
+                
+                document.body.removeChild(testContainer);
+                
+                const memoryInfo = performance.memory ? 
+                    (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + ' MB' : 
+                    'Not available';
+                
+                container.innerHTML = [
+                    '<div class="info">📊 パフォーマンス測定結果:</div>',
+                    '<div>• レンダリング時間: ' + renderTime.toFixed(2) + 'ms</div>',
+                    '<div>• メモリ使用量: ' + memoryInfo + '</div>',
+                    '<div>• タイムスタンプ: ' + new Date().toISOString() + '</div>'
+                ].join('');
+            }, 100);
+        }
+        
+        // テスト実行
+        document.addEventListener('DOMContentLoaded', () => {
+            displayBrowserInfo();
+            runFeatureTests();
+            runPerformanceTests();
+        });
+    </script>
+</body>
+</html>
+  

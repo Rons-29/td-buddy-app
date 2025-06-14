@@ -1,0 +1,73 @@
+{
+  "testSuites": [
+    {
+      "name": "Compatibility Layer Test",
+      "description": "互換性レイヤーの動作確認",
+      "tests": [
+        {
+          "name": "Legacy BrewCharacter Compatibility",
+          "url": "/brews-compatibility-test",
+          "checks": [
+            "component-renders",
+            "animations-work",
+            "events-fire",
+            "styles-applied"
+          ]
+        },
+        {
+          "name": "Performance Comparison",
+          "url": "/brews-performance-test",
+          "checks": [
+            "render-time-acceptable",
+            "memory-usage-optimal",
+            "animation-smooth"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Browser Feature Detection",
+      "description": "ブラウザ機能サポート確認",
+      "tests": [
+        {
+          "name": "Modern JavaScript Features",
+          "checks": [
+            "fetch",
+            "promises",
+            "async-await",
+            "modules",
+            "intersectionObserver",
+            "requestAnimationFrame"
+          ]
+        },
+        {
+          "name": "CSS3 Features",
+          "checks": [
+            "flexbox",
+            "grid",
+            "transforms",
+            "animations",
+            "transitions",
+            "custom-properties"
+          ]
+        },
+        {
+          "name": "React Features",
+          "checks": [
+            "hooks",
+            "concurrent-features",
+            "dynamic-imports",
+            "ssr",
+            "client-components"
+          ]
+        }
+      ]
+    }
+  ],
+  "reporting": {
+    "format": "json",
+    "output": "./test-results/compatibility-report.json",
+    "includeScreenshots": true,
+    "includePerformanceMetrics": true
+  }
+}

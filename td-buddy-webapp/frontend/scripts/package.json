@@ -1,0 +1,16 @@
+{
+  "name": "workbench-scripts",
+  "version": "1.0.0",
+  "description": "ワークベンチデザインシステム修正スクリプト",
+  "main": "fix-badge-colors.js",
+  "scripts": {
+    "fix-badges": "node fix-badge-colors.js",
+    "check-badges": "node check-badge-usage.js"
+  },
+  "dependencies": {
+    "glob": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
