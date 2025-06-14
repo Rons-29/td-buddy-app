@@ -12,8 +12,8 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
     criteria: {
       length: 16,
       count: 1,
-      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase', 'symbols']
-    }
+      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase', 'symbols'],
+    },
   },
   {
     id: 'num-upper-lower-symbol',
@@ -25,10 +25,87 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
     criteria: {
       length: 16,
       count: 3,
-      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase', 'symbols']
-    }
+      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase', 'symbols'],
+    },
   },
-  
+
+  // 脆弱性テスト用
+  {
+    id: 'weak-common',
+    name: '一般的な弱いパスワード',
+    description: 'よく使われる脆弱なパスワードパターン（テスト用）',
+    icon: '⚠️',
+    category: 'vulnerability',
+    isDefault: true,
+    criteria: {
+      length: 8,
+      count: 10,
+      mustIncludeCharTypes: ['lowercase'],
+      isVulnerable: true,
+      vulnerabilityType: 'common',
+    },
+  },
+  {
+    id: 'weak-dictionary',
+    name: '辞書攻撃脆弱',
+    description: '辞書攻撃に脆弱なパスワード（テスト用）',
+    icon: '📖',
+    category: 'vulnerability',
+    isDefault: true,
+    criteria: {
+      length: 6,
+      count: 5,
+      mustIncludeCharTypes: ['lowercase'],
+      isVulnerable: true,
+      vulnerabilityType: 'dictionary',
+    },
+  },
+  {
+    id: 'weak-sequential',
+    name: '連続文字パターン',
+    description: '123456、abcdefなどの連続パターン（テスト用）',
+    icon: '🔢',
+    category: 'vulnerability',
+    isDefault: true,
+    criteria: {
+      length: 8,
+      count: 8,
+      mustIncludeCharTypes: ['numbers', 'lowercase'],
+      isVulnerable: true,
+      vulnerabilityType: 'sequential',
+    },
+  },
+  {
+    id: 'weak-keyboard',
+    name: 'キーボードパターン',
+    description: 'qwerty、asdfなどのキーボード配列（テスト用）',
+    icon: '⌨️',
+    category: 'vulnerability',
+    isDefault: true,
+    criteria: {
+      length: 6,
+      count: 6,
+      mustIncludeCharTypes: ['lowercase'],
+      isVulnerable: true,
+      vulnerabilityType: 'keyboard',
+    },
+  },
+  {
+    id: 'weak-personal',
+    name: '個人情報ベース',
+    description: '名前、生年月日などの個人情報パターン（テスト用）',
+    icon: '👤',
+    category: 'vulnerability',
+    isDefault: true,
+    criteria: {
+      length: 10,
+      count: 5,
+      mustIncludeCharTypes: ['lowercase', 'numbers'],
+      isVulnerable: true,
+      vulnerabilityType: 'personal',
+    },
+  },
+
   // カスタム
   {
     id: 'custom-symbols',
@@ -41,8 +118,8 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
       length: 14,
       count: 5,
       mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase'],
-      customSymbols: '$@_#&?'
-    }
+      customSymbols: '$@_#&?',
+    },
   },
   {
     id: 'custom-charsets',
@@ -54,10 +131,10 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
     criteria: {
       length: 16,
       count: 10,
-      customCharacters: ''
-    }
+      customCharacters: '',
+    },
   },
-  
+
   // Web・アプリ
   {
     id: 'web-standard',
@@ -69,8 +146,8 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
     criteria: {
       length: 12,
       count: 3,
-      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase']
-    }
+      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase'],
+    },
   },
   {
     id: 'num-upper-lower',
@@ -82,10 +159,10 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
     criteria: {
       length: 12,
       count: 3,
-      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase']
-    }
+      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase'],
+    },
   },
-  
+
   // エンタープライズ
   {
     id: 'enterprise-policy',
@@ -97,10 +174,10 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
     criteria: {
       length: 14,
       count: 5,
-      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase', 'symbols']
-    }
+      mustIncludeCharTypes: ['numbers', 'uppercase', 'lowercase', 'symbols'],
+    },
   },
-  
+
   // その他
   {
     id: 'none',
@@ -111,9 +188,9 @@ export const DEFAULT_PASSWORD_PRESETS: PasswordPreset[] = [
     isDefault: true,
     criteria: {
       length: 12,
-      count: 1
-    }
-  }
+      count: 1,
+    },
+  },
 ];
 
 export const PRESET_CATEGORIES = {
@@ -121,32 +198,38 @@ export const PRESET_CATEGORIES = {
     label: 'セキュリティ重視',
     description: '高いセキュリティが求められる用途',
     color: 'red',
-    icon: '🛡️'
+    icon: '🛡️',
+  },
+  vulnerability: {
+    label: '脆弱性テスト',
+    description: 'セキュリティテスト・脆弱性検証用',
+    color: 'orange',
+    icon: '⚠️',
   },
   custom: {
     label: 'カスタム',
     description: '柔軟な設定が可能',
     color: 'green',
-    icon: '🎨'
+    icon: '🎨',
   },
   web: {
     label: 'Web・アプリ',
     description: 'Webサービスやアプリケーション用',
     color: 'blue',
-    icon: '🌐'
+    icon: '🌐',
   },
   enterprise: {
     label: 'エンタープライズ',
     description: '企業・組織での利用',
     color: 'purple',
-    icon: '🏢'
+    icon: '🏢',
   },
   other: {
     label: 'その他',
     description: '自由入力・その他の設定',
     color: 'gray',
-    icon: '📝'
-  }
+    icon: '��',
+  },
 } as const;
 
 // よく使用される記号セット
@@ -154,23 +237,23 @@ export const COMMON_SYMBOL_SETS = [
   {
     name: '基本記号',
     symbols: '!@#$%^&*()',
-    description: 'キーボードで入力しやすい基本的な記号'
+    description: 'キーボードで入力しやすい基本的な記号',
   },
   {
     name: '安全記号',
     symbols: '$@_#&?',
-    description: 'URLやファイル名でも安全に使用できる記号'
+    description: 'URLやファイル名でも安全に使用できる記号',
   },
   {
     name: '数学記号',
     symbols: '+-=/*<>',
-    description: '数学的な記号を含む'
+    description: '数学的な記号を含む',
   },
   {
     name: 'フル記号',
     symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?',
-    description: 'すべての一般的な記号'
-  }
+    description: 'すべての一般的な記号',
+  },
 ];
 
 // 除外したい文字セット
@@ -178,11 +261,11 @@ export const EXCLUSION_SETS = {
   ambiguous: {
     name: '紛らわしい文字',
     chars: 'il1Lo0O',
-    description: '見た目が似ていて間違いやすい文字'
+    description: '見た目が似ていて間違いやすい文字',
   },
   similar: {
     name: '似ている文字',
     chars: 'il1Lo0O69qbdpPG8B',
-    description: 'フォントによっては区別が困難な文字'
-  }
-} as const; 
+    description: 'フォントによっては区別が困難な文字',
+  },
+} as const;

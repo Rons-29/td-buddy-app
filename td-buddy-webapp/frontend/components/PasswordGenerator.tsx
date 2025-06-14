@@ -2,21 +2,37 @@
 
 import { Eye, EyeOff, Settings2 } from 'lucide-react';
 import React, { useRef, useState } from 'react';
+import { DEFAULT_PASSWORD_PRESETS } from '../data/passwordPresets';
 import { APP_CONFIG, TD_MESSAGES } from '../lib/config';
 import { generatePasswordsLocal } from '../lib/passwordUtils';
 import {
   APIResponse,
   CustomCharset,
+  ExportData,
+  ExportOptions,
   PasswordCriteria,
   PasswordPreset,
   PasswordResult,
   TDState,
+  VulnerabilityAnalysis,
 } from '../types/password';
+import {
+  createDownloadBlob,
+  downloadFile,
+  exportToCSV,
+  exportToJSON,
+  exportToTXT,
+  generateFileName,
+} from '../utils/passwordExporter';
+import { analyzePasswordVulnerability } from '../utils/vulnerabilityAnalyzer';
 import BrewCharacter from './BrewCharacter';
 import { CompositionSelector } from './CompositionSelector';
 import { CustomCharsetsEditor } from './CustomCharsetsEditor';
 import { CustomSymbolsInput } from './CustomSymbolsInput';
+import { EducationPanel } from './EducationPanel';
+import { HELP_CONTENT, HelpTooltip } from './HelpTooltip';
 import { ActionButton } from './ui/ActionButton';
+import { VulnerabilityAnalysisDisplay } from './VulnerabilityAnalysisDisplay';
 
 export const PasswordGenerator: React.FC = () => {
   // 構成プリセット状態
@@ -39,6 +55,7 @@ export const PasswordGenerator: React.FC = () => {
   // UI状態（既存）
   const [result, setResult] = useState<PasswordResult | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
   const [showPasswords, setShowPasswords] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -58,6 +75,25 @@ export const PasswordGenerator: React.FC = () => {
   // 大量データ表示用の状態
   const [displayLimit, setDisplayLimit] = useState(100); // 初期表示数
   const [showAllResults, setShowAllResults] = useState(false);
+
+  // 脆弱性分析とエクスポート機能の状態
+  const [vulnerabilityAnalyses, setVulnerabilityAnalyses] = useState<
+    VulnerabilityAnalysis[]
+  >([]);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<{
+    analysis: VulnerabilityAnalysis;
+    password: string;
+  } | null>(null);
+  const [showExportPanel, setShowExportPanel] = useState(false);
+  const [exportOptions, setExportOptions] = useState<ExportOptions>({
+    format: 'csv',
+    includeAnalysis: true,
+    includeMetadata: true,
+    groupByVulnerability: false,
+  });
+
+  // 教育パネルの状態を追加
+  const [showEducationPanel, setShowEducationPanel] = useState(false);
 
   // Brewキャラクター状態（既存）
   const [brewState, setBrewState] = useState<TDState>({
@@ -264,6 +300,23 @@ export const PasswordGenerator: React.FC = () => {
     return count;
   };
 
+  // 有効な文字種が選択されているかチェック
+  const hasValidCharacterTypes = (): boolean => {
+    return (
+      Boolean(criteria.includeUppercase) ||
+      Boolean(criteria.includeLowercase) ||
+      Boolean(criteria.includeNumbers) ||
+      Boolean(criteria.includeSymbols) ||
+      Boolean(criteria.includeExtendedSymbols) ||
+      Boolean(criteria.includeBrackets) ||
+      Boolean(criteria.includeMathSymbols) ||
+      Boolean(criteria.includeUnicode) ||
+      Boolean(criteria.includeReadable) ||
+      Boolean(criteria.includePronounceable) ||
+      Boolean(criteria.customCharacters && criteria.customCharacters.length > 0)
+    );
+  };
+
   // 推奨設定関数
   const getRecommendationTitle = (): string => {
     const strength = getPasswordStrength();
@@ -358,6 +411,11 @@ export const PasswordGenerator: React.FC = () => {
 
   // パスワード生成API呼び出し（構成プリセット対応）
   const generatePasswords = async () => {
+    console.log('🔐 パスワード生成開始');
+    console.log('現在の条件:', criteria);
+    console.log('有効な文字種:', hasValidCharacterTypes());
+    console.log('isGenerating 状態変更: false → true');
+
     setIsGenerating(true);
     setApiError(null);
     setResult(null);
@@ -365,6 +423,10 @@ export const PasswordGenerator: React.FC = () => {
 
     const totalCount = criteria.count;
     const isLargeGeneration = totalCount > 50;
+
+    // 最小表示時間を設定（UXのため）
+    const minDisplayTime = 800; // 800ms
+    const startTime = Date.now();
 
     // 文字セット検証とフォールバック処理
     const validateAndPrepareRequest = () => {
@@ -409,43 +471,13 @@ export const PasswordGenerator: React.FC = () => {
         };
       }
 
-      // custom-symbols プリセットの場合の検証
-      if (selectedPresetId === 'custom-symbols') {
-        if (!customSymbols || customSymbols.trim().length === 0) {
-          console.warn(
-            '🔧 TDがカスタム記号が空のため、デフォルト記号を適用します'
-          );
-          setBrewState(prev => ({
-            ...prev,
-            emotion: 'thinking',
-            message: 'カスタム記号が空のため、標準記号を適用します♪',
-            showSpeechBubble: true,
-          }));
-
-          return {
-            composition: 'web-standard', // 安全なプリセットに変更
-            useUppercase: true,
-            useLowercase: true,
-            useNumbers: true,
-            useSymbols: true,
-          };
-        }
-
-        return {
-          composition: selectedPresetId,
-          useUppercase: criteria.includeUppercase,
-          useLowercase: criteria.includeLowercase,
-          useNumbers: criteria.includeNumbers,
-          useSymbols: criteria.includeSymbols,
-        };
-      }
-
-      // 基本的な文字種チェック
+      // 文字種が一つも選択されていない場合の検証
       const hasAnyCharType =
         criteria.includeUppercase ||
         criteria.includeLowercase ||
         criteria.includeNumbers ||
-        criteria.includeSymbols;
+        criteria.includeSymbols ||
+        (criteria.customCharacters && criteria.customCharacters.length > 0);
 
       if (!hasAnyCharType) {
         console.warn(
@@ -490,14 +522,20 @@ export const PasswordGenerator: React.FC = () => {
     }));
 
     try {
+      console.log('🚀 生成処理開始');
+
       // 大量生成の場合はチャンク処理
       if (isLargeGeneration) {
+        console.log('📦 大量生成モード（チャンク処理）');
         await generatePasswordsInChunks(totalCount, safeConfig);
       } else {
+        console.log('⚡ 単発生成モード');
         await generatePasswordsSingle(totalCount, safeConfig);
       }
+
+      console.log('✅ 生成処理完了');
     } catch (error) {
-      console.error('パスワード生成エラー:', error);
+      console.error('❌ パスワード生成エラー:', error);
       setApiError(
         error instanceof Error ? error.message : '不明なエラーが発生しました'
       );
@@ -510,6 +548,20 @@ export const PasswordGenerator: React.FC = () => {
         showSpeechBubble: true,
       }));
     } finally {
+      // 最小表示時間を確保
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+
+      console.log(
+        `⏱️ 経過時間: ${elapsedTime}ms, 残り待機時間: ${remainingTime}ms`
+      );
+
+      if (remainingTime > 0) {
+        console.log('⏳ 最小表示時間のため待機中...');
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+      }
+
+      console.log('🔓 isGenerating 状態変更: true → false');
       setIsGenerating(false);
       setGenerationProgress(null);
     }
@@ -520,8 +572,13 @@ export const PasswordGenerator: React.FC = () => {
     totalCount: number,
     safeConfig: any
   ) => {
+    console.log('📝 単発生成開始:', { totalCount, safeConfig });
+
     // オフラインモード時はローカル生成
     if (APP_CONFIG.isOfflineMode) {
+      console.log('💻 ローカル生成モード開始');
+      const localStartTime = Date.now();
+
       const localResult = generatePasswordsLocal({
         length: criteria.length,
         count: totalCount,
@@ -536,7 +593,20 @@ export const PasswordGenerator: React.FC = () => {
             : undefined,
       });
 
+      const localEndTime = Date.now();
+      console.log(`⚡ ローカル生成完了: ${localEndTime - localStartTime}ms`);
+      console.log('📊 生成結果:', localResult);
+
       setResult(localResult);
+
+      // 脆弱性分析を実行（脆弱性プリセットの場合）
+      const selectedPreset = DEFAULT_PASSWORD_PRESETS.find(
+        p => p.id === selectedPresetId
+      );
+      if (selectedPreset?.category === 'vulnerability') {
+        console.log('🔍 脆弱性分析実行中...');
+        analyzePasswords(localResult.passwords);
+      }
 
       // ブリューの成功反応
       setBrewState(prev => ({
@@ -553,6 +623,7 @@ export const PasswordGenerator: React.FC = () => {
       return;
     }
 
+    console.log('🌐 API生成モード開始');
     // API生成（レガシー - バックエンド設定完了後に有効）
     const apiUrl = APP_CONFIG.getApiUrl(
       '/api/password/generate-with-composition'
@@ -593,6 +664,14 @@ export const PasswordGenerator: React.FC = () => {
 
     const data: APIResponse = await response.json();
     setResult(data.data);
+
+    // 脆弱性分析を実行（脆弱性プリセットの場合）
+    const selectedPreset = DEFAULT_PASSWORD_PRESETS.find(
+      p => p.id === selectedPresetId
+    );
+    if (selectedPreset?.category === 'vulnerability') {
+      analyzePasswords(data.data.passwords);
+    }
 
     // ブリューの成功反応
     setBrewState(prev => ({
@@ -757,12 +836,39 @@ export const PasswordGenerator: React.FC = () => {
     setTimeout(() => {
       setBrewState(prev => ({ ...prev, showSpeechBubble: false }));
     }, 5000);
+
+    // 脆弱性分析を実行（脆弱性プリセットの場合）
+    const selectedPreset = DEFAULT_PASSWORD_PRESETS.find(
+      p => p.id === selectedPresetId
+    );
+    if (selectedPreset?.category === 'vulnerability' && combinedResult) {
+      analyzePasswords(combinedResult.passwords);
+    }
   };
 
   // クリップボードコピー
   const copyToClipboard = async (password: string, index: number) => {
+    console.log(
+      `📋 コピーボタンがクリックされました (パスワード ${index + 1})`
+    );
+    console.log(`コピー時の isCopying: ${isCopying}`);
+
+    if (isCopying) {
+      console.log('⚠️ 既にコピー処理中のため、処理をスキップします');
+      return;
+    }
+
     try {
+      console.log('📋 コピー処理開始');
+      console.log(`isCopying 状態変更: ${isCopying} → true`);
+      setIsCopying(true);
+
+      const startTime = performance.now();
       await navigator.clipboard.writeText(password);
+      const copyTime = performance.now() - startTime;
+
+      console.log(`📋 クリップボードコピー完了: ${copyTime.toFixed(2)}ms`);
+
       setCopiedIndex(index);
 
       // 結果エリア下部にメッセージ表示
@@ -775,13 +881,33 @@ export const PasswordGenerator: React.FC = () => {
         animation: 'bounce',
       }));
 
+      // 最小表示時間を確保（500ms）
+      const elapsedTime = performance.now() - startTime;
+      const minDisplayTime = 500;
+      const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+
+      console.log(
+        `⏱️ 経過時間: ${elapsedTime.toFixed(
+          2
+        )}ms, 残り待機時間: ${remainingTime.toFixed(2)}ms`
+      );
+
+      if (remainingTime > 0) {
+        console.log('⏳ 最小表示時間のため待機中...');
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+      }
+
+      console.log(`📋 isCopying 状態変更: true → false`);
+      setIsCopying(false);
+
       setTimeout(() => {
         setCopiedIndex(null);
         setCopyMessage(null);
       }, 2000);
     } catch (error) {
-      console.error('コピーエラー:', error);
+      console.error('❌ コピーエラー:', error);
       setCopyMessage('❌ コピーに失敗しました。手動でコピーしてください。');
+      setIsCopying(false);
 
       setTimeout(() => {
         setCopyMessage(null);
@@ -791,13 +917,32 @@ export const PasswordGenerator: React.FC = () => {
 
   // 全パスワードをコピー
   const copyAllPasswords = async () => {
+    console.log('📋 全コピーボタンがクリックされました');
+    console.log(`全コピー時の isCopying: ${isCopying}`);
+
     if (!result?.passwords) {
+      console.log('⚠️ コピーするパスワードがありません');
+      return;
+    }
+
+    if (isCopying) {
+      console.log('⚠️ 既にコピー処理中のため、処理をスキップします');
       return;
     }
 
     const allPasswords = result.passwords.join('\n');
     try {
+      console.log('📋 全コピー処理開始');
+      console.log(`isCopying 状態変更: ${isCopying} → true`);
+      setIsCopying(true);
+
+      const startTime = performance.now();
       await navigator.clipboard.writeText(allPasswords);
+      const copyTime = performance.now() - startTime;
+
+      console.log(
+        `📋 全パスワードクリップボードコピー完了: ${copyTime.toFixed(2)}ms`
+      );
 
       // 結果エリア下部にメッセージ表示
       setCopyMessage(
@@ -811,12 +956,32 @@ export const PasswordGenerator: React.FC = () => {
         animation: 'bounce',
       }));
 
+      // 最小表示時間を確保（500ms）
+      const elapsedTime = performance.now() - startTime;
+      const minDisplayTime = 500;
+      const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+
+      console.log(
+        `⏱️ 経過時間: ${elapsedTime.toFixed(
+          2
+        )}ms, 残り待機時間: ${remainingTime.toFixed(2)}ms`
+      );
+
+      if (remainingTime > 0) {
+        console.log('⏳ 最小表示時間のため待機中...');
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+      }
+
+      console.log(`📋 isCopying 状態変更: true → false`);
+      setIsCopying(false);
+
       setTimeout(() => {
         setCopyMessage(null);
       }, 3000);
     } catch (error) {
-      console.error('全コピーエラー:', error);
+      console.error('❌ 全コピーエラー:', error);
       setCopyMessage('❌ コピーに失敗しました。手動でコピーしてください。');
+      setIsCopying(false);
 
       setTimeout(() => {
         setCopyMessage(null);
@@ -842,6 +1007,89 @@ export const PasswordGenerator: React.FC = () => {
         setBrewState(prev => ({ ...prev, showSpeechBubble: false }));
       }, 2000);
     }
+  };
+
+  // 脆弱性分析実行
+  const analyzePasswords = (passwords: string[]) => {
+    if (!passwords || passwords.length === 0) {
+      return;
+    }
+
+    const selectedPreset = DEFAULT_PASSWORD_PRESETS.find(
+      p => p.id === selectedPresetId
+    );
+    const vulnerabilityType = selectedPreset?.criteria?.vulnerabilityType;
+
+    const analyses = passwords.map(password =>
+      analyzePasswordVulnerability(password, vulnerabilityType)
+    );
+
+    setVulnerabilityAnalyses(analyses);
+  };
+
+  // 脆弱性分析表示
+  const showVulnerabilityAnalysis = (password: string, index: number) => {
+    if (vulnerabilityAnalyses[index]) {
+      setSelectedAnalysis({
+        analysis: vulnerabilityAnalyses[index],
+        password,
+      });
+    }
+  };
+
+  // エクスポート実行
+  const handleExport = () => {
+    if (!result?.passwords || result.passwords.length === 0) {
+      alert('エクスポートするパスワードがありません。');
+      return;
+    }
+
+    const selectedPreset = DEFAULT_PASSWORD_PRESETS.find(
+      p => p.id === selectedPresetId
+    );
+    const exportData: ExportData = {
+      passwords: result.passwords,
+      metadata: {
+        generatedAt: new Date().toISOString(),
+        preset: selectedPreset?.name || 'カスタム',
+        criteria,
+        totalCount: result.passwords.length,
+      },
+      analysis: exportOptions.includeAnalysis
+        ? vulnerabilityAnalyses
+        : undefined,
+    };
+
+    let content: string;
+    let fileExtension: string;
+
+    switch (exportOptions.format) {
+      case 'csv':
+        content = exportToCSV(exportData, exportOptions);
+        fileExtension = 'csv';
+        break;
+      case 'json':
+        content = exportToJSON(exportData, exportOptions);
+        fileExtension = 'json';
+        break;
+      case 'txt':
+        content = exportToTXT(exportData, exportOptions);
+        fileExtension = 'txt';
+        break;
+      default:
+        content = exportToCSV(exportData, exportOptions);
+        fileExtension = 'csv';
+    }
+
+    const blob = createDownloadBlob(content, exportOptions.format);
+    const filename = generateFileName(
+      selectedPreset?.name || 'custom',
+      fileExtension,
+      new Date().toISOString()
+    );
+
+    downloadFile(blob, filename);
+    setShowExportPanel(false);
   };
 
   // プログレスバーコンポーネント
@@ -951,6 +1199,7 @@ export const PasswordGenerator: React.FC = () => {
                 type="copy"
                 onClick={() => copyToClipboard(password, index)}
                 isActive={copiedIndex === index}
+                loading={isCopying}
                 variant="secondary"
                 size="sm"
                 className="ml-3"
@@ -1047,6 +1296,33 @@ export const PasswordGenerator: React.FC = () => {
           className="mb-8"
         />
 
+        {/* 脆弱性パスワード警告表示 */}
+        {selectedPresetId === 'vulnerability' && (
+          <div className="wb-vulnerability-warning">
+            <div className="wb-vulnerability-warning-header">
+              <span className="wb-vulnerability-warning-icon">⚠️</span>
+              <h4 className="wb-vulnerability-warning-title">
+                脆弱性テスト用パスワード
+                <span className="wb-vulnerability-badge">🧪 テスト専用</span>
+              </h4>
+            </div>
+            <div className="wb-vulnerability-warning-text">
+              このプリセットは<strong>意図的に脆弱性のあるパスワード</strong>
+              を生成します。
+              セキュリティテスト、脆弱性検証、教育目的でのみ使用してください。
+              実際のシステムやアカウントでは絶対に使用しないでください。
+            </div>
+            <div
+              className="wb-vulnerability-warning-text"
+              style={{ marginTop: '8px' }}
+            >
+              <strong>用途例:</strong>{' '}
+              ペネトレーションテスト、セキュリティ監査、
+              パスワード強度検証ツールのテストデータ作成
+            </div>
+          </div>
+        )}
+
         {/* 基本設定（ワークベンチカード形式で整理） */}
         <div className="space-y-8 mb-10">
           {/* 第1段階: パスワード仕様設定 */}
@@ -1061,7 +1337,15 @@ export const PasswordGenerator: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 md:gap-10 lg:gap-12 xl:gap-14 2xl:gap-16">
                 {/* パスワード長 */}
                 <div className="wb-tool-control">
-                  <label className="wb-tool-label">📏 パスワード長</label>
+                  <label className="wb-tool-label">
+                    📏 パスワード長
+                    <HelpTooltip
+                      title={HELP_CONTENT.passwordLength.title}
+                      content={HELP_CONTENT.passwordLength.content}
+                      position="top"
+                      className="ml-2"
+                    />
+                  </label>
                   <input
                     type="range"
                     min="4"
@@ -1079,6 +1363,12 @@ export const PasswordGenerator: React.FC = () => {
                 <div className="wb-tool-control">
                   <label className="wb-tool-label">
                     🔢 生成個数
+                    <HelpTooltip
+                      title={HELP_CONTENT.passwordCount.title}
+                      content={HELP_CONTENT.passwordCount.content}
+                      position="top"
+                      className="ml-2"
+                    />
                     {criteria.count > 100 && (
                       <span className="wb-badge wb-badge-warning ml-2">
                         ⚡ 高速生成
@@ -1226,6 +1516,12 @@ export const PasswordGenerator: React.FC = () => {
                   <span className="wb-checkbox-label">
                     <span className="wb-checkbox-icon">🔤</span>
                     大文字 (A-Z)
+                    <HelpTooltip
+                      title={HELP_CONTENT.includeUppercase.title}
+                      content={HELP_CONTENT.includeUppercase.content}
+                      position="right"
+                      className="ml-2"
+                    />
                   </span>
                 </label>
                 <label className="wb-checkbox-item">
@@ -1240,6 +1536,12 @@ export const PasswordGenerator: React.FC = () => {
                   <span className="wb-checkbox-label">
                     <span className="wb-checkbox-icon">🔡</span>
                     小文字 (a-z)
+                    <HelpTooltip
+                      title={HELP_CONTENT.includeLowercase.title}
+                      content={HELP_CONTENT.includeLowercase.content}
+                      position="right"
+                      className="ml-2"
+                    />
                   </span>
                 </label>
                 <label className="wb-checkbox-item">
@@ -1254,6 +1556,12 @@ export const PasswordGenerator: React.FC = () => {
                   <span className="wb-checkbox-label">
                     <span className="wb-checkbox-icon">🔢</span>
                     数字 (0-9)
+                    <HelpTooltip
+                      title={HELP_CONTENT.includeNumbers.title}
+                      content={HELP_CONTENT.includeNumbers.content}
+                      position="right"
+                      className="ml-2"
+                    />
                   </span>
                 </label>
                 <label className="wb-checkbox-item">
@@ -1268,15 +1576,21 @@ export const PasswordGenerator: React.FC = () => {
                   <span className="wb-checkbox-label">
                     <span className="wb-checkbox-icon">🔣</span>
                     記号 (!@#$%)
+                    <HelpTooltip
+                      title={HELP_CONTENT.includeSymbols.title}
+                      content={HELP_CONTENT.includeSymbols.content}
+                      position="right"
+                      className="ml-2"
+                    />
                   </span>
                 </label>
               </div>
             </div>
 
             {/* 拡張文字種 */}
-            <div className="mb-8">
-              <h5 className="wb-tool-subtitle mb-6">🌟 拡張文字種</h5>
-              <div className="wb-checkbox-group grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            <div className="wb-extended-charset-section">
+              <h5 className="wb-extended-charset-title">🌟 拡張文字種</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label className="wb-checkbox-item">
                   <input
                     type="checkbox"
@@ -1306,37 +1620,6 @@ export const PasswordGenerator: React.FC = () => {
                   <span className="wb-checkbox-label">
                     <span className="wb-checkbox-icon">📐</span>
                     括弧類 (()[]{})
-                  </span>
-                </label>
-                <label className="wb-checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={criteria.includeMathSymbols || false}
-                    onChange={e =>
-                      handleCriteriaChange(
-                        'includeMathSymbols',
-                        e.target.checked
-                      )
-                    }
-                    className="wb-checkbox"
-                  />
-                  <span className="wb-checkbox-label">
-                    <span className="wb-checkbox-icon">➕</span>
-                    数学記号 (+-×÷)
-                  </span>
-                </label>
-                <label className="wb-checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={criteria.includeUnicode || false}
-                    onChange={e =>
-                      handleCriteriaChange('includeUnicode', e.target.checked)
-                    }
-                    className="wb-checkbox"
-                  />
-                  <span className="wb-checkbox-label">
-                    <span className="wb-checkbox-icon">🌐</span>
-                    Unicode文字
                   </span>
                 </label>
               </div>
@@ -1431,141 +1714,106 @@ export const PasswordGenerator: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* 第3段階: 除外オプション */}
-          <div className="wb-tool-panel wb-tool-inspect">
-            <div className="wb-tool-panel-header">
-              <h4 className="wb-tool-panel-title">🚫 除外オプション</h4>
-              <p className="wb-tool-panel-description">
-                セキュリティと可読性を向上させる除外設定
-              </p>
-            </div>
-            <div className="wb-checkbox-group space-y-4">
-              {/* 紛らわしい文字除外 */}
-              <label className="wb-checkbox-item wb-checkbox-detailed">
-                <input
-                  type="checkbox"
-                  checked={criteria.excludeAmbiguous}
-                  onChange={e =>
-                    handleCriteriaChange('excludeAmbiguous', e.target.checked)
-                  }
-                  className="wb-checkbox"
-                />
-                <div>
-                  <span className="wb-checkbox-title">
-                    紛らわしい文字を除外
-                  </span>
-                  <div className="wb-checkbox-description">
-                    除外: i, l, 1, L, o, 0, O
-                  </div>
-                </div>
-              </label>
-
-              {/* 似ている文字除外 */}
-              <label className="wb-checkbox-item wb-checkbox-detailed">
-                <input
-                  type="checkbox"
-                  checked={criteria.excludeSimilar || false}
-                  onChange={e =>
-                    handleCriteriaChange('excludeSimilar', e.target.checked)
-                  }
-                  className="wb-checkbox"
-                />
-                <div>
-                  <span className="wb-checkbox-title">似ている記号を除外</span>
-                  <div className="wb-checkbox-description">
-                    除外: {'{}'}, [], (), /\, '"`~
-                  </div>
-                </div>
-              </label>
-
-              {/* 連続文字除外 */}
-              <label className="wb-checkbox-item wb-checkbox-detailed">
-                <input
-                  type="checkbox"
-                  checked={criteria.excludeSequential || false}
-                  onChange={e =>
-                    handleCriteriaChange('excludeSequential', e.target.checked)
-                  }
-                  className="wb-checkbox"
-                />
-                <div>
-                  <span className="wb-checkbox-title">連続文字を避ける</span>
-                  <div className="wb-checkbox-description">
-                    abc, 123 などの連続を回避
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
         </div>
 
-        {/* 第3段階: パスワード生成アクション */}
-        <div className="wb-tool-panel wb-tool-inspect">
-          <div className="wb-tool-panel-header">
-            <h4 className="wb-tool-panel-title">🎯 パスワード生成</h4>
-            <p className="wb-tool-panel-description">
-              設定に基づいてセキュアなパスワードを生成します
-            </p>
-          </div>
+        {/* 教育パネル */}
+        <EducationPanel
+          isOpen={showEducationPanel}
+          onClose={() => setShowEducationPanel(false)}
+        />
 
-          <div className="wb-tool-control">
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-              {/* 生成ボタン */}
+        {/* パスワード生成ボタン */}
+        <div className="text-center my-8">
+          <div className="wb-generate-section">
+            <button
+              onClick={() => {
+                console.log('🖱️ 生成ボタンがクリックされました');
+                console.log('クリック時の isGenerating:', isGenerating);
+                console.log(
+                  'クリック時の hasValidCharacterTypes:',
+                  hasValidCharacterTypes()
+                );
+                generatePasswords();
+              }}
+              disabled={isGenerating || !hasValidCharacterTypes()}
+              className={`wb-generate-button ${
+                isGenerating ? 'wb-generating' : ''
+              } ${!hasValidCharacterTypes() ? 'wb-disabled' : ''}`}
+            >
+              <div className="wb-generate-button-content">
+                <span className="wb-generate-button-icon">
+                  {isGenerating ? '⏳' : '🔐'}
+                </span>
+                <span className="wb-generate-button-text">
+                  {isGenerating ? (
+                    <>
+                      <span className="animate-spin inline-block mr-2">⏳</span>
+                      パスワード生成中...
+                      {generationProgress && (
+                        <span className="ml-2 text-sm">
+                          ({generationProgress.current}/
+                          {generationProgress.total})
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    'パスワード生成'
+                  )}
+                </span>
+              </div>
+              {!isGenerating && <div className="wb-generate-button-glow"></div>}
+            </button>
+
+            {/* デバッグ情報表示（開発時のみ） */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 p-3 bg-gray-100 rounded text-sm text-gray-600">
+                <div>🐛 デバッグ情報:</div>
+                <div>isGenerating: {isGenerating ? 'true' : 'false'}</div>
+                <div>isCopying: {isCopying ? 'true' : 'false'}</div>
+                <div>
+                  hasValidCharacterTypes:{' '}
+                  {hasValidCharacterTypes() ? 'true' : 'false'}
+                </div>
+                <div>criteria.count: {criteria.count}</div>
+                <div>selectedPresetId: {selectedPresetId}</div>
+                {generationProgress && (
+                  <div>
+                    progress: {generationProgress.current}/
+                    {generationProgress.total}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 教育コンテンツリンク */}
+            <div className="wb-generate-actions mt-4">
               <button
-                onClick={generatePasswords}
-                disabled={
-                  isGenerating ||
-                  (!criteria.includeUppercase &&
-                    !criteria.includeLowercase &&
-                    !criteria.includeNumbers &&
-                    !criteria.includeSymbols)
-                }
-                className="wb-generate-button group relative overflow-hidden"
+                onClick={() => setShowEducationPanel(true)}
+                className="wb-education-link-button"
+                type="button"
               >
-                <div className="wb-generate-button-content">
-                  <span className="wb-generate-button-icon">🔐</span>
-                  <span className="wb-generate-button-text">
-                    {isGenerating ? 'パスワード生成中...' : 'パスワード生成'}
-                  </span>
-                </div>
-                <div className="wb-generate-button-glow"></div>
+                <span className="wb-education-link-icon">📚</span>
+                パスワードセキュリティを学ぶ
               </button>
-
-              {/* 一括コピーボタン */}
-              {result && result.passwords && result.passwords.length > 0 && (
-                <button
-                  onClick={copyAllPasswords}
-                  className="wb-copy-all-button"
-                >
-                  <span className="wb-copy-all-button-icon">📋</span>
-                  <span className="wb-copy-all-button-text">全てコピー</span>
-                </button>
-              )}
-
-              {/* 生成状況表示 */}
-              {result && result.passwords && result.passwords.length > 0 && (
-                <div className="wb-generation-status">
-                  <span className="wb-status-count">
-                    {result.passwords.length}
-                  </span>
-                  <span className="wb-status-label">個生成済み</span>
-                </div>
-              )}
             </div>
 
             {/* エラー表示 */}
-            {!criteria.includeUppercase &&
-              !criteria.includeLowercase &&
-              !criteria.includeNumbers &&
-              !criteria.includeSymbols && (
-                <div className="wb-error-message">
-                  <span className="wb-error-icon">⚠️</span>
-                  <span className="wb-error-text">
-                    少なくとも1つの文字種を選択してください
-                  </span>
-                </div>
-              )}
+            {!hasValidCharacterTypes() && (
+              <div className="wb-error-message mt-4">
+                <span className="wb-error-icon">⚠️</span>
+                <span className="wb-error-text">
+                  少なくとも1つの文字種を選択してください
+                </span>
+              </div>
+            )}
+
+            {/* API エラー表示 */}
+            {apiError && (
+              <div className="wb-error-message mt-4">
+                <span className="wb-error-icon">🚨</span>
+                <span className="wb-error-text">{apiError}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -1573,17 +1821,14 @@ export const PasswordGenerator: React.FC = () => {
         <ProgressBar />
 
         {/* 高度な設定ボタン */}
-        <div className="wb-tool-section-divider">
-          <ActionButton
-            type="generate"
+        <div className="text-center my-6">
+          <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            variant="secondary"
-            size="md"
-            className="wb-toggle-button"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <Settings2 className="w-4 h-4" />
             {showAdvanced ? '高度な設定を隠す' : '高度な設定を表示'}
-          </ActionButton>
+          </button>
         </div>
 
         {/* 高度な設定パネル */}
@@ -1778,6 +2023,7 @@ export const PasswordGenerator: React.FC = () => {
               <ActionButton
                 type="copy"
                 onClick={copyAllPasswords}
+                loading={isCopying}
                 variant="primary"
                 size="sm"
                 className="wb-result-action-button"
@@ -1806,6 +2052,216 @@ export const PasswordGenerator: React.FC = () => {
 
           {/* パスワードリスト（グリッドレイアウト） */}
           <OptimizedPasswordDisplay passwords={result.passwords} />
+
+          {/* 脆弱性分析結果（脆弱性プリセットの場合のみ表示） */}
+          {vulnerabilityAnalyses.length > 0 && (
+            <div className="wb-vulnerability-results-panel">
+              <div className="wb-vulnerability-results-header">
+                <h4 className="wb-vulnerability-results-title">
+                  🔍 脆弱性分析結果
+                </h4>
+                <p className="wb-vulnerability-results-description">
+                  生成されたパスワードの脆弱性を分析しました
+                </p>
+                <div className="wb-vulnerability-education-link">
+                  <button
+                    onClick={() => setShowEducationPanel(true)}
+                    className="wb-education-link-button wb-education-link-small"
+                    type="button"
+                  >
+                    <span className="wb-education-link-icon">📚</span>
+                    脆弱性について詳しく学ぶ
+                  </button>
+                </div>
+              </div>
+
+              <div className="wb-vulnerability-summary">
+                <div className="wb-vulnerability-stats">
+                  <div className="wb-vulnerability-stat">
+                    <span className="wb-vulnerability-stat-label">
+                      平均脆弱性スコア
+                    </span>
+                    <span className="wb-vulnerability-stat-value">
+                      {(
+                        vulnerabilityAnalyses.reduce(
+                          (sum, a) => sum + a.vulnerabilityScore,
+                          0
+                        ) / vulnerabilityAnalyses.length
+                      ).toFixed(1)}
+                      /100
+                    </span>
+                  </div>
+                  <div className="wb-vulnerability-stat">
+                    <span className="wb-vulnerability-stat-label">
+                      検出された問題
+                    </span>
+                    <span className="wb-vulnerability-stat-value">
+                      {vulnerabilityAnalyses.reduce(
+                        (sum, a) => sum + a.vulnerabilities.length,
+                        0
+                      )}
+                      件
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="wb-vulnerability-password-list">
+                {result.passwords.slice(0, 10).map((password, index) => {
+                  const analysis = vulnerabilityAnalyses[index];
+                  if (!analysis) {
+                    return null;
+                  }
+
+                  const vulnerabilityLevel =
+                    analysis.vulnerabilityScore >= 80
+                      ? 'critical'
+                      : analysis.vulnerabilityScore >= 60
+                      ? 'high'
+                      : analysis.vulnerabilityScore >= 30
+                      ? 'medium'
+                      : 'low';
+
+                  return (
+                    <div key={index} className="wb-vulnerability-password-item">
+                      <div className="wb-vulnerability-password-info">
+                        <code className="wb-vulnerability-password-text">
+                          {showPasswords
+                            ? password
+                            : '●'.repeat(password.length)}
+                        </code>
+                        <div className="wb-vulnerability-password-score">
+                          <span
+                            className={`wb-vulnerability-score-badge wb-vulnerability-${vulnerabilityLevel}`}
+                          >
+                            {analysis.vulnerabilityScore}/100
+                          </span>
+                          <span className="wb-vulnerability-issues-count">
+                            {analysis.vulnerabilities.length}個の問題
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() =>
+                          showVulnerabilityAnalysis(password, index)
+                        }
+                        className="wb-vulnerability-analyze-button"
+                      >
+                        詳細分析
+                      </button>
+                    </div>
+                  );
+                })}
+
+                {result.passwords.length > 10 && (
+                  <div className="wb-vulnerability-more-info">
+                    残り{result.passwords.length - 10}
+                    個のパスワードも分析済み（エクスポートで確認可能）
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* エクスポート機能 */}
+          <div className="wb-export-section">
+            <button
+              onClick={() => setShowExportPanel(!showExportPanel)}
+              className="wb-export-toggle-button"
+            >
+              📁 エクスポート機能
+              {showExportPanel ? ' ▼' : ' ▶'}
+            </button>
+
+            {showExportPanel && (
+              <div className="wb-export-panel">
+                <div className="wb-export-header">
+                  <span className="wb-export-title">📁 データエクスポート</span>
+                </div>
+
+                <div className="wb-export-options">
+                  <div className="wb-export-option-group">
+                    <label className="wb-export-option-label">出力形式</label>
+                    <div className="wb-export-format-buttons">
+                      {(['csv', 'json', 'txt'] as const).map(format => (
+                        <button
+                          key={format}
+                          onClick={() =>
+                            setExportOptions(prev => ({ ...prev, format }))
+                          }
+                          className={`wb-export-format-button ${
+                            exportOptions.format === format ? 'active' : ''
+                          }`}
+                        >
+                          {format.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="wb-export-option-group">
+                    <label className="wb-export-option-label">含める情報</label>
+                    <div className="wb-export-checkbox-group">
+                      <label className="wb-export-checkbox-item">
+                        <input
+                          type="checkbox"
+                          checked={exportOptions.includeAnalysis}
+                          onChange={e =>
+                            setExportOptions(prev => ({
+                              ...prev,
+                              includeAnalysis: e.target.checked,
+                            }))
+                          }
+                        />
+                        脆弱性分析結果
+                      </label>
+                      <label className="wb-export-checkbox-item">
+                        <input
+                          type="checkbox"
+                          checked={exportOptions.includeMetadata}
+                          onChange={e =>
+                            setExportOptions(prev => ({
+                              ...prev,
+                              includeMetadata: e.target.checked,
+                            }))
+                          }
+                        />
+                        生成メタデータ
+                      </label>
+                      <label className="wb-export-checkbox-item">
+                        <input
+                          type="checkbox"
+                          checked={exportOptions.groupByVulnerability}
+                          onChange={e =>
+                            setExportOptions(prev => ({
+                              ...prev,
+                              groupByVulnerability: e.target.checked,
+                            }))
+                          }
+                        />
+                        脆弱性レベル別グループ化
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="wb-export-actions">
+                  <button
+                    onClick={() => setShowExportPanel(false)}
+                    className="wb-export-button wb-export-button-secondary"
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={handleExport}
+                    className="wb-export-button wb-export-button-primary"
+                  >
+                    📁 エクスポート実行
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* 構成プリセット情報表示 */}
           {(result as any).composition && (
@@ -1853,6 +2309,15 @@ export const PasswordGenerator: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* 脆弱性分析モーダル */}
+      {selectedAnalysis && (
+        <VulnerabilityAnalysisDisplay
+          analysis={selectedAnalysis.analysis}
+          password={selectedAnalysis.password}
+          onClose={() => setSelectedAnalysis(null)}
+        />
       )}
     </div>
   );

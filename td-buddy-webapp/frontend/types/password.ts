@@ -25,11 +25,22 @@ export interface PasswordCriteria {
   customSymbols?: string; // カスタム記号
   excludeSimilar?: boolean; // 似ている文字を除外
   excludeSequential?: boolean; // 連続文字を避ける
+
   // 高度な設定
   minEntropy?: number; // 最小エントロピー（ビット）
   avoidDictionary?: boolean; // 辞書攻撃対策
   noDuplicates?: boolean; // 重複パスワード除去
   maxRetries?: number; // 生成再試行回数
+
+  // 脆弱性テスト用
+  isVulnerable?: boolean; // 脆弱性パスワードフラグ
+  vulnerabilityType?:
+    | 'common'
+    | 'dictionary'
+    | 'sequential'
+    | 'keyboard'
+    | 'personal'
+    | 'repetitive'; // 脆弱性の種類
 }
 
 // カスタム文字種定義（CustomCharsetsEditor用）
@@ -51,7 +62,13 @@ export interface PasswordPreset {
   criteria: Partial<PasswordCriteria>;
   isDefault?: boolean;
   isCustom?: boolean;
-  category: 'security' | 'custom' | 'web' | 'enterprise' | 'other';
+  category:
+    | 'security'
+    | 'vulnerability'
+    | 'custom'
+    | 'web'
+    | 'enterprise'
+    | 'other';
 }
 
 // パスワード生成結果の型
@@ -104,4 +121,65 @@ export interface TDState {
 export interface PresetConfig {
   selectedPresetId?: string;
   customPresets: PasswordPreset[];
+}
+
+// 脆弱性分析結果の型
+export interface VulnerabilityAnalysis {
+  vulnerabilityScore: number; // 0-100 (100が最も脆弱)
+  vulnerabilities: VulnerabilityIssue[];
+  recommendations: string[];
+  educationalContent: EducationalContent;
+  comparisonExample?: {
+    weakPassword: string;
+    strongPassword: string;
+    explanation: string;
+  };
+}
+
+export interface VulnerabilityIssue {
+  type:
+    | 'length'
+    | 'dictionary'
+    | 'pattern'
+    | 'character-set'
+    | 'predictability'
+    | 'common';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  impact: string;
+  examples?: string[];
+}
+
+export interface EducationalContent {
+  title: string;
+  explanation: string;
+  whyVulnerable: string[];
+  attackMethods: AttackMethod[];
+  realWorldExamples: string[];
+}
+
+export interface AttackMethod {
+  name: string;
+  description: string;
+  timeToBreak: string;
+  difficulty: 'trivial' | 'easy' | 'medium' | 'hard';
+}
+
+// エクスポート機能の型
+export interface ExportOptions {
+  format: 'csv' | 'json' | 'txt' | 'xlsx';
+  includeAnalysis: boolean;
+  includeMetadata: boolean;
+  groupByVulnerability: boolean;
+}
+
+export interface ExportData {
+  passwords: string[];
+  metadata: {
+    generatedAt: string;
+    preset: string;
+    criteria: PasswordCriteria;
+    totalCount: number;
+  };
+  analysis?: VulnerabilityAnalysis[];
 }

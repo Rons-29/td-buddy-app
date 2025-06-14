@@ -3234,3 +3234,1989 @@
     padding: 16px;
   }
 }
+
+/* 脆弱性テスト用スタイル */
+.wb-vulnerability-warning {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.wb-vulnerability-warning-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.wb-vulnerability-warning-icon {
+  font-size: 24px;
+  color: #d97706;
+}
+
+.wb-vulnerability-warning-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.wb-vulnerability-warning-text {
+  font-size: 14px;
+  color: #a16207;
+  line-height: 1.5;
+}
+
+.wb-vulnerability-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fbbf24;
+  color: #92400e;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.wb-vulnerability-preset-card {
+  border: 2px solid #f59e0b !important;
+  background: linear-gradient(135deg, #fef3c7, white) !important;
+}
+
+.wb-vulnerability-preset-card:hover {
+  border-color: #d97706 !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2) !important;
+}
+
+.wb-vulnerability-preset-card.selected {
+  border-color: #d97706 !important;
+  background: linear-gradient(135deg, #fde68a, #fef3c7) !important;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* 脆弱性パスワード結果表示 */
+.wb-vulnerability-result {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 2px solid #f87171;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.wb-vulnerability-result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.wb-vulnerability-result-icon {
+  font-size: 20px;
+  color: #dc2626;
+}
+
+.wb-vulnerability-result-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+.wb-vulnerability-analysis {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.wb-vulnerability-analysis-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #dc2626;
+  margin-bottom: 8px;
+}
+
+.wb-vulnerability-analysis-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wb-vulnerability-analysis-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: #7f1d1d;
+}
+
+.wb-vulnerability-analysis-item::before {
+  content: '⚠️';
+  font-size: 12px;
+}
+
+/* 脆弱性カテゴリ用のカラーパレット */
+.wb-category-vulnerability {
+  --category-primary: #f59e0b;
+  --category-secondary: #fbbf24;
+  --category-light: #fef3c7;
+  --category-dark: #92400e;
+}
+
+.wb-category-vulnerability .wb-preset-card {
+  border-color: var(--category-primary);
+  background: linear-gradient(135deg, var(--category-light), white);
+}
+
+.wb-category-vulnerability .wb-preset-card:hover {
+  border-color: var(--category-dark);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+}
+
+.wb-category-vulnerability .wb-preset-card.selected {
+  border-color: var(--category-dark);
+  background: linear-gradient(
+    135deg,
+    var(--category-secondary),
+    var(--category-light)
+  );
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+}
+
+/* 脆弱性分析モーダル */
+.wb-vulnerability-analysis-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.wb-vulnerability-analysis-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.wb-vulnerability-analysis-content {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.wb-vulnerability-analysis-header {
+  padding: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+}
+
+.wb-vulnerability-analysis-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.wb-vulnerability-score-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wb-vulnerability-level-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wb-vulnerability-critical {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.wb-vulnerability-high {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.wb-vulnerability-medium {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fed7aa;
+}
+
+.wb-vulnerability-low {
+  background: #fefce8;
+  color: #ca8a04;
+  border: 1px solid #fde68a;
+}
+
+.wb-analyzed-password {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.wb-analyzed-password-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.wb-analyzed-password-value {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  color: #111827;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  display: block;
+  word-break: break-all;
+}
+
+.wb-vulnerability-close-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wb-vulnerability-close-button:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* タブナビゲーション */
+.wb-vulnerability-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.wb-vulnerability-tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.wb-vulnerability-tab:hover {
+  color: #374151;
+  background: #f3f4f6;
+}
+
+.wb-vulnerability-tab.active {
+  color: #2563eb;
+  background: white;
+  border-bottom-color: #2563eb;
+}
+
+/* タブコンテンツ */
+.wb-vulnerability-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.wb-vulnerability-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+/* スコア表示 */
+.wb-vulnerability-score-display {
+  margin-bottom: 24px;
+}
+
+.wb-vulnerability-score-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.wb-vulnerability-score-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.wb-vulnerability-score-fill.wb-vulnerability-critical {
+  background: linear-gradient(90deg, #dc2626, #991b1b);
+}
+
+.wb-vulnerability-score-fill.wb-vulnerability-high {
+  background: linear-gradient(90deg, #ea580c, #dc2626);
+}
+
+.wb-vulnerability-score-fill.wb-vulnerability-medium {
+  background: linear-gradient(90deg, #d97706, #ea580c);
+}
+
+.wb-vulnerability-score-fill.wb-vulnerability-low {
+  background: linear-gradient(90deg, #ca8a04, #d97706);
+}
+
+.wb-vulnerability-score-text {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* 問題リスト */
+.wb-vulnerability-issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.wb-vulnerability-issue-card {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+}
+
+.wb-vulnerability-issue-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.wb-vulnerability-severity-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.wb-vulnerability-issue-type {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.wb-vulnerability-issue-description {
+  font-size: 14px;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.wb-vulnerability-issue-impact {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* 推奨事項 */
+.wb-vulnerability-recommendations-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wb-vulnerability-recommendation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.wb-vulnerability-recommendation-icon {
+  color: #10b981;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+/* 詳細分析 */
+.wb-vulnerability-detail-card {
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wb-vulnerability-detail-header {
+  padding: 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: between;
+}
+
+.wb-vulnerability-detail-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.wb-vulnerability-detail-content {
+  padding: 16px;
+}
+
+.wb-vulnerability-detail-impact {
+  margin-bottom: 16px;
+}
+
+.wb-vulnerability-detail-impact p {
+  margin: 4px 0 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.wb-vulnerability-examples-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.wb-vulnerability-example {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* 教育コンテンツ */
+.wb-vulnerability-education-header {
+  margin-bottom: 24px;
+}
+
+.wb-vulnerability-education-explanation {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+}
+
+.wb-vulnerability-education-section {
+  margin-bottom: 24px;
+}
+
+.wb-vulnerability-education-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.wb-vulnerability-education-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wb-vulnerability-education-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.wb-vulnerability-education-icon {
+  margin-top: 2px;
+}
+
+.wb-vulnerability-attack-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wb-vulnerability-attack-method-card {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.wb-vulnerability-attack-method-header {
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  margin-bottom: 8px;
+}
+
+.wb-vulnerability-attack-method-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.wb-vulnerability-difficulty-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.wb-vulnerability-attack-method-description {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.wb-vulnerability-attack-method-time {
+  font-size: 12px;
+  color: #374151;
+}
+
+/* 比較表示 */
+.wb-vulnerability-comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.wb-vulnerability-comparison-weak,
+.wb-vulnerability-comparison-strong {
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.wb-vulnerability-comparison-weak {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.wb-vulnerability-comparison-strong {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.wb-vulnerability-comparison-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wb-vulnerability-comparison-password {
+  display: block;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.wb-vulnerability-comparison-password.weak {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.wb-vulnerability-comparison-password.strong {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.wb-vulnerability-comparison-score {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.wb-vulnerability-comparison-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wb-vulnerability-comparison-arrow-icon {
+  font-size: 24px;
+  color: #6b7280;
+}
+
+.wb-vulnerability-comparison-explanation {
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.wb-vulnerability-comparison-text {
+  font-size: 14px;
+  color: #374151;
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+}
+
+/* エクスポート機能 */
+.wb-export-panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.wb-export-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.wb-export-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.wb-export-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.wb-export-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wb-export-option-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.wb-export-format-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wb-export-format-button {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wb-export-format-button:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.wb-export-format-button.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.wb-export-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wb-export-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.wb-export-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.wb-export-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wb-export-button-primary {
+  background: #2563eb;
+  color: white;
+  border: 1px solid #2563eb;
+}
+
+.wb-export-button-primary:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.wb-export-button-secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.wb-export-button-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .wb-vulnerability-analysis-content {
+    margin: 10px;
+    max-height: calc(100vh - 20px);
+  }
+
+  .wb-vulnerability-comparison-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .wb-vulnerability-comparison-arrow {
+    transform: rotate(90deg);
+  }
+
+  .wb-export-options {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-export-actions {
+    flex-direction: column;
+  }
+}
+
+/* 脆弱性分析結果表示 */
+.wb-vulnerability-results-panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.wb-vulnerability-results-header {
+  margin-bottom: 16px;
+}
+
+.wb-vulnerability-results-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.wb-vulnerability-results-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.wb-vulnerability-summary {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.wb-vulnerability-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.wb-vulnerability-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wb-vulnerability-stat-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.wb-vulnerability-stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.wb-vulnerability-password-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wb-vulnerability-password-item {
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.wb-vulnerability-password-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wb-vulnerability-password-text {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  color: #111827;
+  background: white;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+}
+
+.wb-vulnerability-password-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wb-vulnerability-issues-count {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.wb-vulnerability-analyze-button {
+  padding: 8px 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wb-vulnerability-analyze-button:hover {
+  background: #1d4ed8;
+}
+
+.wb-vulnerability-more-info {
+  text-align: center;
+  padding: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+
+/* 生成ボタンスタイル */
+.wb-generate-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  position: relative;
+  overflow: hidden;
+  min-width: 200px;
+}
+
+.wb-generate-button:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  transform: translateY(-2px);
+}
+
+.wb-generate-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.wb-generate-button:disabled {
+  background: #9ca3af !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.6;
+}
+
+.wb-generate-button:disabled:hover {
+  background: #9ca3af !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.wb-generate-button.wb-generating {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  animation: wb-pulse 2s infinite;
+}
+
+.wb-generate-button.wb-disabled {
+  background: #e5e7eb !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+}
+
+@keyframes wb-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.wb-generate-button-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 1;
+  position: relative;
+}
+
+.wb-generate-button-icon {
+  font-size: 18px;
+}
+
+.wb-generate-button-text {
+  font-weight: 600;
+}
+
+.wb-generate-button-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.wb-generate-button:hover .wb-generate-button-glow {
+  left: 100%;
+}
+
+/* 高度な設定パネル */
+.wb-advanced-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 20px;
+}
+
+.wb-advanced-panel-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.wb-advanced-panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.wb-advanced-panel-description {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.wb-advanced-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.wb-advanced-section {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.wb-advanced-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wb-advanced-control {
+  margin-bottom: 16px;
+}
+
+.wb-advanced-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.wb-advanced-value {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.wb-advanced-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wb-advanced-checkbox:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.wb-advanced-checkbox-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.wb-advanced-checkbox-description {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.wb-select-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #111827;
+}
+
+.wb-select-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* 拡張文字種セクション */
+.wb-extended-charset-section {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.wb-extended-charset-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* エラーメッセージ */
+.wb-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.wb-error-icon {
+  font-size: 16px;
+}
+
+.wb-error-text {
+  font-weight: 500;
+}
+
+/* テキスト入力フィールド */
+.wb-text-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #111827;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wb-text-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.wb-text-input::placeholder {
+  color: #9ca3af;
+}
+
+/* ツールヒント */
+.wb-tool-hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .wb-advanced-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .wb-generate-button {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* エクスポートセクション */
+.wb-export-section {
+  margin-top: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.wb-export-toggle-button {
+  width: 100%;
+  padding: 16px 20px;
+  background: #f9fafb;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wb-export-toggle-button:hover {
+  background: #f3f4f6;
+}
+
+/* 脆弱性分析結果のレスポンシブ対応 */
+@media (max-width: 768px) {
+  .wb-vulnerability-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-vulnerability-password-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .wb-vulnerability-analyze-button {
+    align-self: flex-end;
+  }
+}
+
+/* ヘルプツールチップ */
+.wb-help-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+}
+
+.wb-help-tooltip-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.wb-help-tooltip-trigger:hover {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.wb-help-tooltip-trigger:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.wb-help-tooltip-content {
+  position: absolute;
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 400px;
+  background: #1f2937;
+  color: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+  pointer-events: auto;
+  animation: wb-tooltip-fade-in 0.2s ease forwards;
+}
+
+@keyframes wb-tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wb-help-tooltip-top {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  /* 画面外に出ないように調整 */
+  max-width: calc(100vw - 32px);
+}
+
+.wb-help-tooltip-bottom {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  /* 画面外に出ないように調整 */
+  max-width: calc(100vw - 32px);
+}
+
+.wb-help-tooltip-left {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.wb-help-tooltip-right {
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.wb-help-tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+}
+
+.wb-help-tooltip-top .wb-help-tooltip-arrow {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: #1f2937;
+}
+
+.wb-help-tooltip-bottom .wb-help-tooltip-arrow {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: #1f2937;
+}
+
+.wb-help-tooltip-left .wb-help-tooltip-arrow {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: #1f2937;
+}
+
+.wb-help-tooltip-right .wb-help-tooltip-arrow {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: #1f2937;
+}
+
+.wb-help-tooltip-inner {
+  padding: 12px 16px;
+}
+
+.wb-help-tooltip-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f9fafb;
+  margin: 0 0 8px 0;
+}
+
+.wb-help-tooltip-body {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.wb-help-tooltip-text {
+  margin: 0 0 6px 0;
+  color: #d1d5db;
+}
+
+.wb-help-tooltip-text:last-child {
+  margin-bottom: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 640px) {
+  .wb-help-tooltip-content {
+    min-width: 240px;
+    max-width: 300px;
+  }
+
+  .wb-help-tooltip-inner {
+    padding: 10px 12px;
+  }
+
+  .wb-help-tooltip-title {
+    font-size: 13px;
+  }
+
+  .wb-help-tooltip-body {
+    font-size: 12px;
+  }
+}
+
+/* 教育パネル */
+.wb-education-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.wb-education-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.wb-education-panel-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f9fafb;
+}
+
+.wb-education-panel-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.wb-education-panel-close {
+  padding: 8px;
+  border: none;
+  background: none;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.wb-education-panel-close:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.wb-education-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.wb-education-tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.wb-education-tab:hover {
+  color: #374151;
+  background: #f3f4f6;
+}
+
+.wb-education-tab.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  background: white;
+}
+
+.wb-education-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.wb-education-section {
+  max-width: none;
+}
+
+.wb-education-section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 24px 0;
+}
+
+.wb-education-section-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin: 24px 0 16px 0;
+}
+
+.wb-education-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.wb-education-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.wb-education-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.wb-education-card-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.wb-education-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wb-education-list li {
+  padding: 6px 0;
+  color: #374151;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.wb-education-list li:before {
+  content: '•';
+  color: #6366f1;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+.wb-education-stats {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.wb-education-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.wb-education-stat-item {
+  text-align: center;
+}
+
+.wb-education-stat-number {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 4px;
+}
+
+.wb-education-stat-label {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* 脆弱性タイプカード */
+.wb-vulnerability-types {
+  display: grid;
+  gap: 20px;
+}
+
+.wb-vulnerability-type-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wb-vulnerability-type-header {
+  background: #fafafa;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.wb-vulnerability-type-icon {
+  font-size: 20px;
+}
+
+.wb-vulnerability-type-header h4 {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.wb-vulnerability-severity {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.wb-vulnerability-severity.critical {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.wb-vulnerability-severity.high {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.wb-vulnerability-severity.medium {
+  background: #fef3c7;
+  color: #ca8a04;
+}
+
+.wb-vulnerability-type-content {
+  padding: 20px;
+}
+
+.wb-vulnerability-type-content p {
+  margin: 8px 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* 攻撃手法カード */
+.wb-attack-methods {
+  display: grid;
+  gap: 20px;
+}
+
+.wb-attack-method-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wb-attack-method-header {
+  background: #f8fafc;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.wb-attack-method-icon {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.wb-attack-method-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.wb-attack-difficulty {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.wb-attack-difficulty-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.wb-attack-difficulty-badge.trivial {
+  background: #f87171;
+  color: white;
+}
+
+.wb-attack-difficulty-badge.easy {
+  background: #fb923c;
+  color: white;
+}
+
+.wb-attack-difficulty-badge.medium {
+  background: #fbbf24;
+  color: white;
+}
+
+.wb-attack-time-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.wb-attack-method-content {
+  padding: 20px;
+}
+
+.wb-attack-method-content p {
+  margin: 8px 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* データ漏洩事例 */
+.wb-breach-examples {
+  display: grid;
+  gap: 24px;
+}
+
+.wb-breach-example-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wb-breach-example-header {
+  background: #fef2f2;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #fecaca;
+}
+
+.wb-breach-year {
+  background: #dc2626;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wb-breach-example-header h4 {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.wb-breach-scale {
+  padding: 4px 8px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.wb-breach-example-content {
+  padding: 20px;
+}
+
+.wb-breach-example-content p {
+  margin: 8px 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.wb-breach-password-list {
+  margin: 12px 0;
+  padding-left: 20px;
+}
+
+.wb-breach-password-list li {
+  margin: 4px 0;
+  color: #6b7280;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.wb-education-footer {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.wb-education-footer h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0c4a6e;
+  margin: 0 0 16px 0;
+}
+
+.wb-education-lessons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wb-education-lessons li {
+  padding: 6px 0;
+  color: #0f172a;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.wb-education-lessons li:before {
+  content: '✓';
+  color: #059669;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .wb-education-panel {
+    margin: 8px;
+    max-height: calc(100vh - 16px);
+  }
+
+  .wb-education-tabs {
+    flex-wrap: wrap;
+  }
+
+  .wb-education-tab {
+    flex: 1 1 50%;
+  }
+
+  .wb-education-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-education-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 生成セクションと教育リンク */
+.wb-generate-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.wb-generate-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.wb-education-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.wb-education-link-button:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.wb-education-link-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.wb-education-link-icon {
+  font-size: 16px;
+}
+
+.wb-education-link-small {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.wb-vulnerability-education-link {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}

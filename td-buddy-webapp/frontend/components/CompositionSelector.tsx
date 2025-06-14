@@ -62,6 +62,7 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
   // カテゴリーの順序を指定
   const categoryOrder: (keyof typeof PRESET_CATEGORIES)[] = [
     'security',
+    'vulnerability',
     'custom',
     'web',
     'enterprise',
@@ -82,56 +83,83 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
       </div>
 
       {/* カテゴリー水平レイアウト */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-8 lg:gap-10 xl:gap-12 2xl:gap-14 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 lg:gap-8 mb-8">
         {categoryOrder.map(categoryKey => {
           const category = PRESET_CATEGORIES[categoryKey];
           const presets = presetsByCategory[categoryKey] || [];
 
           return (
-            <div key={categoryKey} className="space-y-4">
+            <div key={categoryKey} className="space-y-3">
               {/* カテゴリヘッダー */}
-              <div className="text-center border-b border-gray-200 pb-3">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className="text-xl">{category.icon}</span>
-                  <h4 className="font-medium text-gray-800 text-sm">
+              <div className="text-center border-b border-gray-200 pb-2">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <span className="text-lg">{category.icon}</span>
+                  <h4 className="font-medium text-gray-800 text-xs">
                     {category.label}
                   </h4>
                 </div>
-                <p className="text-xs text-gray-500">{category.description}</p>
+                <p className="text-xs text-gray-500 leading-tight">
+                  {category.description}
+                </p>
               </div>
 
               {/* プリセットカード */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {presets.map(preset => (
                   <div
                     key={preset.id}
                     onClick={() => handlePresetClick(preset)}
                     className={`
-                      relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200
+                      relative p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 min-h-[120px]
                       ${
-                        selectedPresetId === preset.id
+                        preset.category === 'vulnerability'
+                          ? selectedPresetId === preset.id
+                            ? 'wb-vulnerability-preset-card selected border-orange-500 bg-orange-50 shadow-md'
+                            : 'wb-vulnerability-preset-card border-orange-300 bg-orange-25 hover:border-orange-400 hover:shadow-sm'
+                          : selectedPresetId === preset.id
                           ? 'border-blue-500 bg-blue-50 shadow-md'
                           : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
                       }
                     `}
                   >
+                    {/* 脆弱性警告バッジ */}
+                    {preset.category === 'vulnerability' && (
+                      <div className="absolute top-1 left-1">
+                        <span className="wb-vulnerability-badge text-xs">
+                          ⚠️ テスト用
+                        </span>
+                      </div>
+                    )}
+
                     {/* 選択インジケーター */}
                     {selectedPresetId === preset.id && (
                       <div className="absolute top-2 right-2">
-                        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                        <div
+                          className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                            preset.category === 'vulnerability'
+                              ? 'bg-orange-500'
+                              : 'bg-blue-500'
+                          }`}
+                        >
                           <Check className="w-2.5 h-2.5 text-white" />
                         </div>
                       </div>
                     )}
 
                     {/* プリセット内容 */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {/* アイコンとタイトル */}
                       <div className="text-center">
-                        <span className="text-lg block mb-2">
+                        <span className="text-base block mb-1">
                           {preset.icon}
                         </span>
-                        <h5 className="font-medium text-gray-900 text-xs leading-tight">
+                        <h5
+                          className={`font-medium text-xs leading-tight ${
+                            preset.category === 'vulnerability'
+                              ? 'text-orange-900'
+                              : 'text-gray-900'
+                          }`}
+                        >
                           {preset.name}
                         </h5>
                       </div>
@@ -141,12 +169,24 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                         {/* 基本設定 */}
                         <div className="flex justify-center gap-2 text-xs">
                           {preset.criteria.length && (
-                            <span className="wb-badge-count px-1.5 py-0.5 rounded-full text-xs">
+                            <span
+                              className={`px-1.5 py-0.5 rounded-full text-xs ${
+                                preset.category === 'vulnerability'
+                                  ? 'bg-orange-200 text-orange-800'
+                                  : 'wb-badge-count'
+                              }`}
+                            >
                               {preset.criteria.length}文字
                             </span>
                           )}
                           {preset.criteria.count && (
-                            <span className="wb-badge-items px-1.5 py-0.5 rounded-full text-xs">
+                            <span
+                              className={`px-1.5 py-0.5 rounded-full text-xs ${
+                                preset.category === 'vulnerability'
+                                  ? 'bg-orange-200 text-orange-800'
+                                  : 'wb-badge-items'
+                              }`}
+                            >
                               {preset.criteria.count}個
                             </span>
                           )}
@@ -168,6 +208,18 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
                             )}
                           </div>
                         )}
+
+                        {/* 脆弱性タイプ表示 */}
+                        {preset.category === 'vulnerability' &&
+                          preset.criteria.vulnerabilityType && (
+                            <div className="text-center">
+                              <span className="text-xs text-orange-700 font-medium">
+                                {getVulnerabilityTypeLabel(
+                                  preset.criteria.vulnerabilityType
+                                )}
+                              </span>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -306,12 +358,14 @@ function getCharTypeIcon(charType: string): string {
   return icons[charType] || '❓';
 }
 
-function getCategoryColor(category: string): string {
-  const colors: Record<string, string> = {
-    security: 'bg-red-100 text-red-800',
-    web: 'bg-blue-100 text-blue-800',
-    enterprise: 'bg-purple-100 text-purple-800',
-    custom: 'bg-green-100 text-green-800',
+function getVulnerabilityTypeLabel(vulnerabilityType: string): string {
+  const labels: Record<string, string> = {
+    common: '一般的脆弱性',
+    dictionary: '辞書攻撃脆弱',
+    sequential: '連続パターン',
+    keyboard: 'キーボード配列',
+    personal: '個人情報ベース',
+    repetitive: '反復パターン',
   };
-  return colors[category] || 'bg-gray-100 text-gray-800';
+  return labels[vulnerabilityType] || vulnerabilityType;
 }
