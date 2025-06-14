@@ -6,15 +6,43 @@ import React, { useState } from 'react';
 interface EducationPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  scrollToSection?: string;
 }
 
 export const EducationPanel: React.FC<EducationPanelProps> = ({
   isOpen,
   onClose,
+  scrollToSection,
 }) => {
   const [activeTab, setActiveTab] = useState<
     'overview' | 'vulnerabilities' | 'attacks' | 'examples'
   >('overview');
+
+  // スクロール機能
+  React.useEffect(() => {
+    if (isOpen && scrollToSection) {
+      // スクロール対象に応じて適切なタブに切り替え
+      if (scrollToSection === 'security-guide') {
+        setActiveTab('overview');
+      } else if (scrollToSection === 'vulnerabilities-section') {
+        setActiveTab('vulnerabilities');
+      }
+
+      // パネルが開いてタブが切り替わった後、少し遅延してスクロール
+      const timer = setTimeout(() => {
+        const element = document.getElementById(scrollToSection);
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest',
+          });
+        }
+      }, 500); // タブ切り替えとパネルのアニメーション完了を待つ
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, scrollToSection]);
 
   if (!isOpen) {
     return null;
@@ -76,7 +104,7 @@ export const EducationPanel: React.FC<EducationPanelProps> = ({
 
         <div className="wb-education-content">
           {activeTab === 'overview' && (
-            <div className="wb-education-section">
+            <div className="wb-education-section" id="security-guide">
               <h3 className="wb-education-section-title">
                 パスワードセキュリティの重要性
               </h3>
@@ -138,7 +166,7 @@ export const EducationPanel: React.FC<EducationPanelProps> = ({
           )}
 
           {activeTab === 'vulnerabilities' && (
-            <div className="wb-education-section">
+            <div className="wb-education-section" id="vulnerabilities-section">
               <h3 className="wb-education-section-title">
                 脆弱性タイプ別詳細説明
               </h3>
@@ -416,13 +444,50 @@ export const EducationPanel: React.FC<EducationPanelProps> = ({
                       <strong>教訓:</strong>{' '}
                       同じ弱いパスワードを何百万人もが使用していた
                     </p>
+                    <div className="wb-breach-sources">
+                      <p>
+                        <strong>情報源:</strong>
+                      </p>
+                      <ul className="wb-source-links">
+                        <li>
+                          <a
+                            href="https://ja.wikipedia.org/wiki/%E3%83%87%E3%83%BC%E3%82%BF%E4%BE%B5%E5%AE%B3"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            📰 Wikipedia - データ侵害事例一覧
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://haveibeenpwned.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🔍 Have I Been Pwned - 漏洩確認サービス
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://www.ipa.go.jp/security/vuln/report/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            📊 IPA - 脆弱性対策情報
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
                 <div className="wb-breach-example-card">
                   <div className="wb-breach-example-header">
-                    <span className="wb-breach-year">2012</span>
-                    <h4>LinkedIn データ漏洩</h4>
+                    <span className="wb-breach-year">2012/2016</span>
+                    <h4>LinkedIn データ漏洩事件</h4>
                     <span className="wb-breach-scale">
                       規模: 1億1,700万アカウント
                     </span>
@@ -430,25 +495,70 @@ export const EducationPanel: React.FC<EducationPanelProps> = ({
                   <div className="wb-breach-example-content">
                     <p>
                       <strong>概要:</strong>{' '}
-                      プロフェッショナルネットワークサービスの大規模漏洩
+                      2012年に発生した漏洩が2016年に再発覚した大規模事件
                     </p>
                     <p>
-                      <strong>問題:</strong>{' '}
-                      パスワードが弱いハッシュ化（ソルトなし）で保存
-                    </p>
-                    <p>
-                      <strong>よく使われたパスワード:</strong>
+                      <strong>漏洩した情報:</strong>
                     </p>
                     <ul className="wb-breach-password-list">
-                      <li>linkedin</li>
-                      <li>password</li>
-                      <li>123456</li>
-                      <li>linkedin123</li>
+                      <li>メールアドレス</li>
+                      <li>ハッシュ化されたパスワード（ソルトなし）</li>
+                      <li>LinkedInメンバーID（内部識別子）</li>
+                    </ul>
+                    <p>
+                      <strong>問題点:</strong>{' '}
+                      当初はソルト処理なしの弱いハッシュ化のみ
+                    </p>
+                    <p>
+                      <strong>LinkedIn の対応:</strong>
+                    </p>
+                    <ul className="wb-breach-password-list">
+                      <li>被害アカウントのパスワード無効化</li>
+                      <li>2段階認証オプションの追加</li>
+                      <li>ソルト処理とハッシュ化の強化</li>
+                      <li>不審なアクセスの自動検知システム導入</li>
                     </ul>
                     <p>
                       <strong>教訓:</strong>{' '}
-                      サービス名を含むパスワードは特に危険
+                      適切なパスワード保護技術と定期的な変更の重要性
                     </p>
+                    <div className="wb-breach-sources">
+                      <p>
+                        <strong>情報源:</strong>
+                      </p>
+                      <ul className="wb-source-links">
+                        <li>
+                          <a
+                            href="https://www.linkedin.com/help/recruiter/answer/a1338522?lang=ja"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🏢 LinkedIn公式発表 - 2016年5月報告
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://haveibeenpwned.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🔍 Have I Been Pwned - 漏洩確認サービス
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://www.ipa.go.jp/security/index.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            📰 IPA - 情報セキュリティ
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
@@ -481,6 +591,53 @@ export const EducationPanel: React.FC<EducationPanelProps> = ({
                       <strong>教訓:</strong>{' '}
                       短いパスワードは現代技術では即座に解読される
                     </p>
+                    <div className="wb-breach-sources">
+                      <p>
+                        <strong>情報源:</strong>
+                      </p>
+                      <ul className="wb-source-links">
+                        <li>
+                          <a
+                            href="https://ja.wikipedia.org/wiki/Adobe_Systems"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🏢 Wikipedia - Adobe データ侵害事件
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://haveibeenpwned.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🔍 Have I Been Pwned - 漏洩確認サービス
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://www.jpcert.or.jp/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            📰 JPCERT/CC - セキュリティ情報
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://www.nisc.go.jp/security-site/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            📊 NISC - サイバーセキュリティ
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
@@ -514,6 +671,260 @@ export const EducationPanel: React.FC<EducationPanelProps> = ({
                       <strong>教訓:</strong>{' '}
                       システム管理者のパスワードは特に強固にする必要
                     </p>
+                    <div className="wb-breach-sources">
+                      <p>
+                        <strong>情報源:</strong>
+                      </p>
+                      <ul className="wb-source-links">
+                        <li>
+                          <a
+                            href="https://www.cisa.gov/news-events/cybersecurity-advisories/aa20-302a"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🏛️ CISA - ランサムウェア対策ガイド
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://www.fbi.gov/news/press-releases/fbi-releases-indicators-of-compromise-associated-with-ragnar-locker-ransomware"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🔍 FBI - ランサムウェア攻撃分析
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://www.crowdstrike.com/blog/2020-crowdstrike-global-threat-report/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            📊 CrowdStrike - 2020年脅威レポート
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            href="https://www.microsoft.com/security/blog/2020/04/28/protecting-against-rdp-brute-force-attacks/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="wb-source-link"
+                          >
+                            🛡️ Microsoft - RDP攻撃対策
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="wb-breach-example-card">
+                <div className="wb-breach-example-header">
+                  <span className="wb-breach-year">2014</span>
+                  <h4>ベネッセ個人情報漏洩事件</h4>
+                  <span className="wb-breach-scale">
+                    規模: 約3,504万件の個人情報
+                  </span>
+                </div>
+                <div className="wb-breach-example-content">
+                  <p>
+                    <strong>概要:</strong>{' '}
+                    日本最大級の個人情報漏洩事件、内部犯行による
+                  </p>
+                  <p>
+                    <strong>問題:</strong>{' '}
+                    システムアクセス権限の管理不備、弱いパスワード設定
+                  </p>
+                  <p>
+                    <strong>影響:</strong>
+                  </p>
+                  <ul className="wb-breach-password-list">
+                    <li>顧客の氏名、住所、電話番号、生年月日が漏洩</li>
+                    <li>子どもの学習進度情報も含まれる</li>
+                    <li>200億円超の損害賠償</li>
+                  </ul>
+                  <p>
+                    <strong>教訓:</strong>{' '}
+                    内部アクセスでも強固な認証とアクセス制御が必要
+                  </p>
+                  <div className="wb-breach-sources">
+                    <p>
+                      <strong>情報源:</strong>
+                    </p>
+                    <ul className="wb-source-links">
+                      <li>
+                        <a
+                          href="https://ja.wikipedia.org/wiki/%E3%83%99%E3%83%8D%E3%83%83%E3%82%BB%E5%80%8B%E4%BA%BA%E6%83%85%E5%A0%B1%E6%BC%8F%E6%B4%A9%E4%BA%8B%E4%BB%B6"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          🏢 Wikipedia - ベネッセ個人情報漏洩事件
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.ppc.go.jp/personalinfo/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          🏛️ 個人情報保護委員会 - 個人情報保護法
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.ipa.go.jp/security/guide/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          📊 IPA - セキュリティ対策ガイド
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="wb-breach-example-card">
+                <div className="wb-breach-example-header">
+                  <span className="wb-breach-year">2019</span>
+                  <h4>7pay 不正利用事件</h4>
+                  <span className="wb-breach-scale">
+                    規模: 約5,500万円の被害
+                  </span>
+                </div>
+                <div className="wb-breach-example-content">
+                  <p>
+                    <strong>概要:</strong>{' '}
+                    セブン&アイの決済アプリで大規模不正利用が発生
+                  </p>
+                  <p>
+                    <strong>問題:</strong>{' '}
+                    2段階認証なし、パスワードリセット機能の脆弱性
+                  </p>
+                  <p>
+                    <strong>攻撃手法:</strong>
+                  </p>
+                  <ul className="wb-breach-password-list">
+                    <li>他サービスから流出したID・パスワードを使用</li>
+                    <li>パスワードリセット機能を悪用</li>
+                    <li>SMS認証の迂回</li>
+                  </ul>
+                  <p>
+                    <strong>教訓:</strong>{' '}
+                    パスワードの使い回しと弱い認証システムの危険性
+                  </p>
+                  <div className="wb-breach-sources">
+                    <p>
+                      <strong>情報源:</strong>
+                    </p>
+                    <ul className="wb-source-links">
+                      <li>
+                        <a
+                          href="https://ja.wikipedia.org/wiki/7pay"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          🏢 Wikipedia - 7pay不正利用事件
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.nisc.go.jp/policy/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          🏛️ NISC - サイバーセキュリティ政策
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.ipa.go.jp/security/anshin/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          📊 IPA - 安心相談窓口
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="wb-breach-example-card">
+                <div className="wb-breach-example-header">
+                  <span className="wb-breach-year">2021</span>
+                  <h4>LINE 個人情報管理問題</h4>
+                  <span className="wb-breach-scale">
+                    規模: 日本ユーザー約8,600万人
+                  </span>
+                </div>
+                <div className="wb-breach-example-content">
+                  <p>
+                    <strong>概要:</strong>{' '}
+                    日本ユーザーの個人情報が韓国・中国からアクセス可能だった
+                  </p>
+                  <p>
+                    <strong>問題:</strong>{' '}
+                    アクセス権限管理の不備、監査ログの不足
+                  </p>
+                  <p>
+                    <strong>影響:</strong>
+                  </p>
+                  <ul className="wb-breach-password-list">
+                    <li>トーク履歴、連絡先、位置情報へのアクセス</li>
+                    <li>政府機関のLINE利用停止</li>
+                    <li>プライバシーポリシーの大幅見直し</li>
+                  </ul>
+                  <p>
+                    <strong>教訓:</strong>{' '}
+                    国際的なデータ管理では厳格なアクセス制御が必要
+                  </p>
+                  <div className="wb-breach-sources">
+                    <p>
+                      <strong>情報源:</strong>
+                    </p>
+                    <ul className="wb-source-links">
+                      <li>
+                        <a
+                          href="https://ja.wikipedia.org/wiki/LINE_(%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3)"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          🏢 Wikipedia - LINE個人情報管理問題
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.ppc.go.jp/enforcement/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          🏛️ 個人情報保護委員会 - 執行状況
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="https://www.soumu.go.jp/menu_seisaku/ictseisaku/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="wb-source-link"
+                        >
+                          📊 総務省 - ICT政策
+                        </a>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
