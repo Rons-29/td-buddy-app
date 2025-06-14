@@ -198,6 +198,12 @@ export default function RootLayout({
                           📊 CSV詳細設定
                         </Link>
                         <Link
+                          href="/csv-test"
+                          className="block px-wb-3 py-wb-2 text-wb-tool-measure-700 hover:bg-wb-tool-measure-50 wb-text-sm wb-touch-target"
+                        >
+                          🧪 CSVテスト生成
+                        </Link>
+                        <Link
                           href="/datetime"
                           className="block px-wb-3 py-wb-2 text-wb-tool-measure-700 hover:bg-wb-tool-measure-50 wb-text-sm wb-touch-target"
                         >

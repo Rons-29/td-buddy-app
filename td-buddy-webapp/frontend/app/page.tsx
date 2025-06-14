@@ -27,7 +27,7 @@ export default function Home() {
 
   // 工具統計データ（実際の使用状況に基づいて動的に更新可能）
   const toolStats = {
-    totalTools: 12,
+    totalTools: 13,
     activeUsers: 1,
     generatedData: 0,
     uptime: '99.9%',
@@ -648,6 +648,48 @@ export default function Home() {
               </Link>
 
               <Link
+                href="/csv-test"
+                className="block p-6 border-2 rounded-lg hover:shadow-md transition-all group"
+                style={{
+                  backgroundColor: 'var(--wb-tool-measure-100)',
+                  borderColor: 'var(--wb-tool-measure-300)',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor =
+                    'var(--wb-tool-measure-500)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor =
+                    'var(--wb-tool-measure-300)';
+                }}
+              >
+                <div className="text-3xl mb-3 text-center">🧪</div>
+                <h3
+                  className="font-semibold mb-2 text-center"
+                  style={{ color: 'var(--wb-tool-measure-800)' }}
+                >
+                  CSV テスト生成
+                </h3>
+                <p
+                  className="text-sm mb-3 text-center"
+                  style={{ color: 'var(--wb-tool-measure-700)' }}
+                >
+                  テスト用CSVデータを高速生成。プリセット対応で効率的なテストデータ作成。
+                </p>
+                <Badge
+                  variant="outline"
+                  className="w-full justify-center border"
+                  style={{
+                    backgroundColor: 'var(--wb-tool-measure-200)',
+                    color: 'var(--wb-tool-measure-800)',
+                    borderColor: 'var(--wb-tool-measure-400)',
+                  }}
+                >
+                  📏 測定工具
+                </Badge>
+              </Link>
+
+              <Link
                 href="/datetime"
                 className="block p-6 border-2 rounded-lg hover:shadow-md transition-all group"
                 style={{
@@ -929,6 +971,14 @@ export default function Home() {
               categoryColor="var(--wb-tool-measure-100) var(--wb-tool-measure-800)"
             />
             <MobileToolCard
+              href="/csv-test"
+              icon="🧪"
+              title="CSV テスト生成"
+              description="テスト用CSVデータ高速生成"
+              category="📏 測定工具"
+              categoryColor="var(--wb-tool-measure-100) var(--wb-tool-measure-800)"
+            />
+            <MobileToolCard
               href="/ai-chat"
               icon="🤖"
               title="AI チャット"
@@ -984,7 +1034,7 @@ export default function Home() {
                   className="space-y-2 text-sm"
                   style={{ color: 'var(--wb-tool-inspect-700)' }}
                 >
-                  <li>• 全12工具の統合ダッシュボード</li>
+                  <li>• 全13工具の統合ダッシュボード</li>
                   <li>• リアルタイム工房統計表示</li>
                   <li>• カテゴリ別工具分類・管理</li>
                   <li>• クイックアクセス・効率的ナビゲーション</li>
@@ -1006,7 +1056,10 @@ export default function Home() {
                   <li>
                     • 🔗 接合工具: データ統合・組立（個人情報・実用データ）
                   </li>
-                  <li>• 📏 測定工具: 数値・構造・計測（CSV・数値・日時）</li>
+                  <li>
+                    • 📏 測定工具:
+                    数値・構造・計測（CSV詳細・CSVテスト・数値・日時）
+                  </li>
                   <li>
                     • ✨ 仕上げ工具:
                     AI・品質向上（チャット・テキスト・カラー・エクスポート）

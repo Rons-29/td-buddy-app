@@ -1,4 +1,11 @@
-import BrewsPerformanceTest from '../../components/brews/BrewsPerformanceTest';
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const BrewsPerformanceTest = dynamic(
+  () => import('../../components/brews/BrewsPerformanceTest'),
+  { ssr: false }
+);
 
 /**
  * 🧪 Brews Performance Test Page
@@ -9,8 +16,3 @@ import BrewsPerformanceTest from '../../components/brews/BrewsPerformanceTest';
 export default function BrewsPerformanceTestPage() {
   return <BrewsPerformanceTest />;
 }
-
-export const metadata = {
-  title: 'Brews Performance Test | TD Buddy',
-  description: 'Brewsアイコンシステムの包括的パフォーマンステスト - Phase 4B',
-};

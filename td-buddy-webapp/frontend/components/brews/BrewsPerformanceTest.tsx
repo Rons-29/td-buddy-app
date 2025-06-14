@@ -157,8 +157,6 @@ export default function BrewsPerformanceTest() {
           }
           message={`Test ${i}`}
           size="medium"
-          showOverlay={true}
-          interactive={true}
         />
       ));
     });

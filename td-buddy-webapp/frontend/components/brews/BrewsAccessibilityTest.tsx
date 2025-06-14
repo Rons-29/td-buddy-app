@@ -219,14 +219,10 @@ export default function BrewsAccessibilityTest() {
                   size="large"
                   message="キーボードテスト中です"
                   showBubble={true}
-                  interactive={true}
                   onClick={() =>
                     setFocusedElement('新BrewsIcon がクリックされました')
                   }
-                  onFocus={() => handleFocus('新BrewsIcon')}
-                  onKeyDown={e => handleKeyPress(e, '新BrewsIcon')}
                   className="focus:ring-4 focus:ring-blue-500 focus:outline-none"
-                  aria-label="新しいBrewsIconコンポーネント - 幸せな感情、バウンスアニメーション"
                 />
               </div>
 

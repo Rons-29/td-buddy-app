@@ -670,7 +670,9 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
         col => col.id === targetColumnId
       );
 
-      if (draggedIndex === -1 || targetIndex === -1) return;
+      if (draggedIndex === -1 || targetIndex === -1) {
+        return;
+      }
 
       // カラムの順序を再配置
       const newColumns = [...sortedColumns];
@@ -733,7 +735,9 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
         preset = userPresets.find(p => p.id === presetId);
       }
 
-      if (!preset) return;
+      if (!preset) {
+        return;
+      }
 
       const newColumns: CSVColumn[] = preset.columns.map((col, index) => ({
         id: `preset_${presetId}_${index}_${Date.now()}`,
@@ -757,7 +761,9 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const duplicateColumn = useCallback(
     (columnId: string) => {
       const originalColumn = columns.find(col => col.id === columnId);
-      if (!originalColumn) return;
+      if (!originalColumn) {
+        return;
+      }
 
       const duplicatedColumn: CSVColumn = {
         id: `copy_${Date.now()}`,
@@ -909,7 +915,9 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const loadTemplate = useCallback(
     (templateId: string) => {
       const template = templates.find(t => t.id === templateId);
-      if (!template) return;
+      if (!template) {
+        return;
+      }
 
       // 設定をすべて復元
       setColumns(template.settings.columns);
@@ -963,7 +971,9 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   const importPresets = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
-      if (!file) return;
+      if (!file) {
+        return;
+      }
 
       const reader = new FileReader();
       reader.onload = e => {
@@ -1392,34 +1402,67 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* ヘッダーセクション */}
-      <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+      <Card
+        workbench
+        className="mb-6"
+        style={{
+          backgroundColor: 'var(--wb-tool-measure-50)',
+          borderColor: 'var(--wb-tool-measure-200)',
+        }}
+      >
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <FileText className="h-8 w-8 text-blue-600" />
-            <CardTitle className="text-2xl font-bold text-blue-800">
-              📋 CSV テストデータ生成
+            <FileText
+              className="h-8 w-8"
+              style={{ color: 'var(--wb-tool-measure-600)' }}
+            />
+            <CardTitle
+              className="text-2xl font-bold"
+              style={{ color: 'var(--wb-tool-measure-800)' }}
+            >
+              🧪 CSV テストデータ生成
             </CardTitle>
           </div>
-          <CardDescription className="text-blue-700">
+          <CardDescription style={{ color: 'var(--wb-tool-measure-700)' }}>
             QAテスト用の高品質なCSVデータを簡単生成。日本語対応、豊富なデータタイプ対応
           </CardDescription>
         </CardHeader>
       </Card>
 
       {/* Brewキャラクター */}
-      <Card className="border-blue-200">
+      <Card
+        workbench
+        className="mb-6"
+        style={{
+          backgroundColor: 'var(--wb-tool-measure-50)',
+          borderColor: 'var(--wb-tool-measure-200)',
+        }}
+      >
         <CardContent className="pt-6">
           <BrewCharacter emotion={brewMood} message={brewMessage} />
         </CardContent>
       </Card>
 
       {/* カラム設定セクション */}
-      <Card className="border-blue-200">
+      <Card
+        workbench
+        className="mb-6"
+        style={{
+          backgroundColor: 'var(--wb-tool-measure-50)',
+          borderColor: 'var(--wb-tool-measure-200)',
+        }}
+      >
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-lg text-blue-800">
+              <FileText
+                className="h-5 w-5"
+                style={{ color: 'var(--wb-tool-measure-600)' }}
+              />
+              <CardTitle
+                className="text-lg"
+                style={{ color: 'var(--wb-tool-measure-800)' }}
+              >
                 カラム設定
               </CardTitle>
             </div>
@@ -1492,76 +1535,89 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                     }`}
                   >
                     {/* 上段: メイン設定 */}
-                    <div className="flex items-center gap-3 mb-3">
-                      {/* ドラッグハンドル */}
-                      <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors">
-                        <GripVertical className="h-5 w-5" />
-                      </div>
+                    <div className="space-y-3 mb-3">
+                      {/* 第1行: ドラッグハンドル + カラム名入力 + 必須バッジ */}
+                      <div className="flex items-center gap-3">
+                        {/* ドラッグハンドル */}
+                        <div className="cursor-move text-gray-400 hover:text-blue-600 transition-colors flex-shrink-0">
+                          <GripVertical className="h-5 w-5" />
+                        </div>
 
-                      {/* カラム名入力 */}
-                      <div className="flex-1 relative">
-                        <input
-                          type="text"
-                          value={column.name}
-                          onChange={e =>
-                            updateColumn(column.id, { name: e.target.value })
-                          }
-                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            column.required
-                              ? 'border-red-300 bg-red-50'
-                              : 'border-gray-300'
-                          }`}
-                          placeholder="カラム名を入力"
-                        />
+                        {/* カラム名入力 */}
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={column.name}
+                            onChange={e =>
+                              updateColumn(column.id, { name: e.target.value })
+                            }
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              column.required
+                                ? 'border-red-300 bg-red-50'
+                                : 'border-gray-300'
+                            }`}
+                            placeholder="カラム名を入力"
+                          />
+                        </div>
+
+                        {/* 必須バッジ（インライン表示） */}
                         {column.required && (
-                          <span className="absolute -top-2 -right-2 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
-                            必須
-                          </span>
+                          <div className="flex-shrink-0">
+                            <span className="px-2 py-1 bg-red-500 text-white text-xs rounded-full font-medium">
+                              必須
+                            </span>
+                          </div>
                         )}
                       </div>
 
-                      {/* 必須設定チェックボックス */}
-                      <div className="flex items-center gap-2">
-                        <label className="flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={column.required}
-                            onChange={e =>
-                              updateColumn(column.id, {
-                                required: e.target.checked,
-                              })
-                            }
-                            className="mr-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-                          />
-                          <span
-                            className={`text-sm font-medium ${
-                              column.required ? 'text-red-700' : 'text-gray-600'
-                            }`}
+                      {/* 第2行: 必須設定 + アクションボタン */}
+                      <div className="flex items-center justify-between gap-3">
+                        {/* 必須設定チェックボックス */}
+                        <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
+                          <label className="flex items-center cursor-pointer gap-1">
+                            <input
+                              type="checkbox"
+                              checked={column.required}
+                              onChange={e =>
+                                updateColumn(column.id, {
+                                  required: e.target.checked,
+                                })
+                              }
+                              className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded flex-shrink-0"
+                            />
+                            <span
+                              className={`text-sm font-medium whitespace-nowrap ${
+                                column.required
+                                  ? 'text-red-700'
+                                  : 'text-gray-600'
+                              }`}
+                            >
+                              必須
+                            </span>
+                          </label>
+                        </div>
+
+                        {/* アクションボタン */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <ActionButton
+                            type="copy"
+                            onClick={() => duplicateColumn(column.id)}
+                            variant="secondary"
+                            size="sm"
                           >
-                            必須
-                          </span>
-                        </label>
+                            📋
+                          </ActionButton>
+
+                          <ActionButton
+                            type="clear"
+                            onClick={() => removeColumn(column.id)}
+                            variant="danger"
+                            size="sm"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </ActionButton>
+                        </div>
                       </div>
-
-                      {/* 複製ボタン */}
-                      <ActionButton
-                        type="copy"
-                        onClick={() => duplicateColumn(column.id)}
-                        variant="secondary"
-                        size="sm"
-                      >
-                        📋
-                      </ActionButton>
-
-                      {/* 削除ボタン */}
-                      <ActionButton
-                        type="clear"
-                        onClick={() => removeColumn(column.id)}
-                        variant="danger"
-                        size="sm"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </ActionButton>
                     </div>
 
                     {/* 中段: データタイプ選択（2段階式） */}
@@ -1688,13 +1744,23 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       {/* プリセット選択モーダル */}
       {showPresets && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div
+            className="rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto"
+            style={{
+              backgroundColor: 'var(--wb-tool-measure-50)',
+              borderColor: 'var(--wb-tool-measure-200)',
+              border: '1px solid',
+            }}
+          >
             <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-blue-800">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <h3
+                  className="text-xl font-bold"
+                  style={{ color: 'var(--wb-tool-measure-800)' }}
+                >
                   ⭐ プリセット選択
                 </h3>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <ActionButton
                     type="copy"
                     onClick={() => setShowPresetImportExport(true)}
@@ -1719,16 +1785,29 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                   ([categoryKey, category]) => (
                     <div
                       key={categoryKey}
-                      className="border border-gray-200 rounded-lg p-4"
+                      className="rounded-lg p-4"
+                      style={{
+                        border: '1px solid var(--wb-tool-measure-200)',
+                        backgroundColor: 'var(--wb-tool-measure-25)',
+                      }}
                     >
                       {/* カテゴリヘッダー */}
-                      <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                      <div
+                        className="flex items-center gap-3 mb-4 pb-3 border-b"
+                        style={{ borderColor: 'var(--wb-tool-measure-200)' }}
+                      >
                         <span className="text-2xl">{category.emoji}</span>
                         <div>
-                          <h4 className="text-lg font-bold text-gray-800">
+                          <h4
+                            className="text-lg font-bold"
+                            style={{ color: 'var(--wb-tool-measure-800)' }}
+                          >
                             {category.name}
                           </h4>
-                          <p className="text-sm text-gray-600">
+                          <p
+                            className="text-sm"
+                            style={{ color: 'var(--wb-tool-measure-600)' }}
+                          >
                             {category.description}
                           </p>
                         </div>
@@ -1739,35 +1818,57 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                         {category.presets.map(preset => (
                           <div
                             key={preset.id}
-                            className="border border-blue-200 rounded-lg p-3 hover:border-blue-400 transition-colors bg-gradient-to-r from-blue-50 to-indigo-50"
+                            className="rounded-lg p-3 hover:opacity-90 transition-opacity"
+                            style={{
+                              border: '1px solid var(--wb-tool-measure-300)',
+                              background:
+                                'linear-gradient(135deg, var(--wb-tool-measure-100), var(--wb-tool-measure-150))',
+                            }}
                           >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h5 className="font-semibold text-blue-800 mb-1 text-sm">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <h5
+                                  className="font-semibold mb-1 text-sm"
+                                  style={{
+                                    color: 'var(--wb-tool-measure-800)',
+                                  }}
+                                >
                                   {preset.name}
                                 </h5>
-                                <p className="text-xs text-gray-600 mb-2">
+                                <p
+                                  className="text-xs mb-2"
+                                  style={{
+                                    color: 'var(--wb-tool-measure-600)',
+                                  }}
+                                >
                                   {preset.description}
                                 </p>
                                 <div className="flex flex-wrap gap-1">
                                   {preset.columns.map((col, index) => (
                                     <span
                                       key={index}
-                                      className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md"
+                                      className="px-2 py-1 text-xs rounded-md"
+                                      style={{
+                                        backgroundColor:
+                                          'var(--wb-tool-measure-200)',
+                                        color: 'var(--wb-tool-measure-700)',
+                                      }}
                                     >
                                       {col.name}
                                     </span>
                                   ))}
                                 </div>
                               </div>
-                              <ActionButton
-                                type="generate"
-                                onClick={() => applyPreset(preset.id)}
-                                variant="primary"
-                                size="sm"
-                              >
-                                適用
-                              </ActionButton>
+                              <div className="flex-shrink-0">
+                                <ActionButton
+                                  type="generate"
+                                  onClick={() => applyPreset(preset.id)}
+                                  variant="primary"
+                                  size="sm"
+                                >
+                                  適用
+                                </ActionButton>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1778,8 +1879,18 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
               </div>
 
               {/* ブリューからのメッセージ */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-700 text-center">
+              <div
+                className="mt-6 p-4 rounded-lg"
+                style={{
+                  background:
+                    'linear-gradient(135deg, var(--wb-tool-measure-100), var(--wb-tool-measure-150))',
+                  border: '1px solid var(--wb-tool-measure-200)',
+                }}
+              >
+                <p
+                  className="text-sm text-center"
+                  style={{ color: 'var(--wb-tool-measure-700)' }}
+                >
                   🍺 <strong>ブリューからのTip:</strong>{' '}
                   プリセットを適用後も、カラムの追加・削除・並び替えが可能です。お気軽にカスタマイズしてくださいね♪
                 </p>
@@ -1790,15 +1901,28 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       )}
 
       {/* データ生成設定セクション */}
-      <Card className="border-blue-200">
+      <Card
+        workbench
+        className="mb-6"
+        style={{
+          backgroundColor: 'var(--wb-tool-measure-50)',
+          borderColor: 'var(--wb-tool-measure-200)',
+        }}
+      >
         <CardHeader>
-          <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+          <CardTitle
+            className="text-lg flex items-center gap-2"
+            style={{ color: 'var(--wb-tool-measure-800)' }}
+          >
+            <FileText
+              className="h-5 w-5"
+              style={{ color: 'var(--wb-tool-measure-600)' }}
+            />
             データ生成設定
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* 行数設定 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1836,7 +1960,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
             </div>
 
             {/* ファイル名 */}
-            <div>
+            <div className="sm:col-span-2 lg:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 ファイル名
               </label>
@@ -1856,7 +1980,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
           </div>
 
           {/* アクションボタン */}
-          <div className="flex flex-wrap gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 pt-4">
             <ActionButton
               type="copy"
               onClick={() => setShowExportPreview(true)}
@@ -1891,9 +2015,19 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
 
       {/* データ表示セクション */}
       {rows.length > 0 && (
-        <Card className="border-blue-200">
+        <Card
+          workbench
+          className="mb-6"
+          style={{
+            backgroundColor: 'var(--wb-tool-measure-50)',
+            borderColor: 'var(--wb-tool-measure-200)',
+          }}
+        >
           <CardHeader>
-            <CardTitle className="text-lg text-blue-800">
+            <CardTitle
+              className="text-lg"
+              style={{ color: 'var(--wb-tool-measure-800)' }}
+            >
               📊 生成データプレビュー ({rows.length}件)
             </CardTitle>
           </CardHeader>
@@ -1901,7 +2035,7 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto border-collapse">
                 <thead>
-                  <tr className="bg-blue-50">
+                  <tr style={{ backgroundColor: 'var(--wb-tool-measure-100)' }}>
                     {columns
                       .sort((a, b) => a.order - b.order)
                       .map(column => (
@@ -1912,16 +2046,29 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                           onDragEnd={handleDragEnd}
                           onDragOver={e => handleDragOver(e, column.id)}
                           onDrop={e => handleDrop(e, column.id)}
-                          className={`px-4 py-2 text-left text-sm font-medium text-blue-800 border border-blue-200 cursor-move transition-colors ${
+                          className={`px-4 py-2 text-left text-sm font-medium border cursor-move transition-colors ${
                             draggedColumnId === column.id
-                              ? 'bg-blue-200 opacity-50'
+                              ? 'opacity-50'
                               : dragOverColumnId === column.id
-                              ? 'bg-blue-100'
-                              : 'hover:bg-blue-100'
+                              ? ''
+                              : ''
                           }`}
+                          style={{
+                            color: 'var(--wb-tool-measure-800)',
+                            borderColor: 'var(--wb-tool-measure-200)',
+                            backgroundColor:
+                              draggedColumnId === column.id
+                                ? 'var(--wb-tool-measure-200)'
+                                : dragOverColumnId === column.id
+                                ? 'var(--wb-tool-measure-150)'
+                                : undefined,
+                          }}
                         >
                           <div className="flex items-center gap-2">
-                            <GripVertical className="h-3 w-3 text-blue-600" />
+                            <GripVertical
+                              className="h-3 w-3"
+                              style={{ color: 'var(--wb-tool-measure-600)' }}
+                            />
                             {column.name}
                           </div>
                         </th>
@@ -1932,14 +2079,23 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                   {rows.slice(0, 10).map((row, index) => (
                     <tr
                       key={row.id}
-                      className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                      className={index % 2 === 0 ? 'bg-white' : ''}
+                      style={{
+                        backgroundColor:
+                          index % 2 === 1
+                            ? 'var(--wb-tool-measure-25)'
+                            : undefined,
+                      }}
                     >
                       {columns
                         .sort((a, b) => a.order - b.order)
                         .map(column => (
                           <td
                             key={column.id}
-                            className="px-4 py-2 text-sm text-gray-700 border border-gray-200"
+                            className="px-4 py-2 text-sm text-gray-700 border"
+                            style={{
+                              borderColor: 'var(--wb-tool-measure-200)',
+                            }}
                           >
                             {row.data[column.name]}
                           </td>
@@ -1962,10 +2118,21 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
       {/* 一括編集モーダル */}
       {showBulkEdit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+          <div
+            className="rounded-lg shadow-xl max-w-lg w-full mx-4"
+            style={{
+              backgroundColor: 'var(--wb-tool-measure-50)',
+              border: '1px solid var(--wb-tool-measure-200)',
+            }}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-blue-800">✏️ 一括編集</h3>
+                <h3
+                  className="text-lg font-bold"
+                  style={{ color: 'var(--wb-tool-measure-800)' }}
+                >
+                  ✏️ 一括編集
+                </h3>
                 <ActionButton
                   type="clear"
                   onClick={() => setShowBulkEdit(false)}
@@ -1978,7 +2145,10 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
 
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium text-gray-700 mb-2">
+                  <h4
+                    className="font-medium mb-2"
+                    style={{ color: 'var(--wb-tool-measure-700)' }}
+                  >
                     対象カラム選択
                   </h4>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -2005,45 +2175,64 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                 </div>
 
                 {selectedColumns.length > 0 && (
-                  <div className="space-y-3 pt-3 border-t">
-                    <p className="text-sm text-blue-600">
+                  <div
+                    className="space-y-3 pt-3 border-t"
+                    style={{ borderColor: 'var(--wb-tool-measure-200)' }}
+                  >
+                    <p
+                      className="text-sm"
+                      style={{ color: 'var(--wb-tool-measure-600)' }}
+                    >
                       {selectedColumns.length}個のカラムが選択されています
                     </p>
 
                     {/* 選択されたカラムの現在の必須状態を表示 */}
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <h5 className="text-sm font-medium text-gray-700 mb-2">
+                    <div
+                      className="p-3 rounded-lg"
+                      style={{ backgroundColor: 'var(--wb-tool-measure-100)' }}
+                    >
+                      <h5
+                        className="text-sm font-medium mb-2"
+                        style={{ color: 'var(--wb-tool-measure-700)' }}
+                      >
                         現在の必須設定状態
                       </h5>
                       <div className="space-y-1">
-                        {selectedColumns.map(columnId => {
-                          const column = columns.find(c => c.id === columnId);
-                          if (!column) return null;
-                          return (
-                            <div
-                              key={columnId}
-                              className="flex items-center justify-between text-sm"
-                            >
-                              <span>{column.name}</span>
-                              <span
-                                className={`px-2 py-1 rounded text-xs ${
-                                  column.required
-                                    ? 'bg-red-100 text-red-800'
-                                    : 'bg-gray-100 text-gray-800'
-                                }`}
+                        {selectedColumns
+                          .map(columnId => {
+                            const column = columns.find(c => c.id === columnId);
+                            if (!column) {
+                              return null;
+                            }
+                            return (
+                              <div
+                                key={columnId}
+                                className="flex items-center justify-between text-sm"
                               >
-                                {column.required ? '必須' : '任意'}
-                              </span>
-                            </div>
-                          );
-                        })}
+                                <span>{column.name}</span>
+                                <span
+                                  className={`px-2 py-1 rounded text-xs ${
+                                    column.required
+                                      ? 'bg-red-100 text-red-800'
+                                      : 'bg-gray-100 text-gray-800'
+                                  }`}
+                                >
+                                  {column.required ? '必須' : '任意'}
+                                </span>
+                              </div>
+                            );
+                          })
+                          .filter(Boolean)}
                       </div>
                     </div>
 
                     {/* データタイプ変更セクション */}
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label
+                          className="block text-sm font-medium mb-2"
+                          style={{ color: 'var(--wb-tool-measure-700)' }}
+                        >
                           📝 一括データタイプ変更
                         </label>
                         <select
@@ -2179,7 +2368,10 @@ const CSVTestDataGeneratorV2Component: React.FC = () => {
                       />
                       <ActionButton
                         type="generate"
-                        onClick={() => {}}
+                        onClick={() => {
+                          // TODO: テンプレート保存機能を実装
+                          console.log('テンプレート保存機能は未実装です');
+                        }}
                         variant="primary"
                         size="sm"
                         disabled={columns.length === 0}

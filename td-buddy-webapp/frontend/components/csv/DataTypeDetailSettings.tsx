@@ -12,7 +12,6 @@ import {
   TextSettings,
 } from '../../types/csv-detailed-settings';
 import { SETTING_TOOLTIPS } from '../../types/csv-setting-tooltips';
-import { Button } from '../ui/Button';
 import {
   CompactCheckbox,
   CompactInput,
@@ -419,25 +418,43 @@ export const DataTypeDetailSettings: React.FC<DataTypeDetailSettingsProps> = ({
   return (
     <div className="td-slide-down">
       {/* 詳細設定トグルボタン */}
-      <Button
+      <button
         onClick={onToggleExpanded}
-        variant="ghost"
-        size="sm"
-        className="mt-2 w-full text-xs td-button border-orange-200 hover:bg-orange-50"
+        className="mt-2 w-full text-xs flex items-center justify-between gap-2 px-3 py-2 border rounded-md transition-colors duration-200"
+        style={{
+          borderColor: 'var(--wb-tool-measure-200)',
+          color: 'var(--wb-tool-measure-700)',
+          backgroundColor: 'transparent',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.backgroundColor = 'var(--wb-tool-measure-100)';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
       >
-        <Settings className="w-3 h-3 mr-1" />
-        詳細設定
+        <Settings
+          className="w-4 h-4 flex-shrink-0"
+          style={{ color: 'var(--wb-tool-measure-600)' }}
+        />
+        <span className="flex-1 text-center font-medium">詳細設定</span>
         {isExpanded ? (
-          <ChevronUp className="w-3 h-3 ml-1" />
+          <ChevronUp
+            className="w-4 h-4 flex-shrink-0"
+            style={{ color: 'var(--wb-tool-measure-600)' }}
+          />
         ) : (
-          <ChevronDown className="w-3 h-3 ml-1" />
+          <ChevronDown
+            className="w-4 h-4 flex-shrink-0"
+            style={{ color: 'var(--wb-tool-measure-600)' }}
+          />
         )}
-      </Button>
+      </button>
 
       {/* 詳細設定パネル */}
       <div
         className={`overflow-visible transition-all duration-200 ease-in-out ${
-          isExpanded ? 'max-h-48 opacity-100 mt-2' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'
         }`}
       >
         {isExpanded && (

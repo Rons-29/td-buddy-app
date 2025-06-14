@@ -252,8 +252,6 @@ export default function BrewsCompatibilityTestPage() {
                 message={message}
                 showBubble={showMessage && Boolean(message)}
                 size="large"
-                showOverlay={true}
-                interactive={true}
               />
             </div>
 
@@ -264,8 +262,7 @@ export default function BrewsCompatibilityTestPage() {
   emotion="${emotion}"
   animation="${animation}"
   message="${message}"
-  showOverlay={true}
-  interactive={true}
+  showBubble={${showMessage}}
 />`}
               </code>
             </div>
