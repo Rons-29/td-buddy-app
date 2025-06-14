@@ -94,6 +94,9 @@ export const PasswordGenerator: React.FC = () => {
 
   // 教育パネルの状態を追加
   const [showEducationPanel, setShowEducationPanel] = useState(false);
+  const [educationScrollTarget, setEducationScrollTarget] = useState<
+    string | undefined
+  >(undefined);
 
   // Brewキャラクター状態（既存）
   const [brewState, setBrewState] = useState<TDState>({
@@ -101,7 +104,7 @@ export const PasswordGenerator: React.FC = () => {
     animation: 'float',
     message: APP_CONFIG.isOfflineMode
       ? TD_MESSAGES.OFFLINE_MODE
-      : 'パスワード生成の準備ができました！構成プリセットをお選びください♪',
+      : '準備完了！用途を選んでください♪',
     showSpeechBubble: true,
   });
 
@@ -323,7 +326,7 @@ export const PasswordGenerator: React.FC = () => {
     const typeCount = getCharacterTypeCount();
 
     if (typeCount === 0) {
-      return '⚠️ 文字種を選択';
+      return '⚠️ 文字種が必要';
     }
     if (strength === 'weak') {
       return '🔧 強度を向上';
@@ -343,7 +346,7 @@ export const PasswordGenerator: React.FC = () => {
     const length = criteria.length;
 
     if (typeCount === 0) {
-      return '最低1つの文字種を選択してください';
+      return '文字種を選んでください';
     }
     if (strength === 'weak') {
       if (length < 8) {
@@ -1283,9 +1286,9 @@ export const PasswordGenerator: React.FC = () => {
       {/* 工具設定パネル */}
       <div className="wb-tool-panel wb-tool-inspect">
         <div className="wb-tool-panel-header">
-          <h3 className="wb-tool-panel-title">🎯 パスワード生成設定</h3>
+          <h3 className="wb-tool-panel-title">🔐 パスワード設定</h3>
           <p className="wb-tool-panel-description">
-            セキュリティ要件に応じて、パスワードの構成と品質を設定してください
+            セキュリティ要件に合わせて設定します
           </p>
         </div>
 
@@ -1328,10 +1331,8 @@ export const PasswordGenerator: React.FC = () => {
           {/* 第1段階: パスワード仕様設定 */}
           <div className="wb-tool-panel wb-tool-inspect">
             <div className="wb-tool-panel-header">
-              <h4 className="wb-tool-panel-title">📏 パスワード仕様</h4>
-              <p className="wb-tool-panel-description">
-                生成するパスワードの基本仕様を設定します
-              </p>
+              <h4 className="wb-tool-panel-title">📏 基本設定</h4>
+              <p className="wb-tool-panel-description">長さと個数を決めます</p>
             </div>
             <div className="wb-tool-control">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 md:gap-10 lg:gap-12 xl:gap-14 2xl:gap-16">
@@ -1719,7 +1720,11 @@ export const PasswordGenerator: React.FC = () => {
         {/* 教育パネル */}
         <EducationPanel
           isOpen={showEducationPanel}
-          onClose={() => setShowEducationPanel(false)}
+          onClose={() => {
+            setShowEducationPanel(false);
+            setEducationScrollTarget(undefined);
+          }}
+          scrollToSection={educationScrollTarget}
         />
 
         {/* パスワード生成ボタン */}
@@ -1748,7 +1753,7 @@ export const PasswordGenerator: React.FC = () => {
                   {isGenerating ? (
                     <>
                       <span className="animate-spin inline-block mr-2">⏳</span>
-                      パスワード生成中...
+                      生成中...
                       {generationProgress && (
                         <span className="ml-2 text-sm">
                           ({generationProgress.current}/
@@ -1757,7 +1762,7 @@ export const PasswordGenerator: React.FC = () => {
                       )}
                     </>
                   ) : (
-                    'パスワード生成'
+                    '生成する'
                   )}
                 </span>
               </div>
@@ -1788,7 +1793,10 @@ export const PasswordGenerator: React.FC = () => {
             {/* 教育コンテンツリンク */}
             <div className="wb-generate-actions mt-4">
               <button
-                onClick={() => setShowEducationPanel(true)}
+                onClick={() => {
+                  setEducationScrollTarget('security-guide');
+                  setShowEducationPanel(true);
+                }}
                 className="wb-education-link-button"
                 type="button"
               >
@@ -1802,7 +1810,7 @@ export const PasswordGenerator: React.FC = () => {
               <div className="wb-error-message mt-4">
                 <span className="wb-error-icon">⚠️</span>
                 <span className="wb-error-text">
-                  少なくとも1つの文字種を選択してください
+                  文字種を1つ以上選んでください
                 </span>
               </div>
             )}
@@ -1837,7 +1845,7 @@ export const PasswordGenerator: React.FC = () => {
             <div className="wb-advanced-panel-header">
               <h4 className="wb-advanced-panel-title">⚙️ 高度な設定</h4>
               <p className="wb-advanced-panel-description">
-                より詳細な品質設定と生成オプション
+                詳細設定とオプション
               </p>
             </div>
 
@@ -2065,7 +2073,10 @@ export const PasswordGenerator: React.FC = () => {
                 </p>
                 <div className="wb-vulnerability-education-link">
                   <button
-                    onClick={() => setShowEducationPanel(true)}
+                    onClick={() => {
+                      setEducationScrollTarget('vulnerabilities-section');
+                      setShowEducationPanel(true);
+                    }}
                     className="wb-education-link-button wb-education-link-small"
                     type="button"
                   >

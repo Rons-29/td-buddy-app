@@ -74,11 +74,11 @@ export const CompositionSelector: React.FC<CompositionSelectorProps> = ({
       {/* セクションヘッダー */}
       <div className="mb-6">
         <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
-          🎯 構成プリセット選択
+          🎯 どこで使いますか？
           <Info className="w-4 h-4 text-gray-400" />
         </h3>
         <p className="text-sm text-gray-600">
-          用途に応じたパスワード構成プリセットを選択してください
+          用途に合わせて最適なパスワードを作成します
         </p>
       </div>
 
